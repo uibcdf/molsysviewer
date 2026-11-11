@@ -1,0 +1,516 @@
+{
+  "schema": "molsysviewer.movie_export_receiving@1",
+  "date": "2026-11-10",
+  "issue": "uibcdf/molsysviewer#320",
+  "scope": "Initial version-2 media export received from sources on Linux/CPython 3.14 with real Mol*/Chromium rendering. Encoder tests include H.264, VP9 and PNG/ZIP. No hosted, clean installed, native Qt, human, portable interactive web or complete M1-M6 qualification.",
+  "sources": {
+    "molsysviewer_base": "97d49215b2ef92316052697bee12c682ea322e6a",
+    "source_patch_identity": "Explicit final source/guard SHA-256 below, plus immutable before/after input manifests; not an installed package identity.",
+    "sha256": {
+      "molsysviewer/viewer/_movie_export.py": "4dc891526b2d9b6932d8cb5c3ac53119825cbecb5e8f0440a0a8c57616f23bd4",
+      "molsysviewer/viewer/_movie_sampling.py": "96c1a6f62513296dbe3eaf4ef8caf9722866d8cbb53ef890fed99c576e38d5c9",
+      "molsysviewer/viewer/_movie_seek.py": "300c39a73ee53e082bf8fb64da6201a477dd9c02a406e889beaccbdb9d48edb8",
+      "molsysviewer/viewer/_movie_playback.py": "e13773f0f00e756c0bfacdad03e4b81e10240c55a292708e31d85045252c8448",
+      "molsysviewer/viewer/visual_capture.py": "96c4e8697fdbbdfe04a6c52624b76be79901fca51a60ee15b032ee2ef4b8c88d",
+      "molsysviewer/viewer/movie.py": "59a7fe0312a7b8f6089e54b3102546515f2efc31221b0745e1ff46d6eafaac07",
+      "molsysviewer/_depdigest.py": "1f88ca7f02df98909e6fb61d4dcda61990aeaa2fe0ae85447b9e8cdfb5d24555",
+      "molsysviewer/_private/argdigest/argument/format.py": "ae58126be1f7b615dfeebe0b7954ebe7b88c9415a5e2ce46010ea38993eb08e2",
+      "molsysviewer/_private/argdigest/argument/fps.py": "f63e73d443954fe9a40355b4db0a062329b71bbc1bc7825dbb20c760fd596723",
+      "molsysviewer/_private/argdigest/argument/include_overlays.py": "4b975640116d8479399442bfa0f9f14d7fb484dea37cb672f928b3bcc5dffdbb",
+      "molsysviewer/_private/argdigest/argument/on_progress.py": "e35a0d3b6572d027f24781f65e9a3cd928bb1ecc6bbab0928ca09d3d4f3c176f",
+      "molsysviewer/_private/argdigest/argument/sample_level.py": "83bc82b03e56cdfccf302bf4a8c294b222e14d0b93c8461e879778acc97aa49b",
+      "molsysviewer/js/src/index.ts": "0d67526387b01387d7e2e0ec5ae5da4304f875e10f8df2fb7b0a340191300e78",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "d3ca5c06abb18007d2e09558308fe01fcb63e34d764c91912251294918db97a9",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "2adb6dc4c49f052a36b37d0976044680dee0572f43dfbfb27340393da2f7d22c",
+      "molsysviewer/js/src/messages/movie-frame-capture.ts": "7e809cfe90393f0710467c6b0703531a572a3dddbac7eddc0837728dbc9a6bef",
+      "molsysviewer/js/tests/e2e/movie-export.e2e.ts": "ce946c4eacad2aac85023531a0ac450992176b053d47005081a9a1a2f89cbf65",
+      "molsysviewer/js/tests/e2e/movie-export-bridge.py": "518db8731a99627aca02119b91168c8d931489626d50dfbbefb5e4c9735207cc",
+      "tests/test_movie_export.py": "eff8329fcb21a269fb513d87864228bf08a6ed03a188943210117e47cf8c6511",
+      "devtools/public_api_contract_baseline.json": "03864c74bd079a3aaeb2109683cf7213ea0e6fc1910516b662772442edb1eeb4",
+      "devtools/public_api_inventory_baseline.json": "c4c57196333e1c63b280f82cb7bd28dacb5b23cc98fc0f5e9f1ac47f10a96283",
+      "devtools/public_api_stability.json": "2e3ec2dac2d11d4c9c9982c711493dae30d93e69e4283d9ff8da3c3adef729fd",
+      "pyproject.toml": "0389427568457cd5fd08dff3a23032e82ce103ed4ec6ee8954ead419ff949b4f",
+      "molsysviewer/js/package.json": "5df78539ffd5f9015252884e6ec7c2ffbf4981c5bbaedddb77ff8a4724bb622c",
+      "molsysviewer/js/package-lock.json": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd",
+      "molsysviewer/js/tests/e2e/harness.ts": "55523bb1ed52a9e931136b634513d0bf3ba595131f46415c85fd4dd042284860",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "8baf620408bc6d6efdb7391ea017d485c9bee12b7d38a8e6863442f92cc6ecb3"
+    },
+    "generated_runtime_sha256": "4fc344a0fb6c7db654b5ae56e0be2062a8c6954ac492fbc93183726949d16640",
+    "molsysmt": "8d05bc33e75327a2c4f55a8c06ed3a132627fb5b",
+    "molsysmt_native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+  },
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "providers": "Isolated frozen MolSysMT source, published PyUnitWizard 0.29.2 and cached public support. Routine environment not modified.",
+    "runtime_version_notice": "Archived MolSysMT reports 0+unknown; existing editable Viewer metadata reports 0.24.0+97.gdf4bf477.dirty. Neither identifies an installed release candidate. Exact source commits and retained hashes establish this scope.",
+    "public_support": {
+      "pyunitwizard": "0.29.2",
+      "smonitor": "0.21.0",
+      "argdigest": "0.15.0",
+      "depdigest": "0.15.1",
+      "ackredit": "0.9.0",
+      "pytest-receptor": "1.2.1",
+      "imageio": "2.37.4",
+      "imageio-ffmpeg": "0.6.0"
+    },
+    "imageio_ffmpeg_wheel": {
+      "filename": "imageio_ffmpeg-0.6.0-py3-none-manylinux2014_x86_64.whl",
+      "sha256": "c7e46fcec401dd990405049d2e2f475e2b397779df2519b544b8aab515195282",
+      "bytes": 29498237
+    },
+    "encoder_executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+    "encoder_version": "FFmpeg 7.0.2-static",
+    "molstar": "5.4.1"
+  },
+  "resource_policy": {
+    "maximum_receiving_cpus": 2,
+    "ram_gib": 4,
+    "own_swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "execution": "Sequential user systemd scopes, CPU affinity, low-thread native/encoder settings, resource monitoring and owned-process cleanup. Free resources are not reservations."
+  },
+  "implemented": {
+    "api": "await view.movie.export_async(path, *, fps=25, width_px=1280, height_px=720, sample_level=2, format=None, overwrite=False, include_overlays=True, timeout=15.0, on_progress=None, skip_digestion=False)",
+    "stability": "experimental",
+    "formats": [
+      "mp4/libx264/CRF18/medium/faststart",
+      "webm/libvpx-vp9/CRF30/no target bitrate",
+      "pngs/lossless PNG ZIP"
+    ],
+    "sampling": "N=ceil(duration_seconds*p/q), times k*q/p over [0,duration), exact rational scheduling without a materialized frame list. Nominal CFR duration is N*q/p; received container timing checked independently.",
+    "ownership": "One acknowledged capture and one encoded frame in flight; independently owned Mol* task, single-thread encoder pipe with backpressure, finite waits, correlated replies, revision checks and atomic no-clobber/explicit replacement.",
+    "composition": "Native molecular canvas/geometry annotations. Visible DOM plots and legends refused unless explicitly excluded. Authoring controls excluded.",
+    "reproduction": "Manifest includes recipe, sampling, composition, resolution, multisampling, runtime bundle digest, codec settings, colour interpretation and encoder binary digest; embedded in video comment or ZIP manifest."
+  },
+  "profiles": {
+    "probe-346-movie-export-unit": {
+      "native_exit": 0,
+      "seconds": 8.49595956900157,
+      "selected_inputs": 5741,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 394.4,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "c033273200df877cbaa1cb22be1c1f4b470a7ab7be3cfc496e5b2ad255a3ca21",
+      "inputs_before_sha256": "bea6013cfab4d3b5e787ca15b628a554cf322d91f85fcf1cee96edcbcb3d3f48",
+      "stdout_sha256": "0747f3d76bf7886fff806ee5195b4600b4206a24faf4354c64ddab5689d361b8"
+    },
+    "probe-344-movie-native-task-isolation": {
+      "native_exit": 0,
+      "seconds": 18.8456554771401,
+      "selected_inputs": 5741,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2051.4,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "d83a988f0b5e26ca82ba01b88a22e843a19f006ae6e8961108f1e0d777743977",
+      "inputs_before_sha256": "5d2177970fa59e5497ece9e4cf27be2a441b59d370505512033cc1b900ef9e28",
+      "stdout_sha256": "1637c15bc85c51fcb6e910f69cb75ee0b2f30ace50d216d086ca7d766d18ffe6"
+    },
+    "probe-350-video-decode-repeat": {
+      "native_exit": 0,
+      "seconds": 8.144148979103193,
+      "selected_inputs": 5742,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1196.1,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "c0c85870b9f030aa1f5f00e5cef823ff1a69a6893635abd3f366f7d383081e42",
+      "inputs_before_sha256": "e1e581b0543bd21516099a9158b1d2fd4bc2a7242a3398e364a857f17ea9b568",
+      "stdout_sha256": "dca1e35b54b3811e66f15f33f33ffd5a4ee8c0da667f4b2adedb0d1b392f03d7"
+    },
+    "probe-352-movie-export-final": {
+      "native_exit": 0,
+      "seconds": 96.36108484910801,
+      "selected_inputs": 5742,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2155.1,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "1d0eaf304cb0568f899f87d69f875a6da288e9b5cd17dd961472a122819ad7c1",
+      "inputs_before_sha256": "5fa39a8ca72deb6b7cae866d8f14665ee83ccdec46c2ab46ae7710a9770fdb2f",
+      "stdout_sha256": "290f399aa7c2bda7fba4af971c20823fd97575acc2b7932f2d28b5b658ca4ff6"
+    },
+    "build-movie-export-351": {
+      "native_exit": 0,
+      "seconds": 14.564996634842828,
+      "selected_inputs": 5740,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 520.5,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "3449cd53942881238b274e507af0a28597e7fd0e1d7b2d8119ad2436a466c65d",
+      "inputs_before_sha256": "1d70d0346f6f1c2b2d631523c29747df849a4d0dc5c31dbf35ce632916c3ce9c",
+      "stdout_sha256": "13b2a4180faeedd8f8384db7f99ae8f42ab6ac58ab1a7fd5116b6da5f8994fbc"
+    },
+    "build-movie-export-api-345": {
+      "native_exit": 0,
+      "seconds": 6.471448772819713,
+      "selected_inputs": 5737,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 397.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "80b99677c3170dc4fce68c281a7c08140853cc3324f2c1f9c4148cf9f2a2a63e",
+      "inputs_before_sha256": "df10239402b040f2ae2b8f9e8764b86bd1857efc5e93a1188efc06089530189e",
+      "stdout_sha256": "fa870dc73758c9f4b5fd3c6b46f83b0136c83275bf8cfb45f929c26da8defeba"
+    },
+    "probe-349-movie-color-browser": {
+      "native_exit": 0,
+      "seconds": 100.96730339480564,
+      "selected_inputs": 5741,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2085.5,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "c804c3731527e0e0cbea524e664da4d7b05a1da4436ff3c50ca80352462e96b1",
+      "inputs_before_sha256": "99dbc50a1a8c5298d4b7e7ac65169f1fb95538f7d9edc17594413f48e8abc88f",
+      "stdout_sha256": "7c83ef3e07d1667d8941ffafe7e85cfa0c8f7c3ea8576d2426c94d36eedb8d41"
+    },
+    "probe-353-movie-preview-regression": {
+      "native_exit": 0,
+      "seconds": 33.358718526083976,
+      "selected_inputs": 5742,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2075.0,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "324b7b9087f214f16983db202fb36fbe4b6d72bf227668299f2e6b2eb439613b",
+      "inputs_before_sha256": "5fa39a8ca72deb6b7cae866d8f14665ee83ccdec46c2ab46ae7710a9770fdb2f",
+      "stdout_sha256": "b4e6c4b64a26bddec7ac00304e91b7a06160d15ea58cf6c1c27c012e7304978c"
+    },
+    "probe-354-movie-capture-api-regression": {
+      "native_exit": 0,
+      "seconds": 100.73087746091187,
+      "selected_inputs": 5742,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 614.1,
+      "cleanup": {
+        "tracked": 32,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "517ea466f51674ae53612d23ff21229065f6e894560e378147b348a94e1eb773",
+      "inputs_before_sha256": "5fa39a8ca72deb6b7cae866d8f14665ee83ccdec46c2ab46ae7710a9770fdb2f",
+      "stdout_sha256": "63e1d905778a94a21424029f2686c2a6f49eb5fcb2b129581a09e77b9b214401"
+    },
+    "probe-355-movie-javascript-regression": {
+      "native_exit": 0,
+      "seconds": 3.4721091059036553,
+      "selected_inputs": 5742,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 125.9,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "9445c58838b6c783c2842c41ead1669adc066a417d406f2bdab76b74a6bf5bab",
+      "inputs_before_sha256": "5fa39a8ca72deb6b7cae866d8f14665ee83ccdec46c2ab46ae7710a9770fdb2f",
+      "stdout_sha256": "3c2559a51e3da2450a88929d37978ed5998d6ba5c068500bc740588233c7274b"
+    },
+    "probe-356-movie-docs-contract": {
+      "native_exit": 0,
+      "seconds": 13.100133288884535,
+      "selected_inputs": 5742,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 550.3,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "5f15adc9f4688702cd0817e38c102acb77f9c4288abfc9d7383a975337baa0d5",
+      "inputs_before_sha256": "5fa39a8ca72deb6b7cae866d8f14665ee83ccdec46c2ab46ae7710a9770fdb2f",
+      "stdout_sha256": "fdd94ba9c7810ea8c4304695a9487579bfd3a43d74d68eaf3411afed8f59c2da"
+    }
+  },
+  "unit_encoder_tests": {
+    "passed": 24,
+    "failures": 0,
+    "skips": 0,
+    "guard": "tests/test_movie_export.py"
+  },
+  "browser_acceptance": {
+    "size": [
+      1280,
+      720
+    ],
+    "frames": 4,
+    "fps": 4,
+    "duration": 1,
+    "scene_change": 3.233915653935185,
+    "embedded_recipe": true,
+    "independent_capture_mean_errors": [
+      0.09704282407407408,
+      0.09870949074074074,
+      0.104208984375,
+      0.10570131655092592
+    ],
+    "timeout": 15,
+    "nativeCancellation": {
+      "observed": true,
+      "aborted": true,
+      "unrelatedHealthy": true,
+      "imageReserved": false,
+      "sampleLevel": 4
+    },
+    "browserVideo": {
+      "mean_color_error": 1.9713541666666667,
+      "sampled_channels": 384,
+      "width": 1280,
+      "height": 720,
+      "duration": 1
+    },
+    "image_timings": [
+      {
+        "width": 640,
+        "height": 360,
+        "start": 6858.799999952316,
+        "elapsed": 2082
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "start": 9866.200000047684,
+        "elapsed": 2670.899999856949
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "start": 13637,
+        "elapsed": 2521.5
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 18108,
+        "elapsed": 8061.599999904633
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 26959.099999904633,
+        "elapsed": 7878.300000190735
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 35705.799999952316,
+        "elapsed": 7860.900000095367
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 44403,
+        "elapsed": 7938.700000047684
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 53481.799999952316,
+        "elapsed": 7791.900000095367
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 62026.700000047684,
+        "elapsed": 7631.200000047684
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 70424.40000009537,
+        "elapsed": 7781.099999904633
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 78953.20000004768,
+        "elapsed": 7617.700000047684
+      }
+    ]
+  },
+  "media": {
+    "verified.json": {
+      "bytes": 34714,
+      "sha256": "04859ab2f8a9df8e183269a8daf1d639ab0d0472c198f0a0ebc57456f03c618c"
+    },
+    "browser-decode.json": {
+      "bytes": 7863,
+      "sha256": "d18dfc1d5f65ddfabb263234042c17ef569ffc0ec0266736329df75ffe327802"
+    },
+    "browser-reference.json": {
+      "bytes": 4888,
+      "sha256": "cb5c2c44d6da74ae5e4433077fe72e33a1d6e33c83d6c24584ff46996c7583bc"
+    },
+    "movie.mp4": {
+      "bytes": 40380,
+      "sha256": "f76119f548d6514607c353a3aad0773b2a3015e921f49a55e9319ffba71f63c8"
+    },
+    "movie.zip": {
+      "bytes": 290554,
+      "sha256": "458f30e75ada1ac1c8c86289aed5a8c56c03cdd69476be2e95a430c74e967c64"
+    }
+  },
+  "api_review": {
+    "changes": [
+      "view.movie.export_async added as experimental async method"
+    ],
+    "existing_signatures_unchanged": true,
+    "digested_callables": 752,
+    "total_callables": 752,
+    "digesters": 455,
+    "missing_digesters": 0,
+    "missing_bypass_arguments": 0,
+    "generation_expected_writes": [
+      "devtools/public_api_contract_baseline.json",
+      "devtools/public_api_inventory_baseline.json"
+    ]
+  },
+  "diagnostic_history": [
+    {
+      "profiles": [
+        "322"
+      ],
+      "classification": "Initial canonical-caller mismatch in the new argument digesters; corrected before the subsequent 22/24-case passes."
+    },
+    {
+      "profiles": [
+        "325",
+        "327"
+      ],
+      "classification": "New browser test transport instrumentation initially inspected the envelope instead of its payload; diagnostic assertions then corrected."
+    },
+    {
+      "profiles": [
+        "329",
+        "331",
+        "333",
+        "337"
+      ],
+      "classification": "Preserved renderer/deadline failures. Default photographic AA level 4 measured 30.62 s at 720p on two software-rendering CPUs. Explicit Movie AA level 2 and public 15-second budget subsequently passed. Production refuses timeout rather than emitting placeholder output."
+    },
+    {
+      "profiles": [
+        "341"
+      ],
+      "classification": "Native-task test harness had not been loaded; corrected, with actual isolated-task cancellation received separately and in final media guard."
+    },
+    {
+      "profiles": [
+        "347"
+      ],
+      "classification": "Browser colour comparison against a separate PNG capture job failed (mean 21.151/255). Its output bytes were not preserved by that initial success-only artifact path. No root-cause or product-fix claim is inferred. Profile 349 passed the same comparison at 1.875/255 and profile 350 repeated its preserved file 12 times with identical values. Final guard preserves bytes before inspection, compares browser decoding with the actual encoder-input captures, and separately retains whole-image comparison with independent PNG export."
+    }
+  ],
+  "remaining": [
+    "Appearance, lighting and other required typed channels",
+    "Complete static baseline enforcement and reviewable rebase/reset",
+    "Explicit target remapping and v1 migration",
+    "Studio authoring UI and drafts",
+    "Composition of DOM scientific overlays",
+    "Portable interactive web player and assets",
+    "Complete pocket/ligand/interactions/labels M5 story",
+    "Further resolution/rate/duration and platform/codec capacity receiving",
+    "Native Qt, actual Jupyter media export, installed package and human acceptance",
+    "Applicable hosted exact-source CI at agreed checkpoint"
+  ],
+  "publication": {
+    "tags_created": false,
+    "packages_published": false,
+    "remote_ci_dispatched": false,
+    "both_1_0_publications_paused": true
+  },
+  "verification": {
+    "python_regression": {
+      "passed": 810,
+      "skipped": 1,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 97.0,
+      "unit_encoder_cases_included": 24,
+      "skip": "imageio is installed; missing-ImportError branch not exercised",
+      "warning": "282 native LegacyH5MSMWarning observations retained",
+      "scope": "Movie, live/moving/Studio captures, sessions including H5MSM migration, public API/digestion, dependencies and reporting. Not a full library/scientific or installed suite."
+    },
+    "javascript_regression": {
+      "passed": 22,
+      "failures": 0,
+      "skips": 0,
+      "scope": "Frontend capture requests, Movie handler and v2 timeline/clock"
+    },
+    "docs_reference_regression": {
+      "passed": 11,
+      "failures": 0,
+      "skips": 0
+    },
+    "browser_guards": [
+      "movie-export (full correlated media and failure lifecycle)",
+      "movie-seek (seek/preview/pause/popup/session/terminal draw)"
+    ],
+    "static_checks": [
+      "runtime/harness/browser rebuild",
+      "strict TypeScript check of new capture module",
+      "Ruff check and format on 14 Python files",
+      "dependency contract verified",
+      "generated devguide queue index current",
+      "git diff --check"
+    ],
+    "human_preservation": {
+      "viewer_files": 7,
+      "molsysmt_files": 4,
+      "all_reference_hashes_unchanged": true
+    },
+    "all_receiving_owned_processes_retired": true
+  },
+  "evidence_custody": {
+    "state": "verified",
+    "custodian": "Diego",
+    "approved_private_root": "~/.local/state/molsysviewer/evidence/robustness-20261106",
+    "subdirectory": "movie-export-20261110",
+    "files": 224,
+    "bytes": 77129501,
+    "manifest_sha256": "c5929d782147d6c69adf7e0ef200b57b5cdad13224a1f899f1464d873f23b0c9",
+    "all_hashes_verified": true,
+    "private_directories_mode": "0700",
+    "private_files_mode": "0600",
+    "originals_retained": true
+  }
+}

@@ -90,7 +90,7 @@ def _confirm_sample(sample, *, camera, structure_index, playing):
         raise FrontendRequestError(reason="movie_camera_not_applied")
 
 
-async def seek_movie(movie, time_ms, *, timeout):
+async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=None):
     if isinstance(timeout, bool) or not isinstance(timeout, Real) or not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("Movie seek timeout must be finite and positive.")
     view = movie._view
@@ -104,9 +104,16 @@ async def seek_movie(movie, time_ms, *, timeout):
     def begin():
         nonlocal request
         version = live_capture_version(view, required=2)
-        if movie._seek_request is not None or movie._playback is not None or view._movie_export_frames is not None:
+        if (
+            movie._seek_request is not None
+            or movie._playback is not None
+            or view._movie_export_frames is not None
+            or movie._export_job is not export_job
+        ):
             raise FrontendRequestError(reason="movie_operation_pending")
         timeline = movie._require_timeline()
+        if export_job is not None:
+            export_job.validate(movie)
         scene = view.export_state(skip_digestion=True)
         timeline.check_binding(view._source_state_binding(), scene)
         sample = timeline.evaluate(time_ms, tracked_visibility=True)
@@ -123,7 +130,7 @@ async def seek_movie(movie, time_ms, *, timeout):
         _apply_sample(movie, timeline, sample, commands)
         captured = freeze_live_capture(view, version=version)
         revisions = (view._camera_projection_revision, view.player._intent_revision)
-        send_live_capture(view, request, protocol_version=version)
+        send_live_capture(view, request, protocol_version=version, movie_frame=movie_frame)
         return timeline, sample, captured, revisions
 
     try:
@@ -143,6 +150,17 @@ async def seek_movie(movie, time_ms, *, timeout):
                 structure_index=drawn["structure_index"],
                 playing=drawn["playback"]["playing"],
             )
+            if movie_frame is not None:
+                frame = reply.get("movie_frame")
+                if not isinstance(frame, dict) or any(
+                    type(frame.get(key)) is not type(value) or frame.get(key) != value
+                    for key, value in movie_frame.items()
+                ):
+                    raise FrontendRequestError(reason="invalid_movie_frame")
+                from ._movie_playback import _revisions
+
+                export_job.revisions = _revisions(view)
+                return sample, frame
             return sample
 
         return await _capture_owned_call(view, confirm, deadline=deadline)

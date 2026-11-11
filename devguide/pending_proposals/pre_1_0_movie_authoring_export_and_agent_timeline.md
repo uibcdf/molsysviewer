@@ -1,10 +1,10 @@
 ---
 summary: Complete movie authoring and useful export before 1.0, with a timeline future agents can consume.
 issue: uibcdf/molsysviewer#320
-status: open
+status: active
 opened: 2026-11-06
 closed:
-verification: inspected
+verification: measured
 area: [movie, animation, export, studio, public-api]
 guard:
 normative:
@@ -14,15 +14,17 @@ supersedes: []
 
 # Movie authoring, export and future agent planning
 
-**Approved product requirement; detailed design and expanded implementation
-pending.** The principal maintainer explicitly requires useful movie authoring
+**Active requirement; camera/structure/visibility authoring, preview and initial
+media export are source-delivered. The complete workflow remains pending.**
+The principal maintainer explicitly requires useful movie authoring
 and export before 1.0. [#320](https://github.com/uibcdf/molsysviewer/issues/320)
 records the accepted scope and example story. Natural-language planning through
 future MolSys-Agent/MolSys-AI integration follows after 1.0; the shared movie
 model and execution surface must be suitable for that later consumer now.
-No movie production code changes accompany this record.
+The dated M0 inventory below retains its original inspected scope; current
+implementation and receiving are recorded under Scope and progress.
 
-## Current evidence and ownership
+## Initial inventory and ownership — 2026-11-06
 
 The complete duplicate review contains four pages and 318 issue/PR records,
 including closed #36/#172/#177/#273. Those repairs protect distinct camera,
@@ -184,7 +186,7 @@ playback. The first slice should include:
 The [M1 model](../movie_timeline_design.md) has its first experimental Python
 implementation for camera, structure and visibility. The design also covers
 constant-rate endpoint sampling, migration, one execution owner and bounded
-exports. Those parts and the remaining channels still require implementation.
+exports. The progress section distinguishes implemented slices from remaining work.
 
 ## Execution route
 
@@ -237,8 +239,8 @@ the actual Mol* region and same-tag shape nodes. The case passes in profile
 The scoped Movie, capture, session, public API and reporting gate `304`
 passes 844 Python cases, with the expected missing-`imageio` branch skipped.
 The browser case uses the widget runtime with an adapted transport. The same route
-retains separate installed-host receiving. Studio authoring and media and web
-export of version-2 tracks remain open.
+retains separate installed-host receiving. Studio authoring and portable web
+export of version-2 tracks remain open; the first media route is described below.
 The existing coherent-capture guard for browser-only visibility changes from
 version-1 playback also applies to seeks that reuse that capture service.
 
@@ -263,6 +265,23 @@ It uses one kernel and three bundled structures, finishes in 37.61 s under
 Native Qt and installed artifacts keep separate gates.
 The final Ruff-only formatting preserves the Python AST, with 65 targeted
 Movie cases passing again and the same expected dependency branch skipped.
+
+The first M4 tranche adds `await view.movie.export_async(...)` for the existing
+version-2 tracks: MP4/H.264, WebM/VP9 and a lossless PNG/manifest ZIP. A
+correlated job samples an exact rational constant rate, awaits a current
+primary draw, captures one image, and encodes it before requesting another.
+It has bounded waits, synchronous progress callbacks, cooperative owned-task
+cancellation and atomic destination publication. Existing public signatures
+are preserved; the new method is experimental.
+
+The [export receiving record](../movie_export_receiving_20261110.json) retains
+real encoder and molecular-browser evidence, runtime/source identities, resource
+limits and diagnostic failures. Native annotations are captured. Visible DOM
+plots/legends require explicit exclusion or cause refusal. This does not yet
+receive composited overlays, all appearance/lighting channels, full static
+baseline/rebase enforcement, target remapping/v1 migration, Studio authoring,
+portable interactive web playback or the complete M5 story. Native Qt,
+installed packages, other platforms and human observations remain separate.
 
 The pre-1.0 result must let a user approach a known pocket, reveal a loaded
 ligand with an explicit representation, show calculated interactions and labels

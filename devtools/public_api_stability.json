@@ -157,6 +157,12 @@
       "priority": 100,
       "stability": "experimental",
       "reason": "Experimental acknowledged Movie preview; public_api.md"
+    },
+    {
+      "route": "view.movie.export_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental bounded version-2 Movie export; movie_timeline_design.md and #320"
     }
   ]
 }

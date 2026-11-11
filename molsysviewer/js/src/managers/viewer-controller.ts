@@ -12,6 +12,7 @@ import { Shape, ShapeGroup } from "molstar/lib/mol-model/shape";
 import { Loci } from "molstar/lib/mol-model/loci";
 import { StructureComponentRef } from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
+import { Task } from "molstar/lib/mol-task";
 import { PluginCommands } from "molstar/lib/mol-plugin/commands";
 import { OrderedSet } from "molstar/lib/mol-data/int/ordered-set";
 import { SortedArray } from "molstar/lib/mol-data/int/sorted-array";
@@ -4682,6 +4683,17 @@ export class MolSysViewerController {
         return this.plugin.canvas3d?.camera.getSnapshot?.();
     }
 
+    readMovieExportOverlays(): string[] {
+        return Array.from(this.host.querySelectorAll<HTMLElement>(
+            "[data-molsysviewer-legend], [data-molsysviewer-plot-navigation]",
+        )).filter(element => {
+            const bounds = element.getBoundingClientRect();
+            return bounds.width > 0 && bounds.height > 0;
+        }).map(element => element.getAttribute("data-molsysviewer-plot-navigation") ?? "colour-legend");
+    }
+
+    private imageExportPending = false;
+
     async getImageDataUri(options?: {
         width?: number;
         height?: number;
@@ -4689,6 +4701,8 @@ export class MolSysViewerController {
         transparent?: boolean;
         preset?: string;
         cameraSnapshot?: Camera.Snapshot;
+        sampleLevel?: number;
+        signal?: AbortSignal;
     }): Promise<string | { success: false; error_type: string; message: string; requested_width: number; requested_height: number; max_renderbuffer_size?: number; max_viewport_width?: number; max_viewport_height?: number } | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
         if (!helper) return void 0;
@@ -4704,6 +4718,10 @@ export class MolSysViewerController {
         const targetHeight = useCustomResolution ? height : viewportHeight;
         const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
         const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
+        if (this.imageExportPending) return {
+            success: false, error_type: "IMAGE_EXPORT_BUSY", message: "A canvas image export is already running.",
+            requested_width: scaledWidth, requested_height: scaledHeight,
+        };
         const gl = this.plugin.canvas3d?.webgl?.gl as WebGLRenderingContext | WebGL2RenderingContext | undefined;
         if (gl) {
             const maxRenderbufferSize = Number(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
@@ -4744,7 +4762,12 @@ export class MolSysViewerController {
                 || (targetBackgroundMode === "light" && this.scene.isDarkMode)
             : false;
 
+        const previousMultiSample = options?.sampleLevel === undefined ? undefined : { ...helper.imagePass.props.multiSample };
+        this.imageExportPending = true;
         try {
+            if (previousMultiSample) helper.imagePass.setProps({ multiSample: {
+                ...previousMultiSample, mode: options!.sampleLevel === 0 ? "off" : "on", sampleLevel: options!.sampleLevel!,
+            } });
             if (targetBackgroundMode && shouldRestoreBackground) {
                 await this.scene.toggleBackground(targetBackgroundMode);
             }
@@ -4757,14 +4780,40 @@ export class MolSysViewerController {
                 format: { name: "png", params: {} },
                 resolution: { name: "custom", params: { width: scaledWidth, height: scaledHeight } },
             });
+            if (options?.signal) {
+                const signal = options.signal;
+                if (signal.aborted) throw new DOMException("Movie frame cancelled.", "AbortError");
+                // Use Mol*'s public image pass in an independently owned task.
+                // Cancelling a Movie must never abort an unrelated plugin task.
+                const task = Task.create("Render Movie frame", async ctx => {
+                    this.plugin.animationLoop.stop({ noDraw: true });
+                    try {
+                        await ctx.update("Rendering Movie frame");
+                        const pass = helper.imagePass;
+                        await pass.updateBackground();
+                        const data = await pass.getImageData(ctx, scaledWidth, scaledHeight);
+                        await ctx.update("Encoding Movie PNG");
+                        const canvas = document.createElement("canvas");
+                        canvas.width = data.width;
+                        canvas.height = data.height;
+                        const context = canvas.getContext("2d");
+                        if (!context) throw new Error("Movie PNG canvas is unavailable.");
+                        context.putImageData(data, 0, 0);
+                        return canvas.toDataURL("image/png");
+                    } finally { this.plugin.animationLoop.start({ immediate: true }); }
+                });
+                const abort = () => this.plugin.managers.task.requestAbort(task.id, "Movie frame cancelled");
+                signal.addEventListener("abort", abort, { once: true });
+                try { return await this.plugin.runTask(task, { createNewContext: true }); }
+                finally { signal.removeEventListener("abort", abort); }
+            }
             return await helper.getImageDataUri();
         } finally {
-            if (options?.cameraSnapshot && currentSnapshot) {
-                await this.setCameraSnapshot(currentSnapshot, 0);
-            }
-            if (targetBackgroundMode && shouldRestoreBackground) {
-                await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
-            }
+            try {
+                if (previousMultiSample) helper.imagePass.setProps({ multiSample: previousMultiSample });
+                if (options?.cameraSnapshot && currentSnapshot) await this.setCameraSnapshot(currentSnapshot, 0);
+                if (targetBackgroundMode && shouldRestoreBackground) await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
+            } finally { this.imageExportPending = false; }
         }
     }
 

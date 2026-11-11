@@ -37,6 +37,8 @@ dependencies:
   - openmm
 
   # --- Optional but helpful for interactive debugging ---
+  - imageio>=2.16.0
+  - imageio-ffmpeg>=0.6.0
   - jupyterlab_code_formatter
   - jupyterlab-git
 

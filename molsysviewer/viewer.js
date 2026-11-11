@@ -7888,20 +7888,20 @@ function map2(project, thisArg) {
 // node_modules/rxjs/dist/esm5/internal/operators/mergeInternals.js
 function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, expand, innerSubScheduler, additionalFinalizer) {
   var buffer = [];
-  var active = 0;
+  var active2 = 0;
   var index = 0;
   var isComplete = false;
   var checkComplete = function() {
-    if (isComplete && !buffer.length && !active) {
+    if (isComplete && !buffer.length && !active2) {
       subscriber.complete();
     }
   };
   var outerNext = function(value) {
-    return active < concurrent ? doInnerSub(value) : buffer.push(value);
+    return active2 < concurrent ? doInnerSub(value) : buffer.push(value);
   };
   var doInnerSub = function(value) {
     expand && subscriber.next(value);
-    active++;
+    active2++;
     var innerComplete = false;
     innerFrom(project(value, index++)).subscribe(createOperatorSubscriber(subscriber, function(innerValue) {
       onBeforeNext === null || onBeforeNext === void 0 ? void 0 : onBeforeNext(innerValue);
@@ -7915,7 +7915,7 @@ function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, e
     }, void 0, function() {
       if (innerComplete) {
         try {
-          active--;
+          active2--;
           var _loop_1 = function() {
             var bufferedValue = buffer.shift();
             if (innerSubScheduler) {
@@ -7926,7 +7926,7 @@ function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, e
               doInnerSub(bufferedValue);
             }
           };
-          while (buffer.length && active < concurrent) {
+          while (buffer.length && active2 < concurrent) {
             _loop_1();
           }
           checkComplete();
@@ -140574,8 +140574,8 @@ var HelpOverlay = class {
     this.releaseKeyHandler = () => window.removeEventListener("keydown", onKey, true);
   }
   hide() {
-    const active = this.host.getRootNode?.()?.activeElement ?? document.activeElement;
-    const restoreFocus = active && this.root.contains(active);
+    const active2 = this.host.getRootNode?.()?.activeElement ?? document.activeElement;
+    const restoreFocus = active2 && this.root.contains(active2);
     this.visible = false;
     this.root.style.display = "none";
     this.onVisibilityChange?.(false);
@@ -150941,9 +150941,9 @@ var MenuNavigation = class {
   show(page) {
     this.restoreEditor();
     for (const item2 of this.pages) {
-      const active = item2 === page;
-      item2.view.style.display = active ? "block" : "none";
-      item2.trigger?.setAttribute("aria-expanded", active ? "true" : "false");
+      const active2 = item2 === page;
+      item2.view.style.display = active2 ? "block" : "none";
+      item2.trigger?.setAttribute("aria-expanded", active2 ? "true" : "false");
     }
     this.current = page;
     if (page.parent) page.view.scrollTop = 0;
@@ -151115,8 +151115,8 @@ var ViewerContextMenu = class {
   }
   open(target, pageX, pageY, activeSelection2, lastMeasurement, savedSelections, regions, addonActions, addonItems, sceneState) {
     if (!this.isOpen()) {
-      const active = document.activeElement;
-      this.returnFocus = active && this.host.contains(active) ? active : this.host.querySelector?.("canvas") ?? this.host;
+      const active2 = document.activeElement;
+      this.returnFocus = active2 && this.host.contains(active2) ? active2 : this.host.querySelector?.("canvas") ?? this.host;
       if (this.returnFocus.tagName === "CANVAS" && this.returnFocus.tabIndex < 0) this.returnFocus.tabIndex = 0;
     }
     this.currentTarget = target;
@@ -151390,8 +151390,8 @@ var ViewerContextMenu = class {
     this.currentRegions = [];
     this.currentAddonActions = [];
     this.currentAddonItems = [];
-    const active = document.activeElement;
-    const restoreFocus = active && this.root.contains(active);
+    const active2 = document.activeElement;
+    const restoreFocus = active2 && this.root.contains(active2);
     this.root.style.display = "none";
     this.root.setAttribute("aria-hidden", "true");
     this.detachOutsidePointerHandler();
@@ -153530,17 +153530,17 @@ var SystemSyncOverlay = class {
   }
   setState(message) {
     const state = message.state;
-    const active = this.activeElement();
+    const active2 = this.activeElement();
     this.state = state;
     if (state === "synchronized") {
       this.restoreReader();
       this.root.style.display = "none";
       this.restoreInteraction();
-      if (active instanceof HTMLElement && this.reader?.contains(active)) active.focus({ preventScroll: true });
+      if (active2 instanceof HTMLElement && this.reader?.contains(active2)) active2.focus({ preventScroll: true });
       return;
     }
     if (this.root.style.display === "none") {
-      this.previousFocus = active instanceof HTMLElement ? active : null;
+      this.previousFocus = active2 instanceof HTMLElement ? active2 : null;
     }
     this.root.style.display = "flex";
     this.updateReader();
@@ -153572,23 +153572,23 @@ var SystemSyncOverlay = class {
       return;
     }
     if (!this.readerSlot && this.host.contains(this.reader) && this.reader.parentNode) {
-      const active = this.activeElement();
+      const active2 = this.activeElement();
       this.readerSlot = document.createComment("mounted addon reader");
       this.reader.before(this.readerSlot);
       this.readerHost.appendChild(this.reader);
       this.readerHost.scrollTop = 0;
       this.readerHost.style.display = "block";
-      if (active instanceof HTMLElement && this.reader.contains(active)) active.focus({ preventScroll: true });
+      if (active2 instanceof HTMLElement && this.reader.contains(active2)) active2.focus({ preventScroll: true });
     }
   }
   restoreReader() {
     if (this.readerSlot) {
-      const active = this.activeElement();
+      const active2 = this.activeElement();
       if (this.reader && this.readerSlot.parentNode) this.readerSlot.replaceWith(this.reader);
       else this.reader?.remove();
       this.readerSlot.remove();
       this.readerSlot = null;
-      if (active instanceof HTMLElement && this.reader?.contains(active)) active.focus({ preventScroll: true });
+      if (active2 instanceof HTMLElement && this.reader?.contains(active2)) active2.focus({ preventScroll: true });
     }
     this.readerHost.style.display = "none";
   }
@@ -154623,20 +154623,20 @@ var BasePanel = class {
   captureActiveField() {
     try {
       const doc = this.host?.ownerDocument;
-      const active = doc?.activeElement;
-      if (!active || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active)) return null;
-      const tag2 = active.tagName;
+      const active2 = doc?.activeElement;
+      if (!active2 || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active2)) return null;
+      const tag2 = active2.tagName;
       if (tag2 !== "INPUT" && tag2 !== "TEXTAREA" && tag2 !== "SELECT" && tag2 !== "BUTTON") return null;
-      const attributes2 = Array.from(active.attributes ?? []);
+      const attributes2 = Array.from(active2.attributes ?? []);
       const attr = attributes2.find((a8) => a8.name.startsWith("data-molsysviewer-")) ?? attributes2.find((a8) => a8.name === "aria-label");
       if (!attr) return null;
       return {
         selector: `[${attr.name}="${attr.value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"]`,
-        value: active.value ?? "",
-        start: active.selectionStart ?? null,
-        end: active.selectionEnd ?? null,
+        value: active2.value ?? "",
+        start: active2.selectionStart ?? null,
+        end: active2.selectionEnd ?? null,
         // Canonical replies own discrete values; preserve focus only.
-        keepValue: tag2 !== "SELECT" && tag2 !== "BUTTON" && active.type !== "checkbox" && active.type !== "radio"
+        keepValue: tag2 !== "SELECT" && tag2 !== "BUTTON" && active2.type !== "checkbox" && active2.type !== "radio"
       };
     } catch {
       return null;
@@ -156138,15 +156138,15 @@ function makeStyleControlRow(label2, control) {
   return row3;
 }
 function bindContinuousHistory(input, onStart, onEnd) {
-  let active = false;
+  let active2 = false;
   const start4 = () => {
-    if (active) return;
-    active = true;
+    if (active2) return;
+    active2 = true;
     onStart();
   };
   const end4 = () => {
-    if (!active) return;
-    active = false;
+    if (!active2) return;
+    active2 = false;
     onEnd();
   };
   input.addEventListener("pointerdown", start4);
@@ -165230,11 +165230,11 @@ var FloatingPanelShell = class {
       fullscreenButton.style.cssText = this.toggleButton.style.cssText;
       fullscreenButton.setAttribute("data-molsysviewer-panel-fullscreen", "true");
       const updateFullscreenButton = () => {
-        const active = !!document.fullscreenElement;
-        fullscreenButton.title = active ? "Exit Fullscreen" : "Fullscreen";
+        const active2 = !!document.fullscreenElement;
+        fullscreenButton.title = active2 ? "Exit Fullscreen" : "Fullscreen";
         fullscreenButton.setAttribute("aria-label", fullscreenButton.title);
-        fullscreenButton.setAttribute("aria-pressed", String(active));
-        setViewportIcon(fullscreenButton, active ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN);
+        fullscreenButton.setAttribute("aria-pressed", String(active2));
+        setViewportIcon(fullscreenButton, active2 ? VIEWPORT_ICON_EXIT_FULLSCREEN : VIEWPORT_ICON_FULLSCREEN);
       };
       fullscreenButton.addEventListener("click", (event) => {
         event.preventDefault();
@@ -168272,6 +168272,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.panelOpenState = false;
     /** Serialises framing so a newer load cannot be overtaken by an older one. */
     this.frameRequestToken = 0;
+    this.imageExportPending = false;
     if (plugin.canvas3d) this.releaseFontAtlasUploads = installFontAtlasUploads(plugin.canvas3d.webgl);
     this.model = initOptions?.model;
     this.isPanelOnly = !!initOptions?.isPanelOnly;
@@ -172018,6 +172019,14 @@ var MolSysViewerController = class _MolSysViewerController {
   getCameraSnapshot() {
     return this.plugin.canvas3d?.camera.getSnapshot?.();
   }
+  readMovieExportOverlays() {
+    return Array.from(this.host.querySelectorAll(
+      "[data-molsysviewer-legend], [data-molsysviewer-plot-navigation]"
+    )).filter((element) => {
+      const bounds = element.getBoundingClientRect();
+      return bounds.width > 0 && bounds.height > 0;
+    }).map((element) => element.getAttribute("data-molsysviewer-plot-navigation") ?? "colour-legend");
+  }
   async getImageDataUri(options) {
     const helper = this.plugin.helpers.viewportScreenshot;
     if (!helper) return void 0;
@@ -172032,6 +172041,13 @@ var MolSysViewerController = class _MolSysViewerController {
     const targetHeight = useCustomResolution ? height : viewportHeight;
     const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
     const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
+    if (this.imageExportPending) return {
+      success: false,
+      error_type: "IMAGE_EXPORT_BUSY",
+      message: "A canvas image export is already running.",
+      requested_width: scaledWidth,
+      requested_height: scaledHeight
+    };
     const gl = this.plugin.canvas3d?.webgl?.gl;
     if (gl) {
       const maxRenderbufferSize = Number(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
@@ -172061,7 +172077,14 @@ var MolSysViewerController = class _MolSysViewerController {
     const preset = typeof options?.preset === "string" ? options.preset : "current";
     const targetBackgroundMode = !options?.transparent && preset === "publication-light" ? "light" : !options?.transparent && preset === "publication-dark" ? "dark" : void 0;
     const shouldRestoreBackground = targetBackgroundMode ? targetBackgroundMode === "dark" && !this.scene.isDarkMode || targetBackgroundMode === "light" && this.scene.isDarkMode : false;
+    const previousMultiSample = options?.sampleLevel === void 0 ? void 0 : { ...helper.imagePass.props.multiSample };
+    this.imageExportPending = true;
     try {
+      if (previousMultiSample) helper.imagePass.setProps({ multiSample: {
+        ...previousMultiSample,
+        mode: options.sampleLevel === 0 ? "off" : "on",
+        sampleLevel: options.sampleLevel
+      } });
       if (targetBackgroundMode && shouldRestoreBackground) {
         await this.scene.toggleBackground(targetBackgroundMode);
       }
@@ -172074,13 +172097,44 @@ var MolSysViewerController = class _MolSysViewerController {
         format: { name: "png", params: {} },
         resolution: { name: "custom", params: { width: scaledWidth, height: scaledHeight } }
       });
+      if (options?.signal) {
+        const signal = options.signal;
+        if (signal.aborted) throw new DOMException("Movie frame cancelled.", "AbortError");
+        const task = Task.create("Render Movie frame", async (ctx) => {
+          this.plugin.animationLoop.stop({ noDraw: true });
+          try {
+            await ctx.update("Rendering Movie frame");
+            const pass = helper.imagePass;
+            await pass.updateBackground();
+            const data = await pass.getImageData(ctx, scaledWidth, scaledHeight);
+            await ctx.update("Encoding Movie PNG");
+            const canvas = document.createElement("canvas");
+            canvas.width = data.width;
+            canvas.height = data.height;
+            const context2 = canvas.getContext("2d");
+            if (!context2) throw new Error("Movie PNG canvas is unavailable.");
+            context2.putImageData(data, 0, 0);
+            return canvas.toDataURL("image/png");
+          } finally {
+            this.plugin.animationLoop.start({ immediate: true });
+          }
+        });
+        const abort2 = () => this.plugin.managers.task.requestAbort(task.id, "Movie frame cancelled");
+        signal.addEventListener("abort", abort2, { once: true });
+        try {
+          return await this.plugin.runTask(task, { createNewContext: true });
+        } finally {
+          signal.removeEventListener("abort", abort2);
+        }
+      }
       return await helper.getImageDataUri();
     } finally {
-      if (options?.cameraSnapshot && currentSnapshot) {
-        await this.setCameraSnapshot(currentSnapshot, 0);
-      }
-      if (targetBackgroundMode && shouldRestoreBackground) {
-        await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
+      try {
+        if (previousMultiSample) helper.imagePass.setProps({ multiSample: previousMultiSample });
+        if (options?.cameraSnapshot && currentSnapshot) await this.setCameraSnapshot(currentSnapshot, 0);
+        if (targetBackgroundMode && shouldRestoreBackground) await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
+      } finally {
+        this.imageExportPending = false;
       }
     }
   }
@@ -172312,6 +172366,62 @@ var MolSysViewerController = class _MolSysViewerController {
   }
 };
 
+// src/messages/movie-frame-capture.ts
+var active = /* @__PURE__ */ new WeakSet();
+async function captureMovieFrame(controller, value, timeout, signal) {
+  if (!value || typeof value !== "object" || typeof value.job_id !== "string" || !value.job_id || !Number.isSafeInteger(value.frame_index) || value.frame_index < 0 || !Number.isInteger(value.width) || !Number.isInteger(value.height) || value.width < 16 || value.height < 16 || value.width > 8192 || value.height > 8192 || value.width * value.height > 2 ** 24 || typeof value.include_overlays !== "boolean" || !Number.isInteger(value.sample_level) || value.sample_level < 0 || value.sample_level > 5) {
+    throw new Error("Invalid Movie frame capture.");
+  }
+  if (!controller.readMovieExportOverlays) throw new Error("Movie overlay inspection is unavailable.");
+  if (value.include_overlays && controller.readMovieExportOverlays().length) {
+    throw new Error("Visible DOM overlays require explicit exclusion from Movie export.");
+  }
+  if (active.has(controller)) throw new Error("A previous Movie screenshot is still retiring.");
+  if (signal?.aborted) throw new DOMException("Movie frame cancelled.", "AbortError");
+  active.add(controller);
+  const owned = new AbortController();
+  const image = Promise.resolve().then(() => controller.getImageDataUri({
+    width: value.width,
+    height: value.height,
+    transparent: false,
+    preset: "current",
+    sampleLevel: value.sample_level,
+    signal: owned.signal
+  }));
+  void image.then(() => active.delete(controller), () => active.delete(controller));
+  let timer2;
+  let abort2;
+  const deadline = new Promise((_, reject) => {
+    timer2 = setTimeout(() => {
+      owned.abort();
+      reject(new Error("Movie screenshot timed out."));
+    }, timeout);
+    abort2 = () => {
+      owned.abort();
+      reject(new DOMException("Movie frame cancelled.", "AbortError"));
+    };
+    signal?.addEventListener("abort", abort2, { once: true });
+  });
+  try {
+    const result2 = await Promise.race([image, deadline]);
+    if (typeof result2 !== "string" || !result2.startsWith("data:image/png;base64,")) {
+      throw new Error("Movie screenshot failed to return PNG content.");
+    }
+    return {
+      job_id: value.job_id,
+      frame_index: value.frame_index,
+      width: value.width,
+      height: value.height,
+      include_overlays: value.include_overlays,
+      sample_level: value.sample_level,
+      data_uri: result2
+    };
+  } finally {
+    if (timer2 !== void 0) clearTimeout(timer2);
+    if (abort2) signal?.removeEventListener("abort", abort2);
+  }
+}
+
 // src/messages/frontend-requests.ts
 function captureKey(message) {
   return typeof message?.request_id === "string" && message.request_id.length > 0 && typeof message?.capture_revision === "string" && message.capture_revision.length > 0 ? JSON.stringify([message.request_id, message.capture_revision]) : null;
@@ -172385,6 +172495,7 @@ async function handleFrontendRequest(controller, message, send, capture) {
       const canvas = controller.plugin.canvas3d;
       if (!canvas) throw new Error("No live canvas is available for capture.");
       const timeout = Number(message.capture_timeout_ms);
+      const started = performance.now();
       if (message.capture_version === 2) {
         if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
         controller.prepareMovingVisualCapture?.();
@@ -172403,7 +172514,29 @@ async function handleFrontendRequest(controller, message, send, capture) {
           capture?.signal,
           () => !!(sample = controller.readMovingVisualState())
         );
-        if (!capture?.signal.aborted) send({ ...correlation, ok: true, capture_version: 2, ...captured });
+        let frame2;
+        if (message.movie_frame !== void 0) {
+          if (message.movie_preview !== void 0) throw new Error("Movie frame export cannot run a preview clock.");
+          const remaining = Math.min(timeout, 3e5) - (performance.now() - started);
+          if (!Number.isFinite(remaining) || remaining <= 0) throw new Error("Movie frame deadline expired.");
+          frame2 = await captureMovieFrame(controller, message.movie_frame, remaining, capture?.signal);
+          const current2 = controller.readMovingVisualState();
+          const pose = (value) => value && JSON.stringify([
+            value.structure_index,
+            value.playback,
+            value.snapshot.position,
+            value.snapshot.target,
+            value.snapshot.up
+          ]);
+          if (!current2 || pose(current2) !== pose(captured)) throw new Error("Movie scene moved during screenshot.");
+        }
+        if (!capture?.signal.aborted) send({
+          ...correlation,
+          ok: true,
+          capture_version: 2,
+          ...captured,
+          ...frame2 ? { movie_frame: frame2 } : {}
+        });
         return;
       }
       const { snapshot, structure_index } = await readCanvasDraw(canvas, () => {
@@ -173104,42 +173237,42 @@ var ArrayNativeStreamReceiver = class {
     }
   }
   async chunk(message, buffers) {
-    const active = this.active;
-    if (!active) {
+    const active2 = this.active;
+    if (!active2) {
       throw new Error("Late array-native chunk has no active generation");
     }
     if (message.protocol_version !== ARRAY_NATIVE_PROTOCOL_VERSION) {
       throw new Error(`Unsupported array-native stream version ${message.protocol_version}`);
     }
-    if (identity2(message) !== this.endpointIdentity || message.generation !== active.begin.generation) {
+    if (identity2(message) !== this.endpointIdentity || message.generation !== active2.begin.generation) {
       throw new Error("Array-native chunk identity or generation mismatch");
     }
-    if (message.chunk_id !== active.nextChunkId || message.structure_start !== active.nextStructureStart) {
+    if (message.chunk_id !== active2.nextChunkId || message.structure_start !== active2.nextStructureStart) {
       throw new Error("Duplicate, out-of-order, or non-contiguous array-native chunk");
     }
     const structureCount = positiveInteger(message.structure_count, "structure_count");
     const end4 = message.structure_start + structureCount;
-    if (end4 > active.begin.metadata.n_structures) {
+    if (end4 > active2.begin.metadata.n_structures) {
       throw new Error("Array-native chunk exceeds the declared structure range");
     }
     const chunkKinds = new Set(message.structural_arrays.map((item2) => item2.kind));
-    if (chunkKinds.size !== active.kinds.size || [...active.kinds].some((kind) => !chunkKinds.has(kind))) {
+    if (chunkKinds.size !== active2.kinds.size || [...active2.kinds].some((kind) => !chunkKinds.has(kind))) {
       throw new Error("Array-native chunk arrays do not match the stream declaration");
     }
     const decoded = decodeStructuralArraySet(
       message.structural_arrays,
       buffers,
-      active.begin.metadata.n_atoms,
+      active2.begin.metadata.n_atoms,
       structureCount
     );
-    active.coordinates.set(
+    active2.coordinates.set(
       decoded.coordinates,
-      message.structure_start * active.begin.metadata.n_atoms * 3
+      message.structure_start * active2.begin.metadata.n_atoms * 3
     );
-    if (active.box && decoded.box) active.box.set(decoded.box, message.structure_start * 9);
-    if (active.time && decoded.time) active.time.set(decoded.time, message.structure_start);
-    active.nextChunkId += 1;
-    active.nextStructureStart = end4;
+    if (active2.box && decoded.box) active2.box.set(decoded.box, message.structure_start * 9);
+    if (active2.time && decoded.time) active2.time.set(decoded.time, message.structure_start);
+    active2.nextChunkId += 1;
+    active2.nextStructureStart = end4;
     this.notify({
       event: "structure_data_chunk_ack",
       viewer_id: message.viewer_id,
@@ -173149,20 +173282,20 @@ var ArrayNativeStreamReceiver = class {
       chunk_id: message.chunk_id,
       ...targetIdentity(message)
     });
-    if (active.nextChunkId !== active.begin.chunk_count) return;
-    if (active.nextStructureStart !== active.begin.metadata.n_structures) {
+    if (active2.nextChunkId !== active2.begin.chunk_count) return;
+    if (active2.nextStructureStart !== active2.begin.metadata.n_structures) {
       throw new Error("Array-native stream ended before all structures arrived");
     }
     this.active = null;
-    await this.onComplete(active.begin, {
-      atoms: active.begin.metadata.atoms,
-      bonds: active.begin.metadata.bonds,
-      meta: active.begin.metadata.meta,
-      nAtoms: active.begin.metadata.n_atoms,
-      nStructures: active.begin.metadata.n_structures,
-      coordinates: active.coordinates,
-      box: active.box,
-      time: active.time
+    await this.onComplete(active2.begin, {
+      atoms: active2.begin.metadata.atoms,
+      bonds: active2.begin.metadata.bonds,
+      meta: active2.begin.metadata.meta,
+      nAtoms: active2.begin.metadata.n_atoms,
+      nStructures: active2.begin.metadata.n_structures,
+      coordinates: active2.coordinates,
+      box: active2.box,
+      time: active2.time
     });
     this.notify({
       event: "structure_data_complete",
@@ -177680,7 +177813,8 @@ async function bootDocsView(opts) {
     notifyHost({ event: "ready", capabilities: {
       array_native_molsys_ref: [1],
       visual_state_capture: [1, 2],
-      movie_preview: [1]
+      movie_preview: [1],
+      movie_frame_capture: [1]
     } });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);
@@ -178393,7 +178527,8 @@ function render({ model, el, runtimeSource }) {
           max_buffer_bytes: 16 * 1024 * 1024,
           transferable_array_buffer: false,
           visual_state_capture: [1, 2],
-          movie_preview: [1]
+          movie_preview: [1],
+          movie_frame_capture: [1]
         }
       });
     } catch (err) {

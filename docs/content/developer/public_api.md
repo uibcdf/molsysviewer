@@ -457,6 +457,12 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     `await play_async(loop=False, start_time_ms=0.0, *, timeout=5.0)` and
     `await pause_async()`. Evaluation, preview and session persistence are
     described in [Timeline and keyframes](../user/movie/timeline.md#independent-tracks-experimental).
+  - `view.movie.export_async()` (method) is experimental and asynchronous.
+    It samples version-2 tracks through the live primary renderer and streams
+    MP4/H.264, WebM/VP9 or PNG/manifest ZIP output. It requires ImageIO and, for
+    video, imageio-ffmpeg. The [export reference](../user/movie/export.md)
+    documents resolution, rational rate, quality, composition, finite waits,
+    progress, cancellation and atomic destination behavior.
 - `view.on_hover(callback)` / `view.off_hover(callback)`
 - `view.on_click(callback)` / `view.off_click(callback)`
 - `view.on_context(callback)` / `view.off_context(callback)`

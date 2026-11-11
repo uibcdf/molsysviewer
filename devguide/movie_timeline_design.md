@@ -13,6 +13,11 @@ JSON/session persistence. The JavaScript runtime exports
 `seek_async()` validates binding and applies a sample through existing scene
 owners, with a version-2 visual capture barrier on the primary canvas. Existing
 version-1 playback uses its original recipe.
+The first version-2 export route, `await view.movie.export_async(...)`, streams
+correlated images to MP4/H.264, WebM/VP9 or a PNG/manifest ZIP. The
+[receiving record](movie_export_receiving_20261110.json) separates source
+encoder, browser and API scopes. Appearance, lighting, complete baseline
+rebasing, Studio authoring and a portable interactive web player remain open.
 The sections below describe the broader M1–M6 design and its remaining work.
 
 ## One model, several consumers
@@ -125,12 +130,16 @@ an extra encoded frame merely to display the exact endpoint. The final encoded
 sample precedes the duration by at most one frame interval; inspection/preview
 can evaluate the exact endpoint, and an explicit final hold supplies a desired
 ending. The manifest records duration, exact sampling rule, rate, sample count
-and actual encoded duration. Variable-rate exports need a separate contract.
+and nominal constant-rate encoded duration `N*q/p`. Container timestamp
+quantization is checked on decoded output for received cases; the rational
+does not claim exact container timing on every codec/rate combination.
+Variable-rate exports need a separate contract.
 
 Python and TypeScript share a numerical oracle authored on a three-structure
 pentalanine trajectory, with boundary and reversed seeks, same-tag targets in
-distinct domains, and a generic half turn. Frame sampling for encoded output
-will receive its own numerical tests alongside playback and export.
+distinct domains, and a generic half turn. `tests/test_movie_export.py` checks
+half-open sampling, rational rates, boundaries and constant-space scheduling,
+then sends the declared rate through actual H.264/VP9 encoders.
 Finite JSON and safe integer bounds apply at the transport boundary. No field
 silently changes under a different application unit policy.
 
@@ -149,12 +158,14 @@ view.movie.evaluate(time_ms)               # detached desired state
 await view.movie.seek_async(time_ms, timeout=5.0)
 await view.movie.play_async(loop=False, start_time_ms=0.0, timeout=5.0)
 await view.movie.pause_async()
+await view.movie.export_async(path, fps="30000/1001", width_px=1280, height_px=720)
 view.movie.to_dict()
 view.movie.from_dict(recipe)
 ```
 
-The planned application surface adds coherent live capture, coordinated
-playback, explicit target mapping and rendering acknowledgments. Proposed calls:
+Live application and coordinated preview have draw acknowledgments. The
+remaining application surface includes captured baselines, explicit target
+mapping and reviewed reset/rebase behavior. Proposed calls:
 
 ```python
 await view.movie.capture_baseline_async(...)
@@ -162,9 +173,8 @@ await view.movie.reset_async(...)           # restore baseline and time zero
 view.movie.from_dict(recipe, target_map=...)
 ```
 
-Review the application signatures before implementation. Add a correlated
-export job with progress/cancel/result
-rather than exposing an uncorrelated View-wide frame list. Synchronous existing
+The export job has a correlated identity, synchronous progress callbacks,
+task cancellation and a detached result manifest. Synchronous existing
 calls need a declared compatibility route; a notebook cannot block its own
 comm event loop while waiting for frames. Preserve user-facing semantics or
 provide an explicit reviewed migration rather than silent signature drift.
@@ -214,6 +224,33 @@ loss, unavailable codecs and invalid images produce explicit terminal outcomes,
 clean up owned resources and preserve an existing destination. A placeholder
 image is never a successful movie. The export manifest retains plan/assets,
 runtime/encoder identity, units, sampling, resolution and actual outcome.
+
+The initial export route requires version-2 capture plus the explicit
+`movie_frame_capture: [1]` capability on the primary canvas. It never falls
+back to a placeholder. Each frame carries its job, index, dimensions,
+composition and multisampling level. Python checks the echoed metadata and
+PNG dimensions before decoding; a stale or malformed reply cannot complete a
+new job. Revision changes during export refuse publication. This tranche
+receives a scene whose static setup is unchanged after authoring: complete
+static-baseline enforcement and reviewable rebasing remain M1 work, rather
+than being implied by identity/target checks.
+
+Export uses Mol*'s public image pass in an independently owned task. Abort is
+cooperative at its task checkpoints and never calls a global task abort. An
+in-flight GPU operation retains screenshot ownership until it actually settles.
+The Movie default multisampling level is 2; the helper's previous photographic
+settings are restored and interactive-canvas quality is not changed. The
+renderer's remaining deadline includes the draw barrier and image capture.
+
+Python sends one decoded RGB frame at a time to a single-thread FFmpeg pipe,
+with backpressure and finite waits. MP4 uses libx264/CRF 18/medium/faststart;
+WebM uses libvpx-vp9/CRF 30 without a target bitrate. The manifest records the
+explicit colour conversion, provider version and executable digest. PNG ZIP
+stores each lossless image immediately and appends the manifest; videos embed
+it as comment metadata. Both paths use a temporary sibling destination, then
+atomic no-clobber publication by default or explicit atomic replacement.
+Task cancellation retires the owned encoder and removes temporary output,
+preserving any existing destination. The view remains at its last applied pose.
 
 Media composition explicitly includes the molecular canvas and selected visual
 overlays, without Studio, toolbars or authoring controls. Native geometry and

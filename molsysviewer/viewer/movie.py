@@ -36,6 +36,7 @@ class MovieManager:
     play(loop=False)                     Preview animation in browser.
     stop()                               Stop browser playback.
     export(path, fps, ...)               Export to MP4 / GIF / WebM.
+    await export_async(path, ...)       Stream a version-2 Movie to media.
 
     Serialization
     -------------
@@ -51,6 +52,7 @@ class MovieManager:
         self._timeline: _MovieTimeline | None = None
         self._seek_request = None
         self._playback = None
+        self._export_job = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -723,6 +725,61 @@ class MovieManager:
         imgs = [_decode_frame(f["data_uri"]) for f in frames_data]
         imageio.mimwrite(str(path), imgs, **_frame_rate_kwargs(path, fps))
         return path
+
+    @signal(tags=["movie", "export"])
+    @digest()
+    async def export_async(
+        self,
+        path: str | Path,
+        *,
+        fps: int | float | str = 25,
+        width_px: int = 1280,
+        height_px: int = 720,
+        sample_level: int = 2,
+        format: str | None = None,
+        overwrite: bool = False,
+        include_overlays: bool = True,
+        timeout: float = 15.0,
+        on_progress=None,
+        skip_digestion: bool = False,
+    ) -> dict:
+        """Render a version-2 Movie to MP4, WebM or a lossless PNG ZIP.
+
+        Samples the half-open interval at a constant rational ``fps`` (for
+        example ``"30000/1001"``). The live primary canvas must support Movie
+        frame capture. One frame is rendered and encoded at a time; the
+        destination is published only after successful encoder completion.
+        ``sample_level`` selects Mol* multisampling (0–5; default 2). It affects
+        exported images only and is recorded in the manifest. ``timeout``
+        bounds renderer/encoder waits and must be in (0, 300] seconds. Cancel the await
+        task to stop export. Competing Movie operations are refused.
+
+        Returns the absolute ``path``, output ``bytes`` and detached
+        ``manifest`` (recipe, sampling, composition and encoder). The manifest
+        is also embedded in video metadata or the PNG archive. Native geometry
+        annotations are included. Visible trajectory plots currently require
+        hiding or the explicit ``include_overlays=False`` exclusion.
+
+        ``on_progress`` is an optional synchronous callback receiving a detached
+        progress dictionary. The view remains at the last sampled pose.
+        MP4/WebM require the optional imageio-ffmpeg backend; all formats require
+        ImageIO. A missing renderer or codec never produces a placeholder.
+        """
+        from ._movie_export import export_movie
+
+        return await export_movie(
+            self,
+            path,
+            fps=fps,
+            width_px=width_px,
+            height_px=height_px,
+            sample_level=sample_level,
+            format=format,
+            overwrite=overwrite,
+            include_overlays=include_overlays,
+            timeout=timeout,
+            on_progress=on_progress,
+        )
 
     # ── Internal ──────────────────────────────────────────────────────────
 

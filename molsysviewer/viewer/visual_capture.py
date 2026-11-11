@@ -166,7 +166,7 @@ def prepare_live_capture(view, *, timeout: float, endpoint_id=None):
     return captured, request
 
 
-def send_live_capture(view, request, *, protocol_version: int = 1, movie_preview=None) -> None:
+def send_live_capture(view, request, *, protocol_version: int = 1, movie_preview=None, movie_frame=None) -> None:
     """Keep a capture behind its own canvas's structural-stream gate."""
     import time
 
@@ -175,12 +175,16 @@ def send_live_capture(view, request, *, protocol_version: int = 1, movie_preview
         "op": "request_visual_state",
         "request_id": request.request_id,
         "capture_revision": request.revision,
-        "capture_timeout_ms": max(1.0, min(30.0, request.deadline - time.monotonic()) * 1000),
+        "capture_timeout_ms": max(
+            1.0, min(300.0 if movie_frame is not None else 30.0, request.deadline - time.monotonic()) * 1000
+        ),
     }
     if protocol_version == 2:
         message["capture_version"] = 2
     if movie_preview is not None:
         message["movie_preview"] = movie_preview
+    if movie_frame is not None:
+        message["movie_frame"] = movie_frame
     if target is not None:
         message["target_endpoint_id"] = target
     try:

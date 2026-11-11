@@ -1,9 +1,10 @@
 import type { MolSysViewerController } from "../managers/viewer-controller";
 import { readCanvasDraw } from "../managers/canvas-draw";
 import type { MovingVisualSnapshot } from "./visual-state-snapshot";
+import { captureMovieFrame } from "./movie-frame-capture";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
-    & Partial<Pick<MolSysViewerController, "moviePreviewClock">>
+    & Partial<Pick<MolSysViewerController, "moviePreviewClock" | "readMovieExportOverlays">>
     & { prepareMovingVisualCapture?(): void; readMovingVisualState?(): MovingVisualSnapshot | undefined };
 
 export type VisualStateCaptureReservation = {
@@ -99,6 +100,7 @@ export async function handleFrontendRequest(controller: RequestController, messa
             const canvas = controller.plugin.canvas3d;
             if (!canvas) throw new Error("No live canvas is available for capture.");
             const timeout = Number(message.capture_timeout_ms);
+            const started = performance.now();
             if (message.capture_version === 2) {
                 if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
                 controller.prepareMovingVisualCapture?.();
@@ -112,7 +114,20 @@ export async function handleFrontendRequest(controller: RequestController, messa
                     ...(nextMovieSample ? { movie_next_sample: nextMovieSample() } : {}) }),
                     Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000,
                     capture?.signal, () => !!(sample = controller.readMovingVisualState!()));
-                if (!capture?.signal.aborted) send({ ...correlation, ok: true, capture_version: 2, ...captured });
+                let frame: Record<string, unknown> | undefined;
+                if (message.movie_frame !== undefined) {
+                    if (message.movie_preview !== undefined) throw new Error("Movie frame export cannot run a preview clock.");
+                    const remaining = Math.min(timeout, 300000) - (performance.now() - started);
+                    if (!Number.isFinite(remaining) || remaining <= 0) throw new Error("Movie frame deadline expired.");
+                    frame = await captureMovieFrame(controller, message.movie_frame, remaining, capture?.signal);
+                    const current = controller.readMovingVisualState!();
+                    const pose = (value: MovingVisualSnapshot | undefined) => value && JSON.stringify([
+                        value.structure_index, value.playback, value.snapshot.position, value.snapshot.target, value.snapshot.up,
+                    ]);
+                    if (!current || pose(current) !== pose(captured)) throw new Error("Movie scene moved during screenshot.");
+                }
+                if (!capture?.signal.aborted) send({ ...correlation, ok: true, capture_version: 2, ...captured,
+                    ...(frame ? { movie_frame: frame } : {}) });
                 return;
             }
             // Read inside the didDraw callback. A Promise continuation can run

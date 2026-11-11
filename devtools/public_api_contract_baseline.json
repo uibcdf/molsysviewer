@@ -19818,6 +19818,111 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
     },
+    "view.movie.export_async": {
+      "async": true,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "path"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "int",
+            "value": 25
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "fps"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "int",
+            "value": 1280
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "width_px"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "int",
+            "value": 720
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "height_px"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "int",
+            "value": 2
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "sample_level"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "format"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "overwrite"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": true
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "include_overlays"
+        },
+        {
+          "default": {
+            "binary64": "0x1.e000000000000p+3",
+            "kind": "float",
+            "value": 15.0
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "timeout"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "on_progress"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental bounded version-2 Movie export; movie_timeline_design.md and #320",
+      "stability": "experimental"
+    },
     "view.movie.from_dict": {
       "async": false,
       "kind": "callable",

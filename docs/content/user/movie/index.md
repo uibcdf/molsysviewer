@@ -32,6 +32,7 @@ is to *step through a trajectory*, that is `view.player`, not a movie — see
 | Inspect timeline | `view.movie.info()` |
 | Preview in browser | `view.movie.play()` / `view.movie.stop()` |
 | Export to file | `view.movie.export("out.mp4", fps=25)` |
+| Export independent tracks (experimental development API) | `await view.movie.export_async("out.mp4", fps=25)` |
 | Save/load recipe | `view.movie.save("orbit.json")` / `view.movie.load(...)` |
 
 The [experimental independent tracks](timeline.md#independent-tracks-experimental)

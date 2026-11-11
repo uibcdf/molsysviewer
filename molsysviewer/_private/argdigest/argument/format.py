@@ -11,13 +11,18 @@ MOVIE_FORMATS = ("mp4", "gif", "webm")
 
 
 def digest_format(format, caller=None):  # noqa: A002 — the public argument is named `format`
+    from argdigest.core.caller import caller_matches
+
+    formats = (
+        ("mp4", "webm", "pngs") if caller_matches(caller, "molsysviewer.viewer.movie.export_async") else MOVIE_FORMATS
+    )
     if format is None:
         return None
-    if isinstance(format, str) and format.strip().lower() in MOVIE_FORMATS:
+    if isinstance(format, str) and format.strip().lower() in formats:
         return format.strip().lower()
     raise ArgumentError(
         "format",
         value=format,
         caller=caller,
-        message=f"expected one of {', '.join(MOVIE_FORMATS)}",
+        message=f"expected one of {', '.join(formats)}",
     )

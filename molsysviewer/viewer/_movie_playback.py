@@ -29,7 +29,12 @@ class _MoviePlayback:
         live_capture_version(view, required=2)
         if 1 not in view._frontend_capabilities.get("movie_preview", []):
             raise FrontendRequestError(reason="movie_preview_not_supported")
-        if movie._playback is not None or movie._seek_request is not None or view._movie_export_frames is not None:
+        if (
+            movie._playback is not None
+            or movie._seek_request is not None
+            or movie._export_job is not None
+            or view._movie_export_frames is not None
+        ):
             raise FrontendRequestError(reason="movie_operation_pending")
         self.timeline = movie._require_timeline()
         scene = view.export_state(skip_digestion=True)

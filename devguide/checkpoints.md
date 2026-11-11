@@ -907,6 +907,17 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The first [version-2 Movie media route](movie_timeline_design.md) adds
+experimental `export_async()` for MP4/H.264, WebM/VP9 and PNG/manifest ZIP,
+using the existing camera/structure/visibility evaluator and coherent draw
+owner. The [receiving record](movie_export_receiving_20261110.json) separates
+actual encoder, molecular-browser, cancellation and API checks. Export streams
+one frame at a time, records explicit render/encoder settings and publishes
+atomically. This is an initial M4 slice: remaining appearance/lighting channels,
+full baseline/rebase behavior, Studio authoring, composited overlays and portable
+interactive web playback still belong to #320. Native/installed/human receiving
+and both 1.0 publications remain separate and pending.
+
 The [H5MSM 1.0 receipt](molsysmt_h5msm10_receiving_20261110.json) receives
 MolSysMT `8d05bc33` against MolSysViewer runtime `a6a3a309`: prior-writer 0.5
 sessions and equivalent 1.0 sessions preserve scene/science; selective native
@@ -2909,8 +2920,9 @@ chronological status narrative here.
    remains received; human E4 stays postponed.
 6. **Movie:** retain the [matched evaluators and acknowledged Python seek](movie_timeline_design.md)
    and bounded preview for camera, structure and visibility tracks. Retain
-   preview/pause, popup convergence and save/reopen receiving. Continue with
-   the remaining #320 channels, Studio authoring, media/web export and
+   preview/pause, popup convergence, save/reopen and initial bounded media
+   export receiving. Continue with the remaining #320 channels, Studio
+   authoring, composited overlays, portable web export and
    installed-host receiving.
 7. **G:** prepare #294's covering artifact and exact installed/downstream
    qualification when separately authorized. Candidate/tag/package actions and

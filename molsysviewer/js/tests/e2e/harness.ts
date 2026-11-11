@@ -2642,3 +2642,4 @@ export async function probePopupOpenFeatures(
         computed: (controller as any).getPanelPopupSize?.() ?? null,
     };
 }
+export { Task } from "molstar/lib/mol-task";

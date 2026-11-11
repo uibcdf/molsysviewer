@@ -3,6 +3,8 @@
 from ._private.exceptions import LibraryNotFoundError
 
 LIBRARIES = {
+    "imageio": {"type": "soft", "pypi": "imageio"},
+    "imageio_ffmpeg": {"type": "soft", "pypi": "imageio-ffmpeg", "conda": "imageio-ffmpeg", "channel": "conda-forge"},
     "numpy": {"type": "hard", "pypi": "numpy"},
     "molsysmt": {"type": "hard", "pypi": None, "conda": "molsysmt", "channel": "uibcdf"},
     "anywidget": {"type": "hard", "pypi": "anywidget"},
