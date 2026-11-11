@@ -60,11 +60,12 @@ REGIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/region-hide.e2e.ts"
 POPUP_BOOTSTRAP_BROWSER_GUARD = "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts"
 GROUP_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/group-panel.test.ts"
 ADDON_PANEL_UNIT_GUARD = "molsysviewer/js/tests/unit/addon-panel-lifecycle.test.ts"
+STATE_HANDLER_UNIT_GUARD = "molsysviewer/js/tests/unit/state-handler.test.ts"
 
 
 def validate_guard(root: Path, selector: str) -> list[str]:
     """Resolve the default Python and explicitly adopted frontend profiles."""
-    if selector in {GROUP_PANEL_UNIT_GUARD, ADDON_PANEL_UNIT_GUARD}:
+    if selector in {GROUP_PANEL_UNIT_GUARD, ADDON_PANEL_UNIT_GUARD, STATE_HANDLER_UNIT_GUARD}:
         js_root = root / "molsysviewer/js"
         try:
             entry = (root / selector).read_text(encoding="utf-8")
@@ -72,19 +73,24 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             scripts = json.loads((js_root / "package.json").read_text(encoding="utf-8"))["scripts"]
         except (OSError, ValueError, KeyError) as error:
             return [f"guard {selector!r} cannot be indexed: {error}"]
-        owner_requirements = (
-            (
+        owner_requirements = {
+            GROUP_PANEL_UNIT_GUARD: (
                 'import { GroupPanel } from "../../src/ui/group-panel";' in entry,
                 'test("GroupPanel test DOM resolves scoped options and preserves prepend order"' in entry,
                 'import "./group-panel.test";' in index,
-            )
-            if selector == GROUP_PANEL_UNIT_GUARD
-            else (
+            ),
+            ADDON_PANEL_UNIT_GUARD: (
                 'import { MolSysViewerController } from "../../src/managers/viewer-controller";' in entry,
                 'test("addon CSS survives render content replacement"' in entry,
                 'import "./addon-panel-lifecycle.test";' in index,
-            )
-        )
+            ),
+            STATE_HANDLER_UNIT_GUARD: (
+                'import { StateHandlers } from "../../src/managers/handlers/state-handlers";' in entry,
+                'test("state handler styles a newly-created bare region without rebuilding its component"' in entry,
+                'test("state handler reset_representation removes the visual instead of adding cartoon"' in entry,
+                'import "./state-handler.test";' in index,
+            ),
+        }[selector]
         requirements = (
             'import test from "node:test";' in entry,
             *owner_requirements,
@@ -645,6 +651,12 @@ def test_the_board_check_exists_and_refuses_to_write_state_into_a_document():
     assert "issue close" not in source, "closing is a human act"
 
 
+def test_state_handler_unit_guard_resolves_its_runner(tmp_path):
+    assert validate_guard(ROOT, STATE_HANDLER_UNIT_GUARD) == []
+    assert validate_guard(tmp_path, STATE_HANDLER_UNIT_GUARD)
+    assert validate_guard(ROOT, STATE_HANDLER_UNIT_GUARD + "::run")
+
+
 def test_the_protocol_records_the_flat_archive_as_a_decision():
     """Declined on 2026-08-14. Written down so nobody re-proposes it in six months."""
     text = (DEVGUIDE / "reporting_protocol.md").read_text(encoding="utf-8")
@@ -696,7 +708,7 @@ def test_addon_panel_unit_guard_is_bounded_and_registered() -> None:
     assert validate_guard(ROOT, ADDON_PANEL_UNIT_GUARD) == []
     assert validate_guard(Path("/nonexistent"), ADDON_PANEL_UNIT_GUARD)
     assert validate_guard(ROOT, ADDON_PANEL_UNIT_GUARD + "::FakeElement")
-    assert validate_guard(ROOT, "molsysviewer/js/tests/unit/state-handler.test.ts")
+    assert validate_guard(ROOT, "molsysviewer/js/tests/unit/loader-handler.test.ts")
 
 
 def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> None:

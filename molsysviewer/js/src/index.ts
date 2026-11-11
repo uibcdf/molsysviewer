@@ -871,8 +871,10 @@ function setupWidgetResizer(
         dots.style.background = "rgba(255, 255, 255, 0.2)";
     });
 
-    handle.addEventListener("pointerdown", (e) => {
+    let releaseDrag: (() => void) | undefined;
+    const onPointerDown = (e: PointerEvent) => {
         e.preventDefault();
+        releaseDrag?.();
         const startY = e.clientY;
         const startHeight = host.clientHeight;
         
@@ -885,13 +887,23 @@ function setupWidgetResizer(
         const onPointerUp = () => {
             window.removeEventListener("pointermove", onPointerMove);
             window.removeEventListener("pointerup", onPointerUp);
+            window.removeEventListener("pointercancel", onPointerUp);
+            releaseDrag = undefined;
         };
 
+        releaseDrag = onPointerUp;
         window.addEventListener("pointermove", onPointerMove);
         window.addEventListener("pointerup", onPointerUp);
-    });
+        window.addEventListener("pointercancel", onPointerUp);
+    };
+    handle.addEventListener("pointerdown", onPointerDown);
 
     host.appendChild(handle);
+    return () => {
+        releaseDrag?.();
+        handle.removeEventListener("pointerdown", onPointerDown);
+        handle.remove();
+    };
 }
 
 /**
@@ -1043,7 +1055,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         el.appendChild(target);
 
         // Setup interactive resizing
-        setupWidgetResizer(el, target, (w, h) => {
+        releaseRuntime.push(setupWidgetResizer(el, target, (w, h) => {
             el.style.height = `${h}px`;
             target.style.height = `${h}px`;
             
@@ -1051,7 +1063,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             controllerPromise.then(c => {
                 c.plugin.canvas3d?.requestResize();
             });
-        });
+        }));
 
         // 2. Initialize Popup Manager. The popup source is resolved lazily so the
         // notebook state does not need a second synced copy of the AnyWidget bundle.
@@ -1115,8 +1127,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             ),
         });
         const enablePopout = !!model.get("enable_popout");
-        (el as any).molsysviewerClosePopup = () => popupMgr.close("canvas");
-        (el as any).molsysviewerOpenPopup = async (win: Window) => {
+        const closeCanvasPopup = () => popupMgr.close("canvas");
+        const openCanvasPopup = async (win: Window) => {
             await controllerPromise;
             const existing = popupMgr.focusCanvasWindow(win);
             if (existing) return existing;
@@ -1131,6 +1143,14 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             }
             return win;
         };
+        (el as any).molsysviewerClosePopup = closeCanvasPopup;
+        (el as any).molsysviewerOpenPopup = openCanvasPopup;
+        releaseRuntime.push(() => {
+            // A notebook may retain the output element after its widget closes.
+            // Retire only this render's API, preserving a later mount's owners.
+            if ((el as any).molsysviewerClosePopup === closeCanvasPopup) delete (el as any).molsysviewerClosePopup;
+            if ((el as any).molsysviewerOpenPopup === openCanvasPopup) delete (el as any).molsysviewerOpenPopup;
+        });
         const openPanelPopup = (preopenedWindow?: Window | null, panel?: "navigate" | "addons",
             captureEndpointId = envelopeAdapter.widgetHostEndpoint) => {
             controllerPromise.then(async c => {
@@ -1749,7 +1769,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             popupMgr.dispose();
             arrayNativeStream.dispose();
             disposed = true;
-            for (const release of releaseRuntime) release();
+            for (const release of releaseRuntime.splice(0)) release();
             if (wheelTimeout) window.clearTimeout(wheelTimeout);
             
             // 1. Remove global listeners
@@ -1779,6 +1799,8 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                     console.log("[MolSysViewer] Mol* controller disposed.");
                 } catch (e) {
                     console.error("[MolSysViewer] Error disposing plugin:", e);
+                } finally {
+                    target.remove();
                 }
             });
 

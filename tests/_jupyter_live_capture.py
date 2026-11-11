@@ -46,6 +46,9 @@ def _safe_browser_summary(path: Path) -> dict:
                 "cancel late reply",
                 "autonomous capture deadline",
                 "moving setup",
+                "lifecycle open",
+                "lifecycle close",
+                "lifecycle collection",
                 "moving popup",
                 "background state",
                 "background session",
@@ -147,8 +150,8 @@ def _stop_owned_processes(owned):
 
 
 def run(output: Path, *, profile: str = "full") -> int:
-    if profile not in {"full", "background"}:
-        raise ValueError("Select the full or background receiving profile.")
+    if profile not in {"full", "background", "lifecycle"}:
+        raise ValueError("Select the full, background or lifecycle receiving profile.")
     for name in ("jupyterlab", "ipykernel", "anywidget", "psutil"):
         if importlib.util.find_spec(name) is None:
             raise RuntimeError(f"The live Jupyter guard requires {name}.")
@@ -290,6 +293,22 @@ def run(output: Path, *, profile: str = "full") -> int:
                 }
             ],
         }
+        if profile == "lifecycle":
+            import runpy
+
+            notebook["cells"] = [
+                {
+                    "id": f"lifecycle-{index}",
+                    "cell_type": "code",
+                    "metadata": {},
+                    "source": source.splitlines(True),
+                    "execution_count": None,
+                    "outputs": [],
+                }
+                for index, source in enumerate(
+                    runpy.run_path(str(Path(__file__).with_name("_jupyter_widget_lifecycle.py")))["notebook_cells"]()
+                )
+            ]
         (output / "notebooks/capture.ipynb").write_text(json.dumps(notebook))
         with (output / "server.log").open("w") as log:
             (output / "server.log").chmod(0o600)
@@ -319,10 +338,12 @@ def run(output: Path, *, profile: str = "full") -> int:
             raise TimeoutError("The isolated Jupyter server did not become ready.")
         with (output / "browser.log").open("w") as log:
             (output / "browser.log").chmod(0o600)
-            entry = (
-                Path(__file__).with_name("_jupyter_background_capture.mjs")
-                if profile == "background"
-                else Path(__file__).with_suffix(".mjs")
+            entry = Path(__file__).with_name(
+                {
+                    "background": "_jupyter_background_capture.mjs",
+                    "lifecycle": "_jupyter_widget_lifecycle.mjs",
+                    "full": "_jupyter_live_capture.mjs",
+                }[profile]
             )
             browser = subprocess.Popen([str(node), str(entry)], env=env, stdout=log, stderr=log)
             process = psutil.Process(browser.pid)
@@ -397,7 +418,7 @@ def run(output: Path, *, profile: str = "full") -> int:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--profile", choices=("full", "background"), default="full")
+    parser.add_argument("--profile", choices=("full", "background", "lifecycle"), default="full")
     arguments = parser.parse_args()
     selected = arguments.output
     if selected is None:

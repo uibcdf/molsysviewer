@@ -226,6 +226,21 @@ def test_live_background_jupyter_work_files(tmp_path):
 
 
 @pytest.mark.jupyter_runtime
+def test_live_jupyter_controller_release(tmp_path):
+    if os.environ.get("MOLSYSVIEWER_JUPYTER_TEST") != "1":
+        pytest.skip("Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and native Chromium available.")
+    output = tmp_path / "jupyter-lifecycle"
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    assert owner["run"](output, profile="lifecycle") == 0, f"Private lifecycle diagnostics: {output}"
+    observed = json.loads((output / "lifecycle-observations.json").read_text())
+    assert observed["outcome"] == "passed"
+    assert observed["retired_callbacks"] == []
+    assert all(observed["native_collected"][name] for name in ("structure", "model", "axis"))
+    assert observed["witness"] == observed["initial"]["witness"]
+    assert not (output / "settings.json").exists()
+    assert not (output / "config/jupyter_server_config.py").exists()
+
+
 def test_live_jupyter_work_files(tmp_path):
     if os.environ.get("MOLSYSVIEWER_JUPYTER_TEST") != "1":
         pytest.skip("Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and Playwright available.")

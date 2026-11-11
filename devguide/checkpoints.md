@@ -907,6 +907,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [widget-controller receipt](widget_controller_release_receiving_20261111.json)
+receives the partial #356 correction: closing outputs retire their owned popup
+methods, resize resources and target. The actual-notebook regression checks
+collection of the controller/native model and preserves an independently drawn
+witness. The coordinate backing buffer still needs an owner/disposition; #356
+and E2 remain open. The expanded capture entry fails in two distinct scopes;
+[#344 is reopened](pending_bugs/jupyter_capture_receiving_recurrence.md), with
+the original prefixes/deadlines preserved rather than a global passing claim.
+#362 separately repairs two stale unit fixtures without
+changing the production state handler. Follow the ledger for the remaining
+Jupyter reliability and integrated receiving.
+
 Curated molecular representation parameters now have ordinary ArgDigest owners
 and pre-mutation semantic checks across Whole, regions and delegated styles.
 The [representation receipt](curated_representation_receiving_20261111.json)

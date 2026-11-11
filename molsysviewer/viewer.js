@@ -174865,15 +174865,17 @@ var presentationSurface = {
       }
       throw new Error("The result canvas is not ready. Try opening it again.");
     }
-    el.molsysviewerOpenPopup = async (win) => {
+    const openCanvasPopup = async (win) => {
       const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
       api.molsysviewerOnPopupClosed = () => el.molsysviewerOnPopupClosed?.();
       return api.molsysviewerOpenPopup(win);
     };
-    el.molsysviewerClosePopup = async () => {
+    const closeCanvasPopup = async () => {
       const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
       api.molsysviewerClosePopup();
     };
+    el.molsysviewerOpenPopup = openCanvasPopup;
+    el.molsysviewerClosePopup = closeCanvasPopup;
     const open = (resultId, destination) => {
       if (disposed) return Promise.reject(new Error("The notebook output has been removed."));
       if (destination !== "notebook" && destination !== "window") return Promise.reject(new Error("Choose notebook or window."));
@@ -175016,6 +175018,8 @@ var presentationSurface = {
         entry.win?.close();
         entry.view.remove();
       }
+      if (el.molsysviewerOpenPopup === openCanvasPopup) delete el.molsysviewerOpenPopup;
+      if (el.molsysviewerClosePopup === closeCanvasPopup) delete el.molsysviewerClosePopup;
       sourceView.remove();
       el.replaceChildren();
     };
@@ -178251,8 +178255,10 @@ function setupWidgetResizer(host, target, onResize) {
     handle.style.background = "rgba(255, 255, 255, 0.04)";
     dots.style.background = "rgba(255, 255, 255, 0.2)";
   });
-  handle.addEventListener("pointerdown", (e) => {
+  let releaseDrag;
+  const onPointerDown = (e) => {
     e.preventDefault();
+    releaseDrag?.();
     const startY = e.clientY;
     const startHeight = host.clientHeight;
     const onPointerMove = (moveEvent) => {
@@ -178263,11 +178269,21 @@ function setupWidgetResizer(host, target, onResize) {
     const onPointerUp = () => {
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+      releaseDrag = void 0;
     };
+    releaseDrag = onPointerUp;
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
-  });
+    window.addEventListener("pointercancel", onPointerUp);
+  };
+  handle.addEventListener("pointerdown", onPointerDown);
   host.appendChild(handle);
+  return () => {
+    releaseDrag?.();
+    handle.removeEventListener("pointerdown", onPointerDown);
+    handle.remove();
+  };
 }
 function render({ model, el, runtimeSource }) {
   el.dataset.molsysviewerCanvasOutput = "true";
@@ -178376,14 +178392,14 @@ function render({ model, el, runtimeSource }) {
   target.addEventListener("wheel", onWheel, { passive: true });
   target.tabIndex = 0;
   el.appendChild(target);
-  setupWidgetResizer(el, target, (w, h) => {
+  releaseRuntime.push(setupWidgetResizer(el, target, (w, h) => {
     el.style.height = `${h}px`;
     target.style.height = `${h}px`;
     sendToPython({ event: "widget_resize", height: h, width: w });
     controllerPromise.then((c8) => {
       c8.plugin.canvas3d?.requestResize();
     });
-  });
+  }));
   const legacyPopupJsSource = model.get("popup_js_source");
   const esmSource = model.get("_esm");
   const esmLooksLikeFullRuntime = typeof esmSource === "string" && esmSource.includes("bootPopup") && esmSource.includes("MolSysViewerController");
@@ -178432,8 +178448,8 @@ function render({ model, el, runtimeSource }) {
     )
   });
   const enablePopout = !!model.get("enable_popout");
-  el.molsysviewerClosePopup = () => popupMgr.close("canvas");
-  el.molsysviewerOpenPopup = async (win) => {
+  const closeCanvasPopup = () => popupMgr.close("canvas");
+  const openCanvasPopup = async (win) => {
     await controllerPromise;
     const existing = popupMgr.focusCanvasWindow(win);
     if (existing) return existing;
@@ -178448,6 +178464,12 @@ function render({ model, el, runtimeSource }) {
     }
     return win;
   };
+  el.molsysviewerClosePopup = closeCanvasPopup;
+  el.molsysviewerOpenPopup = openCanvasPopup;
+  releaseRuntime.push(() => {
+    if (el.molsysviewerClosePopup === closeCanvasPopup) delete el.molsysviewerClosePopup;
+    if (el.molsysviewerOpenPopup === openCanvasPopup) delete el.molsysviewerOpenPopup;
+  });
   const openPanelPopup = (preopenedWindow, panel, captureEndpointId = envelopeAdapter.widgetHostEndpoint) => {
     controllerPromise.then(async (c8) => {
       if (!preopenedWindow) {
@@ -178963,7 +178985,7 @@ function render({ model, el, runtimeSource }) {
     popupMgr.dispose();
     arrayNativeStream.dispose();
     disposed = true;
-    for (const release of releaseRuntime) release();
+    for (const release of releaseRuntime.splice(0)) release();
     if (wheelTimeout) window.clearTimeout(wheelTimeout);
     window.removeEventListener("message", messageHandler);
     window.removeEventListener("pointerup", onPointerUpOrCancel);
@@ -178986,6 +179008,8 @@ function render({ model, el, runtimeSource }) {
         console.log("[MolSysViewer] Mol* controller disposed.");
       } catch (e) {
         console.error("[MolSysViewer] Error disposing plugin:", e);
+      } finally {
+        target.remove();
       }
     });
   };

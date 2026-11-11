@@ -38,15 +38,17 @@ export const presentationSurface = {
             }
             throw new Error("The result canvas is not ready. Try opening it again.");
         }
-        (el as any).molsysviewerOpenPopup = async (win: Window) => {
+        const openCanvasPopup = async (win: Window) => {
             const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
             api.molsysviewerOnPopupClosed = () => (el as any).molsysviewerOnPopupClosed?.();
             return api.molsysviewerOpenPopup(win);
         };
-        (el as any).molsysviewerClosePopup = async () => {
+        const closeCanvasPopup = async () => {
             const api = await popupApi(sourceView.el, "[data-molsysviewer-canvas-output]");
             api.molsysviewerClosePopup();
         };
+        (el as any).molsysviewerOpenPopup = openCanvasPopup;
+        (el as any).molsysviewerClosePopup = closeCanvasPopup;
 
         const open: OpenResult = (resultId, destination) => {
             if (disposed) return Promise.reject(new Error("The notebook output has been removed."));
@@ -166,6 +168,8 @@ export const presentationSurface = {
             for (const pending of requests.values()) { clearTimeout(pending.timer); pending.reject(new Error("The notebook output was removed.")); }
             for (const win of reservations.values()) win.close();
             for (const entry of entries.values()) { entry.win?.close(); entry.view.remove(); }
+            if ((el as any).molsysviewerOpenPopup === openCanvasPopup) delete (el as any).molsysviewerOpenPopup;
+            if ((el as any).molsysviewerClosePopup === closeCanvasPopup) delete (el as any).molsysviewerClosePopup;
             sourceView.remove(); el.replaceChildren();
         };
     },

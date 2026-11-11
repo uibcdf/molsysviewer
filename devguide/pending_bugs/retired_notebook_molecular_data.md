@@ -1,19 +1,19 @@
 ---
 summary: Identify why closed notebook controllers retain molecular data during repeated real work.
 issue: uibcdf/molsysviewer#356
-status: active
+status: partial
 opened: 2026-11-10
 closed:
 severity: medium
 verification: measured
 area: [jupyter, memory, lifecycle, performance]
-guard:
+guard: tests/test_jupyter_live_capture.py::test_live_jupyter_controller_release
 normative:
 blocked_by: []
 supersedes: []
 ---
 
-# Retired notebook molecular data — diagnosis active
+# Retired notebook molecular data — controller correction; buffer diagnosis open
 
 After 15 complete E2 cycles in one actual Jupyter kernel, the independent
 1TCD witness is the only connected controller. Thirty other controllers remain
@@ -112,11 +112,39 @@ view. Replacing that settled promise only in the closed test model leaves the
 62-atom controller observable in both collection samples. Neither manager
 registration nor that retained promise alone explains the remaining lifetime.
 
-Trace the model and renderer owner references that survive disposal with the
-reduced Jupyter probe. If
-MolSysViewer owns the lifetime, release the retained payload and verify
-the cause and actual release, including the still-open witness and popup
-independence. A disposed flag or an accessor that stops exposing data is not a
-memory correction. Repeat the complete same-kernel gate after that diagnosis,
-within the agreed resource stops. This finding does not claim a universal leak,
-memory limit or installed/human qualification.
+## Current causal receiving — 2026-11-11
+
+The detached canvas output retains `molsysviewerOpenPopup` and
+`molsysviewerClosePopup` closures; its resize handle also has an unreleased
+callback. In the reduced actual-notebook differential `459`, removing the
+retired children alone leaves its controller reachable. Removing the two
+popup properties then releases the controller, native structure/model and
+the observed coordinate axis array in both GC samples. The independent
+22-atom witness remains connected. The coordinate backing buffer remains
+reachable, so that diagnostic correctly exits with a failed buffer assertion.
+The preceding `458` attempt fails at Chromium startup because its Unix socket
+path is too long; it never tests the product.
+
+The source correction retires only the closing render's popup methods, its
+resize handle/active drag listeners and its own target element. Independent
+result surfaces retire their corresponding methods too. It does not modify
+the structure accessor or replace live scientific data. The permanent real
+Jupyter guard fails on the original runtime (`460`) and passes on the corrected
+runtime (`462`): retired controller/structure/model/axis collection is actual,
+the independent witness's coordinate values are unchanged and it completes a
+fresh native draw. Popup methods belonging to a later mount are preserved by
+identity checks.
+
+This is a partial correction. The one-structure 62-atom case still observes
+its 744-byte coordinate backing buffer after controller collection. Neither
+the guard's narrower passing scope nor the reduced array size proves the
+owner or scaling of that residual lifetime. Preserve the failed `459` scope;
+do not credit E2 or run the full thirty-cycle gate as though #356 were closed.
+The [receiving record](../widget_controller_release_receiving_20261111.json)
+separates native receiving, fixture correction #362, integration and custody.
+
+Next isolate the backing-buffer owner with matched direct/widget controls and
+an independent unowned-buffer GC control, without full heap snapshots. Receive
+the residual disposition and the complete same-kernel gate within the agreed
+resource stops. This finding does not claim universal memory/VRAM bounds,
+installed/human qualification or a cause of the original shared pressure stop.

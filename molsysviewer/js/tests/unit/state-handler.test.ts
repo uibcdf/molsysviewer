@@ -267,7 +267,7 @@ test("state handler styles a newly-created bare region without rebuilding its co
     const plugin: any = {
         state: {
             data: {
-                cells: { has: () => true },
+                cells: new Map([["component-ref", undefined], ["repr-ref", undefined]]),
                 build: () => ({
                     to: (_ref: unknown) => ({
                         apply: (_transform: unknown, _params: unknown) => ({
@@ -389,7 +389,7 @@ test("state handler reset_representation removes the visual instead of adding ca
     const plugin: any = {
         state: {
             data: {
-                cells: { has: () => true },
+                cells: new Map([["component-ref-0", undefined], ["component-ref-1", undefined], ["repr-1", undefined]]),
                 build: () => ({
                     to: (_ref: unknown) => ({
                         apply: (_transform: unknown, _params: unknown) => ({

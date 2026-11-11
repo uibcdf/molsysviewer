@@ -505,6 +505,14 @@ is not live-notebook qualification; its explicit CLI receiving route is
 `python tests/_jupyter_live_capture.py` (optional `--output` must be a new path).
 This profile retains private raw logs, cleans its own processes/credentials and
 checks autonomous timeout as well as cancellation without late writes.
+The same owner also exposes `--profile lifecycle` and the explicit pytest
+guard `tests/test_jupyter_live_capture.py::test_live_jupyter_controller_release`.
+With `MOLSYSVIEWER_JUPYTER_TEST=1`, two real bundled single-structure Views
+receive closed-output callback retirement and weak native-controller/model/axis
+collection while an independent witness retains its coordinates and completes
+a fresh draw. Backing-buffer lifetime is recorded separately under #356;
+passing this guard does not qualify complete memory release or E2. Default
+unselected skips are not actual-host receiving.
 Keyboard Settings and shared control fade assertions additionally belong to the
 existing `controls-visibility.e2e.ts` profile.
 
@@ -636,3 +644,13 @@ The existing trajectory-plot guard additionally checks real keyboard intents,
 Python callbacks, complete raw values and native molecular coordinates in both
 canvases for repeated/reversed x positions. The validator checks the fixed
 entry, fixture and build/core registration; that proves addressability only.
+
+### Region state-handler unit guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/unit/state-handler.test.ts`, without suffixes, globs or
+commands. From `molsysviewer/js`, run `npm run test:js`; its bundled canonical
+index imports this owner. The guard retains bare-component styling and
+representation-reset assertions using the native cell-map interface. It does
+not qualify actual molecular geometry or widget lifecycle. `validate_guard`
+checks the exact owner, assertions, index import and documented build/runner.

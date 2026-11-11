@@ -415,6 +415,17 @@ unexplained and open. Movie has reviewed version-2 imports; legacy migration,
 Studio authoring and portable web remain open. #357's curated parameter
 validation and #361's camera guard precondition are source-received in
 [the representation receipt](../curated_representation_receiving_20261111.json).
+#356 now has a causal controller/native-model release correction and a permanent
+actual-Jupyter guard, but its backing buffer remains reachable; retain the
+[partial receiving](../widget_controller_release_receiving_20261111.json) and
+keep the full E2 gate pending. #362 repairs two stale native-map unit fixtures
+without changing the state-handler product path.
+#344's [consolidated actual-Jupyter capture receiving](../pending_bugs/jupyter_capture_receiving_recurrence.md)
+is reopened: the 2-CPU attempt times out in moving Studio capture; the 8-CPU
+comparison receives all six moving cases, then fails the delayed-reply setup.
+These distinct failed entries qualify neither the current combined gate nor
+complete cancellation/deadline receiving. Preserve the earlier exact-source
+font correction and diagnose this recurrence without assuming its cause.
 MolSysMT has additionally owner-closed #709/#710 in `f0dbb58e0`: its private
 selective reader accepts supported modular H5MSM roots and its addon mirrors
 current native defaults/options. Its directed receiving does not replace the
@@ -615,8 +626,10 @@ plan plus #705 evidence.
    original failed runs and unchanged deadlines.
 3. Retain owner-merged #706's corrected readiness/playback deadlines and
    owner-incorporated #707 instrumentation. Neither closes the unexplained
-   #615 timeout. Retain source-received #357/#361, with their original failures
-   and exact native/API guards. #702 is owner-merged and #696/#699 are verified
+   #615 timeout. Retain source-received #357/#361 with their original failures
+   and exact native/API guards, plus #356's partial controller correction.
+   Diagnose reopened #344's post-moving delayed-reply setup before the full
+   prolonged gate. #702 is owner-merged and #696/#699 are verified
    ancestors of public owner main. Receive changed combined-head gates in one agreed batch,
    without a new hosted matrix or CI run for every incremental commit.
 4. Retain the completed scale anchors and fifteen correct same-kernel cycles.
@@ -635,7 +648,7 @@ their own inputs and do not supersede this order.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |
-| A — integrity, restoration and cleanup | A1–A6 source-delivered; #319 closes coherent live capture with negotiated v2, v1 compatibility, actual Jupyter/Qt moving/background and combined browser receiving; final platform/installed/human acceptance remains separate | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves work; ownership/deadline cleanup and real API/render/file regressions |
+| A — integrity, restoration and cleanup | A1–A6 retain their delivered source scopes; #319 closes the negotiated capture implementation. Current consolidated Jupyter receiving is reopened under #344; final platform/installed/human acceptance remains separate | Viewer; #316/#317/#318/#319/#344 and private handling under #315 | Rejection preserves work; ownership/deadline cleanup and complete current API/render/file receiving, including the reopened entry |
 | B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B4 is source-delivered through core and producer PR #702; B3.6 needs a scope decision | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
 | C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691/#696/#699 by verified ancestry; #702/#706 are owner-merged; #707 instrumentation is owner-incorporated. Changed combined-head gates remain. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3 source-delivered; C4 remains open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #702 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
