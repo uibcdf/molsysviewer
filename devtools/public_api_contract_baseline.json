@@ -20124,6 +20124,30 @@
       "reason": "Experimental acknowledged Movie preview; public_api.md",
       "stability": "experimental"
     },
+    "view.movie.rebase": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "review"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental explicit Movie rebase acceptance; movie_timeline_design.md and #320",
+      "stability": "experimental"
+    },
     "view.movie.remove_track": {
       "async": false,
       "kind": "callable",
@@ -20172,6 +20196,32 @@
         }
       ],
       "reason": "Experimental acknowledged recorded-scene Movie reset; movie_timeline_design.md and #320",
+      "stability": "experimental"
+    },
+    "view.movie.review_rebase": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "camera"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental headless Movie rebase review; movie_timeline_design.md and #320",
       "stability": "experimental"
     },
     "view.movie.save": {

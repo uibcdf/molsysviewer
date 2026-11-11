@@ -77,6 +77,20 @@ async function native(page: Page) {
     });
 }
 
+async function gateVisibility(page: Page) {
+    return page.evaluate(() => {
+        const c = (window as any).__mirrorController;
+        const shown = (tag: string) => {
+            const refs = c.state.tagIndex.get(c.state.taggedKey("shape", tag));
+            const reprs = [...(refs ?? [])].map((ref: any) => c.plugin.state.data.cells.get(ref)?.obj?.data?.repr)
+                .filter((repr: any) => repr?.renderObjects);
+            if (!reprs.length) throw new Error(`Missing native sphere ${tag}`);
+            return reprs.some((repr: any) => repr.renderObjects.some((ro: any) => ro.state.visible));
+        };
+        return { site: shown("site"), other: shown("gate-hidden") };
+    });
+}
+
 async function run() {
     await withFixtureWorkspace("movie-appearance", async workspace => {
         const browser = await chromium.launch();
@@ -103,6 +117,9 @@ async function run() {
             const popup = await opened;
             popup.on("pageerror", error => errors.push(String(error)));
             await popup.waitForFunction(() => (window as any).__mirrorController?.state.regionIndex.get("site")?.representations.length === 1);
+            const rebase = await operation(page, { rebase_setup: true });
+            assert.equal(rebase.tracks_retained, true);
+            assert.ok(rebase.changes.some((row: any) => row.domain === "annotation" && row.tag === "rebase-note"));
             const snapshots: any[] = [];
             for (const time of [500, 1000, 250, 0]) {
                 const result = await operation(page, { seek: time });
@@ -186,6 +203,26 @@ async function run() {
             assert.equal(captured.frame, 2);
             assert.equal(captured.tracks, 0);
             assert.equal(captured.session_reopened, true);
+            await operation(page, { layer_gate_setup: true });
+            const gate: any[] = [];
+            for (const at of [0, 1000, 0]) {
+                const state = await operation(page, { layer_seek: at });
+                assert.equal(state.other_hidden, true);
+                assert.equal(state.site_hidden, at === 1000);
+                const visible = await gateVisibility(page);
+                assert.deepEqual(visible, { site: at !== 1000, other: false });
+                await restoredPopup.waitForFunction(({ visible }) => {
+                    const c = (window as any).__mirrorController;
+                    const shown = (tag: string) => {
+                        const refs = c?.state.tagIndex.get(c.state.taggedKey("shape", tag));
+                        const reprs = [...(refs ?? [])].map((ref: any) => c.plugin.state.data.cells.get(ref)?.obj?.data?.repr)
+                            .filter((repr: any) => repr?.renderObjects);
+                        return reprs.length ? reprs.some((repr: any) => repr.renderObjects.some((ro: any) => ro.state.visible)) : null;
+                    };
+                    return shown("site") === visible.site && shown("gate-hidden") === false;
+                }, { visible });
+                gate.push({ at, ...visible });
+            }
             await restoredPopup.close();
             assert.deepEqual(errors, []);
             if (process.env.MOLSYSVIEWER_MOVIE_EVIDENCE_DIR) {
@@ -195,7 +232,7 @@ async function run() {
                 await copyFile(resolve(workspace, "appearance.msv"), resolve(out, "appearance.msv"));
                 await copyFile(resolve(workspace, "baseline.msv"), resolve(out, "baseline.msv"));
                 await writeFile(resolve(out, "verified.json"), JSON.stringify({ snapshots, exported, drawOrders,
-                    baseline: { resetState: reset.state, native: baseline, captured } }, null, 2));
+                    baseline: { resetState: reset.state, native: baseline, captured }, rebase, gate }, null, 2));
             }
             console.log("[Movie appearance] Native materials, boundary bonds, popup, preview, 720p MP4, baseline reset/capture and session agree.");
         } finally {

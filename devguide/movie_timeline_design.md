@@ -19,8 +19,8 @@ correlated images to MP4/H.264, WebM/VP9 or a PNG/manifest ZIP. The
 encoder, browser and API scopes. Uniform colours/alpha, simple molecular
 representations, annotation text, RGB background and ambient/diffuse lighting
 have their first implementation. Acknowledged baseline capture and explicit
-recorded-scene reset are implemented; complete static-baseline enforcement,
-reviewable rebasing, richer style
+recorded-scene reset, serialized static-scene checks and reviewed headless
+rebasing are implemented. Resolved renderer defaults, target remapping, richer style
 recipes, Studio authoring and a portable interactive web player remain open.
 The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
 separate numerical, native-node, popup, session and media evidence.
@@ -79,10 +79,47 @@ Asset digests establish byte correspondence with a preserved plan, not the
 authenticity of a molecular source or the scientific validity of an analysis.
 
 Changing the scene after baseline capture cannot silently redefine the movie.
-Compilation records its expected scene/system revision. Incompatible edits
-interrupt application and request explicit revalidation/rebasing. Rebase is a
-reviewable operation with a target/conflict report, not an automatic replacement
-of recorded choices. Importing a recipe alone does not apply it to the scene.
+Live application first checks its serialized static scene; runtime revisions
+then retire intervening edits. Incompatible edits require explicit reset or
+reviewed rebasing. Importing a recipe alone does not apply it to the scene;
+existing import/session target and scientific binding validation remains.
+
+### Reviewed rebase and serialized scene checks
+
+`review_rebase(camera=None)` proposes the current Python scene/frame, retaining
+all track/key values and the original baseline camera by default. It returns
+`molsysviewer.movie_rebase_review@1`: original-recipe/current-scene fingerprints,
+camera input, bounded change summaries, affected implicit-start tracks,
+conflicts and a candidate. It never applies either scene or recipe. Only
+`rebase(review)` accepts it: rederive and compare the complete review, reject
+pending Movie jobs, stale/edited data and missing/replaced scientific/region
+identities, recheck context after validation, then install the candidate with
+no scene commands. Booleans remain distinct from numbers; JSON integer-valued
+float round trips are admitted. These hashes are change detectors, not origin
+authentication. Explicit target remapping and acknowledged live rebase review
+remain separate work; this route is headless and motion should be paused.
+
+The scene definition masks fields owned by tracks and normalizes renderable
+collections by domain/tag. Ignore camera/frame/playback navigation, editor
+selections, export preferences, DOM plots and allocation counters. Projected
+box frame indices and aggregate group flags are derived state. Preserve all
+other serialized object definitions, styles, anchors, scientific/query
+references, memberships and ordering. Seek/preview/export and `validate()`
+check this definition; pure recipe/session operations retain their existing
+binding checks. Runtime revision barriers still protect in-flight work.
+This is the recorded-state catalogue, not arbitrary native Mol* settings or
+resolved renderer defaults. No trajectory or occurrence array is copied into
+individual keys or change summaries.
+
+Movie layer visibility composes a gate over member intent before issuing final
+member deltas. A visible baseline layer preserves each member's baseline flag;
+an initially hidden layer opens untracked members as visible because ordinary
+Layer.hide has no latent per-member visibility record. Explicit member tracks
+retain their own intent; a closed gate wins. The evaluator reports logical
+channels, and application uses the recorded baseline to compose them. Do not
+show-all then hide some members again, or use current aggregate flags as a
+new baseline on reverse seek. Ordinary layer APIs are unchanged. The portable
+web adapter must receive the same composition before its own qualification.
 
 ## Channels and interpolation
 
@@ -145,7 +182,8 @@ samples retain their shape. Live application requires `movie_appearance: [1]`;
 an older renderer is refused. The compact preview recipe carries only the
 required appearance fields, not molecular coordinates or analysis occurrences.
 Untracked material-parameter changes on an animated structural target require
-a reviewed new baseline; complete static-scene conflict/rebase handling remains
+a reviewed new baseline. The serialized static-scene check and reviewed rebase
+are described above; native defaults and acknowledged live rebase review remain
 pending. Simple region updates reuse the existing component/representation
 nodes, including type changes, rather than deleting them for each material key.
 They retain region priority throughout the update and preserve the existing
@@ -236,8 +274,8 @@ hides an absent baseline box. It may recreate object handles and does not
 promise rollback of accepted scene commands after a timeout. It is a restore
 of the recorded state catalogue, not a snapshot of arbitrary Mol* settings.
 
-Complete static-baseline enforcement, reviewed rebase reports and explicit
-target mapping remain pending. Proposed import extension:
+Resolved native defaults, acknowledged live rebase review and explicit target
+mapping remain pending. Proposed import extension:
 
 ```python
 view.movie.from_dict(recipe, target_map=...)
@@ -253,9 +291,9 @@ provide an explicit reviewed migration rather than silent signature drift.
 
 The first live route is a single Python seek. It validates the recipe and
 reserves the reply before applying commands, pauses trajectory and camera
-motion, and sets the evaluated camera and structure. It applies visibility
-only on tracked targets, using each domain's existing semantics. One scene
-history operation groups those visibility changes. The primary canvas samples
+motion, and sets the evaluated camera and structure. It applies visibility through existing
+member owners, composing Movie layer gates before issuing final deltas. One
+scene history operation groups those visibility changes. The primary canvas samples
 the camera and structure after frame projections and draw are current. The
 reply must match the pose and stopped structure. Cancellation or timeout
 retires the request and can leave already accepted changes on screen. A changed
@@ -300,10 +338,11 @@ The initial export route requires version-2 capture plus the explicit
 back to a placeholder. Each frame carries its job, index, dimensions,
 composition and multisampling level. Python checks the echoed metadata and
 PNG dimensions before decoding; a stale or malformed reply cannot complete a
-new job. Revision changes during export refuse publication. This tranche
-receives a scene whose static setup is unchanged after authoring: complete
-static-baseline enforcement and reviewable rebasing remain M1 work, rather
-than being implied by identity/target checks.
+new job. Revision changes during export refuse publication. Serialized
+static-definition checks reject unreviewed changes to the recorded catalogue;
+explicit reviewed rebasing can adopt intentional scene edits before export.
+Resolved native defaults and acknowledged live rebase reviews remain M1 work;
+the recorded state catalogue does not imply a snapshot of every renderer setting.
 
 Export uses Mol*'s public image pass in an independently owned task. Abort is
 cooperative at its task checkpoints and never calls a global task abort. An

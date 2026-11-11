@@ -175,6 +175,18 @@
       "priority": 100,
       "stability": "experimental",
       "reason": "Experimental acknowledged recorded-scene Movie reset; movie_timeline_design.md and #320"
+    },
+    {
+      "route": "view.movie.review_rebase",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental headless Movie rebase review; movie_timeline_design.md and #320"
+    },
+    {
+      "route": "view.movie.rebase",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental explicit Movie rebase acceptance; movie_timeline_design.md and #320"
     }
   ]
 }

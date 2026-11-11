@@ -453,10 +453,39 @@ class MovieManager:
     @signal()
     @digest()
     def validate(self, *, skip_digestion: bool = False) -> None:
-        """Check that the track recipe still addresses this system and its scene targets."""
-        self._require_timeline().check_binding(
-            self._view._source_state_binding(), self._view.export_state(skip_digestion=True)
-        )
+        """Check the recipe's binding and untracked serialized scene definition."""
+        timeline = self._require_timeline()
+        scene = self._view.export_state(skip_digestion=True)
+        timeline.check_binding(self._view._source_state_binding(), scene)
+        timeline.check_scene(scene)
+
+    @signal(tags=["movie"])
+    @digest()
+    def review_rebase(self, *, camera: dict | None = None, skip_digestion: bool = False) -> dict:
+        """Review a current-scene baseline while preserving every track/key.
+
+        Return a detached change/conflict report and candidate recipe without
+        changing the Movie or scene. Keep the old baseline camera by default;
+        an explicit pose uses angstroms and dimensionless up. The current Python
+        structure becomes the proposed initial structure. Missing/replaced
+        targets require explicit repair; no atom or scientific identity is inferred.
+        """
+        from ._movie_rebase import review_rebase
+
+        return review_rebase(self, camera)
+
+    @signal(tags=["movie"])
+    @digest()
+    def rebase(self, review: dict, *, skip_digestion: bool = False) -> None:
+        """Accept an unchanged current review without applying it to the scene.
+
+        Recheck the original recipe and reviewed scene before replacing the
+        baseline. Reject stale/edited reviews and scientific/target conflicts.
+        Use reset_async() separately to apply the new recorded scene.
+        """
+        from ._movie_rebase import rebase
+
+        rebase(self, review)
 
     @signal()
     @digest()

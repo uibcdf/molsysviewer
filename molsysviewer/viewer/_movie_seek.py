@@ -7,7 +7,7 @@ from numbers import Real
 from uuid import uuid4
 
 from ._movie_appearance import appearance_commands
-from ._movie_timeline import _VISIBILITY_DOMAINS
+from ._movie_timeline import _VISIBILITY_DOMAINS, _scene_visibility
 from .frontend_requests import FrontendRequestError
 from .visual_capture import (
     _capture_owned_call,
@@ -28,15 +28,33 @@ def _visibility_owners(view, targets):
     return owners
 
 
-def _visibility_commands(owners, visibility):
+def _visibility_commands(owners, visibility, timeline=None):
+    targets = dict(owners)
+    desired = {(row["domain"], row["tag"]): row["visible"] for row in visibility}
+    if timeline is not None:
+        baseline = _scene_visibility(timeline._data["baseline"]["scene"])
+        logical = dict(desired)
+        for key, visible in logical.items():
+            if key[0] != "layer" or not targets[key].members:
+                continue
+            for member_key, member in targets[key].members.items():
+                if member_key not in baseline:
+                    raise ValueError(f"Movie layer member {member_key!r} is absent from its baseline.")
+                # A visible baseline layer preserves individual member intent.
+                # An initially hidden layer has no latent visibility record:
+                # members default to visible when opened, unless tracked explicitly.
+                own = logical.get(member_key, baseline[member_key][0] if baseline[key][0] else True)
+                targets[member_key] = member
+                desired[member_key] = visible and own
+            # Apply final member deltas, never show-all then hide some again.
+            desired.pop(key)
     commands = []
-    for row in visibility:
-        domain, tag = row["domain"], row["tag"]
-        target = owners[domain, tag]
+    for (domain, tag), requested in desired.items():
+        target = targets[domain, tag]
         visible = target.visible if domain == "whole" else not target._hidden
-        if visible == row["visible"]:
+        if visible == requested:
             continue
-        commands.append(target.show if row["visible"] else target.hide)
+        commands.append(target.show if requested else target.hide)
     return commands
 
 
@@ -137,9 +155,11 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
         else:
             scene = view.export_state(skip_digestion=True)
             timeline.check_binding(view._source_state_binding(), scene)
+            if export_job is None:
+                timeline.check_scene(scene)
             sample = timeline.evaluate(time_ms, tracked_visibility=True)
             owners = _visibility_owners(view, timeline.visibility_targets())
-            commands = _visibility_commands(owners, sample["visibility"])
+            commands = _visibility_commands(owners, sample["visibility"], timeline)
 
         remaining = deadline - time.monotonic()
         if remaining <= 0:

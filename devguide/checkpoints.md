@@ -907,13 +907,22 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+Experimental `review_rebase()`/`rebase(review)` preserve all tracks and keys
+while reviewing/accepting a current Python-scene baseline. Live Movie operations
+now check the untracked serialized scene before sending commands. The
+[rebase receipt](movie_rebase_receiving_20261111.json) keeps API, conflict,
+native/media and wider receiving separate. #359 corrects layer reversal by
+composing final member visibility from baseline intent and layer/member tracks;
+ordinary layer APIs are unchanged. Resolved renderer defaults, acknowledged
+live rebase review and target remapping remain open.
+
 Experimental `capture_baseline_async()` starts an empty Movie recipe from an
 acknowledged live camera/structure. `reset_async()` restores the recorded scene
 before zero-time keys, with stopped motion and one object-Undo step. The
 [baseline receipt](movie_baseline_receiving_20261111.json) separates protocol,
 native popup/session/media and broader receiving. #358 corrects saved region
-priority on creation/style messages during all state restores. Full static
-scene conflict checks, reviewed rebasing and target remapping remain open.
+priority on creation/style messages during all state restores. Resolved native
+defaults, acknowledged live rebase review and target remapping remain open.
 
 The [bounded Movie appearance catalogue](movie_timeline_design.md#received-appearance-catalogue)
 now adds uniform colour/alpha, simple representations, annotation text and
@@ -922,8 +931,7 @@ The [appearance receipt](movie_appearance_receiving_20261110.json) keeps native
 stable-node/order, popup, session, numerical and video evidence separate.
 Final directed receiving passes 546 Python cases and 28 JavaScript cases;
 native region boundary geometry and adjacent region lifecycle receiving pass.
-Complete static-baseline enforcement/rebasing, richer recipes, Studio and web
-remain open.
+Richer recipes, Studio and web remain open.
 
 The first [version-2 Movie media route](movie_timeline_design.md) adds
 experimental `export_async()` for MP4/H.264, WebM/VP9 and PNG/manifest ZIP,
@@ -2940,7 +2948,7 @@ chronological status narrative here.
    and bounded preview for camera, structure and visibility tracks. Retain
    preview/pause, popup convergence, save/reopen and initial bounded media
    export and bounded appearance receiving. Continue with
-   full static-baseline enforcement/rebasing, richer style recipes, Studio authoring,
+   resolved native defaults, live rebase review, target mapping, richer style recipes, Studio authoring,
    composited overlays, portable web export and
    installed-host receiving.
 7. **G:** prepare #294's covering artifact and exact installed/downstream

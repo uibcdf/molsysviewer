@@ -298,8 +298,8 @@ updating simple native representation nodes in place. The recipe records its
 colour interpolation rule; Python/TypeScript numerical receiving and actual molecular browser/popup,
 session and 720p video receiving have distinct scopes. Declared viewport
 environment now travels in state/session files without making object Undo
-restore earlier camera/environment settings. Complete static baseline,
-reviewed rebasing, broader recipes, Studio, web and integrated M5 acceptance remain
+restore earlier camera/environment settings. Resolved renderer defaults,
+live rebase review, broader recipes, Studio, web and integrated M5 acceptance remain
 open; this does not complete #320.
 
 The [baseline tranche](../movie_baseline_receiving_20261111.json) adds
@@ -309,8 +309,18 @@ restored object changes into one Undo step. Reset restores the state catalogue,
 not arbitrary Mol* settings; unrecorded viewport/export preferences retain
 state-import semantics. Its native receiving exposed #358's pre-existing
 region-priority replay mismatch; restoration now declares saved priority
-before creation/style, without a transient promotion. Complete static-scene
-conflict checks, reviewed rebase/target mapping and M2/M4/M5 work stay open.
+before creation/style, without a transient promotion. Resolved defaults,
+acknowledged live rebase review, target mapping and M2/M4/M5 work stay open.
+
+The [rebase tranche](../movie_rebase_receiving_20261111.json) adds a detached
+change/conflict/candidate report and explicit acceptance with stale/edited
+review rejection. It preserves keys and supplied scientific analyses. Live
+application checks untracked serialized definitions while ignoring declared
+navigation/editor/derived fields. #359 receives deterministic Movie layer
+gating with baseline member intent and explicit member tracks, without
+changing ordinary layer actions or issuing show-then-hide corrections.
+This is source support for the recorded catalogue; it does not qualify all
+native defaults, live rebase capture, Studio authoring or portable web playback.
 
 Post-1.0 agent planning translates instructions into this same inspectable,
 validated and editable plan, with preview and export through the same owner.

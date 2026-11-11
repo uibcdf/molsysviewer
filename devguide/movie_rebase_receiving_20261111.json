@@ -1,0 +1,342 @@
+{
+  "schema": "molsysviewer.movie_rebase_receiving@1",
+  "date": "2026-11-11",
+  "completed_utc": "2026-11-11T16:41:47.663298+00:00",
+  "issue": "uibcdf/molsysviewer#320",
+  "related_bug": "uibcdf/molsysviewer#359",
+  "status": "source_received",
+  "scope": "Experimental headless review/explicit rebase and serialized static-scene checks; real molecular Python owners and native Mol*/Chromium with a persistent Python bridge, popup, session and video. Not actual Jupyter, native Qt, hosted, installed or human acceptance.",
+  "sources": {
+    "molsysviewer_base": "a292f7975de0233b4ff3ae2b0a8937bb374d215e",
+    "molsysmt": "8d05bc33e75327a2c4f55a8c06ed3a132627fb5b",
+    "molsysmt_native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "sha256": {
+      "molsysviewer/viewer/_movie_rebase.py": "1e6b4945b417ae60bc3e80536ff5f3220494830ff7fb2b76f58867c6a34017ff",
+      "molsysviewer/viewer/_movie_scene.py": "42d42aedea7ae15ec58b633f5e3efea2b7fed5100523c892a8bcac05ea7f9080",
+      "molsysviewer/viewer/_movie_seek.py": "3aa42d813aded8ad8ffd8b49bb5b9bc2daa4f5dc8f740d994e4c762b6fd390be",
+      "molsysviewer/viewer/_movie_timeline.py": "9834cb4dbd9d01470e7ba1479a52a97105deff6f467d0b3f635c97541160a781",
+      "molsysviewer/viewer/_movie_playback.py": "55d6c3e992f5b15fbaf1815cf30af034aac206a551791a538df0ea9908c3ddc1",
+      "molsysviewer/viewer/_movie_export.py": "ab3d46ec487ffdb0d658c0963ef1e03ea6737b284811d8023c1c6c935d62b7c9",
+      "molsysviewer/viewer/movie.py": "8579ececf8adf1568d32515c64c359f6f3bd286c34112f660698d780033c7226",
+      "molsysviewer/_private/argdigest/argument/review.py": "2e61cadf4ac33a807cd0b89293673c254e8c653f96bc3911c79b07c1ba908768",
+      "molsysviewer/js/tests/e2e/movie-appearance-bridge.py": "8b7c17420b92611713a0e52231e27e017411399dc5d8c47ad6b02c551fed7b53",
+      "molsysviewer/js/tests/e2e/movie-appearance.e2e.ts": "18f7afb4acfc8e812fdd02b8f455787b123c90d396557461134d2693878eee70",
+      "tests/test_movie_rebase.py": "cf6d0e27eb27fac69766eb445968acc32ab90afad1b137c2fb957451359a7032",
+      "tests/test_movie_timeline.py": "92723e2ca9105932901396b7439273677d3ad104ad5ace6d42c6dfde6da4ac2e",
+      "tests/test_movie_baseline.py": "f54b1923cc6c8077c4f75a156467e93ee4bb5b81141fbe96965c397cd60892dc",
+      "devtools/public_api_contract_baseline.json": "8e623056a2fe596bbe1a1b93c76fce3e7b6f0da26a9c13ad80f6e79363dab866",
+      "devtools/public_api_inventory_baseline.json": "f6a8cc41c6a578ce04a3dcc17d5b7958002e0b62f91fff9ff661e3101cbb136e",
+      "devtools/public_api_stability.json": "a9c04746e07a62d3f0af661f6afad30629c20309f8696b863ecd3314075c28e3"
+    },
+    "generated_runtime_sha256": "c9e0737aefb37b66ad8ed91505bb96e8b6aa08df0f579c092fa9e4827c897e12",
+    "runtime_notice": "No TypeScript runtime changed or runtime rebuild occurred. Only the changed real-browser E2E entries were rebuilt. Exact source hashes are not an installed candidate identity."
+  },
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "providers": "Isolated frozen MolSysMT source, published PyUnitWizard 0.29.2 and cached public support. Routine environment not modified.",
+    "runtime_version_notice": "Archived MolSysMT reports 0+unknown; existing editable Viewer metadata reports 0.24.0+97.gdf4bf477.dirty. Neither identifies an installed release candidate. Exact source commits and retained hashes establish this scope.",
+    "public_support": {
+      "pyunitwizard": "0.29.2",
+      "smonitor": "0.21.0",
+      "argdigest": "0.15.0",
+      "depdigest": "0.15.1",
+      "ackredit": "0.9.0",
+      "pytest-receptor": "1.2.1",
+      "imageio": "2.37.4",
+      "imageio-ffmpeg": "0.6.0"
+    },
+    "imageio_ffmpeg_wheel": {
+      "filename": "imageio_ffmpeg-0.6.0-py3-none-manylinux2014_x86_64.whl",
+      "sha256": "c7e46fcec401dd990405049d2e2f475e2b397779df2519b544b8aab515195282",
+      "bytes": 29498237
+    },
+    "encoder_executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+    "encoder_version": "FFmpeg 7.0.2-static",
+    "molstar": "5.4.1"
+  },
+  "resource_policy": {
+    "maximum_receiving_cpus": 2,
+    "ram_gib": 4,
+    "own_swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "execution": "Sequential user systemd scopes, CPU affinity, low-thread native/encoder settings, resource monitoring and owned-process cleanup. Free resources are not reservations."
+  },
+  "contracts": {
+    "review": "review_rebase(camera=None) returns a detached molsysviewer.movie_rebase_review@1 changes/conflicts/affected_tracks/candidate report, with recipe and scene SHA-256 change detectors. Uses current Python scene/frame, retains the baseline camera unless explicitly supplied and does not capture the renderer, mutate the scene or recalculate science. Compact per-object field summaries avoid expanding large scene arrays in the changes list; the candidate remains a full detached recipe.",
+    "accept": "rebase(review) recomputes and validates the full report against current recipe and scene, rejects stale/edited/conflicted reviews and pending Movie owners, then installs the new baseline without scene commands. Every existing track/key value is retained. Structural JSON comparison distinguishes booleans from numbers but accepts equivalent integer-valued floats after JSON transport. Fingerprints are change detectors, not authenticity proofs.",
+    "identity": "Changed molecular binding, missing/replaced targets, replacement analysis revisions and incompatible tracked properties are conflicts. No silent scientific recomputation, target drop, identity remapping or atom-map inference.",
+    "static_definition": "validate() and the beginning of live seek/preview/export compare untracked serialized scene definitions. Tracked properties are masked; derived aggregate layer.hidden and interaction.layer_hidden are excluded. Member visibility follows Movie gate ownership. Camera/frame navigation, active/saved selection and allocation high-water state, output figure and trajectory-plot catalogues are excluded; plot export composition retains its separate refusal/exclusion policy. Geometry, independent styles, anchors, layer membership, region order and scientific references remain checked. Ongoing preview/export retains revision guards. Reset deliberately repairs from the recorded baseline; pure recipe import/session serialization keeps its existing binding policy.",
+    "layer_gate": "#359: layer visibility composes with final member intent before applying deltas. A visible baseline layer retains each member baseline hidden flag; explicit member tracks replace that intent and a closed gate wins. An initially hidden layer has no latent visibility information after ordinary hide, so untracked members default to visible when the Movie opens it. Empty layers retain ordinary group actions. Ordinary user Python/Studio layer show/hide semantics are unchanged; no show-then-hide correction is emitted for a member that must stay hidden.",
+    "api": "Exactly two experimental synchronous additions: view.movie.review_rebase and view.movie.rebase. 756/756 reviewed public callables are digested, zero undigested or missing digest arguments, 456 declared digesters. Existing signatures unchanged."
+  },
+  "profiles": {
+    "probe-397-movie-rebase-contract": {
+      "native_exit": 0,
+      "seconds": 27.875104228965938,
+      "selected_inputs": 5759,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 406.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "81 passed: rebase and overlapping Movie contracts before the later layer-gating fix and additional persistence/native assertions.",
+      "invocation_sha256": "a5446365edc44ec06f0468e723b701a2bd46da09fb0f329489544fa8b323b60a",
+      "inputs_sha256": "ce7f46115113f66d734ac617132caffbf83cb7f4ddfbaca5f57d761eaa6a4c95",
+      "stdout_sha256": "3d4616af3aee4426a4a1f56af70b3a83381888a3841e01e2175cc5e0fbd1b578"
+    },
+    "probe-399-movie-layer-gates": {
+      "native_exit": 0,
+      "seconds": 24.44376886007376,
+      "selected_inputs": 5759,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 406.7,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "85 passed: rebase, appearance, timeline and export contracts with layer/member gating. Later persistence assertions are received by profile 404.",
+      "invocation_sha256": "574c759d134eddeab19e065ab51926c890b45aea9c54daf8ee79512ae9a79c25",
+      "inputs_sha256": "0a8c428c3e43a6c3bc02e651a33e6a65cb7264a671f36397d11d979d0159b50f",
+      "stdout_sha256": "81ab7bf2a23a3ea08c7be172966e4a67fe65f76da8bc5581461fe527ec1d451a"
+    },
+    "probe-400-movie-rebase-api": {
+      "native_exit": 0,
+      "seconds": 6.138780575012788,
+      "selected_inputs": 5757,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 397.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Generate/review exactly two experimental sync additions; 756/756 public callables digested, no existing signature changes. Only the two generated snapshots are excluded from this generator input freeze.",
+      "invocation_sha256": "759de12e88f55e4ed3fcc3713ad648f338b4ab0f33e5bc44fd7ed929c6aa3421",
+      "inputs_sha256": "405971f2c40c1ae50fffc22fb87ed1d56636201cf348c80e02e81268f9c15467",
+      "stdout_sha256": "d48672ee8207e479ae326dc36a6fcd6d4a9aa9daa7921072ceb8c8980c102306"
+    },
+    "build-movie-rebase-401": {
+      "native_exit": 0,
+      "seconds": 1.7314003880601376,
+      "selected_inputs": 5757,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 66.4,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Compile Movie appearance/export/seek E2E entries only; no runtime or version metadata changes.",
+      "invocation_sha256": "b44bb04d24618609bee8e45d5a07af02a1bf11085f4af763da88dbad5671081e",
+      "inputs_sha256": "0aa07a08c19dfc1cddb988376c0f3cd99a4e3ee7231e72254e9d4e537ff8d563",
+      "stdout_sha256": "29e8e717d4206afcf7edce6bf3a78c0cd53a82e5251677ff8112bfa696d815f7"
+    },
+    "probe-403-movie-rebase-native": {
+      "native_exit": 0,
+      "seconds": 92.65816240292042,
+      "selected_inputs": 5759,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2680.4,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "1 passed: explicit real Mol*/Chromium guard receives unreviewed-edit refusal without live mutation, read-only review, accepted baseline with identical tracks, the existing twelve-track/native geometry/reset/capture/session/720p MP4 story, and native layer member flags at 0/1000/0 in both primary and canvas popup.",
+      "invocation_sha256": "e612b102f0996e3296b37e18ac3a4a67320c63a37ce5b90b0b25f6802c451072",
+      "inputs_sha256": "60ebe9f32324c01db7c7602ddeb990845086845d513462f2b5e45ac93a953059",
+      "stdout_sha256": "5182807a949cbc90e5a35c0a4c67321dcefd5c278502d2e99ec5b4b39b58de35"
+    },
+    "probe-404-movie-rebase-regression": {
+      "native_exit": 0,
+      "seconds": 284.83985446509905,
+      "selected_inputs": 5759,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 981.8,
+      "cleanup": {
+        "tracked": 42,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Root Ruff lint and format (1,024 files), dependency contract, generated index and whitespace checks pass; 1,397 passed, 2 skipped across 57 directed files. Final production, test and public-API inputs match native profile 403. Native opt-in skip is separately received by profile 403; installed imageio prevents the absent-dependency branch.",
+      "invocation_sha256": "ad311ec27ed00e5320d77143800e960aa008b25554edc90715dcfd1c0add0596",
+      "inputs_sha256": "60ebe9f32324c01db7c7602ddeb990845086845d513462f2b5e45ac93a953059",
+      "stdout_sha256": "f2c29994e8361e7a0dc76fa938b773a63086abd2edde36870bf2c5cb868fc2fe"
+    },
+    "probe-406-movie-rebase-docs": {
+      "native_exit": 0,
+      "seconds": 8.180675751063973,
+      "selected_inputs": 5764,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 409.0,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "411 passed in devguide links, public API docs and reporting protocol after the final documentation/receipt update. Existing source/API/native guards unchanged; counts overlap the broad run.",
+      "invocation_sha256": "330521b0739d27367b06291ea5fc129e0bfa1c77216aac2db69164180eab72ff",
+      "inputs_sha256": "ad3ecc2eeab24d5d6b30a1131f308610ac07bbbadca4890ec1efd5c232ab345c",
+      "stdout_sha256": "88da267f9391bc1277d8f2afaa49a2a6a97048fdcdf0be1f817c3b35d23558a4"
+    }
+  },
+  "native": {
+    "rebase": {
+      "ok": true,
+      "changes": [
+        {
+          "domain": "annotation",
+          "tag": "rebase-note",
+          "change": "added",
+          "fields": [],
+          "before": null,
+          "after": {
+            "kind": "dict",
+            "size": 7,
+            "sha256": "sha256:74641e53809ae5d2053e5193b2af531f312891cbfeda8bd68da26a6a649d61e6"
+          }
+        }
+      ],
+      "tracks_retained": true
+    },
+    "layer_members_primary_and_popup": [
+      {
+        "at": 0,
+        "site": true,
+        "other": false
+      },
+      {
+        "at": 1000,
+        "site": false,
+        "other": false
+      },
+      {
+        "at": 0,
+        "site": true,
+        "other": false
+      }
+    ],
+    "native_render_object_visibility_asserted": true,
+    "session_reopened": true,
+    "encoded_size": [
+      1280,
+      720
+    ],
+    "encoded_frame_count": 4,
+    "encoded_fps": 4,
+    "encoded_duration_seconds": 1,
+    "sample_level": 0,
+    "baseline_capture_reset_and_region_priority_received": true
+  },
+  "media": {
+    "appearance.mp4": {
+      "bytes": 43654,
+      "sha256": "1552bcc28ad281677d1f44209a62beb44b3fd63c41db93ee007f66eb9ed54c63"
+    },
+    "appearance.msv": {
+      "bytes": 18527,
+      "sha256": "09fec32da37b076bd269ea513520a1b4f4b39aa7db578ef106d52770c07e2c17"
+    },
+    "baseline.msv": {
+      "bytes": 18097,
+      "sha256": "109c6fd18c83f91863b7af46aafe00a303c5ea253109b5f3eb62020bbc1ea849"
+    },
+    "verified.json": {
+      "bytes": 28605,
+      "sha256": "38f08d68d9705620ed568c7322db2364d84f912c7d2be8ff57a8563d9fcb124e"
+    }
+  },
+  "diagnostics": [
+    {
+      "profile": "probe-395-movie-rebase-unit",
+      "outcome": "35 passed, 2 failed from invalid test preparation: unsupported interactions_policy=drop and wrong shape API arguments. Use public load(mode=replace) and links.add_links(atom_pairs=...). No scientific algorithm changed."
+    },
+    {
+      "profile": "probe-396-movie-rebase-unit",
+      "outcome": "77 passed, 1 failed: an existing seek test added an object after the baseline; the new static-definition guard correctly refuses. Explicitly review/accept that intentional setup before the visibility test."
+    },
+    {
+      "profile": "probe-398-layer-visibility-reversal",
+      "outcome": "Exit 1 retains the original real-owner #359 reversal defect: hidden member becomes visible at repeated zero. Movie adapter now composes final member flags from baseline and independent tracks. Original diagnostic retained; final guards in 403/404 receive the correction."
+    },
+    {
+      "profile": "probe-402-movie-rebase-native",
+      "outcome": "Browser provisioning failed before assertions: a long workspace TMPDIR caused Chromium SingletonSocket path-too-long. Keep the full receptor report; retry with a short private workspace TMPDIR. No browser skip, assertion change or successful product claim from this failed launch."
+    },
+    {
+      "profile": "probe-405-movie-rebase-docs",
+      "outcome": "Pytest usage error before collection: relative test paths were resolved from the isolated supervisor working directory. Use absolute selectors in 406; no source changes or tests skipped."
+    }
+  ],
+  "validation_composition": {
+    "broad": {
+      "passed": 1397,
+      "failed": 0,
+      "skipped": 2,
+      "warnings": 891,
+      "pytest_seconds": 279.49
+    },
+    "broad_skip_reasons": [
+      "imageio is installed; cannot test ImportError path",
+      "Explicit real Mol*/Chromium Movie receiving is required."
+    ],
+    "native_guard": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "pytest_seconds": 90.22
+    },
+    "reuse": "Overlapping directed passes are not summed. The native opt-in is received explicitly in profile 403, not inferred from the broad skipped entry.",
+    "documentation_after_closeout": {
+      "passed": 411,
+      "failed": 0,
+      "skipped": 0,
+      "pytest_seconds": 4.83
+    }
+  },
+  "remaining": [
+    "Resolved supported native renderer defaults for undeclared environment settings",
+    "Acknowledged asynchronous live rebase review and explicit target remapping/v1 migration",
+    "Richer style/label/overlay recipes",
+    "Studio authoring and portable interactive web assets/player",
+    "Complete integrated M5 story and applicable hosted/installed/native Qt/actual-Jupyter/human receiving"
+  ],
+  "evidence_custody": {
+    "state": "verified",
+    "custodian": "Diego",
+    "approved_private_root": "~/.local/state/molsysviewer/evidence/robustness-20261106",
+    "subdirectory": "movie-rebase-20261111",
+    "files": 82,
+    "bytes": 27404773,
+    "manifest_sha256": "28c17d67f524e977ed83022d14dc220718fe85136d87ca29d3dc413ae01b509c",
+    "all_hashes_verified": true,
+    "private_directories_mode": "0700",
+    "private_files_mode": "0600",
+    "originals_retained": true,
+    "documentation_supplement": {
+      "subdirectory": "movie-rebase-docs-20261111",
+      "files": 11,
+      "bytes": 3853621,
+      "manifest_sha256": "120ab18cd41dcaf4aa6a82a184165ed300ef81a94863220acc6fce4cf75a71e2",
+      "all_hashes_verified": true,
+      "originals_retained": true
+    }
+  },
+  "publication": {
+    "tags_created": false,
+    "packages_published": false,
+    "remote_ci_dispatched": false,
+    "both_1_0_publications_paused": true
+  }
+}

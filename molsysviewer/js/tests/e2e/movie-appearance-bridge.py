@@ -21,7 +21,36 @@ def main():
         async def operation(event):
             nonlocal result
             try:
-                if "seek" in event:
+                if event.get("rebase_setup"):
+                    recipe = view.movie.to_dict()
+                    view.annotations.add("Reviewed scene", atom_indices=[2], tag="rebase-note")
+                    before = view.export_state()
+                    before.get("view", {}).pop("camera", None)
+                    revisions = (
+                        view.history._edit_revision,
+                        view.player._intent_revision,
+                        view._camera_projection_revision,
+                    )
+                    try:
+                        await view.movie.seek_async(500, timeout=20)
+                    except ValueError as error:
+                        assert "untracked changes" in str(error)
+                    else:
+                        raise AssertionError("An unreviewed scene edit must not start a Movie seek.")
+                    after = view.export_state()
+                    after.get("view", {}).pop("camera", None)
+                    assert after == before and revisions == (
+                        view.history._edit_revision,
+                        view.player._intent_revision,
+                        view._camera_projection_revision,
+                    )
+                    review = view.movie.review_rebase()
+                    assert review["can_apply"] and view.movie.to_dict() == recipe
+                    view.movie.rebase(review)
+                    assert view.movie.to_dict()["tracks"] == recipe["tracks"]
+                    view.movie.validate()
+                    result = {"ok": True, "changes": review["changes"], "tracks_retained": True}
+                elif "seek" in event:
                     sample = await view.movie.seek_async(event["seek"], timeout=20)
                     result = {"ok": True, "sample": sample}
                 elif "play" in event:
@@ -80,6 +109,32 @@ def main():
                         "frame": recipe["baseline"]["scene"]["view"]["structure_index"],
                         "tracks": len(recipe["tracks"]),
                         "session_reopened": True,
+                    }
+                elif event.get("layer_gate_setup"):
+                    camera = view.movie.to_dict()["baseline"]["camera"]
+                    view.player.go_to_structure(0)
+                    view.layers.add("movie-layer")
+                    view.shapes["site"].set_layer_tag("movie-layer")
+                    view.shapes.add_sphere(
+                        center="[0,0,0] angstrom", radius="1 angstrom", tag="gate-hidden", layer_tag="movie-layer"
+                    ).hide()
+                    view.movie.set_baseline(1000, camera=camera)
+                    view.movie.add_track(
+                        {
+                            "tag": "gate",
+                            "target": {"domain": "layer", "tag": "movie-layer"},
+                            "property": "visible",
+                            "keys": [{"time_ms": 500, "value": False}],
+                        }
+                    )
+                    result = {"ok": True}
+                elif "layer_seek" in event:
+                    await view.movie.seek_async(event["layer_seek"], timeout=20)
+                    view.movie.validate()
+                    result = {
+                        "ok": True,
+                        "site_hidden": view.shapes["site"]._hidden,
+                        "other_hidden": view.shapes["gate-hidden"]._hidden,
                     }
             except Exception as error:
                 import traceback

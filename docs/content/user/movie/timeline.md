@@ -201,8 +201,9 @@ visibility track with property `visible` take effect at their key times and hold
 until the next key. Visibility targets are `whole` or a tagged `region`, `layer`,
 `shape`, `annotation`, `measurement` or `interaction`. `update_track()` replaces
 a track's keys. `remove_track()` removes its scheduled channel. The baseline
-remains in the recipe; `reset_async()` restores its recorded scene. Reviewed
-rebasing is still in progress.
+remains in the recipe; `reset_async()` restores its recorded scene. Use
+`review_rebase()` and `rebase(review)` to adopt intentional changes after
+reviewing their effects on the recipe.
 
 `evaluate()` returns detached values without changing the live scene.
 `validate()` checks the recipe against the current system and its referenced
@@ -255,8 +256,8 @@ view.movie.add_track({
 Seeking, preview and export apply them through the existing scene owners.
 They preserve region order and supplied interaction analyses. Editing an
 untracked material parameter on an animated structural target requires a
-reviewed new baseline. Complete static-scene conflict checks and reviewed
-rebasing are still in progress.
+reviewed new baseline. Applying a Movie now also checks its untracked
+serialized scene definition.
 
 ### Capturing and restoring the baseline
 
@@ -292,6 +293,63 @@ Reset returns the acknowledged state before any time-zero keys. In contrast,
 `seek_async(0)` applies those keys. Cancelling or timing out a reset can leave
 already accepted scene changes visible. Reset may recreate scene objects;
 retrieve them again through their managers if you kept Python handles.
+
+### Reviewing changes to the baseline
+
+When you intentionally change the scene after authoring a Movie, review those
+changes before using them as its new baseline:
+
+```python
+review = view.movie.review_rebase()
+review["changes"]
+review["conflicts"]
+review["affected_tracks"]
+```
+
+Review does not change the scene or Movie. It keeps every track and key, and
+proposes the current Python scene and structure as the new baseline. By
+default it retains the original baseline camera. Supply `camera=...` explicitly
+to change it; position and target use Å and up is dimensionless. Pause live
+motion before reviewing: this is a headless operation, not a renderer capture.
+
+`affected_tracks` names tracks whose implicit starting value would change.
+An explicit key at zero keeps its own starting value. `changes` uses compact
+summaries for large values; inspect `candidate` for the complete proposed
+recipe. Missing/replaced targets, incompatible properties or a changed
+molecular binding are conflicts. No track is silently dropped or rebound.
+
+After inspecting a review with `can_apply=True`, accept it explicitly:
+
+```python
+view.movie.rebase(review)
+```
+
+Acceptance checks the original recipe and reviewed scene again. Stale or edited
+reviews are rejected while preserving your latest work. Passive camera
+telemetry alone does not stale a review. Rebase replaces the recipe's baseline;
+it does not apply it to the canvas or recompute scientific analyses.
+
+`validate()`, seeking, preview and export reject untracked changes to the
+serialized molecular scene. Reset the recorded scene or review a rebase.
+Navigation, active/saved selections, export presets and DOM plots are excluded
+from this scene-definition check; plots retain their separate export-composition
+policy. Frame-projected box indices and aggregate layer flags are derived
+state. Unrecorded native renderer settings remain outside this check.
+
+### Layer visibility in a Movie
+
+A layer visibility track acts as a gate over its members. When a baseline layer
+is visible, opening the gate preserves each member's initial hidden state.
+A closed gate hides every member, including those with an explicit visible
+member key. Member tracks keep their own schedule behind that gate. Evaluation
+reports the logical layer/member intent; application composes final member
+visibility before issuing commands.
+
+An initially hidden layer has no stored latent visibility because ordinary
+layer hiding has already hidden its members. Untracked members therefore open
+as visible when its Movie gate opens. Give a member an explicit visibility
+track to keep it hidden. Ordinary Python and Studio layer show/hide operations
+continue to affect every member.
 
 ### Preview an instant
 

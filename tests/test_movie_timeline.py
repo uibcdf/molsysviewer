@@ -217,6 +217,9 @@ def test_seek_applies_typed_visibility_and_awaits_correlated_draw(authored, tmp_
     movie.add_track(_track("shape", "shape", "visible", (700, False), target="site"))
     authored.shapes.add_sphere(center="[1, 1, 1] angstrom", radius="1 angstrom", tag="other")
     authored.shapes.hide("other")
+    # The extra static object is an intentional part of this scene. Accept its
+    # reviewed baseline without changing the already-authored visibility keys.
+    movie.rebase(movie.review_rebase())
     authored._ready = True
     authored._frontend_capabilities = {"visual_state_capture": [2]}
     authored.player.play(fps=12)

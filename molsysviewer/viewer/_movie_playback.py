@@ -63,6 +63,7 @@ class _MoviePlayback:
             raise FrontendRequestError(reason="movie_appearance_not_supported")
         scene = view.export_state(skip_digestion=True)
         self.timeline.check_binding(view._source_state_binding(), scene)
+        self.timeline.check_scene(scene)
         self.owners = _visibility_owners(view, self.timeline.visibility_targets())
         self.sample = self.timeline.evaluate(start_time_ms, tracked_visibility=True)
         self.id = uuid4().hex
@@ -96,7 +97,7 @@ class _MoviePlayback:
             movie,
             self.timeline,
             self.sample,
-            _visibility_commands(self.owners, self.sample["visibility"]),
+            _visibility_commands(self.owners, self.sample["visibility"], self.timeline),
             take_motion=initial,
         )
         self.revisions = _revisions(view)

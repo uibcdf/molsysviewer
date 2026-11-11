@@ -463,7 +463,14 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     time-zero keys and returns its acknowledged state. These are experimental;
     [capture/reset semantics](../user/movie/timeline.md#capturing-and-restoring-the-baseline)
     distinguish recipe replacement, object Undo, cancellation and state-import
-    scope from scientific editing and full static-scene/rebase enforcement.
+    scope from scientific editing and unrecorded renderer settings.
+    `review_rebase(*, camera=None)` returns a detached change/conflict/candidate
+    report; `rebase(review)` accepts only a current unedited review, preserving
+    every key and leaving the live scene unchanged. These experimental headless
+    operations use the current Python scene/frame and keep the old baseline
+    camera unless explicitly replaced. The [rebase reference](../user/movie/timeline.md#reviewing-changes-to-the-baseline)
+    specifies static-definition checks, excluded editor/projection fields,
+    derived layer flags and logical layer/member visibility composition.
     The [appearance catalogue](../user/movie/timeline.md#animating-appearance)
     adds uniform colours/alpha, simple representations, text and declared
     background/lighting without new authoring method signatures.

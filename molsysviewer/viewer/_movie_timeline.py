@@ -428,6 +428,20 @@ class _MovieTimeline:
     def track_records(self):
         return deepcopy(self._data["tracks"])
 
+    def rebased(self, scene, camera, binding):
+        data = self.to_dict()
+        data["baseline"] = {"scene": scene, "camera": camera, "binding": binding}
+        revised = _MovieTimeline(data)
+        # Existing keys are already validated; preserve their exact serialized
+        # values rather than normalizing camera vectors a second time.
+        revised._data["tracks"] = self.track_records()
+        return revised
+
+    def check_scene(self, scene):
+        from ._movie_scene import check_scene
+
+        check_scene(self, scene, _VISIBILITY_DOMAINS)
+
     @property
     def duration_ms(self):
         return self._data["duration_ms"]

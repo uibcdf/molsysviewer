@@ -84,6 +84,7 @@ class _MovieExport:
             raise FrontendRequestError(reason="movie_appearance_not_supported")
         scene = view.export_state(skip_digestion=True)
         self.timeline.check_binding(view._source_state_binding(), scene)
+        self.timeline.check_scene(scene)
         excluded = _visible_overlays(view, scene)
         if include_overlays and excluded:
             raise ValueError(
