@@ -521,3 +521,6 @@ Completed work, kept for the reasoning:
 - [Independent result presentation](independent_result_view_presentation.md) — #301 receives independent notebook and native result windows, ownership and retry.
 - [Declared pending readers](read_only_addon_panel_actions.md) — #304 receives declared mounted readers while the old scene stays inert.
 - [Conditional result replacement](conditional_result_replacement.md) — #306 receives atomic source identity and revision checks without overwriting intervening work.
+
+- [Curated representation parameters](curated_representation_parameter_digestion.md) — #357 validates advertised renderer options before mutation and receives real native forwarding.
+- [Movie camera guard precondition](movie_baseline_camera_guard_precondition.md) — #361 uses the production snapshot authority after a native queued-reset adverse control, preserving exact capture assertions.

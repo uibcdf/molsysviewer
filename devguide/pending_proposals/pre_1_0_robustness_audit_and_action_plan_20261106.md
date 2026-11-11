@@ -14,7 +14,14 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
-**Current source delivery — 2026-11-10, host services:** the [C3 receipt](../host_integration_closeout_20261110.json) receives independent result presentation, declared pending readers and conditional replacement, including 63 current native controls and the real browser entry. The original counter is **38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance. Covering hosted, installed and postponed human evidence remain separate.
+**Current consolidation — 2026-11-11:** the original counter remains
+**38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance.
+The [C3 receipt](../host_integration_closeout_20261110.json) receives host
+services. Additional [Movie import receiving](../movie_import_receiving_20261111.json)
+does not change that denominator. H5MSM default 1.0 and the owner contact
+correction are no longer waiting for provider implementation; their received
+and still-pending consumer scopes are distinguished in the dashboard below.
+Covering hosted, installed and postponed human evidence remain separate.
 
 **Previous source delivery — 2026-11-10, independent construction:**
 [The construction receipt](../molsysmt_construction_receiving_20261110.json)
@@ -395,6 +402,31 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Reconciled source state — 2026-11-11:** H5MSM default 1.0 is
+[source-received](../h5msm_default_receiving_20261111.json) on MolSysMT
+`aee7aa65`; previous default-0.5 and retained-session controls keep their
+original scope. MolSysMT #666 is owner-closed in `a9e6c6efb`, consuming
+published PyUnitWizard 0.29.2's cutoff correction (#143); receive the contact
+family/panel before crediting D6.7. PR #706 is owner-merged at `257451d8b`.
+PR #707 is closed without a merge; its browser instrumentation was
+incorporated by the owner in `7ccb00b93` and received in `7b7cbc2f1`, as
+the [handoff](../molsysmt_pre_1_0_handoff_20261110.md) records. #615 remains
+unexplained and open. Movie has reviewed version-2 imports; legacy migration,
+Studio authoring and portable web remain open. #357's curated parameter
+validation and #361's camera guard precondition are source-received in
+[the representation receipt](../curated_representation_receiving_20261111.json).
+MolSysMT has additionally owner-closed #709/#710 in `f0dbb58e0`: its private
+selective reader accepts supported modular H5MSM roots and its addon mirrors
+current native defaults/options. Its directed receiving does not replace the
+still-failed earlier full collection; consumer receiving of that new source
+remains distinct from the archived provider used for #357/#361.
+The actual shared prefix still has unrelated `pip check` conflicts under
+workspace/floor coordination (MolSysSuite #82/#137); scoped exact-source
+receiving is not clean-prefix qualification. The latest
+maintainer order is reconciliation, reliability/API, Movie, documentation and
+the exact installed 1.0.0 pair. No original outcome or final gate is credited
+solely by these upstream closures.
+
 **Scope decisions — 2026-11-10:** the maintainer explicitly adopts E2's
 documented scale matrix and 30 active cycles in one kernel, plus B4's
 producer-owned reproducibility metadata ([#349](https://github.com/uibcdf/molsysviewer/issues/349), [plan](../archive/figure_observation_provenance_pre_1_0.md)) and F1's reviewed public-contract
@@ -558,9 +590,11 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
-Explicit H5MSM 1.0 consumption is [received](../molsysmt_h5msm10_receiving_20261110.json)
-on MolSysMT `8d05bc33` with 47 session/projection passes; retain the default-0.5
-mechanics save refusal and the separate installed/default-transition gates.
+H5MSM public-default 1.0 consumption is
+[received](../h5msm_default_receiving_20261111.json) on MolSysMT `aee7aa65`,
+including ordinary session save/reopen with stored mechanics and retained
+0.5/1.0 archives. Earlier explicit-1.0 and default-0.5 refusal controls retain
+their exact provider scope; final installed qualification remains separate.
 This adds integration evidence without changing the original-outcome counter.
 
 The [MolSysMT coordination response](../molsysmt_pre_1_0_handoff_20261110.md)
@@ -570,17 +604,19 @@ qualification under #524, the H5MSM session assumptions, and the #615 capture
 plan plus #705 evidence.
 
 1. Retain the owner-integrated D5.2/D6.5 contributions (#696/#699) and
-   owner-closed #695/#697 and owner-merged producer PR #702. Resolve the contact
-   boundary #666 / PyUnitWizard #143 before their broader acceptance. #690 is source-closed
+   owner-closed #695/#697 and owner-merged producer PR #702. Receive the owner
+   correction of #666 / PyUnitWizard #143 and complete D6.7's contact family/panel
+   acceptance; both provider issues are closed. #690 is source-closed
    and its canonical corrected backend is received; do not repeat its dangerous
    original allocation outside the preserved protected control.
 2. Retain source-delivered B4 figure provenance and F1’s reviewed public-contract snapshot; retain the verified owner integration of producer PR #702.
    Retain delivered C3 host services; continue D5.4/#615 initialization and
    C4/Viewer #305 with causal or bounded evidenced dispositions, retaining
    original failed runs and unchanged deadlines.
-3. Receive MolSysMT's review of PR #706 against main after its corrected
-   readiness and playback-deadline checks, and of #707 for the browser side
-   of the joint #615 capture. #702 is owner-merged and #696/#699 are verified
+3. Retain owner-merged #706's corrected readiness/playback deadlines and
+   owner-incorporated #707 instrumentation. Neither closes the unexplained
+   #615 timeout. Retain source-received #357/#361, with their original failures
+   and exact native/API guards. #702 is owner-merged and #696/#699 are verified
    ancestors of public owner main. Receive changed combined-head gates in one agreed batch,
    without a new hosted matrix or CI run for every incremental commit.
 4. Retain the completed scale anchors and fifteen correct same-kernel cycles.
@@ -601,7 +637,7 @@ their own inputs and do not supersede this order.
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A6 source-delivered; #319 closes coherent live capture with negotiated v2, v1 compatibility, actual Jupyter/Qt moving/background and combined browser receiving; final platform/installed/human acceptance remains separate | Viewer; #316/#317/#318/#319 and private handling under #315 | Rejection preserves work; ownership/deadline cleanup and real API/render/file regressions |
 | B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B4 is source-delivered through core and producer PR #702; B3.6 needs a scope decision | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
-| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691/#696/#699 by verified ancestry; #702 is owner-merged; receiver PR #706 retains owner review and changed combined-head gates. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3 source-delivered; C4 remains open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #702 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
+| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691/#696/#699 by verified ancestry; #702/#706 are owner-merged; #707 instrumentation is owner-incorporated. Changed combined-head gates remain. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3 source-delivered; C4 remains open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #702 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; E1 continuous actual-Jupyter workflow source-delivered with separate native Qt evidence; E2 bounded-scale acceptance pending and E4 human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | F3 current handoff source-delivered; F2 broad documentation remains pending; the additional F1 compatibility snapshot is source-received | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
@@ -1014,7 +1050,7 @@ do not silently omit an existing accepted family.
 | **D6.4 — chemical repair and assignments, source received** | Independent explicit inference/bond repair, terminal completion/caps, reference H removal, AutoDock typing and named charges are delivered through owner-merged PR #681; native/unit/source/effect, actual Jupyter/popup and Qt/result-window receiving pass. The owner has delivered #679/#686 terminal-context repairs, received in their directed native cohorts; older GUI receipts retain their exact source scope and final acceptance remains separate |
 | **D6.5 — construction and solvent, source received** | Draft PR #699 supplies five native tasks with explicit sequence/cell/model/charge/seed/structure inputs, independent results and reviewed adoption. Native/unit/axis/source/refusal, actual Jupyter/both-popup and native Qt receiving pass. Owner integration and covering installed/hosted/human acceptance remain separate |
 | **D6.6 — coordinate refinement** | Source-delivered in PR #678: explicit reviewed model, native CPU/Reference single-structure minimization, current or independent effect; native/analytical, Jupyter and Qt receiving pass. Graphical adoption of native #582’s compiled recipe and final acceptance retain their own scope |
-| **D6.7 — structural observables** | Distances, neighborhoods, conformations, angles/torsions and PCA have bounded numerical/axis/ownership receiving. Contacts #666 / PyUnitWizard #143 and full-family acceptance remain; PCA alone does not complete this outcome |
+| **D6.7 — structural observables** | Distances, neighborhoods, conformations, angles/torsions and PCA have bounded numerical/axis/ownership receiving. #666 / PyUnitWizard #143 are owner-closed; consumer contact family/panel and full-family acceptance remain. PCA or provider closure alone does not complete this outcome |
 | **D6.8 — properties and molecular reports, source received** | Nine native property/sequence/connectivity tasks in owner-merged PR #682; source maps, definitions, explicit units/scope, missing-chemistry refusal and complete participant actions pass native, actual Jupyter/both-popup and representative Qt receiving. Changed combined-head and final acceptance remain separate |
 | **D6.9 — interactions and mechanics, source received** | Draft PR #687 delivers nine sparse native detector tasks and four explicitly reviewed mechanical reports; native/unit/axis, actual Jupyter/both-popup and native Qt guards pass. Storage and visual adoption remain separate; graphical adoption of native #582’s compiled recipe and final acceptance remain |
 | **D6.10 — qualified visual adoption, source received** | Existing Measures/conformation plots plus explicit scalar-property/RMSF colors and compatible pair/extreme/vector-component/tuple/SASA structure series in owner-merged PR #683. Native/unit/axis/refusal/history/state and actual Jupyter/both-popup/native Qt receiving pass. No new renderer or B3.6/B4 metadata contract; changed combined-head and final acceptance remain separate |
@@ -1224,6 +1260,9 @@ now names the Whole and Region conversions explicitly, and the
 describes installed entry-point discovery and explicit development registration.
 The broader reference, examples, installation and capability reconciliation
 remains pending until the relevant functionality is settled. Check canonical
+generated capability judgements against current Movie export, observed
+state/session and native-host evidence before regeneration; stale prose in
+the generator is not an absent implementation. Check canonical
 control modes, source-versus-published addon availability, experimental limits
 and provider documentation links. Viewer owns addon management/creation/catalogue;
 each component owns its addon use and scientific documentation.
@@ -1241,8 +1280,9 @@ normative contracts, publication gates, human observations or scientific scope.
 
 **G1 — pending, actions paused:** #294 requires a public artifact covering the
 delivered scene-handle/player contracts and a disposition for the downstream
-initialization case. MolSysViewer **0.25.0** remains an unfrozen proposal for
-that pre-1.0 milestone. The final release pairs MolSysViewer **1.0.0** with
+initialization case. The earlier **0.25.0** intermediate proposal is deferred
+by current maintainer coordination; no artifact or producer is selected.
+The final release pairs MolSysViewer **1.0.0** with
 MolSysMT **1.0.0**.
 After the required code/docs gates and maintainer decision, fix a clean producer,
 source counterpart, build coordinates and original file hashes. Preserve all

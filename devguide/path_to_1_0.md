@@ -1,6 +1,6 @@
 # Path to 1.0.0 (Unified Release Plan)
 
-**Current action ledger — 2026-11-10:** the
+**Current action ledger — 2026-11-11:** the
 [robustness audit and plan under #315](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 records the new integrity/lifecycle findings, plot and scientific-figure work,
 pending contribution/native receiving and full-session/installed acceptance.
@@ -11,8 +11,11 @@ authorizes a candidate or either 1.0 publication.
 The [physical-model receipt](molsysmt_physical_recipe_receiving_20261110.json)
 receives original D5.2 and the owner's earlier session/interaction integration.
 Native #690 is source-closed and its corrected backend is received. Native #695
-box alignment and #666 unit/cutoff semantics, accepted construction, adopted
-figure-provenance/API contracts and the E2 matrix remain explicit work.
+box alignment and #666 unit/cutoff semantics are owner-closed; retain their
+actual consumer receiving scope. Construction and figure-provenance/API
+contracts are source-delivered. E2's complete prolonged run, current
+reliability/API closures, Movie, public documentation and exact installed
+qualification remain explicit work.
 These sources do not authorize a candidate or publication.
 
 The [2026-11-09 integration/refinement checkpoint](molsysmt_pca_refinement_receiving_20261109.json)

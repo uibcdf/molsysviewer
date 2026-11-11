@@ -437,7 +437,8 @@ new job. Revision changes during export refuse publication. Serialized
 static-definition checks reject unreviewed changes to the recorded catalogue;
 explicit reviewed rebasing can adopt intentional scene edits before export.
 Observed supported environment channels and acknowledged live rebase reviews
-extend M1; explicit mapping/migration and richer catalogues remain open. The
+extend M1; reviewed version-2 mapping is received, while legacy migration and
+richer catalogues remain open. The
 recorded state catalogue does not imply a snapshot of every renderer setting.
 
 Export uses Mol*'s public image pass in an independently owned task. Abort is

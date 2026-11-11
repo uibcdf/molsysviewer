@@ -415,8 +415,8 @@ class StylesManager:
         return {
             "tag": tag,
             "summary": schema["summary"],
-            "common_params": [dict(item) for item in COMMON_REPRESENTATION_PARAMS],
-            "specific_params": [dict(item) for item in schema["specific_params"]],
+            "common_params": deepcopy(COMMON_REPRESENTATION_PARAMS),
+            "specific_params": deepcopy(schema["specific_params"]),
         }
 
     @signal(tags=["style", "query"])

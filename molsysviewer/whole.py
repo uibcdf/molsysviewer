@@ -87,6 +87,9 @@ class Whole:
             `coarse-surface`, `empty`). When provided, supersedes ``representation`` and applies
             the preconfigured style bundle.
         """
+        from ._private.representation_params import normalize_curated_params
+
+        params = normalize_curated_params(params, caller="molsysviewer.whole.set_representation")
         color = params.pop("color", None)
         if color is not None:
             params["molstar_color_theme"] = {"name": "uniform", "params": {"value": normalize_color(color)}}

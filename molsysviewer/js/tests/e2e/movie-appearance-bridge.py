@@ -15,6 +15,12 @@ def main():
     transport = runpy.run_path(str(Path(__file__).with_name("canvas-popup-bridge.py")))
     media = runpy.run_path(str(Path(__file__).with_name("movie-export-bridge.py")))
     with fixture["make_appearance_view"]() as view:
+        # Exercise an ordinary curated parameter call before mounting either
+        # canvas. Its fixed native value must survive appearance changes.
+        view.regions["site"].set_representation(
+            "ball-and-stick", **{**view.regions["site"].repr_params, "sizeFactor": 0.7}
+        )
+        view.movie.rebase(view.movie.review_rebase())
         result = None
         task = None
 
@@ -113,7 +119,18 @@ def main():
                         ]
                         == 0xFFFFFF
                     )
-                    result = {"ok": True, "state": state, "scientific_unchanged": True}
+                    result = {
+                        "ok": True,
+                        "state": state,
+                        "scientific_unchanged": True,
+                        "baseline_camera": recipe["baseline"]["camera"],
+                    }
+                elif "prepare_camera" in event:
+                    # Declare the test's new viewpoint through the same Python
+                    # authority/revision route as an ordinary notebook caller.
+                    view.player.go_to_structure(2)
+                    view.set_camera_snapshot(event["prepare_camera"], duration_ms=0)
+                    result = {"ok": True}
                 elif "baseline_capture" in event:
                     recipe = await view.movie.capture_baseline_async(2500, timeout=20)
                     await view.save_session_async(event["baseline_capture"], timeout=20)

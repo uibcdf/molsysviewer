@@ -68,7 +68,7 @@ async function native(page: Page) {
         }
         const renderer = c.plugin.canvas3d.props.renderer;
         return { frame: c.trajectory.getTrajectoryState().currentFrame, regionRef, component: region.component,
-            representation: values.type.name, alpha: values.type.params.alpha, regionOrder: region.order,
+            representation: values.type.name, alpha: values.type.params.alpha, sizeFactor: values.type.params.sizeFactor, regionOrder: region.order,
             regionHidden: c.plugin.state.data.cells.get(regionRef).state.isHidden === true,
             sphereColor: shape.getColor(0), sphereAlpha: sphere.state.alphaFactor,
             caption: caption.props.customText, glyphs, boundary,
@@ -104,6 +104,7 @@ async function run() {
             release = await mountCanvasPopupFixture(page, bridge);
             await captureCanvasPopupControllers(page);
             const original = await native(page);
+            assert.equal(original.sizeFactor, 0.7);
             await page.evaluate(() => {
                 const w = window as any, c = w.__mirrorController;
                 w.__movieRegionDrawOrders = [];
@@ -127,6 +128,7 @@ async function run() {
                 const result = await operation(page, { seek: time });
                 const expected = new Map(result.sample.appearance.map((row: any) => [`${row.domain}:${row.property}`, row.value]));
                 const rendered = await native(page);
+                assert.equal(rendered.sizeFactor, 0.7, "Curated scale must reach the native representation and survive seeks.");
                 assert.equal(rendered.regionRef, original.regionRef);
                 assert.equal(rendered.component, original.component);
                 assert.equal(rendered.regionOrder, original.regionOrder);
@@ -194,12 +196,35 @@ async function run() {
                     && c.plugin.canvas3d.props.renderer.backgroundColor === 0;
             });
             const observed = { position: [3, 4, 50], target: [3, 4, 5], up: [0, 1, 0] };
-            await page.evaluate(async camera => {
+            const cameraPrecondition = await page.evaluate(async ({ camera, competing }) => {
                 const c = (window as any).__mirrorController;
                 await c.handleMessage({ op: "set_trajectory_frame", index: 2 });
-                c.plugin.canvas3d.camera.setState(camera, 0);
-                c.plugin.canvas3d.requestDraw();
-            }, observed);
+                const canvas = c.plugin.canvas3d;
+                const pose = () => {
+                    const value = canvas.camera.getSnapshot();
+                    return { position: [...value.position], target: [...value.target], up: [...value.up] };
+                };
+                const draw = () => new Promise((resolve, reject) => {
+                    let replay = true;
+                    const sub = canvas.didDraw.subscribe(() => {
+                        if (replay) return;
+                        sub.unsubscribe(); clearTimeout(timer); resolve(pose());
+                    });
+                    replay = false;
+                    const timer = setTimeout(() => { sub.unsubscribe(); reject(new Error("Camera control needs a fresh native draw.")); }, 5000);
+                    canvas.requestDraw();
+                });
+                canvas.requestCameraReset({ snapshot: competing, durationMs: 0 });
+                canvas.camera.setState(camera, 0);
+                const immediate = pose();
+                const rawWrite = await draw();
+                return { immediate, rawWrite, competing };
+            }, { camera: observed, competing: reset.baseline_camera });
+            assert.deepEqual(cameraPrecondition.immediate, observed);
+            assert.deepEqual(cameraPrecondition.rawWrite, cameraPrecondition.competing);
+            // The actual Python authority, not a second renderer-local write,
+            // owns the intended viewpoint across both mirrored endpoints.
+            await operation(page, { prepare_camera: observed });
             const captured = await operation(page, { baseline_capture: resolve(workspace, "baseline.msv") });
             assert.deepEqual(captured.camera, observed);
             assert.equal(captured.frame, 2);
@@ -257,7 +282,7 @@ async function run() {
                 await copyFile(resolve(workspace, "observed.msv"), resolve(out, "observed.msv"));
                 await copyFile(resolve(workspace, "observed.mp4"), resolve(out, "observed.mp4"));
                 await writeFile(resolve(out, "verified.json"), JSON.stringify({ snapshots, exported, drawOrders,
-                    baseline: { resetState: reset.state, native: baseline, captured }, rebase, observed: liveReview, gate }, null, 2));
+                    baseline: { resetState: reset.state, native: baseline, captured, cameraPrecondition }, rebase, observed: liveReview, gate }, null, 2));
             }
             console.log("[Movie appearance] Native materials, boundary bonds, popup, preview, 720p MP4, baseline reset/capture and session agree.");
         } finally {

@@ -1,0 +1,908 @@
+{
+  "schema": "molsysviewer.curated_representation_receiving@1",
+  "date": "2026-11-11",
+  "completed_utc": "2026-11-11T22:08:31.702981+00:00",
+  "issues": [
+    "uibcdf/molsysviewer#357",
+    "uibcdf/molsysviewer#361"
+  ],
+  "status": "source_received",
+  "scope": "Curated molecular renderer argument contracts and native Movie guard preparation. Controlled source receiving with actual updated editable PyUnitWizard; not the complete repository suite, actual Jupyter, visible Qt, hosted, clean installed-package or human acceptance.",
+  "sources": {
+    "molsysviewer_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "molsysmt_native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "pyunitwizard": {
+      "version": "0.29.4+2.g9bb4f5f",
+      "origin": "Editable /home/diego/repos@uibcdf/pyunitwizard in molsyssuite@uibcdf_3.14",
+      "source": "9bb4f5f",
+      "public_0_29_4_tag": "d9dd0261d7e1f43624f4dd9356830ab9b126bd14",
+      "runtime_source_diff_from_tag": "empty for pyunitwizard/; two later documentation commits"
+    },
+    "support_route": "Recorded cached qualified support sources, exact archived MolSysMT and matched native binary, explicit Conda interpreter. No installation or global requirement changes. Profile input manifests freeze the resolved support files.",
+    "sha256": {
+      "molsysviewer/_private/representation_params.py": "3103ce9de93f9aa8c52b8b699f89053a6eb02db5dd1b77a35203c86092db03fb",
+      "molsysviewer/_private/argdigest/argument/resolution.py": "6f5fb15b8db8c77b737b062a7620253c9bdb8c14238cff904ede31272fdc98d1",
+      "molsysviewer/_private/argdigest/function/__init__.py": "b8be1cea9dd6d12f3142bf134041bc897b8bd8b36d6a1810de91eaaa6b763799",
+      "molsysviewer/viewer/representations.py": "c3708bda5de909dc25544a49826fc2cb5d879fd4bee716ddda40758fdffa124f",
+      "molsysviewer/whole.py": "62321c52edd1f0eef203bc1a8bed815f601d1a97d21db3444079a1ca514de9d9",
+      "molsysviewer/regions.py": "cd3a4f11308953e4cf945fa4422ecf1e94c0ecea4354e8689c9ccf7bca396028",
+      "molsysviewer/styles.py": "b3f4c24e0cde6d3215f5e68d5a31159807fdf728d3e54f89c520e63969cff199",
+      "molsysviewer/_private/argdigest/argument/sizeFactor.py": "7fb2977b997f5b437f4c88b489ef79f818154aaba04ecc3d844abdd5d7f9ce8a",
+      "molsysviewer/_private/argdigest/argument/sizeAspectRatio.py": "5f80987404b3c1bd24008349c8fabc9c9f490039b03b436639f43d7a8f5d5601",
+      "molsysviewer/_private/argdigest/argument/terminalLinkSizeFactor.py": "137e4d996e4f2ce23278eb390373c5f0f14300539834ce2733a3fc3f75febd8d",
+      "molsysviewer/_private/argdigest/argument/probeRadius.py": "d8b092800019cee16f2ba55907e387ace831dfd9003a724e58d9856510f7040f",
+      "molsysviewer/_private/argdigest/argument/tubularHelices.py": "82414b9b805b0e311f12964293a9a7a7e961983c486cbe2105c871896de4a4ff",
+      "molsysviewer/_private/argdigest/argument/helixProfile.py": "8a4fd2e49d0f9646ff39319bba0ba2468a72bb9327d7581fac1c2bcfbde66711",
+      "molsysviewer/_private/argdigest/argument/nucleicProfile.py": "5141d462466f142b1338c38809b269fa1f13547079c72e89675a772622d85bfc",
+      "molsysviewer/_private/argdigest/argument/ignoreHydrogens.py": "755fc677e5a634f0e973721931de40fe339c98886f41d06135c4f6ccc5847bcb",
+      "molsysviewer/_private/argdigest/argument/ignoreHydrogensVariant.py": "1ec4d28b441077ec64e711e16b1b83cfb2bc71e3ad4e72c453c31f003c5ecd2f",
+      "molsysviewer/_private/argdigest/argument/multipleBonds.py": "ad1461ce27c8e431d2a53c153c697bb93620ce65e68b35761f4de58cbdca6b53",
+      "molsysviewer/_private/argdigest/argument/quality.py": "46e44657d2904c242e1d5627bd16609a54379bf0f46cd44def06a183c5d52a90",
+      "tests/test_representation_parameters.py": "71c67ae7a540549518ba40a976df65da3ed87761e57cbf55ae33574d1d3b4a46",
+      "molsysviewer/js/tests/e2e/movie-appearance-bridge.py": "bf5f7f3b07aea74846e022cec00d9d99fc307c8b0eca13262e5db471745c3603",
+      "molsysviewer/js/tests/e2e/movie-appearance.e2e.ts": "fcec51cd1faf2c537115a8dae811657b500ce5c247d1630777f7940db6fa3d21",
+      "devtools/public_api_contract_baseline.json": "4d9baae63f4fe08dff8c71f1ecd0e457601ec4eacd45d237442fbeffc1240611",
+      "devtools/public_api_inventory_baseline.json": "a06ec9da89b6cc6d64f5285c7895e3dd3ecde2306c369ad4f3014c0925633cce",
+      "devtools/public_api_stability.json": "3c573245976fe16ddbe0a0943f5dd5c30d92b51feffc31a64c1c041c1383d861",
+      "molsysviewer/js/package.json": "ec5bfaad7792f530e1d3b9ad7310ff42e5fca769fe7c4e0a8d78c24dfcc9e426",
+      "molsysviewer/js/package-lock.json": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd"
+    },
+    "generated_runtime_sha256": "6894451501a820b33ae93447ec726b17acda5e9e83235227fd2bdd9971137bde",
+    "generated_entry_sha256": "ea8b773597e469aebbd4bda2ed229b1206156614fce00f82b257ea0b10ee3b9d",
+    "runtime_notice": "Production TypeScript and runtime bundle unchanged from 0f539c45. Only the changed browser test entry was rebuilt from its TypeScript source; no generated runtime was read or edited."
+  },
+  "results": {
+    "focused": {
+      "passed": 99,
+      "failed": 0,
+      "skipped": 0,
+      "guard": "tests/test_representation_parameters.py",
+      "coverage": "Real Whole/Region and Styles; digested and trusted calls; scalar/type/enum/range/quantity rejection before scene/history mutation; fixed angstrom values under three unit policies; independent schema enums; advanced diagnostics; session/Undo/Redo; shape-opacity and pocket-grid controls."
+    },
+    "broader_regression": {
+      "passed": 1649,
+      "failed": 0,
+      "skipped": 3,
+      "warnings": 1175,
+      "scope": "66 directed scene, Movie, state/session, representations, API, dependencies, reporting and reference files. Overlaps the focused/native scopes; counts must not be added.",
+      "skip_reasons": [
+        "imageio is installed: missing-dependency branch unselected",
+        "native browser opt-in unselected here; received separately in 456",
+        "frontend compiler opt-in unselected here; production TS unchanged, prior strict compiler receiving retained"
+      ],
+      "root_checks": [
+        "ruff check .",
+        "ruff format --check .",
+        "dependency contract audit",
+        "devguide indexes",
+        "git diff HEAD --check"
+      ]
+    },
+    "native": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "guard": "tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+      "size_factors": [
+        0.7,
+        0.7,
+        0.7,
+        0.7
+      ],
+      "scope": "Real persistent Python/Mol*/Chromium native primary geometry, four arbitrary/reverse samples, existing canvas popup, preview, session reopen and decoded MP4 controls.",
+      "camera_precondition": {
+        "immediate": {
+          "position": [
+            3,
+            4,
+            50
+          ],
+          "target": [
+            3,
+            4,
+            5
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        "rawWrite": {
+          "position": [
+            8.323631275405166,
+            11.00643418488964,
+            35.11552731458959
+          ],
+          "target": [
+            8.323631275405166,
+            11.00643418488964,
+            0.11552731458958919
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        "competing": {
+          "position": [
+            8.323631275405166,
+            11.00643418488964,
+            35.11552731458959
+          ],
+          "target": [
+            8.323631275405166,
+            11.00643418488964,
+            0.11552731458958919
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "camera_capture": {
+        "ok": true,
+        "camera": {
+          "position": [
+            3,
+            4,
+            50
+          ],
+          "target": [
+            3,
+            4,
+            5
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        "frame": 2,
+        "tracks": 0,
+        "session_reopened": true
+      },
+      "media": {
+        "main": {
+          "sampling": {
+            "rule": "constant-rate-half-open@1",
+            "fps": {
+              "numerator": 4,
+              "denominator": 1
+            },
+            "duration_ms": 1000,
+            "frame_count": 4,
+            "first_time_ms": 0,
+            "last_time_ms": 750,
+            "encoded_duration_seconds": {
+              "numerator": 1,
+              "denominator": 1
+            }
+          },
+          "resolution": {
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "observed_control": "Decoded 320x180 MP4, two frames at 2 fps."
+      }
+    },
+    "api": {
+      "public_callables": 759,
+      "digested": 759,
+      "undigested": 0,
+      "exempt": 0,
+      "declared_digesters": 468,
+      "missing_digesters": 0,
+      "declarations": 972,
+      "existing_signatures_and_stability_changed": false
+    },
+    "diagnostic_history": [
+      {
+        "profile": "probe-445-curated-before",
+        "failed": 2,
+        "reason": "Real Whole/Region public sizeFactor calls emit missing-digester warnings before the correction."
+      },
+      {
+        "profile": "probe-451-curated-native",
+        "failed": 1,
+        "reason": "Representation checks pass; later raw camera preparation is replaced by authored baseline on capture. Exact historical pending-reset owner not proved."
+      },
+      {
+        "profile": "probe-454-curated-native-camera-owned",
+        "failed": 1,
+        "reason": "Intermediate adverse control expected an arbitrary reset but received the authored baseline. Preserved separately; no production change attributed to an unproved cause."
+      }
+    ],
+    "documentation": {
+      "state": "passed",
+      "profile": "probe-457-curated-docs",
+      "scope": "Final links/reporting/public API/reference guards and required root/index checks; terminal report preserves native counts.",
+      "passed": 418,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "environment": {
+    "actual_prefix_pip_check_exit": 1,
+    "conflicts": 12,
+    "owning_coordination": [
+      "uibcdf/molsyssuite#82",
+      "uibcdf/molsyssuite#137"
+    ],
+    "notice": "Shared-prefix metadata drift and unrelated external constraints remain separate from this controlled source route. No new PyUnitWizard defect or clean-prefix qualification is claimed. Raw current-provider receiving was not executed because owner runtime paths were changing; owner files were preserved."
+  },
+  "profiles": {
+    "probe-445-curated-before": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/receive_representation.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_representation_parameters.py",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt445"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 1,
+      "seconds": 13.199647346045822,
+      "peak_owned_rss_mib": 395.1,
+      "selected_inputs": 5929,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "32ebefa5f201f6b5575ef1e4f9a68a7e78410ec4d32b40ce5cb4f824371a2baf",
+        "inputs-before.json": "32ebefa5f201f6b5575ef1e4f9a68a7e78410ec4d32b40ce5cb4f824371a2baf",
+        "invocation.json": "9e5a97fef5526232d9bc7f4f3df03ccbd13b586a75631943c1606c48ec8938b7",
+        "resources-before.json": "ef707b4537307d4e21bafd9459c59d342dd9d48e68716cedbc125b077a7ee2d9",
+        "stdout.log": "0dbf3d98ab90b1754dfa55230bc6cc41198c43426e7d183530d8bc7bad04920a"
+      }
+    },
+    "probe-446-curated-fixed": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/receive_representation.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_representation_parameters.py",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt446"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 14.184207851067185,
+      "peak_owned_rss_mib": 398.7,
+      "selected_inputs": 5941,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "6a82fcb0393dfb56daab8f8506af0c4f98fda77ee286b935089ff94e4a4ef833",
+        "inputs-before.json": "6a82fcb0393dfb56daab8f8506af0c4f98fda77ee286b935089ff94e4a4ef833",
+        "invocation.json": "03f3f37eb7523d452d6fa678bc5872970cfca37c14422eb70aa8f5a7079ed8c1",
+        "resources-before.json": "4f24b487f70480ad7b43050270e1ea71de9064b90c6e3083c44adf90d060f0de",
+        "stdout.log": "ed43595bcd16f50423b132fe4b6507b05b721dd5ef9fb3e8253236a710fc7e61"
+      }
+    },
+    "probe-447-curated-api": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/devtools/public_api_inventory.py",
+        "--write-baseline"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 5.660166502930224,
+      "peak_owned_rss_mib": 391.4,
+      "selected_inputs": 5941,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "ddac2ca7c5e99fe53e5ac0763c31294f491b0008eb129ba8a455c86e1651500f",
+        "inputs-before.json": "ddac2ca7c5e99fe53e5ac0763c31294f491b0008eb129ba8a455c86e1651500f",
+        "invocation.json": "cfb53679fa664a65e567cdcab1cb58710e926f086ee87e665acdc61b23676c04",
+        "resources-before.json": "ad136a6e9731fc81087a040dbfb3d032967fe8e59794401f680f624b3216f786",
+        "stdout.log": "9ff40eaa31befb3f2d4e88e33af8a871e52bf290a2cc65524e71f35df2ddb8b6"
+      }
+    },
+    "probe-448-curated-scalar": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/receive_representation.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_representation_parameters.py",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt448"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 14.502734482986853,
+      "peak_owned_rss_mib": 398.6,
+      "selected_inputs": 5942,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "ca5c2bdc8d1b2324ade251a5228821ae36ff3217b3fa1de49503272076b65634",
+        "inputs-before.json": "ca5c2bdc8d1b2324ade251a5228821ae36ff3217b3fa1de49503272076b65634",
+        "invocation.json": "2000083022df5ae862ac993a194250713fbdcd4067c9237daa7d22612f2ff792",
+        "resources-before.json": "62afe4e9196fa0688d1c9de619dc6349c2b627fa7a41a860f40b8926379e2b95",
+        "stdout.log": "cf5e2632b79618b459dd806f715cdd8e0ec5aadbb13bb00cd41216df0deaa72b"
+      }
+    },
+    "build-449-curated-browser": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build_curated_browser.py"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 1.2936932661104947,
+      "peak_owned_rss_mib": 65.0,
+      "selected_inputs": 5942,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "434e7cd21140c593416aa8a0277aae7e1a24937ba33cb21bd32f9b30e898ae37",
+        "inputs-before.json": "434e7cd21140c593416aa8a0277aae7e1a24937ba33cb21bd32f9b30e898ae37",
+        "invocation.json": "e2239b0ed31d3ade42578d1eafe6fda2815561ccea3954170bbf1822f4f2a9d5",
+        "resources-before.json": "378d26bf948264308f7954679f0d36bffe4e7a55ef28f9e65a3732ab0c6674a0",
+        "stdout.log": "ce530d4ec57e903fad44a643ffc61a23116ac13a5f43b28fd0e643ace4daf56f"
+      }
+    },
+    "probe-450-curated-regression": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=2G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/receive_curated_regression.py"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 358.5212638438679,
+      "peak_owned_rss_mib": 944.2,
+      "selected_inputs": 5944,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 44,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "b010385392637bc3bdc77fd6b387e233c1dabb07bff8474bcf725e6bad918d67",
+        "inputs-before.json": "b010385392637bc3bdc77fd6b387e233c1dabb07bff8474bcf725e6bad918d67",
+        "invocation.json": "e19a6857644a09d3676892c8c75b27a277770c2ca17fae51b0090be0888ff831",
+        "resources-before.json": "79faa93273f872ce2430b2233f8d3cbbb55d8c6dfae5d6a29d83d70cb7aea121",
+        "stdout.log": "9a5fa72994ac220c09c05c9c4d36a28c8de98deac6050f0d3ef6f0fd1187c6fe"
+      }
+    },
+    "probe-451-curated-native": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=200%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt451"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 1,
+      "seconds": 91.84154896996915,
+      "peak_owned_rss_mib": 2667.7,
+      "selected_inputs": 5944,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "b010385392637bc3bdc77fd6b387e233c1dabb07bff8474bcf725e6bad918d67",
+        "inputs-before.json": "b010385392637bc3bdc77fd6b387e233c1dabb07bff8474bcf725e6bad918d67",
+        "invocation.json": "1a0ca0619d53e6f8ea23d17671c91f4ade2581e36be753397b056ebc02856acd",
+        "resources-before.json": "033dc38aa5b75058df968b17aef19e7b7cb24924151e6ab56bb705e07504de65",
+        "stdout.log": "295e0814978d238291bc97c708658febda7c2556263c3b6f6e95b08d9526e047"
+      }
+    },
+    "build-452-curated-camera-guard": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build_curated_browser.py"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 1.3329358119517565,
+      "peak_owned_rss_mib": 49.5,
+      "selected_inputs": 5942,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "6c6672d4d5c056afe7d65cc75288c5c63b2df9fa3a3c3d2ed84eec22f1c1859f",
+        "inputs-before.json": "6c6672d4d5c056afe7d65cc75288c5c63b2df9fa3a3c3d2ed84eec22f1c1859f",
+        "invocation.json": "dc19a8610b006d786a4340456f868d84ad3ebd3846268d9faaaa1b2b1ee1657f",
+        "resources-before.json": "6902b58d747b7e755d5a5ec8274907636a9691a569f165cc80aea3929bbe0146",
+        "stdout.log": "43643323f27416efdb9f07853385b8b53635ab03b39b8c58c4ecdb175fcbed0c"
+      }
+    },
+    "probe-454-curated-native-camera-owned": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=200%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt454"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 1,
+      "seconds": 91.68335246597417,
+      "peak_owned_rss_mib": 2652.2,
+      "selected_inputs": 5944,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "d1958f525d982a50f20deeb9d97993b4e74093edbe9956d0211e59aa3781900f",
+        "inputs-before.json": "d1958f525d982a50f20deeb9d97993b4e74093edbe9956d0211e59aa3781900f",
+        "invocation.json": "9b885be6cdc8e038a0cdfb002cd90a950d00fe4c135de629c98eb3364d006788",
+        "resources-before.json": "338cfd362f4c332fe85a13e992f9f28d2a8d37a0266d65336459796ac18f6bf4",
+        "stdout.log": "b5946d9a1f906b7243801d21ef35964f1a9d4ef1af1b92d35873a908dc77e377"
+      }
+    },
+    "build-455-authority-guard": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build_curated_browser.py"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 1.388205531053245,
+      "peak_owned_rss_mib": 45.6,
+      "selected_inputs": 5942,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "8431b145360ec257ebbd8d5f773d4c1723d4c2936506d218bfe7280a96eb5260",
+        "inputs-before.json": "8431b145360ec257ebbd8d5f773d4c1723d4c2936506d218bfe7280a96eb5260",
+        "invocation.json": "a30ff3c2e32abe072f7604b670737108617248ef0e922818682a5d902cf7600d",
+        "resources-before.json": "b85b41801959b776f6e89859ec6e83c7c3ae91580f1b9e00287477e99dcb972e",
+        "stdout.log": "f41a9bc15968d5ed284f4552a1b7249e4851e5d13a946696a0474a2de98d7d1a"
+      }
+    },
+    "probe-456-authority-camera-native": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=200%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt456"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 131.6184821180068,
+      "peak_owned_rss_mib": 2641.8,
+      "selected_inputs": 5944,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "53203acc1a08ec31c4b02059385303fd0039666e754c12fd0ccc4c3b2857aa08",
+        "inputs-before.json": "53203acc1a08ec31c4b02059385303fd0039666e754c12fd0ccc4c3b2857aa08",
+        "invocation.json": "4ad92e4c17130a9b7eb150f972cdb72b6bfd6ae9899dbad05010d503f640b437",
+        "resources-before.json": "58ab2666b7b310f64bbe2aad402a88833998a47bfa870b04a714feaa4494de88",
+        "stdout.log": "2d3a2fb6e3a062ade1b71cb66ab9bb159f361a3ea9d70682d754379b93e57906"
+      }
+    },
+    "probe-457-curated-docs": {
+      "pyunitwizard_route": "editable 0.29.4+2.g9bb4f5f; source receiving, not public artifact qualification",
+      "pyunitwizard_source": "9bb4f5f",
+      "outer_deadline_seconds": 600,
+      "state": "completed",
+      "mode": "jupyter",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/receive_curated_docs.py"
+      ],
+      "source_base": "0f539c451f53efad8bade4466b5be42884a66e8f",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "provider_public_runtime_base": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "scope": "Post-integration exact owner-source/Viewer receiving with the receipt-matched canonical corrected native backend and cached public support. Command and terminal reports define scope; not hosted, installed, public or human acceptance. Automated source receiving only; not human or installed-artifact acceptance.",
+      "native_exit": 0,
+      "seconds": 19.72792186192237,
+      "peak_owned_rss_mib": 554.2,
+      "selected_inputs": 5946,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 11,
+        "survivors": [],
+        "errors": []
+      },
+      "tracking_errors": [],
+      "resource_stop": null,
+      "files": {
+        "inputs-after.json": "f4febb86083b88e736986f3ad559aa136f8a45a9f3500af67474189587d19177",
+        "inputs-before.json": "f4febb86083b88e736986f3ad559aa136f8a45a9f3500af67474189587d19177",
+        "invocation.json": "ffe10dbcbc08fc5187245c035dcfc24a77e328814a0188fc958743fc35cbb6ef",
+        "resources-before.json": "2f93d8e6c78addd3c19047e33911188569bdb2d5848a4ad8680ab4639374385d",
+        "stdout.log": "f71fc373335883fbbef42e0fc8e6b704d2abe22243c60f8a74a2ac613a8decd3"
+      }
+    }
+  },
+  "native_files": {
+    "appearance.mp4": {
+      "bytes": 49417,
+      "sha256": "98b254fdb08b07bae863ed2cb0084c14c69af2790b0abc9c1d2b9f708cb20f34"
+    },
+    "appearance.msv": {
+      "bytes": 18929,
+      "sha256": "f73d70738d94e3d3a39282588cc04d53b271685471a148486ea07081c78f1fd9"
+    },
+    "baseline.msv": {
+      "bytes": 18295,
+      "sha256": "23183f1842ad37db695aaf9b037ecf3443f96dceb1a60ee2b6f8e2b6a0445460"
+    },
+    "observed.mp4": {
+      "bytes": 8195,
+      "sha256": "d8c47a4177bb0bb0ea876d07e969ceba4304bf169076a2c74ccdc2141d06907f"
+    },
+    "observed.msv": {
+      "bytes": 18315,
+      "sha256": "d16ba46f3e945c389deed51f6599e91ae529288d7287ffcc76395c5889bcb691"
+    },
+    "verified.json": {
+      "bytes": 41292,
+      "sha256": "b2fcdffe415e4d8017fa8522fc4da7d727b581fa6c33b80ebe309cb3dd78c449"
+    }
+  },
+  "resource_policy": {
+    "ceiling_logical_cpus": 8,
+    "ceiling_ram_gib": 6,
+    "actual_focused": "1 CPU / 1 GiB",
+    "actual_broader": "1 CPU / 2 GiB",
+    "actual_native": "2 CPU / 4 GiB",
+    "own_swap_gib": 0,
+    "minimum_global_available_gib": 6.5,
+    "execution": "Sequential systemd scopes, task limits, monitored pressure/reserve and owned process cleanup; no foreign process manipulation."
+  },
+  "custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "curated-parameters-20261111",
+    "file_count": 76,
+    "payload_bytes": 27322442,
+    "manifest_sha256": "b0028fc79470ef26aabe61696cef62e011a41beee05eef0bc37e46a8c15b582f",
+    "permissions": "directory 0700; files 0600",
+    "originals_deleted": false
+  },
+  "remaining": [
+    "Actual Jupyter lifecycle/retainer diagnosis #356/#354, original #615 initialization cause and adopted prolonged-use gate",
+    "Movie #320 legacy migration, additional renderer channels, Studio authoring, portable web and integrated story",
+    "Broad documentation, postponed human receiving and exact installed/hosted 1.0.0 pair qualification"
+  ],
+  "plan_accounting": {
+    "source_delivered": 38,
+    "original_outcomes": 46,
+    "final_applicable_accepted": 1,
+    "new_original_outcomes_credited": 0
+  },
+  "publication": "No frozen producer, package, tag, Release, promotion, DOI or publication authorization follows."
+}

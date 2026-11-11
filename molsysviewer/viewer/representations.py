@@ -169,6 +169,25 @@ REPRESENTATION_PARAM_SCHEMAS = {
     },
 }
 
+# Native Mol* controls: scale factors are dimensionless; spatial controls
+# share the molecular payload's fixed angstrom coordinate space. Slider
+# maxima are presentation choices, not hard scientific/geometry limits.
+_PARAMETER_LIMITS = {
+    "sizeFactor": {"minimum": 0.0},
+    "sizeAspectRatio": {"minimum": 0.0, "exclusive_minimum": True},
+    "terminalLinkSizeFactor": {"minimum": 0.0},
+    "resolution": {"minimum": 0.0, "exclusive_minimum": True, "unit": "angstrom"},
+    "probeRadius": {"minimum": 0.0, "unit": "angstrom"},
+}
+for _schema in REPRESENTATION_PARAM_SCHEMAS.values():
+    for _parameter in _schema["specific_params"]:
+        _parameter.update(_PARAMETER_LIMITS.get(_parameter["name"], {}))
+
+_CURATED_PARAMETER_VALUES = {
+    row["name"]: row for schema in REPRESENTATION_PARAM_SCHEMAS.values() for row in schema["specific_params"]
+}
+_CURATED_PARAMETER_VALUES["quality"] = next(row for row in COMMON_REPRESENTATION_PARAMS if row["name"] == "quality")
+
 
 def normalize_representation_type(value: str | None) -> str | None:
     if value is None:

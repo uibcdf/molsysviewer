@@ -890,6 +890,9 @@ class Region:
         If ``preset`` is provided, it supersedes ``representation`` and applies a Mol* preset
         (auto, atomic-detail, polymer-and-ligand, polymer-cartoon, coarse-surface, empty).
         """
+        from ._private.representation_params import normalize_curated_params
+
+        params = normalize_curated_params(params, caller="molsysviewer.regions.set_representation")
         color = params.pop("color", None)
         if color is not None:
             params["molstar_color_theme"] = {"name": "uniform", "params": {"value": normalize_color(color)}}

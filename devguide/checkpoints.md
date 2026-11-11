@@ -907,6 +907,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+Curated molecular representation parameters now have ordinary ArgDigest owners
+and pre-mutation semantic checks across Whole, regions and delegated styles.
+The [representation receipt](curated_representation_receiving_20261111.json)
+separates 99 focused cases, 1,649 affected regression cases and real native
+popup/session/media receiving. #357 closes this source contract; #361 qualifies
+the camera guard's setup through the production snapshot authority, without a
+product camera change. The original failures remain retained. Current PyUnitWizard
+is editable 0.29.4; the shared prefix has unrelated dependency conflicts and is
+not an installed-package qualification environment. Resume the current ledger's
+Jupyter reliability work before the prolonged-use gate; no new original-plan
+outcome or final release gate is credited by this correction.
+
 The [H5MSM default-transition receipt](h5msm_default_receiving_20261111.json)
 receives public-default 1.0 session save/reopen on MolSysMT `aee7aa65`, with
 the unchanged qualified ABI3 backend. The ordinary Viewer writer delegates
