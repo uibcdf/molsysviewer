@@ -6,6 +6,24 @@ import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas
 import { chromium } from "./e2e-browser";
 import { fixtureEnvironment, withFixtureWorkspace } from "./fixture-workspace";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
+import type { Page } from "playwright";
+
+async function command(page: Page, message: Record<string, unknown>) {
+    return page.evaluate(async value => (window as any).__popupWidgetModel.send(value), message);
+}
+
+async function movieResult(page: Page, message: Record<string, unknown>, read: (reply: any) => any) {
+    const deadline = performance.now() + 25_000;
+    do {
+        const result = read(await command(page, message));
+        if (result) {
+            assert.equal(result.ok, true, result.error);
+            return result;
+        }
+        await delay(200);
+    } while (performance.now() < deadline);
+    throw new Error("Movie operation did not produce a correlated draw verdict.");
+}
 
 async function run() {
     const dir = dirname(fileURLToPath(import.meta.url));
@@ -13,6 +31,7 @@ async function run() {
         const browser = await chromium.launch();
         let bridge: PythonFixtureBridge | undefined;
         let release: (() => Promise<void>) | undefined;
+        let popup: Page | undefined;
         try {
             bridge = new PythonFixtureBridge(resolve(dir, "movie-seek-bridge.py"), resolve(dir, "../../../.."),
                 30_000, { env: fixtureEnvironment(workspace) });
@@ -21,26 +40,14 @@ async function run() {
             page.on("pageerror", error => errors.push(String(error)));
             release = await mountCanvasPopupFixture(page, bridge);
             await captureCanvasPopupControllers(page);
-            await page.evaluate(async () => { await (window as any).__popupWidgetModel.send({ movie_start_motion: true }); });
+            await command(page, { movie_start_motion: true });
             await page.waitForFunction(() => {
                 const c = (window as any).__mirrorController;
                 return c.trajectory.getPlaybackSnapshot().playing && c.scene.isSpinActive;
             });
             for (const [time, frame, visible] of [[600, 2, false], [100, 0, true]] as const) {
-                await page.evaluate(async time => {
-                    await (window as any).__popupWidgetModel.send({ movie_seek: time });
-                }, time);
-                let result;
-                const deadline = performance.now() + 25_000;
-                do {
-                    result = await page.evaluate(async () => {
-                        const reply = await (window as any).__popupWidgetModel.send({ movie_seek_status: true });
-                        return reply.movie_seek_result;
-                    });
-                    if (!result) await delay(200);
-                } while (!result && performance.now() < deadline);
-                assert.ok(result, "The Movie seek must produce a correlated draw verdict.");
-                assert.equal(result.ok, true, result.error);
+                await command(page, { movie_seek: time });
+                const result = await movieResult(page, { movie_seek_status: true }, reply => reply.movie_seek_result);
                 assert.equal(result.sample.time_ms, time);
                 assert.equal(result.frame, frame);
                 assert.equal(result.playing, false);
@@ -68,10 +75,77 @@ async function run() {
                         Math.abs(value - result.sample.camera[key][index]) <= 1e-6));
                 }
             }
+
+            const popupOpened = page.waitForEvent("popup");
+            await page.getByTitle("Open popup", { exact: true }).click();
+            popup = await popupOpened;
+            popup.on("pageerror", error => errors.push(String(error)));
+            await popup.waitForFunction(() => (window as any).__mirrorController?.getStructureData()?.elementCount === 62);
+
+            // Observe samples issued by the real primary renderer's clock.
+            await page.evaluate(() => {
+                const w = window as any;
+                const model = w.__popupWidgetModel;
+                const send = model.send.bind(model);
+                w.__moviePreviewTimes = [];
+                model.send = (message: any) => {
+                    const payload = message.payload ?? message;
+                    if (payload.event === "visual_state_snapshot" && payload.movie_next_sample) {
+                        w.__moviePreviewTimes.push(payload.movie_next_sample.time_ms);
+                    }
+                    return send(message);
+                };
+            });
+            const previewResult = (kind: string) => movieResult(page, { movie_preview_status: true },
+                reply => reply.movie_preview_result[kind]);
+            await command(page, { movie_preview_play: { loop: true, start: 400 } });
+            await page.waitForFunction(() => (window as any).__moviePreviewTimes.length >= 3);
+            await command(page, { movie_preview_pause: true });
+            const paused = (await previewResult("pause")).sample;
+            assert.deepEqual((await previewResult("play")).sample, paused);
+            const observed = await page.evaluate(() => {
+                const w = window as any;
+                return { frame: w.__mirrorController.trajectory.getTrajectoryState().currentFrame,
+                    position: w.__mirrorController.getCameraSnapshot().position,
+                    samples: w.__moviePreviewTimes.length };
+            });
+            assert.equal(observed.frame, paused.structure_index);
+            assert.ok(observed.position.every((value: number, index: number) =>
+                Math.abs(value - paused.camera.position[index]) <= 1e-6));
+            await popup.waitForFunction(sample => {
+                const c = (window as any).__mirrorController;
+                const drawn = c.getCameraSnapshot();
+                const region = c.state.regionIndex.get("site");
+                return c.trajectory.getTrajectoryState().currentFrame === sample.structure_index
+                    && region?.hidden === !sample.visibility[0].visible
+                    && drawn?.position.every((value: number, index: number) => Math.abs(value - sample.camera.position[index]) <= 1e-6)
+                    && c.moviePreviewClock.current === undefined;
+            }, paused);
+            await command(page, { movie_preview_save: resolve(workspace, "paused.msv") });
+            const restored = await previewResult("save");
+            assert.ok(restored.same_recipe);
+            assert.equal(restored.frame, paused.structure_index);
+            assert.equal(restored.visible, paused.visibility[0].visible);
+            for (const key of ["position", "target", "up"] as const) {
+                assert.ok(restored.camera[key].every((value: number, index: number) =>
+                    Math.abs(value - paused.camera[key][index]) <= 1e-6));
+            }
+            // The next independent seek will get its own receipt. Late clocks
+            // cannot resume the retired preview while it rewinds the scene.
+            await command(page, { movie_seek: 0 });
+            const rewound = await movieResult(page, { movie_seek_status: true }, reply => reply.movie_seek_result);
+            assert.equal(rewound.frame, 0);
+            assert.equal(await page.evaluate(() => (window as any).__moviePreviewTimes.length), observed.samples);
+            await command(page, { movie_preview_play: { loop: false, start: 650 } });
+            const finished = (await previewResult("play")).sample;
+            assert.equal(finished.time_ms, 1000);
+            assert.equal(finished.structure_index, 2);
+            assert.deepEqual(finished.camera.position, [30, 0, 0]);
             assert.deepEqual(await page.evaluate(() => (window as any).__popupFixtureErrors), []);
             assert.deepEqual(errors, []);
-            console.log("[E2E Movie seek] Forward and reverse draws agree with the authored sample.");
+            console.log("[E2E Movie] Seek, preview pause, popup mirror, restored session and terminal draw agree.");
         } finally {
+            await popup?.close();
             await release?.();
             await Promise.all([browser.close(), bridge?.close()]);
         }

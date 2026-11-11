@@ -19890,6 +19890,23 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
     },
+    "view.movie.pause_async": {
+      "async": true,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental acknowledged Movie preview; public_api.md",
+      "stability": "experimental"
+    },
     "view.movie.play": {
       "async": false,
       "kind": "callable",
@@ -19924,6 +19941,50 @@
       ],
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
+    },
+    "view.movie.play_async": {
+      "async": true,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "loop"
+        },
+        {
+          "default": {
+            "binary64": "0x0.0p+0",
+            "kind": "float",
+            "value": 0.0
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "start_time_ms"
+        },
+        {
+          "default": {
+            "binary64": "0x1.4000000000000p+2",
+            "kind": "float",
+            "value": 5.0
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "timeout"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Experimental acknowledged Movie preview; public_api.md",
+      "stability": "experimental"
     },
     "view.movie.remove_track": {
       "async": false,

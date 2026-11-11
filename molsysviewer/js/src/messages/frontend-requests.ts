@@ -3,6 +3,7 @@ import { readCanvasDraw } from "../managers/canvas-draw";
 import type { MovingVisualSnapshot } from "./visual-state-snapshot";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
+    & Partial<Pick<MolSysViewerController, "moviePreviewClock">>
     & { prepareMovingVisualCapture?(): void; readMovingVisualState?(): MovingVisualSnapshot | undefined };
 
 export type VisualStateCaptureReservation = {
@@ -101,8 +102,14 @@ export async function handleFrontendRequest(controller: RequestController, messa
             if (message.capture_version === 2) {
                 if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
                 controller.prepareMovingVisualCapture?.();
+                const nextMovieSample = message.movie_preview === undefined ? undefined
+                    : controller.moviePreviewClock?.prepare(message.movie_preview);
+                if (message.movie_preview !== undefined && !nextMovieSample) {
+                    throw new Error("Movie preview is unavailable on this renderer.");
+                }
                 let sample: MovingVisualSnapshot | undefined;
-                const captured = await readCanvasDraw(canvas, () => sample!,
+                const captured = await readCanvasDraw(canvas, () => ({ ...sample!,
+                    ...(nextMovieSample ? { movie_next_sample: nextMovieSample() } : {}) }),
                     Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000,
                     capture?.signal, () => !!(sample = controller.readMovingVisualState!()));
                 if (!capture?.signal.aborted) send({ ...correlation, ok: true, capture_version: 2, ...captured });

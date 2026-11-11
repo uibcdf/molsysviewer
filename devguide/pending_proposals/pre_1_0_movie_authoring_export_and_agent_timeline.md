@@ -237,10 +237,32 @@ the actual Mol* region and same-tag shape nodes. The case passes in profile
 The scoped Movie, capture, session, public API and reporting gate `304`
 passes 844 Python cases, with the expected missing-`imageio` branch skipped.
 The browser case uses the widget runtime with an adapted transport. The same route
-still needs installed-host and popup receiving. Continuous playback, Studio
-authoring and media and web export of version-2 tracks remain open.
+retains separate installed-host receiving. Studio authoring and media and web
+export of version-2 tracks remain open.
 The existing coherent-capture guard for browser-only visibility changes from
 version-1 playback also applies to seeks that reuse that capture service.
+
+Version-2 preview now uses a bounded renderer-clock/authority loop. The
+primary renderer proposes the next sample after a completed draw. Python
+validates the proposal and applies differences through the scene owners.
+One draw is outstanding at a time. `play_async()` completes at the endpoint
+or after pause, `pause_async()` drains the current draw, and `seek_async()`
+drains playback before switching to its own request. The renderer gets a
+compact recipe once and releases its clock on termination. Python checks
+revisions between samples and does not copy the molecular trajectory.
+
+The expanded `movie-seek` browser guard passes preview, pause, backward seek,
+terminal draw, popup convergence and live session save/reopen. Profile `306`
+finishes in 36.40 s at 2 CPUs / 4 GiB, with all 13 owned processes retired.
+Scoped receiving also passes 22 JavaScript cases and 848 Python cases, with
+one expected missing-`imageio` branch skipped. Profile `308` preserves all
+10,962 selected inputs. Actual JupyterLab profile `309` passes playback, pause,
+live session save/reopen, rewind and terminal draw through production comms.
+It uses one kernel and three bundled structures, finishes in 37.61 s under
+2 CPUs / 4 GiB, and retires all 19 owned processes. Its final clock is retired.
+Native Qt and installed artifacts keep separate gates.
+The final Ruff-only formatting preserves the Python AST, with 65 targeted
+Movie cases passing again and the same expected dependency branch skipped.
 
 The pre-1.0 result must let a user approach a known pocket, reveal a loaded
 ligand with an explicit representation, show calculated interactions and labels

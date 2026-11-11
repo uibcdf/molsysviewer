@@ -925,6 +925,7 @@ export type PlayMovieMessage = {
 
 export type StopMovieMessage = {
     op: "stop_movie";
+    movie_preview_id?: string;
 };
 
 export type PartialCoordinatesUpdateMessage = {

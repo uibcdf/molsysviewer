@@ -166,6 +166,7 @@ def test_shared_movie_oracle_matches_real_python_recipe(authored):
     authored.movie.set_baseline(recipe["duration_ms"], camera=recipe["baseline"]["camera"])
     for track in recipe["tracks"]:
         authored.movie.add_track(track)
+
     def check(expected):
         observed = authored.movie.evaluate(expected["time_ms"])
         np.testing.assert_allclose(
@@ -308,3 +309,96 @@ def test_reentrant_navigation_during_pause_retires_the_seek(authored):
     assert authored.player.index == 1
     assert authored.camera.get_snapshot() is None
     assert not authored._frontend_requests._pending and authored.movie._seek_request is None
+
+
+def _preview_ready(view):
+    view._ready = True
+    view._frontend_capabilities = {"visual_state_capture": [2], "movie_preview": [1]}
+
+
+async def _preview_ticket(view):
+    async with asyncio.timeout(2):
+        while not view._frontend_requests._pending:
+            await asyncio.sleep(0)
+    assert len(view._frontend_requests._pending) == 1
+    return next(iter(view._frontend_requests._pending.values()))
+
+
+def test_preview_finishes_at_endpoint_and_keeps_the_authored_state(authored, tmp_path):
+    movie = authored.movie
+    movie.add_track(_track("frame", "structure", "index", (300, 2)))
+    movie.add_track(_track("camera", "camera", "pose", (1000, END)))
+    movie.add_track(_track("region", "region", "visible", (200, False), target="site"))
+    _preview_ready(authored)
+    timeline = movie._timeline
+
+    async def run():
+        play = asyncio.create_task(movie.play_async(start_time_ms=100))
+        first = await _preview_ticket(authored)
+        authored._handle_frontend_event(
+            {
+                **_draw_reply(first, timeline.evaluate(100)),
+                "movie_next_sample": timeline.evaluate(1000, tracked_visibility=True),
+            }
+        )
+        final = await _preview_ticket(authored)
+        assert final.request_id != first.request_id and final.revision == first.revision
+        assert authored.player.index == 2 and not authored.regions["site"].visible
+        assert not play.done()
+        authored._handle_frontend_event(_draw_reply(final, timeline.evaluate(1000)))
+        result = await play
+        assert result == timeline.evaluate(1000, tracked_visibility=True)
+        assert movie._playback is None and not authored._frontend_requests._pending
+
+    asyncio.run(run())
+    path = tmp_path / "preview.msv"
+    authored.save_session(path)
+    with msv.load_session(path) as restored:
+        assert restored.movie.to_dict() == movie.to_dict()
+        assert restored.player.index == 2 and not restored.regions["site"].visible
+        assert restored.camera.get_snapshot() == END
+
+
+def test_backward_seek_drains_preview_before_applying_a_new_frame(authored):
+    movie = authored.movie
+    movie.add_track(_track("frame", "structure", "index", (300, 2)))
+    _preview_ready(authored)
+
+    async def run():
+        play = asyncio.create_task(movie.play_async(loop=True, start_time_ms=500))
+        playing = await _preview_ticket(authored)
+        seek = asyncio.create_task(movie.seek_async(100))
+        await asyncio.sleep(0)
+        assert not seek.done() and authored.player.index == 2
+        authored._handle_frontend_event(_draw_reply(playing, movie.evaluate(500)))
+        assert (await play)["time_ms"] == 500
+        seeking = await _preview_ticket(authored)
+        assert seeking.revision != playing.revision
+        authored._handle_frontend_event(_draw_reply(playing, movie.evaluate(500)))
+        assert not seeking.future.done()
+        authored._handle_frontend_event(_draw_reply(seeking, movie.evaluate(100)))
+        assert (await seek)["structure_index"] == 0
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("failure", ["invalid-sample", "intervening-edit"])
+def test_preview_retires_when_the_source_or_clock_reply_changes(authored, failure):
+    movie = authored.movie
+    _preview_ready(authored)
+
+    async def run():
+        play = asyncio.create_task(movie.play_async())
+        ticket = await _preview_ticket(authored)
+        reply = _draw_reply(ticket, movie.evaluate(0))
+        reply["movie_next_sample"] = {**movie._timeline.evaluate(100, tracked_visibility=True), "structure_index": 1}
+        expected = "invalid_movie_preview_sample"
+        if failure == "intervening-edit":
+            authored.whole.hide()
+            expected = "movie_preview_superseded"
+        authored._handle_frontend_event(reply)
+        with pytest.raises(FrontendRequestError, match=expected):
+            await play
+        assert movie._playback is None and not authored._frontend_requests._pending
+
+    asyncio.run(run())

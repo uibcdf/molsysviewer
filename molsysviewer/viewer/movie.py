@@ -50,6 +50,7 @@ class MovieManager:
         self._keyframes: list[dict] = []
         self._timeline: _MovieTimeline | None = None
         self._seek_request = None
+        self._playback = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -436,7 +437,34 @@ class MovieManager:
         """
         from ._movie_seek import seek_movie
 
+        if self._playback is not None:
+            self._require_timeline().evaluate(time_ms, tracked_visibility=True)
+            await self.pause_async(skip_digestion=True)
         return await seek_movie(self, time_ms, timeout=timeout)
+
+    @signal(tags=["movie", "capture"])
+    @digest()
+    async def play_async(
+        self, loop: bool = False, start_time_ms: float = 0.0, *, timeout: float = 5.0, skip_digestion: bool = False
+    ) -> dict | None:
+        """Preview version-2 tracks until completion or pause on the primary canvas.
+
+        The renderer samples its clock after each completed draw. A slow draw
+        can skip intermediate times, and the final sample is always applied on
+        normal completion. The timeout bounds each draw in seconds. Run as an
+        asyncio task to control playback from another notebook cell.
+        """
+        from ._movie_playback import play_movie
+
+        return await play_movie(self, loop=loop, start_time_ms=start_time_ms, timeout=timeout)
+
+    @signal(tags=["movie", "capture"])
+    @digest()
+    async def pause_async(self, *, skip_digestion: bool = False) -> dict | None:
+        """Pause a version-2 preview and return its last acknowledged sample."""
+        from ._movie_playback import pause_movie
+
+        return await pause_movie(self)
 
     # ── Inspection ────────────────────────────────────────────────────────
 
@@ -577,6 +605,9 @@ class MovieManager:
     @digest()
     def stop(self, *, skip_digestion: bool = False) -> None:
         """Stop browser playback."""
+        if self._playback is not None:
+            self._playback.pause_requested = True
+            return
         self._view._send_runtime_only({"op": "stop_movie"})  # noqa: SLF001
 
     @signal()

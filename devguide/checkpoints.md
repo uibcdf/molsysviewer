@@ -2899,9 +2899,10 @@ chronological status narrative here.
    prolonged-use protocol. E1's continuous workflow
    remains received; human E4 stays postponed.
 6. **Movie:** retain the [matched evaluators and acknowledged Python seek](movie_timeline_design.md)
-   for camera, structure and visibility tracks. Continue with coordinated
-   playback, popup and installed-host receiving, the remaining #320 channels,
-   Studio authoring and export.
+   and bounded preview for camera, structure and visibility tracks. Retain
+   preview/pause, popup convergence and save/reopen receiving. Continue with
+   the remaining #320 channels, Studio authoring, media/web export and
+   installed-host receiving.
 7. **G:** prepare #294's covering artifact and exact installed/downstream
    qualification when separately authorized. Candidate/tag/package actions and
    both 1.0 publications remain paused.

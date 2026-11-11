@@ -190,7 +190,8 @@ function sceneVisibility(scene: Record<string, unknown>): Map<string, Visibility
  * Compile a detached version-2 recipe for arbitrary-time evaluation in JavaScript.
  * The caller owns binding to a molecular system and application to a live scene.
  */
-export function compileMovieTimeline(value: unknown): { duration_ms: number; evaluate(time_ms: number): MovieSample } {
+export function compileMovieTimeline(value: unknown, { trackedVisibility = false } = {}):
+    { duration_ms: number; evaluate(time_ms: number): MovieSample } {
     const recipe = record(value, "Movie recipe", ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"]);
     if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
     const duration = time(recipe.duration_ms);
@@ -254,6 +255,7 @@ export function compileMovieTimeline(value: unknown): { duration_ms: number; eva
         }
     }
 
+    const visibilityRows = trackedVisibility ? Array.from(rows).filter(([id]) => visTracks.has(id)) : Array.from(rows);
     return {
         duration_ms: duration,
         evaluate(time_ms) {
@@ -269,7 +271,7 @@ export function compileMovieTimeline(value: unknown): { duration_ms: number; eva
                 time_ms: at,
                 camera: pose,
                 structure_index: frameTrack[upperBound(frameTrack, at) - 1]?.value ?? baseFrame,
-                visibility: Array.from(rows, ([id, row]) => {
+                visibility: visibilityRows.map(([id, row]) => {
                     const track = visTracks.get(id);
                     return { ...row, visible: (track && track[upperBound(track, at) - 1]?.value) ?? row.visible };
                 }),

@@ -452,9 +452,11 @@ the same tag; APIs resolve identity as `(domain, tag)`.
   - `export(path, *, fps, format)` — requires `imageio`; sends `play_movie` with `mode="export"` and collects frames from the JS runtime
   - Experimental version-2 recipes use `set_baseline(duration_ms, *, camera, state=None)`,
     `set_duration(duration_ms)`, `add_track(track)`, `update_track(tag, *, keys)`,
-    `remove_track(tag)`, `validate()`, `evaluate(time_ms)` and
-    `await seek_async(time_ms, *, timeout=5.0)`. Evaluation, live seek and session
-    persistence are described in [Timeline and keyframes](../user/movie/timeline.md#independent-tracks-experimental).
+    `remove_track(tag)`, `validate()`, `evaluate(time_ms)`,
+    `await seek_async(time_ms, *, timeout=5.0)`,
+    `await play_async(loop=False, start_time_ms=0.0, *, timeout=5.0)` and
+    `await pause_async()`. Evaluation, preview and session persistence are
+    described in [Timeline and keyframes](../user/movie/timeline.md#independent-tracks-experimental).
 - `view.on_hover(callback)` / `view.off_hover(callback)`
 - `view.on_click(callback)` / `view.off_click(callback)`
 - `view.on_context(callback)` / `view.off_context(callback)`

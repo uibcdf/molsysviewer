@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { compileMovieTimeline } from "../../src/managers/movie-timeline";
+import { MoviePreviewClock } from "../../src/managers/movie-preview-clock";
 import oracle from "../fixtures/movie-timeline-oracle.json";
 
 function checkSamples(recipe: unknown, samples: typeof oracle.samples) {
@@ -58,4 +59,19 @@ test("Movie compiler rejects invalid times, ambiguous targets and inconsistent s
     recipe.baseline.scene.regions[0].tag = "site";
     recipe.baseline.scene.sources.binding.n_structures = 1;
     assert.throws(() => compileMovieTimeline(recipe), /source records do not match/);
+});
+
+test("Movie preview samples renderer time, wraps or finishes, and retires the old clock", () => {
+    const clock = new MoviePreviewClock();
+    const loop = clock.prepare({ id: "loop", recipe: oracle.recipe, start_time_ms: 700, loop: true }, 1000);
+    assert.equal(loop(1100).time_ms, 800);
+    assert.equal(clock.prepare({ id: "loop" })(1700).time_ms, 200);
+    assert.equal(loop(1700).visibility.length, 2);
+    const once = clock.prepare({ id: "once", recipe: oracle.recipe, start_time_ms: 1000, loop: false }, 2000);
+    assert.throws(() => loop(2200), /replaced before its draw/);
+    assert.equal(once(2600).time_ms, oracle.recipe.duration_ms);
+    clock.release("loop");
+    assert.equal(once(2600).time_ms, oracle.recipe.duration_ms);
+    clock.release("once");
+    assert.throws(() => clock.prepare({ id: "once" }), /no longer current/);
 });

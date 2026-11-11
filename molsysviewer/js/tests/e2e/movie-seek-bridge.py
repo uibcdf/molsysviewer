@@ -43,6 +43,7 @@ def main():
             }
         )
         result = None
+        preview = {}
 
         async def seek(at):
             nonlocal result
@@ -51,6 +52,34 @@ def main():
                 result = {"ok": True, "sample": sample, "frame": view.player.index, "playing": view.player.is_playing}
             except Exception as error:
                 result = {"ok": False, "error": str(error)}
+
+        async def play(event):
+            try:
+                sample = await view.movie.play_async(event["loop"], start_time_ms=event["start"], timeout=12)
+                preview["play"] = {"ok": True, "sample": sample}
+            except Exception as error:
+                preview["play"] = {"ok": False, "error": str(error)}
+
+        async def pause():
+            try:
+                sample = await view.movie.pause_async()
+                preview["pause"] = {"ok": True, "sample": sample}
+            except Exception as error:
+                preview["pause"] = {"ok": False, "error": str(error)}
+
+        async def save(path):
+            try:
+                await view.save_session_async(path, timeout=12)
+                with msv.load_session(path) as restored:
+                    preview["save"] = {
+                        "ok": True,
+                        "frame": restored.player.index,
+                        "camera": restored.camera.get_snapshot(),
+                        "visible": restored.regions["site"].visible,
+                        "same_recipe": restored.movie.to_dict() == view.movie.to_dict(),
+                    }
+            except Exception as error:
+                preview["save"] = {"ok": False, "error": str(error)}
 
         def action(owner, event):
             nonlocal result
@@ -65,6 +94,18 @@ def main():
                 return True
             if event.get("movie_seek_status"):
                 return {"movie_seek_result": result}
+            if "movie_preview_play" in event:
+                preview.clear()
+                asyncio.create_task(play(event["movie_preview_play"]))
+                return True
+            if event.get("movie_preview_pause"):
+                asyncio.create_task(pause())
+                return True
+            if "movie_preview_save" in event:
+                asyncio.create_task(save(event["movie_preview_save"]))
+                return True
+            if event.get("movie_preview_status"):
+                return {"movie_preview_result": dict(preview)}
             return False
 
         bridge["serve"](view, action, async_processing=True)

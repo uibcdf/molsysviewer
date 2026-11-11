@@ -145,6 +145,18 @@
       "priority": 100,
       "stability": "experimental",
       "reason": "Experimental acknowledged Movie seek; public_api.md"
+    },
+    {
+      "route": "view.movie.pause_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental acknowledged Movie preview; public_api.md"
+    },
+    {
+      "route": "view.movie.play_async",
+      "priority": 100,
+      "stability": "experimental",
+      "reason": "Experimental acknowledged Movie preview; public_api.md"
     }
   ]
 }

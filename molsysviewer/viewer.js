@@ -150362,6 +150362,281 @@ var MovieHandlers = class {
   }
 };
 
+// src/managers/movie-timeline.ts
+var halfTurnTolerance = 1e-12;
+var collections = {
+  annotation: "annotations",
+  interaction: "interactions",
+  layer: "layers",
+  measurement: "measurements",
+  region: "regions",
+  shape: "shapes"
+};
+function record2(value, label2, fields) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label2} must be an object.`);
+  }
+  if (fields && (Object.keys(value).length !== fields.length || fields.some((field2) => !owns(value, field2)))) {
+    throw new Error(`${label2} must contain ${fields.join(", ")}.`);
+  }
+  return value;
+}
+function owns(value, field2) {
+  return Object.prototype.hasOwnProperty.call(value, field2);
+}
+function tag(value) {
+  if (typeof value !== "string" || !value.trim()) throw new Error("Movie tags must be nonempty.");
+  return value;
+}
+function time(value, maximum = Number.MAX_SAFE_INTEGER) {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > maximum) {
+    throw new Error(`Movie time must be between 0 and ${maximum} ms.`);
+  }
+  return value;
+}
+function frame(value, count3) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= count3) {
+    throw new Error(`Movie structure index must be an integer in [0, ${count3}).`);
+  }
+  return value;
+}
+function visibility(value) {
+  if (typeof value !== "boolean") throw new Error("Movie visibility must be boolean.");
+  return value;
+}
+function vector(value) {
+  if (!Array.isArray(value) || value.length !== 3 || !Array.from(value).every((component) => typeof component === "number" && Number.isFinite(component))) {
+    throw new Error("Movie camera vectors must have three finite components.");
+  }
+  return Vec3.create(value[0], value[1], value[2]);
+}
+function camera(value) {
+  const pose = record2(value, "Movie camera pose");
+  const position = vector(pose.position);
+  const target = vector(pose.target);
+  const up3 = vector(pose.up);
+  const backward = Vec3.sub(Vec3(), position, target);
+  const distance2 = Math.hypot(...backward);
+  const upLength = Math.hypot(...up3);
+  if (!(distance2 > 0) || !(upLength > 0) || !Number.isFinite(distance2) || !Number.isFinite(upLength)) {
+    throw new Error("Movie camera requires a positive finite distance and a nonzero up vector.");
+  }
+  Vec3.set(backward, backward[0] / distance2, backward[1] / distance2, backward[2] / distance2);
+  Vec3.set(up3, up3[0] / upLength, up3[1] / upLength, up3[2] / upLength);
+  const right = Vec3.cross(Vec3(), up3, backward);
+  const rightLength = Math.hypot(...right);
+  if (rightLength < 1e-12) throw new Error("Movie camera up must not be parallel to its viewing direction.");
+  Vec3.scale(right, right, 1 / rightLength);
+  Vec3.cross(up3, backward, right);
+  const orientation = Quat.fromMat3(Quat(), Mat3.fromColumns(Mat3(), right, up3, backward));
+  return { pose: { position, target, up: up3 }, distance: distance2, orientation };
+}
+function ease(fraction, easing) {
+  switch (easing) {
+    case "ease-in":
+      return fraction ** 2;
+    case "ease-out":
+      return 1 - (1 - fraction) ** 2;
+    case "ease-in-out":
+      return fraction < 0.5 ? 2 * fraction ** 2 : 1 - 2 * (1 - fraction) ** 2;
+    default:
+      return fraction;
+  }
+}
+function interpolateCamera(left, right, fraction) {
+  const a8 = left.orientation;
+  const b8 = right.orientation;
+  const dot = Quat.dot(a8, b8);
+  const orientation = Quat();
+  const startWeight = 1 - fraction;
+  if (Math.abs(dot) <= halfTurnTolerance) {
+    const sign = (value) => Math.sign(value.find((component) => Math.abs(component) > halfTurnTolerance));
+    const leftWeight = Math.sin(startWeight * Math.PI / 2) * sign(a8);
+    const rightWeight = Math.sin(fraction * Math.PI / 2) * sign(b8);
+    for (let i = 0; i < 4; i++) orientation[i] = leftWeight * a8[i] + rightWeight * b8[i];
+  } else if (Math.abs(dot) > 0.9995) {
+    const endWeight = dot < 0 ? -fraction : fraction;
+    for (let i = 0; i < 4; i++) orientation[i] = startWeight * a8[i] + endWeight * b8[i];
+  } else {
+    Quat.slerp(orientation, a8, b8, fraction);
+  }
+  Quat.normalize(orientation, orientation);
+  const target = Vec3();
+  for (let i = 0; i < 3; i++) target[i] = startWeight * left.pose.target[i] + fraction * right.pose.target[i];
+  const distance2 = startWeight * left.distance + fraction * right.distance;
+  const offset4 = Vec3.transformQuat(Vec3(), Vec3.unitZ, orientation);
+  const position = Vec3.scaleAndAdd(Vec3(), target, offset4, distance2);
+  const up3 = Vec3.transformQuat(Vec3(), Vec3.unitY, orientation);
+  return camera({ position, target, up: up3 }).pose;
+}
+function keys2(value, duration, read, cameraTrack = false) {
+  if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
+  const result2 = [];
+  for (const item2 of value) {
+    const key2 = record2(item2, "Movie key");
+    if (Object.keys(key2).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
+      throw new Error("Movie keys accept time_ms, value and optional easing.");
+    }
+    const at = time(key2.time_ms, duration);
+    if (result2.length && at <= result2[result2.length - 1].time) {
+      throw new Error("Movie keys in one track must be strictly increasing.");
+    }
+    const easing = owns(key2, "easing") ? key2.easing : "linear";
+    if (easing !== "linear" && (!cameraTrack || easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out")) {
+      throw new Error("Only camera pose keys admit a non-linear easing.");
+    }
+    result2.push({ time: at, value: read(key2.value), easing });
+  }
+  return result2;
+}
+function upperBound(keys3, at) {
+  let low = 0;
+  let high = keys3.length;
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2);
+    if (keys3[middle].time <= at) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+function visibilityId(domain, name) {
+  return JSON.stringify([domain, name]);
+}
+function sceneVisibility(scene) {
+  const whole = { domain: "whole", tag: null, visible: visibility(record2(scene.whole, "Movie whole").visible) };
+  const rows = /* @__PURE__ */ new Map([[visibilityId("whole", null), whole]]);
+  for (const domain of Object.keys(collections)) {
+    const name = collections[domain];
+    const items = owns(scene, name) ? scene[name] : [];
+    if (!Array.isArray(items)) throw new Error(`Movie scene ${name} must be a list.`);
+    for (const value of items) {
+      const item2 = record2(value, `Movie ${domain}`);
+      const name2 = tag(item2.tag);
+      const id = visibilityId(domain, name2);
+      if (rows.has(id)) throw new Error(`Ambiguous Movie target ${id}.`);
+      rows.set(id, { domain, tag: name2, visible: !visibility(owns(item2, "hidden") ? item2.hidden : false) });
+    }
+  }
+  return rows;
+}
+function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
+  const recipe = record2(value, "Movie recipe", ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"]);
+  if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
+  const duration = time(recipe.duration_ms);
+  if (duration === 0) throw new Error("Movie duration must be positive.");
+  const units = record2(recipe.units, "Movie units", ["time", "camera_length"]);
+  if (units.time !== "ms" || units.camera_length !== "angstrom") {
+    throw new Error("Movie recipes use milliseconds and angstroms.");
+  }
+  const baseline = record2(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
+  const binding = record2(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
+  const count3 = binding.n_structures;
+  if (typeof count3 !== "number" || !Number.isSafeInteger(count3) || count3 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
+    throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
+  }
+  const scene = record2(baseline.scene, "Movie scene");
+  if (scene.version !== 2 || owns(scene, "movie")) {
+    throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
+  }
+  if (scene.sources != null) {
+    const source = record2(
+      record2(scene.sources, "Movie scene sources").binding,
+      "Movie source binding",
+      ["n_atoms", "n_structures", "fingerprint"]
+    );
+    if (Object.keys(binding).some((key2) => binding[key2] !== source[key2])) {
+      throw new Error("Movie baseline source records do not match its molecular binding.");
+    }
+  }
+  const baseCamera = { time: 0, value: camera(baseline.camera), easing: "linear" };
+  const baseFrame = frame(record2(scene.view, "Movie view").structure_index, count3);
+  const rows = sceneVisibility(scene);
+  const trackTags = /* @__PURE__ */ new Set();
+  const visTracks = /* @__PURE__ */ new Map();
+  let poseTrack = [];
+  let frameTrack = [];
+  if (!Array.isArray(recipe.tracks)) throw new Error("Movie tracks must be an ordered list.");
+  for (const value2 of recipe.tracks) {
+    const track = record2(value2, "Movie track", ["tag", "target", "property", "keys"]);
+    const name = tag(track.tag);
+    if (trackTags.has(name)) throw new Error("Movie track tags must be unique.");
+    trackTags.add(name);
+    const target = record2(track.target, "Movie target");
+    const domain = target.domain;
+    if (typeof domain !== "string" || Object.keys(target).some((field2) => field2 !== "domain" && field2 !== "tag")) {
+      throw new Error("Movie targets require a domain and optionally a tag.");
+    }
+    const untagged = domain === "camera" || domain === "structure" || domain === "whole";
+    if (untagged && target.tag != null) throw new Error(`Movie target ${domain} has no tag.`);
+    if (domain === "camera" && track.property === "pose") {
+      if (poseTrack.length) throw new Error("Movie permits only one track per target property.");
+      poseTrack = keys2(track.keys, duration, camera, true);
+    } else if (domain === "structure" && track.property === "index") {
+      if (frameTrack.length) throw new Error("Movie permits only one track per target property.");
+      frameTrack = keys2(track.keys, duration, (value3) => frame(value3, count3));
+    } else if (track.property === "visible" && domain !== "camera" && domain !== "structure") {
+      const id = visibilityId(domain, untagged ? null : tag(target.tag));
+      if (!rows.has(id)) throw new Error(`Unknown Movie visibility target ${id}.`);
+      if (visTracks.has(id)) throw new Error("Movie permits only one track per target property.");
+      visTracks.set(id, keys2(track.keys, duration, visibility));
+    } else {
+      throw new Error(`Unsupported Movie property for ${domain}.`);
+    }
+  }
+  const visibilityRows = trackedVisibility ? Array.from(rows).filter(([id]) => visTracks.has(id)) : Array.from(rows);
+  return {
+    duration_ms: duration,
+    evaluate(time_ms) {
+      const at = time(time_ms, duration);
+      const right = upperBound(poseTrack, at);
+      const start4 = poseTrack[right - 1] ?? baseCamera;
+      const end4 = poseTrack[right];
+      const pose = !end4 || start4.time === at ? {
+        position: Vec3.clone(start4.value.pose.position),
+        target: Vec3.clone(start4.value.pose.target),
+        up: Vec3.clone(start4.value.pose.up)
+      } : interpolateCamera(start4.value, end4.value, ease((at - start4.time) / (end4.time - start4.time), start4.easing));
+      return {
+        time_ms: at,
+        camera: pose,
+        structure_index: frameTrack[upperBound(frameTrack, at) - 1]?.value ?? baseFrame,
+        visibility: visibilityRows.map(([id, row3]) => {
+          const track = visTracks.get(id);
+          return { ...row3, visible: (track && track[upperBound(track, at) - 1]?.value) ?? row3.visible };
+        })
+      };
+    }
+  };
+}
+
+// src/managers/movie-preview-clock.ts
+var MoviePreviewClock = class {
+  prepare(request, now2 = performance.now()) {
+    if (!request || typeof request.id !== "string" || !request.id) throw new Error("Invalid Movie preview ID.");
+    if (request.recipe !== void 0) {
+      if (this.current?.id === request.id) throw new Error("Movie preview was already started.");
+      const timeline = compileMovieTimeline(request.recipe, { trackedVisibility: true });
+      const start4 = request.start_time_ms;
+      if (typeof start4 !== "number" || !Number.isFinite(start4) || start4 < 0 || start4 > timeline.duration_ms || typeof request.loop !== "boolean") {
+        throw new Error("Invalid Movie preview start.");
+      }
+      this.current = { id: request.id, timeline, origin: now2, start: start4, loop: request.loop };
+    }
+    const clock = this.current;
+    if (clock?.id !== request.id) throw new Error("Movie preview is no longer current.");
+    return (drawnAt = performance.now()) => {
+      if (clock !== this.current) throw new Error("Movie preview was replaced before its draw.");
+      const duration = clock.timeline.duration_ms;
+      const elapsed = clock.start + Math.max(0, drawnAt - clock.origin);
+      const at = clock.loop ? elapsed % duration : Math.min(elapsed, duration);
+      return clock.timeline.evaluate(at);
+    };
+  }
+  release(id) {
+    if (id === void 0 || this.current?.id === id) this.current = void 0;
+  }
+};
+
 // src/managers/canvas-draw.ts
 async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal, ready) {
   return new Promise((resolve, reject) => {
@@ -167982,6 +168257,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.addonListeners = /* @__PURE__ */ new Map();
     this.layoutChangeListeners = [];
     this.interactionSummaries = [];
+    this.moviePreviewClock = new MoviePreviewClock();
     // Loaded structure bundle
     this.currentActiveSelection = null;
     this.contextHistoryState = { canUndo: false, canRedo: false };
@@ -169134,6 +169410,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   dispose() {
     this.disposed = true;
+    this.moviePreviewClock.release();
     this.trajectory?.dispose();
     this.boxDisplay?.dispose();
     this.cancelInitialFraming();
@@ -170367,7 +170644,8 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "stop_movie":
-          await this.movie.stop();
+          if (msg.movie_preview_id) this.moviePreviewClock.release(msg.movie_preview_id);
+          else await this.movie.stop();
           break;
         case "set_addon_runtime_summary": {
           const prevWorkspaceIds = this.addonRuntimeInitialized ? new Set(this.getWorkspaceOptions().map((item2) => item2.id)) : null;
@@ -172110,10 +172388,17 @@ async function handleFrontendRequest(controller, message, send, capture) {
       if (message.capture_version === 2) {
         if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
         controller.prepareMovingVisualCapture?.();
+        const nextMovieSample = message.movie_preview === void 0 ? void 0 : controller.moviePreviewClock?.prepare(message.movie_preview);
+        if (message.movie_preview !== void 0 && !nextMovieSample) {
+          throw new Error("Movie preview is unavailable on this renderer.");
+        }
         let sample;
         const captured = await readCanvasDraw(
           canvas,
-          () => sample,
+          () => ({
+            ...sample,
+            ...nextMovieSample ? { movie_next_sample: nextMovieSample() } : {}
+          }),
           Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3,
           capture?.signal,
           () => !!(sample = controller.readMovingVisualState())
@@ -175777,7 +176062,7 @@ var RemoteWorkbench = class {
       case "set_whole_summary":
         this.wholeSummary = {
           ...msg,
-          params: record2(msg.params),
+          params: record3(msg.params),
           visible: msg.visible !== false,
           available_attributes: strings(msg.available_attributes),
           color_schemes: strings(msg.color_schemes),
@@ -175813,8 +176098,8 @@ var RemoteWorkbench = class {
         this.refreshObjects();
         return;
       case "set_measurement_settings": {
-        const source = record2(msg.options ?? msg);
-        const atoms2 = record2(source.representative_atoms);
+        const source = record3(msg.options ?? msg);
+        const atoms2 = record3(source.representative_atoms);
         this.measurementSettings = {
           ...this.measurementSettings,
           endpointPolicyDefault: typeof source.endpoint_policy_default === "string" ? source.endpoint_policy_default : this.measurementSettings.endpointPolicyDefault,
@@ -176025,7 +176310,7 @@ var REMOTE_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
   "open_navigate"
 ]);
 function contextTarget(value) {
-  const item2 = record2(value);
+  const item2 = record3(value);
   if (!["empty", "structure", "shape", "measurement", "annotation"].includes(String(item2.kind))) return null;
   if (item2.event !== "interaction_context_menu") return null;
   return item2;
@@ -176049,7 +176334,7 @@ function strings(value) {
 function stringsToNumbers(value) {
   return Array.isArray(value) ? value.filter((item2) => typeof item2 === "number" && Number.isFinite(item2)) : [];
 }
-function record2(value) {
+function record3(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 function numberOr(value, fallback) {
@@ -176081,8 +176366,8 @@ function mapAnnotation(item2) {
     nAtoms: numberOr(item2.n_atoms, 0),
     atomIndices: stringsToNumbers(item2.atom_indices),
     hidden: !!item2.hidden,
-    style: record2(item2.style),
-    anchor: record2(item2.anchor),
+    style: record3(item2.style),
+    anchor: record3(item2.anchor),
     broken: !!item2.broken,
     brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
   };
@@ -176917,252 +177202,6 @@ async function bootRemoteRenderedClient(options) {
   };
 }
 
-// src/managers/movie-timeline.ts
-var halfTurnTolerance = 1e-12;
-var collections = {
-  annotation: "annotations",
-  interaction: "interactions",
-  layer: "layers",
-  measurement: "measurements",
-  region: "regions",
-  shape: "shapes"
-};
-function record3(value, label2, fields) {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`${label2} must be an object.`);
-  }
-  if (fields && (Object.keys(value).length !== fields.length || fields.some((field2) => !owns(value, field2)))) {
-    throw new Error(`${label2} must contain ${fields.join(", ")}.`);
-  }
-  return value;
-}
-function owns(value, field2) {
-  return Object.prototype.hasOwnProperty.call(value, field2);
-}
-function tag(value) {
-  if (typeof value !== "string" || !value.trim()) throw new Error("Movie tags must be nonempty.");
-  return value;
-}
-function time(value, maximum = Number.MAX_SAFE_INTEGER) {
-  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > maximum) {
-    throw new Error(`Movie time must be between 0 and ${maximum} ms.`);
-  }
-  return value;
-}
-function frame(value, count3) {
-  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= count3) {
-    throw new Error(`Movie structure index must be an integer in [0, ${count3}).`);
-  }
-  return value;
-}
-function visibility(value) {
-  if (typeof value !== "boolean") throw new Error("Movie visibility must be boolean.");
-  return value;
-}
-function vector(value) {
-  if (!Array.isArray(value) || value.length !== 3 || !Array.from(value).every((component) => typeof component === "number" && Number.isFinite(component))) {
-    throw new Error("Movie camera vectors must have three finite components.");
-  }
-  return Vec3.create(value[0], value[1], value[2]);
-}
-function camera(value) {
-  const pose = record3(value, "Movie camera pose");
-  const position = vector(pose.position);
-  const target = vector(pose.target);
-  const up3 = vector(pose.up);
-  const backward = Vec3.sub(Vec3(), position, target);
-  const distance2 = Math.hypot(...backward);
-  const upLength = Math.hypot(...up3);
-  if (!(distance2 > 0) || !(upLength > 0) || !Number.isFinite(distance2) || !Number.isFinite(upLength)) {
-    throw new Error("Movie camera requires a positive finite distance and a nonzero up vector.");
-  }
-  Vec3.set(backward, backward[0] / distance2, backward[1] / distance2, backward[2] / distance2);
-  Vec3.set(up3, up3[0] / upLength, up3[1] / upLength, up3[2] / upLength);
-  const right = Vec3.cross(Vec3(), up3, backward);
-  const rightLength = Math.hypot(...right);
-  if (rightLength < 1e-12) throw new Error("Movie camera up must not be parallel to its viewing direction.");
-  Vec3.scale(right, right, 1 / rightLength);
-  Vec3.cross(up3, backward, right);
-  const orientation = Quat.fromMat3(Quat(), Mat3.fromColumns(Mat3(), right, up3, backward));
-  return { pose: { position, target, up: up3 }, distance: distance2, orientation };
-}
-function ease(fraction, easing) {
-  switch (easing) {
-    case "ease-in":
-      return fraction ** 2;
-    case "ease-out":
-      return 1 - (1 - fraction) ** 2;
-    case "ease-in-out":
-      return fraction < 0.5 ? 2 * fraction ** 2 : 1 - 2 * (1 - fraction) ** 2;
-    default:
-      return fraction;
-  }
-}
-function interpolateCamera(left, right, fraction) {
-  const a8 = left.orientation;
-  const b8 = right.orientation;
-  const dot = Quat.dot(a8, b8);
-  const orientation = Quat();
-  const startWeight = 1 - fraction;
-  if (Math.abs(dot) <= halfTurnTolerance) {
-    const sign = (value) => Math.sign(value.find((component) => Math.abs(component) > halfTurnTolerance));
-    const leftWeight = Math.sin(startWeight * Math.PI / 2) * sign(a8);
-    const rightWeight = Math.sin(fraction * Math.PI / 2) * sign(b8);
-    for (let i = 0; i < 4; i++) orientation[i] = leftWeight * a8[i] + rightWeight * b8[i];
-  } else if (Math.abs(dot) > 0.9995) {
-    const endWeight = dot < 0 ? -fraction : fraction;
-    for (let i = 0; i < 4; i++) orientation[i] = startWeight * a8[i] + endWeight * b8[i];
-  } else {
-    Quat.slerp(orientation, a8, b8, fraction);
-  }
-  Quat.normalize(orientation, orientation);
-  const target = Vec3();
-  for (let i = 0; i < 3; i++) target[i] = startWeight * left.pose.target[i] + fraction * right.pose.target[i];
-  const distance2 = startWeight * left.distance + fraction * right.distance;
-  const offset4 = Vec3.transformQuat(Vec3(), Vec3.unitZ, orientation);
-  const position = Vec3.scaleAndAdd(Vec3(), target, offset4, distance2);
-  const up3 = Vec3.transformQuat(Vec3(), Vec3.unitY, orientation);
-  return camera({ position, target, up: up3 }).pose;
-}
-function keys2(value, duration, read, cameraTrack = false) {
-  if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
-  const result2 = [];
-  for (const item2 of value) {
-    const key2 = record3(item2, "Movie key");
-    if (Object.keys(key2).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
-      throw new Error("Movie keys accept time_ms, value and optional easing.");
-    }
-    const at = time(key2.time_ms, duration);
-    if (result2.length && at <= result2[result2.length - 1].time) {
-      throw new Error("Movie keys in one track must be strictly increasing.");
-    }
-    const easing = owns(key2, "easing") ? key2.easing : "linear";
-    if (easing !== "linear" && (!cameraTrack || easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out")) {
-      throw new Error("Only camera pose keys admit a non-linear easing.");
-    }
-    result2.push({ time: at, value: read(key2.value), easing });
-  }
-  return result2;
-}
-function upperBound(keys3, at) {
-  let low = 0;
-  let high = keys3.length;
-  while (low < high) {
-    const middle = low + Math.floor((high - low) / 2);
-    if (keys3[middle].time <= at) low = middle + 1;
-    else high = middle;
-  }
-  return low;
-}
-function visibilityId(domain, name) {
-  return JSON.stringify([domain, name]);
-}
-function sceneVisibility(scene) {
-  const whole = { domain: "whole", tag: null, visible: visibility(record3(scene.whole, "Movie whole").visible) };
-  const rows = /* @__PURE__ */ new Map([[visibilityId("whole", null), whole]]);
-  for (const domain of Object.keys(collections)) {
-    const name = collections[domain];
-    const items = owns(scene, name) ? scene[name] : [];
-    if (!Array.isArray(items)) throw new Error(`Movie scene ${name} must be a list.`);
-    for (const value of items) {
-      const item2 = record3(value, `Movie ${domain}`);
-      const name2 = tag(item2.tag);
-      const id = visibilityId(domain, name2);
-      if (rows.has(id)) throw new Error(`Ambiguous Movie target ${id}.`);
-      rows.set(id, { domain, tag: name2, visible: !visibility(owns(item2, "hidden") ? item2.hidden : false) });
-    }
-  }
-  return rows;
-}
-function compileMovieTimeline(value) {
-  const recipe = record3(value, "Movie recipe", ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"]);
-  if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
-  const duration = time(recipe.duration_ms);
-  if (duration === 0) throw new Error("Movie duration must be positive.");
-  const units = record3(recipe.units, "Movie units", ["time", "camera_length"]);
-  if (units.time !== "ms" || units.camera_length !== "angstrom") {
-    throw new Error("Movie recipes use milliseconds and angstroms.");
-  }
-  const baseline = record3(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
-  const binding = record3(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
-  const count3 = binding.n_structures;
-  if (typeof count3 !== "number" || !Number.isSafeInteger(count3) || count3 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
-    throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
-  }
-  const scene = record3(baseline.scene, "Movie scene");
-  if (scene.version !== 2 || owns(scene, "movie")) {
-    throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
-  }
-  if (scene.sources != null) {
-    const source = record3(
-      record3(scene.sources, "Movie scene sources").binding,
-      "Movie source binding",
-      ["n_atoms", "n_structures", "fingerprint"]
-    );
-    if (Object.keys(binding).some((key2) => binding[key2] !== source[key2])) {
-      throw new Error("Movie baseline source records do not match its molecular binding.");
-    }
-  }
-  const baseCamera = { time: 0, value: camera(baseline.camera), easing: "linear" };
-  const baseFrame = frame(record3(scene.view, "Movie view").structure_index, count3);
-  const rows = sceneVisibility(scene);
-  const trackTags = /* @__PURE__ */ new Set();
-  const visTracks = /* @__PURE__ */ new Map();
-  let poseTrack = [];
-  let frameTrack = [];
-  if (!Array.isArray(recipe.tracks)) throw new Error("Movie tracks must be an ordered list.");
-  for (const value2 of recipe.tracks) {
-    const track = record3(value2, "Movie track", ["tag", "target", "property", "keys"]);
-    const name = tag(track.tag);
-    if (trackTags.has(name)) throw new Error("Movie track tags must be unique.");
-    trackTags.add(name);
-    const target = record3(track.target, "Movie target");
-    const domain = target.domain;
-    if (typeof domain !== "string" || Object.keys(target).some((field2) => field2 !== "domain" && field2 !== "tag")) {
-      throw new Error("Movie targets require a domain and optionally a tag.");
-    }
-    const untagged = domain === "camera" || domain === "structure" || domain === "whole";
-    if (untagged && target.tag != null) throw new Error(`Movie target ${domain} has no tag.`);
-    if (domain === "camera" && track.property === "pose") {
-      if (poseTrack.length) throw new Error("Movie permits only one track per target property.");
-      poseTrack = keys2(track.keys, duration, camera, true);
-    } else if (domain === "structure" && track.property === "index") {
-      if (frameTrack.length) throw new Error("Movie permits only one track per target property.");
-      frameTrack = keys2(track.keys, duration, (value3) => frame(value3, count3));
-    } else if (track.property === "visible" && domain !== "camera" && domain !== "structure") {
-      const id = visibilityId(domain, untagged ? null : tag(target.tag));
-      if (!rows.has(id)) throw new Error(`Unknown Movie visibility target ${id}.`);
-      if (visTracks.has(id)) throw new Error("Movie permits only one track per target property.");
-      visTracks.set(id, keys2(track.keys, duration, visibility));
-    } else {
-      throw new Error(`Unsupported Movie property for ${domain}.`);
-    }
-  }
-  return {
-    duration_ms: duration,
-    evaluate(time_ms) {
-      const at = time(time_ms, duration);
-      const right = upperBound(poseTrack, at);
-      const start4 = poseTrack[right - 1] ?? baseCamera;
-      const end4 = poseTrack[right];
-      const pose = !end4 || start4.time === at ? {
-        position: Vec3.clone(start4.value.pose.position),
-        target: Vec3.clone(start4.value.pose.target),
-        up: Vec3.clone(start4.value.pose.up)
-      } : interpolateCamera(start4.value, end4.value, ease((at - start4.time) / (end4.time - start4.time), start4.easing));
-      return {
-        time_ms: at,
-        camera: pose,
-        structure_index: frameTrack[upperBound(frameTrack, at) - 1]?.value ?? baseFrame,
-        visibility: Array.from(rows, ([id, row3]) => {
-          const track = visTracks.get(id);
-          return { ...row3, visible: (track && track[upperBound(track, at) - 1]?.value) ?? row3.visible };
-        })
-      };
-    }
-  };
-}
-
 // src/index.ts
 function buildMeasurementOpFromInteractionEvent(event) {
   if (!event || event.event !== "interaction_measurement_created") return null;
@@ -177638,7 +177677,11 @@ async function bootDocsView(opts) {
     const canvas = controller.plugin.canvas3d;
     if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
     await waitForCanvasDraw(canvas);
-    notifyHost({ event: "ready", capabilities: { array_native_molsys_ref: [1], visual_state_capture: [1, 2] } });
+    notifyHost({ event: "ready", capabilities: {
+      array_native_molsys_ref: [1],
+      visual_state_capture: [1, 2],
+      movie_preview: [1]
+    } });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);
     const message = err instanceof Error ? err.message : String(err);
@@ -178349,7 +178392,8 @@ function render({ model, el, runtimeSource }) {
           binary_structure_data: binaryStructureData,
           max_buffer_bytes: 16 * 1024 * 1024,
           transferable_array_buffer: false,
-          visual_state_capture: [1, 2]
+          visual_state_capture: [1, 2],
+          movie_preview: [1]
         }
       });
     } catch (err) {

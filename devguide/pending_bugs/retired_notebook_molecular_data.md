@@ -105,6 +105,13 @@ The retained host's child nodes are therefore insufficient to explain the
 observation. The probes do not establish the direction of ownership between
 the surviving host element, model proxy and controller.
 
+The native-model registry probe `307` confirms that the retired model is
+closed, has no comm or registered views, and is absent from both Jupyter
+manager indexes. Its settled `state_change` still resolves to the old widget
+view. Replacing that settled promise only in the closed test model leaves the
+62-atom controller observable in both collection samples. Neither manager
+registration nor that retained promise alone explains the remaining lifetime.
+
 Trace the model and renderer owner references that survive disposal with the
 reduced Jupyter probe. If
 MolSysViewer owns the lifetime, release the retained payload and verify

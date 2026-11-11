@@ -1849,6 +1849,192 @@
           }
         ]
       }
+    },
+    "307": {
+      "native_exit": 0,
+      "seconds": 39.68958419794217,
+      "selected_inputs": 10962,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2316.2,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "source_base": "394f5a38a5f26fd1119922834d30d06b07f21ca9",
+      "provider_source": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+      "private_profile": "probe-307-jupyter-widget-registry",
+      "observation": "The closed native WidgetModel has no comm or registered views and is absent from both Jupyter manager indexes. Replacing its settled state_change promise does not release the retired controller.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "4a9368005ea21c3095ccdadd41a8e99482856f22af272feeeaebd1ef1181cd6c",
+      "diagnostic": {
+        "registry": [
+          {
+            "model": true,
+            "registeredAsync": true,
+            "registeredSync": true,
+            "closed": false,
+            "hasComm": true,
+            "viewCount": 1,
+            "stateChangeOwnsElement": true
+          },
+          {
+            "model": true,
+            "registeredAsync": false,
+            "registeredSync": false,
+            "closed": true,
+            "hasComm": false,
+            "viewCount": 0,
+            "stateChangeOwnsElement": true
+          }
+        ],
+        "releasedViewResult": true,
+        "afterModelQueue": [
+          [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ],
+          [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 22
+            },
+            {
+              "disposed": true,
+              "connected": false,
+              "atoms": 62
+            }
+          ]
+        ],
+        "ownership": [
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          },
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          },
+          {
+            "aborted": [
+              1
+            ],
+            "targets": [
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": true,
+                "cleanup": true
+              },
+              {
+                "element": true,
+                "modelProxy": true,
+                "signal": false,
+                "cleanup": false
+              }
+            ],
+            "controllers": [
+              true,
+              true
+            ]
+          }
+        ],
+        "array_loads": [
+          {
+            "atoms": 22,
+            "structures": 1
+          },
+          {
+            "atoms": 62,
+            "structures": 1
+          }
+        ],
+        "scope": "Two small bundled single-structure views in actual Jupyter; no popups, no playback, no retained DOM handle",
+        "before": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 62
+          }
+        ],
+        "closed": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ],
+        "after": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 22
+          },
+          {
+            "disposed": true,
+            "connected": false,
+            "atoms": 62
+          }
+        ]
+      }
     }
   },
   "private_custody_checkpoint_after_diagnostics": {
@@ -1917,6 +2103,15 @@
     "files_verified": 70,
     "bytes_verified": 22304514,
     "manifest_sha256": "824f5bdedba135dc29d8f8b2fd0ea4f99b317c90010d5394af5e227ff5e4fd4c",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "private_custody_checkpoint_preview_and_registry": {
+    "number": 20,
+    "files_verified": 68,
+    "bytes_verified": 18636728,
+    "manifest_sha256": "d808163ca9fc8a2d6a87db64542bfd122f67b9ef92aa1e20e346896468cbba5b",
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false

@@ -147,6 +147,8 @@ view.movie.remove_track(tag)
 view.movie.validate()                      # raises if binding or targets are invalid
 view.movie.evaluate(time_ms)               # detached desired state
 await view.movie.seek_async(time_ms, timeout=5.0)
+await view.movie.play_async(loop=False, start_time_ms=0.0, timeout=5.0)
+await view.movie.pause_async()
 view.movie.to_dict()
 view.movie.from_dict(recipe)
 ```
@@ -156,8 +158,6 @@ playback, explicit target mapping and rendering acknowledgments. Proposed calls:
 
 ```python
 await view.movie.capture_baseline_async(...)
-view.movie.play(...)
-await view.movie.stop_async(...)            # drain pending writes, freeze pose
 await view.movie.reset_async(...)           # restore baseline and time zero
 view.movie.from_dict(recipe, target_map=...)
 ```
@@ -180,6 +180,19 @@ the camera and structure after frame projections and draw are current. The
 reply must match the pose and stopped structure. Cancellation or timeout
 retires the request and can leave already accepted changes on screen. A changed
 recipe, scene or navigation intent invalidates the acknowledgment.
+
+Version-2 preview uses a single primary-renderer clock. The first draw request
+passes a compact evaluator recipe containing the tracks and the baseline values
+needed by them. Every response acknowledges the actual draw and proposes the
+next sample at the renderer's monotonic time. The Python owner checks the
+proposal against its recipe and issues the next sample through ordinary scene
+commands. There is one outstanding draw. Popups receive scene projections
+from that clock. Samples with unchanged visibility avoid overlay snapshots,
+and the recipe never carries trajectory coordinates. Preview may skip times
+under load and always applies the terminal sample on normal non-looping
+completion. Pause drains the pending draw and returns its sample. Seeking
+drains preview before starting a distinct request. A session saved after pause
+restores the visible scene and the recipe.
 
 One execution owner arbitrates Movie, trajectory playback and camera spin/rock.
 Starting Movie explicitly pauses competing motion. Each application has a

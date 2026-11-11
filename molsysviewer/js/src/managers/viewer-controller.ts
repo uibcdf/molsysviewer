@@ -36,6 +36,7 @@ import { SceneHandlers } from "./handlers/scene-handlers";
 import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { MovieHandlers } from "./handlers/movie-handlers";
+import { MoviePreviewClock } from "./movie-preview-clock";
 import { waitForCanvasDraw } from "./canvas-draw";
 import type { MovingVisualSnapshot } from "../messages/visual-state-snapshot";
 import type { CameraIntentApplication } from "./camera-sync";
@@ -885,6 +886,7 @@ export class MolSysViewerController {
     public readonly state: StateHandlers;
     public readonly trajectory: TrajectoryHandlers;
     public readonly movie: MovieHandlers;
+    public readonly moviePreviewClock = new MoviePreviewClock();
 
     private currentStructure?: StateObjectRef; // Ref to structure root
     private loadedStructure?: LoadedStructure; // Loaded structure bundle
@@ -1902,6 +1904,7 @@ export class MolSysViewerController {
 
     dispose(): void {
         this.disposed = true;
+        this.moviePreviewClock.release();
         this.trajectory?.dispose();
         this.boxDisplay?.dispose();
         this.cancelInitialFraming();
@@ -3116,7 +3119,10 @@ export class MolSysViewerController {
                     }
                     break;
                 }
-                case "stop_movie": await this.movie.stop(); break;
+                case "stop_movie":
+                    if (msg.movie_preview_id) this.moviePreviewClock.release(msg.movie_preview_id);
+                    else await this.movie.stop();
+                    break;
                 case "set_addon_runtime_summary": {
                     const prevWorkspaceIds = this.addonRuntimeInitialized
                         ? new Set(this.getWorkspaceOptions().map((item) => item.id))

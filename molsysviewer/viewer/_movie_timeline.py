@@ -269,6 +269,11 @@ def _duration(value):
     return duration
 
 
+def _tracked_visibility(tracks, visibility):
+    targets = {(domain, tag) for domain, tag, prop in map(_channel, tracks) if prop == "visible"}
+    return {key: row for key, row in visibility.items() if key in targets}
+
+
 class _MovieTimeline:
     """Store validated, detached data and replace it only after a complete check."""
 
@@ -314,9 +319,23 @@ class _MovieTimeline:
         }
         self._index = index
         self._visibility = visibility
+        self._tracked_visibility = _tracked_visibility(self._data["tracks"], visibility)
 
     def to_dict(self):
         return deepcopy(self._data)
+
+    def preview_recipe(self):
+        """Send the clock only the baseline fields it needs to evaluate tracks."""
+        scene = {
+            "version": 2,
+            "view": {"structure_index": self._index},
+            "whole": {"visible": self._visibility["whole", None][0]},
+        }
+        for (domain, tag), (visible, _) in self._tracked_visibility.items():
+            if domain != "whole":
+                scene.setdefault(_VISIBILITY_DOMAINS[domain], []).append({"tag": tag, "hidden": not visible})
+        baseline = {**self._data["baseline"], "scene": scene}
+        return deepcopy({**self._data, "baseline": baseline})
 
     def edit(self, *, duration, tracks):
         """Keep the privately owned baseline and replace validated tracks as a unit."""
@@ -324,6 +343,7 @@ class _MovieTimeline:
         tracks = _tracks(tracks, self._visibility, self._data["baseline"]["binding"]["n_structures"], duration)
         revised = copy(self)
         revised._data = {**self._data, "duration_ms": duration, "tracks": tracks}
+        revised._tracked_visibility = _tracked_visibility(tracks, self._visibility)
         return revised
 
     def track_records(self):
@@ -338,11 +358,7 @@ class _MovieTimeline:
         return len(self._data["tracks"])
 
     def visibility_targets(self):
-        return {
-            (domain, tag)
-            for domain, tag, prop in map(_channel, self._data["tracks"])
-            if prop == "visible"
-        }
+        return tuple(self._tracked_visibility)
 
     def check_binding(self, binding, scene=None):
         if self._data["baseline"]["binding"] != binding:
@@ -361,11 +377,12 @@ class _MovieTimeline:
                 if key not in current or current[key][1] != self._visibility[key][1]:
                     raise ValueError(f"Movie scene target {key!r} is missing or changed.")
 
-    def evaluate(self, time_ms):
+    def evaluate(self, time_ms, *, tracked_visibility=False):
         time = _time(time_ms, "Movie time", self.duration_ms)
         camera = self._data["baseline"]["camera"]
         index = self._index
-        visibility = {key: row[0] for key, row in self._visibility.items()}
+        targets = self._tracked_visibility if tracked_visibility else self._visibility
+        visibility = {key: row[0] for key, row in targets.items()}
         for track in self._data["tracks"]:
             domain, tag, prop = _channel(track)
             keys = track["keys"]

@@ -219,5 +219,28 @@ The seek pauses running motion, applies the camera and structure, and changes
 visibility on targets with a visibility track. It returns the sample after the
 primary canvas confirms a completed draw with the requested camera and structure.
 The timeout is in seconds. If the wait is interrupted, scene commands already
-accepted can remain visible. Continuous playback and media export use the
-version-1 keyframes described above.
+accepted can remain visible.
+
+### Play and pause
+
+For a single run, use `await view.movie.play_async()`. It returns the final
+drawn sample. For a loop you can pause from another notebook cell:
+
+```python
+import asyncio
+
+preview = asyncio.create_task(view.movie.play_async(loop=True))
+```
+
+```python
+paused = await view.movie.pause_async()
+await preview
+await view.save_session_async("paused.msv")
+```
+
+The primary canvas chooses the next preview time after each completed draw.
+Complex frames may skip intermediate samples during playback. Pause waits for
+the in-flight sample. You can resume with `start_time_ms=paused["time_ms"]` or
+jump to another time with `seek_async()`. The session stores the visible camera,
+structure and scene with the recipe. Media export currently uses version-1
+keyframes.
