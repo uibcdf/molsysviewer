@@ -155,16 +155,33 @@ lifecycle. MolSysViewer owns the mount/scene/draw observations. MolSysMT owns th
 Analysis runner and the kernel/server observations. A causal repair or an
 evidenced environment-specific disposition is still required to close #615.
 
+The browser contribution is [draft PR #707](https://github.com/uibcdf/molsysmt/pull/707)
+at `cdcb8ed7c`. The real Analysis initialization step (`283`) observed the
+3,983-atom scene at 5.17 s and a new Mol* draw at 6.68 s after the Run anchor.
+The canvas belonged to the initial cell and was connected when sampled. The
+initial observer attempt (`282`) missed the mount because it required the
+AnyWidget output to already be attached to the cell. The revised observer
+records mount start and verifies cell correspondence after attachment. A
+separate Chromium control (`284`) distinguishes unarmed, armed timeout with
+the browser open, and unavailable browser states. The joint capture with
+MolSysMT's kernel/server observation remains to be run.
+
 ## MolSysMT #705 server preparation
 
-[Draft PR #706](https://github.com/uibcdf/molsysmt/pull/706) at
-`66273e4d3ad722726336055b4bf38dc76761e35e` retains the 20-second default and
-accepts a finite explicit `--server-ready-timeout` greater than zero and at
-most 300 seconds. The 25 CLI/runtime-file tests in probe `256` pass, with the
-readiness implementation retained at the stated PR head. The actual
-same-kernel campaign `265` reaches authenticated server readiness in 9.56 s
-with a 90-second configured budget. The earlier `248` timeout at 20.04 s
-and all scope distinctions are in the
+[PR #706](https://github.com/uibcdf/molsysmt/pull/706) is ready for MolSysMT
+review against `main` at `af1e735232e21f4324234ff9ef11daf9a920a8ff`. The 20-second
+default and explicit finite budgets up to 300 seconds are retained. Requests
+and retry sleeps use the remaining time. A 200 response at or after the
+deadline cannot dispatch the browser. The optional prolonged profile rejects
+requested playback that alone consumes the 2,400-second browser budget before
+creating output. The current combined launcher passes 44 focused cases
+(`288`), including the owner session diagnostics and the adverse deadlines.
+Real isolated servers reach authenticated readiness in 3.02 s with the
+default budget and 3.01 s with the selected 90 seconds. This server check
+records browser dispatch and retires the server without executing the browser.
+
+The original 25-case review, the earlier `248` timeout at 20.04 s and the
+partial same-kernel campaign `265` retain their original sources in the
 [receiving receipt](prolonged_scientific_session_receiving_20261110.json).
 The 30-second first-canvas wait under #615 and the scientific deadlines retain
 their own contracts. PR review belongs to MolSysMT.

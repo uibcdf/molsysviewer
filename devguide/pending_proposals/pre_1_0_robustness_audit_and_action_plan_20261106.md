@@ -573,7 +573,9 @@ plan plus #705 evidence.
    Retain delivered C3 host services; continue D5.4/#615 initialization and
    C4/Viewer #305 with causal or bounded evidenced dispositions, retaining
    original failed runs and unchanged deadlines.
-3. Leave new receiver PR #706 review/integration to MolSysMT; #702 is owner-merged and #696/#699 are verified
+3. Receive MolSysMT's review of PR #706 against main after its corrected
+   readiness and playback-deadline checks, and of #707 for the browser side
+   of the joint #615 capture. #702 is owner-merged and #696/#699 are verified
    ancestors of public owner main. Receive changed combined-head gates in one agreed batch,
    without a new hosted matrix or CI run for every incremental commit.
 4. Retain the completed scale anchors and fifteen correct same-kernel cycles.

@@ -61,6 +61,15 @@ The full trajectory is therefore not necessary to reproduce the observation.
 The probe exits normally in 48.00 s at 2 CPUs / 4 GiB without swap or resource
 stop; all 20 owned processes retire and 10,904 selected inputs stay unchanged.
 
+The direct host control `285` creates the same 22- and 62-atom systems from
+their single-structure JSON payloads with actual Mol* draws and no widget.
+After disposal and DOM detachment, both separate GC samples report that the
+retired controller is unreachable and the independent witness is connected.
+The 18.10 s probe uses 2 CPUs / 4 GiB, retires all 13 owned processes and
+preserves all 10,910 inputs. This control differs from Jupyter in both host
+ownership and input transport. It narrows the next comparison to those
+boundaries. Compare the same transport across hosts before assigning a cause.
+
 The bounded heap capture `275` loses the browser target in the same workflow.
 Its private partial stream reaches the 128 MiB recording cap; it is not
 a valid heap snapshot and proves no retaining path. The supervisor retires all

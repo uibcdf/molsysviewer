@@ -1260,6 +1260,50 @@
           }
         ]
       }
+    },
+    "285": {
+      "native_exit": 0,
+      "seconds": 18.1036856721621,
+      "selected_inputs": 10910,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1873.2,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "private_profile": "probe-285-direct-controller-lifetime",
+      "observation": "Direct controller/JSON control retires its single-structure controller after two collection samples. The retained Jupyter cases differ in host and transport.",
+      "accepted_as_30_cycle_receiving": false,
+      "diagnostic_sha256": "688b99a1b0a1fdab34614bb934eaa960652eff1cb1602f416f2e321dd07ea7ce",
+      "diagnostic": {
+        "scope": "Direct MolSysViewer controllers, single-frame bundled dialanine and pentalanine, actual Mol* draws, no AnyWidget/Jupyter.",
+        "before": [
+          22,
+          62
+        ],
+        "retired": {
+          "disposed": true,
+          "connected": false
+        },
+        "after": [
+          {
+            "retired": null,
+            "witness": {
+              "connected": true,
+              "atoms": 22
+            }
+          },
+          {
+            "retired": null,
+            "witness": {
+              "connected": true,
+              "atoms": 22
+            }
+          }
+        ]
+      }
     }
   },
   "private_custody_checkpoint_after_diagnostics": {
@@ -1276,6 +1320,40 @@
     "files_verified": 90,
     "bytes_verified": 153446088,
     "manifest_sha256": "8d5c0913c36c33d2917ea38cbace01fd8aea175b017d8b7b15dc30de2ae14f47",
+    "original_diagnostics_retained": true,
+    "unused_owned_credentials_hash_retired": true,
+    "off_host_backup_claimed": false
+  },
+  "owner_contribution_revision": {
+    "public_pr_head": "af1e735232e21f4324234ff9ef11daf9a920a8ff",
+    "tested_head": "68cfbf40640d28f55a96acce49bd835e9ed5f121",
+    "tested_to_public_change": "Trailing whitespace only in the browser driver; Node syntax checked.",
+    "owner_base": "078e322fc5305836452fba31a632fb1176e36b68",
+    "viewer_source": "f09757122a91dbbf32846738890a96623c2353e2",
+    "focused_passed": 44,
+    "native_exit": 0,
+    "private_profile": "probe-288-pr706-combined-main",
+    "junit_sha256": "28e66a4a08ff03d0ee7a953b961c80c4262e21293188675ab1513ad2ebe90070",
+    "observed_real_startups": [
+      {
+        "budget_seconds": 20.0,
+        "ready": true,
+        "elapsed_seconds": 3.0205445089377463
+      },
+      {
+        "budget_seconds": 90.0,
+        "ready": true,
+        "elapsed_seconds": 3.007474394980818
+      }
+    ],
+    "scope": "Real authenticated Jupyter server preparation and retirement, with browser dispatch recorded without browser execution.",
+    "owner_integration_claimed": false
+  },
+  "private_custody_checkpoint_deadline_revision": {
+    "number": 17,
+    "files_verified": 158,
+    "bytes_verified": 49646834,
+    "manifest_sha256": "720f2fca7eb87ee3779ed3577ae044e689443c3f87f92a41c92756f7db74af6a",
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false

@@ -931,7 +931,8 @@ MolSysMT #705. This does not resolve
 #615's different molecular-cell initialization observation.
 The [MolSysMT handoff](molsysmt_pre_1_0_handoff_20261110.md) records MolSysViewer
 feedback on #250/#254, the coordinated 1.0.0 installed pair under #524,
-H5MSM 1.0 consumer cases and the proposed pre-timeout #615 capture.
+H5MSM 1.0 consumer cases, the tested browser-side #615 capture in draft #707,
+and PR #706's tested deadline corrections ready for owner review.
 Continue these, the remaining integration/diagnostic exits, documentation and
 mandatory Movie #320. Human checks and candidate/publication actions stay paused.
 
