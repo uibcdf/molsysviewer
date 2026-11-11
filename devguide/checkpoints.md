@@ -907,6 +907,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [H5MSM default-transition receipt](h5msm_default_receiving_20261111.json)
+receives public-default 1.0 session save/reopen on MolSysMT `aee7aa65`, with
+the unchanged qualified ABI3 backend. The ordinary Viewer writer delegates
+without a format override; named science/scene and stored mechanics survive.
+Retained prior-writer fixtures and the earlier default-0.5 provider remain
+separate controls. #615's owner instrumentation is received in `7b7cbc2f1`;
+the original timeout remains unexplained and active, as the
+[handoff](molsysmt_pre_1_0_handoff_20261110.md) records. These are source scopes;
+the coordinated 1.0 producer/build is not frozen or qualified.
+
 Experimental `review_rebase_async()` observes a coherent primary-canvas
 camera/frame and supported RGB background/ambient/primary-light intensities.
 Explicit acceptance preserves tracks and uses one private per-view ticket;

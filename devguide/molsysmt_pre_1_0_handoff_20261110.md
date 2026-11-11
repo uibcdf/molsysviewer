@@ -110,14 +110,18 @@ the other analysis and untouched coverage remain valid. Explicit
 the already invalidated science before save/reopen. Edits may assign new
 occurrence indices; detached original analyses remain unchanged.
 
-There is one explicit persistence limit: a 1.0 session with stored mechanics
-opens and retains its force-field request, charges and cutoff quantity, but
-the default 0.5 writer rejects saving it. The existing destination survives.
-No mechanics are silently discarded. MolSysViewer currently offers no
-session-level format override; a future provider-default transition must
-receive this path before claiming complete mechanics save/reopen. This source
-receiving supports explicit 1.0 consumption; it neither changes the default
-writer nor qualifies installed artifacts or a public 1.0 release.
+The earlier 8d05bc33 receiving retained an explicit limit: a 1.0 session with
+stored mechanics opened, while the default 0.5 writer refused saving it and
+preserved an existing destination. On MolSysMT
+`aee7aa65da56e896d1cb2d655bf73736f6453a43`, the public default is 1.0. The
+[default-transition receiving](h5msm_default_receiving_20261111.json) now exercises
+ordinary session save/reopen with force-field request, charges and cutoff
+units retained. It also opens the earlier retained 0.5/1.0 fixtures and saves
+them through the new default without changing those inputs. The same guard
+keeps the previous default-0.5 refusal route explicit. MolSysViewer delegates
+the schema default to the provider; no production writer override or scientific
+algorithm changes are needed. This is source receiving, not installed or public
+1.0 qualification.
 
 ## Versions for installed qualification
 
@@ -134,8 +138,9 @@ and [MolSysMT #524](https://github.com/uibcdf/molsysmt/issues/524) record the tw
 
 The maintainer confirmed that **MolSysMT 1.0.0 and MolSysViewer 1.0.0 will be
 released together**. This is the pair for final installed qualification.
-The earlier MolSysViewer 0.25.0 proposal concerns a possible pre-1.0 milestone
-and has no qualified public artifact. The minimum version supporting the
+The earlier MolSysViewer 0.25.0 proposal has no qualified public artifact;
+current coordination defers that intermediate milestone and waits for the final
+1.0.0 pair. No producer/ref/build is selected by this receiving. The minimum version supporting the
 redesigned addon remains to be verified under #524.
 
 When candidate work resumes, agree clean source SHAs and supported capability
@@ -179,7 +184,7 @@ lifecycle. MolSysViewer owns the mount/scene/draw observations. MolSysMT owns th
 Analysis runner and the kernel/server observations. A causal repair or an
 evidenced environment-specific disposition is still required to close #615.
 
-The browser contribution is [draft PR #707](https://github.com/uibcdf/molsysmt/pull/707)
+The browser contribution began as [PR #707](https://github.com/uibcdf/molsysmt/pull/707)
 at `cdcb8ed7c`. The real Analysis initialization step (`283`) observed the
 3,983-atom scene at 5.17 s and a new Mol* draw at 6.68 s after the Run anchor.
 The canvas belonged to the initial cell and was connected when sampled. The
@@ -187,8 +192,21 @@ initial observer attempt (`282`) missed the mount because it required the
 AnyWidget output to already be attached to the cell. The revised observer
 records mount start and verifies cell correspondence after attachment. A
 separate Chromium control (`284`) distinguishes unarmed, armed timeout with
-the browser open, and unavailable browser states. The joint capture with
-MolSysMT's kernel/server observation remains to be run.
+the browser open, and unavailable browser states.
+
+Owner implementation `7ccb00b93` and receiving record `7b7cbc2f1` incorporate
+that browser contribution with the kernel/live-session timeline as the explicit
+`--scenario analysis --initial-canvas-only` path. The published
+[owner evidence](https://github.com/uibcdf/molsysmt/blob/7b7cbc2f1/devtools/data/initial_canvas_diagnostic_receiving_615_20261111.json)
+records 52 Python controls, six Node controls on both Node 22.22.1 and 24.21.0,
+and an actual cold Jupyter pass against the verified MolSysViewer `5164f13b`
+source. The 3,983-atom scene has an eligible new draw 14.30 seconds after the
+observed click, within the unchanged 30-second canvas wait. The cross-process
+epoch discrepancy is retained rather than treated as synchronized causal time.
+This receives the instrumentation. It does not reproduce or explain the original
+timeout, does not receive current Movie source, and does not justify closing
+#615. Its evidenced disposition remains active, with observation ready for the
+next relevant recurrence; no blind rerun or increased canvas wait is requested.
 
 ## MolSysMT #705 server preparation
 

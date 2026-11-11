@@ -5,6 +5,7 @@ synthetic geometry to make parallel records, maps and coverage unambiguous.
 No detector accuracy or browser-rendering claim follows from this fixture.
 """
 
+import inspect
 import zipfile
 from copy import deepcopy
 
@@ -23,6 +24,13 @@ import molsysviewer as msv
 def _schema(path):
     with h5py.File(path, "r") as file:
         return file.attrs["version"]
+
+
+def _default_schema():
+    """The public writer owns its default; Viewer does not pin another schema."""
+    value = inspect.signature(msm.h5msm.write).parameters["format_version"].default
+    assert value in {"0.5", "1.0"}, f"Receive a newly declared H5MSM writer default explicitly: {value!r}"
+    return value
 
 
 def _xyz(system):
@@ -103,9 +111,18 @@ def scientific_session(tmp_path):
         view.save_session(path)
         with zipfile.ZipFile(path) as archive:
             members = {name: archive.read(name) for name in archive.namelist()}
+        # Construct an explicit 0.5 input independently of today's default.
+        # Prior-writer archived inputs have their own retained receiving evidence.
+        default_molecular = tmp_path / "default-input.h5msm"
+        default_molecular.write_bytes(members["structure.h5msm"])
+        assert _schema(default_molecular) == _default_schema()
         molecular = tmp_path / "original-05.h5msm"
-        molecular.write_bytes(members["structure.h5msm"])
+        msm.h5msm.write(view.molsys, molecular, format_version="0.5")
         assert _schema(molecular) == "0.5"
+        members["structure.h5msm"] = molecular.read_bytes()
+        with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            for name, data in members.items():
+                archive.writestr(name, data)
         yield view, path, molecular, members
 
 
@@ -217,13 +234,13 @@ def test_session_schema_preserves_scene_science_and_queries(tmp_path, scientific
         assert restored.camera.get_snapshot() == source.camera.get_snapshot()
         assert restored.player.index == 4
         _assert_queries(restored)
-        # Persistence through the public writer still follows its default 0.5.
+        # Ordinary save follows the public provider's declared default.
         output = tmp_path / "saved-again.msv"
         restored.save_session(output)
         with zipfile.ZipFile(output) as archive:
             embedded = tmp_path / "saved-again.h5msm"
             embedded.write_bytes(archive.read("structure.h5msm"))
-        assert _schema(embedded) == "0.5"
+        assert _schema(embedded) == _default_schema()
         with msv.load_session(output) as again:
             _assert_system(restored.molsys, again.molsys)
             assert again.export_state() == restored.export_state()
@@ -292,7 +309,7 @@ def test_independent_interactions_attach_without_replacing_system(tmp_path, scie
         np.testing.assert_array_equal(_xyz(target.molsys), original_coordinates)
 
 
-def test_mechanics_10_session_reads_and_default_save_refuses_loss(tmp_path, scientific_session):
+def test_mechanics_10_session_default_save_preserves_data_or_refuses_loss(tmp_path, scientific_session):
     source, _, _, members = scientific_session
     molecular = tmp_path / "mechanics-10.h5msm"
     mechanics = source.molsys.molecular_mechanics
@@ -315,6 +332,35 @@ def test_mechanics_10_session_reads_and_default_save_refuses_loss(tmp_path, scie
         output = tmp_path / "keep-existing.msv"
         sentinel = b"existing destination must survive unsupported default schema"
         output.write_bytes(sentinel)
-        with pytest.raises(ValueError, match="molecular mechanics"):
+        if _default_schema() == "0.5":
+            with pytest.raises(ValueError, match="molecular mechanics"):
+                restored.save_session(output)
+            assert output.read_bytes() == sentinel
+        else:
             restored.save_session(output)
-        assert output.read_bytes() == sentinel
+            with zipfile.ZipFile(output) as archive:
+                embedded = tmp_path / "mechanics-default.h5msm"
+                embedded.write_bytes(archive.read("structure.h5msm"))
+            assert _schema(embedded) == "1.0"
+            with msv.load_session(output) as again:
+                _assert_system(restored.molsys, again.molsys)
+                _assert_queries(again)
+                recovered = again.molsys.molecular_mechanics
+                assert recovered.forcefield == mechanics.forcefield
+                np.testing.assert_array_equal(recovered.partial_charge, mechanics.partial_charge)
+                assert str(puw.get_unit(recovered.cutoff_distance)) == "angstrom"
+                assert puw.get_value(recovered.cutoff_distance, to_unit="nm") == pytest.approx(1.2)
+
+
+def test_session_default_schema_roundtrip_is_explicit(tmp_path, scientific_session):
+    source = scientific_session[0]
+    output = tmp_path / "default.msv"
+    source.save_session(output)
+    with zipfile.ZipFile(output) as archive:
+        molecular = tmp_path / "default.h5msm"
+        molecular.write_bytes(archive.read("structure.h5msm"))
+    assert _schema(molecular) == _default_schema()
+    with msv.load_session(output) as restored:
+        _assert_system(source.molsys, restored.molsys)
+        _assert_queries(restored)
+        assert restored.export_state() == source.export_state()

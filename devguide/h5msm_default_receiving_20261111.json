@@ -1,0 +1,220 @@
+{
+  "schema": "molsysviewer.h5msm_default_receiving@1",
+  "date": "2026-11-11",
+  "completed_utc": "2026-11-11T19:59:08.976434+00:00",
+  "status": "source_received",
+  "issues": [
+    "uibcdf/molsysmt#256",
+    "uibcdf/molsysviewer#315"
+  ],
+  "scope": "Independent headless Python source receiving of default H5MSM 1.0 session persistence. Not installed, browser, actual Jupyter, Qt, hosted or release qualification.",
+  "sources": {
+    "molsysviewer_base": "ed1e118212a6d33ec4495544184f26f75ee9c096",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "previous_default_control": "8d05bc33e75327a2c4f55a8c06ed3a132627fb5b",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "rust_source_tree_unchanged": true,
+    "archive_sha256": "2fd898bb24c8cfa9ab8a410ce20e5828599cfc1264c473270fc328e23c8276c5",
+    "guard": "tests/test_session_h5msm_migration.py",
+    "guard_sha256": "d50353d5feccd9155de5f1dae9a210215b85e7355ffa41a804ff38766c44b7f9",
+    "viewer_production_code_changed": false,
+    "human_owner_changes_preserved": true,
+    "viewer_runtime_sha256": "f77b3f06132c271ed97f4d997b40db3ea5cefdf87c66f3251538694d4dd9da51"
+  },
+  "environment": {
+    "python": "3.14.7",
+    "implementation": "CPython",
+    "interpreter_environment": "molsyssuite@uibcdf_3.14",
+    "imported_runtime_versions": {
+      "molsysmt": "0+unknown",
+      "molsysviewer": "0.24.0+97.gdf4bf477.dirty",
+      "pyunitwizard": "0.29.2",
+      "smonitor": "0.21.0",
+      "argdigest": "0.15.0",
+      "depdigest": "0.15.1",
+      "ackredit": "0.9.0",
+      "pytest_receptor": "1.2.1",
+      "h5py": "3.16.0",
+      "numpy": "2.4.6",
+      "pandas": "2.3.3"
+    },
+    "identity_notice": "Archived MolSysMT source reports 0+unknown. Existing editable distribution metadata reports an older development build; neither identifies or qualifies an installed 1.0 package. Source identity is the exact commit plus retained file hashes.",
+    "pyunitwizard_file": "pyunitwizard-0.29.2-py_0.tar.bz2",
+    "pyunitwizard_sha256": "bb28b9420760b557025163e11c934e096c7b98200cac720100a2db924e9ee617",
+    "pyunitwizard_source_url": "https://conda.anaconda.org/uibcdf/noarch/pyunitwizard-0.29.2-py_0.tar.bz2",
+    "support_route": "Isolated public support copies; new published PyUnitWizard extracted ahead of older copies without modifying the routine environment."
+  },
+  "resources": {
+    "logical_cpus": 1,
+    "ram_gib": 1,
+    "own_swap_gib": 0,
+    "minimum_globally_available_gib": 6.5,
+    "sequential": true,
+    "supervised_own_processes_only": true,
+    "reason": "Respect announced concurrent MolSysMT work (3 CPU/6 GiB) and its 6.5 GiB shared reserve; free memory is not a reservation.",
+    "peak_owned_rss_mib": 533.2
+  },
+  "contracts": {
+    "default": "The Viewer session writer delegates without a format override. On aee7aa65 the public provider default and actual embedded output are 1.0. The same guards support the earlier declared default 0.5 without pinning the new writer back to it. Unknown future defaults require new explicit receiving.",
+    "legacy_fixture": "Current-provider tests construct explicit 0.5 fixtures on fresh paths, separately from default-written input. Two genuinely retained prior-writer artifacts are independently verified against their original hashes and reopened/resaved as 1.0 without modifying input bytes.",
+    "mechanics": "Default 1.0 save/reopen retains the synthetic unresolved force-field request, 62 partial charges and the cutoff value/unit (12 angstrom = 1.2 nm). Earlier default 0.5 still refuses an unrepresentable session and preserves the existing destination. No scientific preparation or silent data discard.",
+    "science": "Retain coordinates, box, reference ChemicalStates bonds/components, scene/camera/frame and two named analyses. Synthetic observations receive compound participants/roles, parallel evidence, occurrence indices, periodic images, evaluated-empty/unevaluated coverage, units and atom/structure maps. Queries include nonconsecutive/duplicate structures; managed coordinate edits retain selective native invalidation. This does not validate detector accuracy."
+  },
+  "profiles": {
+    "probe-426-h5msm-default": {
+      "native_exit": 0,
+      "seconds": 17.583188326098025,
+      "selected_inputs": 5764,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 460.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "18 passed on aee7aa65: sessions, explicit 0.5/1.0 inputs, default 1.0, mechanics, queries and selective invalidation.",
+      "invocation_sha256": "4cfb6dd6cdf185bb5694b2ea785c330cc899aa9d79d783e41d02286283e1e973",
+      "inputs_sha256": "b33702f46cfc1bf4d7ee2beaf842c6d007e6579f86ead45332a2468fe04bae9e",
+      "stdout_sha256": "9ca9fc0eb29fd78d3e3c1e9b81cc892e6aedd2f30b5bb84490b66b9b98b854ec"
+    },
+    "probe-427-retained-h5-default": {
+      "native_exit": 0,
+      "seconds": 6.686815330060199,
+      "selected_inputs": 5765,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 364.9,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Two retained prior-writer sessions match their original hashes, open and resave as 1.0 with full scene/science/query checks; input bytes unchanged.",
+      "invocation_sha256": "d73067dd25b451d29a8c8fd1264f31f6c606650b6ab20c80bbc1228e53d54879",
+      "inputs_sha256": "3e67d0edc61489ecef8b8785c535c9b1ac7c6a5ed731c6d04a7052495868465e",
+      "stdout_sha256": "d3c76afcd0d37851eba6fd0314800fcea60e7bebdf2e7105dcc7ba4f05d87054"
+    },
+    "probe-428-h5msm-legacy-default": {
+      "native_exit": 0,
+      "seconds": 20.0075209971983,
+      "selected_inputs": 5769,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 459.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "The identical 18 guards pass on frozen 8d05bc33 with default 0.5, including explicit refusal without destination loss for stored mechanics.",
+      "invocation_sha256": "8a4bed74d1cd0ef3d61cff4b2a332171d7eaa3d241efc73d90c061ddf7186b3a",
+      "inputs_sha256": "5db3893df647cfdaba75859c034262243f566eebe624de42de0754d309f99ffe",
+      "stdout_sha256": "79453261636cf35289f84279750d8adf021d9a8d4cce9536cf6903bb9d494fd5"
+    },
+    "probe-429-h5msm-default-boundaries": {
+      "native_exit": 0,
+      "seconds": 64.48765253601596,
+      "selected_inputs": 5765,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 533.2,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "151 passed on aee7aa65: member integrity, session/state rejection, interaction scene and Movie timeline/session boundaries.",
+      "invocation_sha256": "cec416bce8d0304dae33c497e4166e1e7160013711543b5e0a3300204c98fe07",
+      "inputs_sha256": "3e67d0edc61489ecef8b8785c535c9b1ac7c6a5ed731c6d04a7052495868465e",
+      "stdout_sha256": "99375e843fb4c9357a63ebf3bd1e07d5c0082f788659c0ffd1605dadea2268e0"
+    },
+    "probe-430-h5-default-records": {
+      "native_exit": 0,
+      "seconds": 6.343272937927395,
+      "selected_inputs": 5765,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 170.0,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "409 documentation/reporting passes; subsequent change only clarifies the decision to defer an intermediate 0.25.0 artifact, with no new link/contract.",
+      "invocation_sha256": "d2b27882fb6c91a4823b9fd4bc8440f632e9d11c1ca0eb764c2a6e3583ac9ea7",
+      "inputs_sha256": "3e67d0edc61489ecef8b8785c535c9b1ac7c6a5ed731c6d04a7052495868465e",
+      "stdout_sha256": "43c71154abcd88dd0a2bf7e3fc45a61d5dda59926b27968228693e2129b538fd"
+    }
+  },
+  "retained_artifacts": [
+    {
+      "input": "existing-05.msv",
+      "input_sha256": "418135b91881a1ead68f20444d79af5f982a72a0e2f8279281c196efc0fb1166",
+      "output_sha256": "f30f6d8ebfd7908c65b46a69f89565cd889489b2eff03bb3b7b8a5441246564a",
+      "output_schema": "1.0",
+      "scene_science_queries_preserved": true,
+      "input_bytes_unchanged": true
+    },
+    {
+      "input": "legacy-migrated-10.msv",
+      "input_sha256": "8f147fa3d359c6a04b14a5d29697449cc5caa24952dd8e784309828898c679e3",
+      "output_sha256": "b29ff3031feddaafc6bebc8d00f235ac3be5aa39099dc44289c193dad48122ba",
+      "output_schema": "1.0",
+      "scene_science_queries_preserved": true,
+      "input_bytes_unchanged": true
+    }
+  ],
+  "diagnostics": [
+    {
+      "profile": "probe-425-h5msm-default",
+      "outcome": "New fixture attempted to overwrite a freshly created header probe; the public writer correctly raised FileExistsError. Use distinct fresh default-header and explicit-0.5 paths, then rerun the full file. No product error inferred."
+    }
+  ],
+  "owner_615": {
+    "state": "active_cause_unknown",
+    "owner_implementation": "7ccb00b93e1e658318ebc7057e137eafa9f70191",
+    "owner_receiving": "7b7cbc2f10f74870b9556f6e483c53c8293053f2",
+    "reviewed_comment": "https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6801420587",
+    "owner_viewer_source": "5164f13b",
+    "owner_controls": "52 Python; six Node controls on 22.22.1 and 24.21.0; actual cold Jupyter initial-canvas-only pass, observed draw 14.30 s after click. Original deadlines and cross-process epoch discrepancy retained.",
+    "disposition": "Instrumentation delivered; no instrumented reproduction or causal repair of the original timeout. Do not infer closure from passes or substitute this headless receiving for notebook evidence."
+  },
+  "candidate": {
+    "selected": false,
+    "intended_final_pair": "MolSysMT 1.0.0 / MolSysViewer 1.0.0",
+    "source_checkpoint_for_discussion": "ed1e118212a6d33ec4495544184f26f75ee9c096",
+    "possible_pre_1_0_milestone": "Deferred in current coordination; wait for the final 1.0.0 pair. No 0.25.0 artifact preparation.",
+    "remaining": "#320 mapping/migration, Studio/web/M5 and final docs/host/installed gates; minimum public addon-compatible artifact under #524 remains unqualified."
+  },
+  "publication": {
+    "tags_created": false,
+    "builds_dispatched": false,
+    "matrices_dispatched": false,
+    "packages_published": false,
+    "both_1_0_publications_paused": true
+  },
+  "evidence_custody": {
+    "state": "verified",
+    "custodian": "Diego",
+    "approved_private_root": "~/.local/state/molsysviewer/evidence/robustness-20261106",
+    "subdirectory": "h5msm-default-20261111",
+    "files": 46,
+    "bytes": 143738548,
+    "manifest_sha256": "1e34d3a13b4a1316c3a11e35c8286cedcc42e2b2689ae0ba9bd7677d91d3a0b3",
+    "all_hashes_verified": true,
+    "private_directories_mode": "0700",
+    "private_files_mode": "0600",
+    "originals_retained": true
+  },
+  "validation": {
+    "new_default_cases": 18,
+    "retained_prior_writer_artifacts": 2,
+    "previous_default_cases": 18,
+    "boundary_cases": 151,
+    "documentation_cases": 409,
+    "failed": 0,
+    "skipped": 0,
+    "scope_notice": "Separate directed scopes; do not interpret these counts as full-suite, installed or notebook qualification."
+  }
+}
