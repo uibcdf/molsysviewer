@@ -209,7 +209,33 @@ async function delayedReply(work,kind){
   };
  });
  await work.getByRole('button',{name:'Save file',exact:true}).click();
- await page.waitForFunction(()=>window.__heldCapture.length===1);
+ try{await page.waitForFunction(()=>window.__heldCapture.length===1);}
+ catch(error){
+  // Observe the failed precondition without issuing a repair frame/camera,
+  // fabricating a reply, or replacing its original error.
+  report.delayed_capture_failure=await page.evaluate(()=>{
+   const c=window.__captureControllers[0],frame=c.trajectory.getTrajectoryState().currentFrame;
+   const canvas=c.plugin.canvas3dContext?.canvas;
+   return {disposed:c.disposed,held_replies:window.__heldCapture.length,
+    frame,playback:c.trajectory.getTrajectoryState(),sync:c.systemSyncState,
+    updating:c.plugin.state.data.behaviors.isUpdating.value,
+    trajectory:c.trajectory.isCaptureFrameReady(frame),box:c.boxDisplay.isFrameReady(frame),
+    shapes:c.shapes.isFrameReady(frame),interactions:c.interactions.isFrameReady(frame),
+    annotations:c.annotations.isGeometryCurrent(),movie:c.movie.isCaptureSafe,
+    dynamic:{applied:c.dynamicRegionEvaluationAppliedFrame,inflight:c.dynamicRegionEvaluationInFlight,
+     pending:c.dynamicRegionEvaluationPendingFrame,requests:[...c.dynamicRegionRequests]},
+    canvas:{connected:canvas?.isConnected,visibility:canvas&&getComputedStyle(canvas).visibility,
+     rect:canvas?.getBoundingClientRect().toJSON()},
+    operations:window.__captureOperationTrace.slice(-40),protocol:window.__captureProtocolTraffic.slice(-40),
+    moving_requests:window.__jupMovingWire?.requests.slice(-3),
+    post_moving_draws:window.__postMovingReadiness?.draws,
+    post_moving_initial:window.__postMovingReadiness?.initial,
+    status:document.querySelector('[data-molsysviewer-work-file-status]')?.textContent};
+  }).catch(failure=>({diagnostic_error:failure.name}));
+  report.delayed_capture_failure.authority=await kernel("print('MSV_CAPTURE_JSON '+json.dumps(_moving['status']()))")
+   .catch(failure=>({diagnostic_error:failure.name}));
+  throw error;
+ }
  assert.equal(await work.getByLabel('Path in Python session',{exact:true}).isDisabled(),true);
  if(kind==='cancel')await work.getByRole('button',{name:'Cancel save',exact:true}).click();
  // In the timeout case there is no kernel request or transport poll between
@@ -257,6 +283,26 @@ try{
  await receiveStudio(popup,'state','popup');await receiveStudio(popup,'session','popup');await popup.close();
  await page.bringToFront();
  await receiveJupyterMoving({page,kernel,config,report,openWork,openCanvas,setStage:value=>{stage=value;}});
+ await page.evaluate(()=>{
+  const c=window.__captureControllers[0];
+  const read=()=>{
+   const frame=c.trajectory.getTrajectoryState().currentFrame;
+   return {ms:performance.now(),frame,disposed:c.disposed,playing:c.trajectory.getTrajectoryState().isPlaying,
+    hidden:document.hidden,updating:c.plugin.state.data.behaviors.isUpdating.value,
+    trajectory:c.trajectory.isCaptureFrameReady(frame),box:c.boxDisplay.isFrameReady(frame),shapes:c.shapes.isFrameReady(frame),
+    interactions:c.interactions.isFrameReady(frame),annotations:c.annotations.isGeometryCurrent(),movie:c.movie.isCaptureSafe,
+    dynamic:{applied:c.dynamicRegionEvaluationAppliedFrame,inflight:c.dynamicRegionEvaluationInFlight,
+     pending:c.dynamicRegionEvaluationPendingFrame,requests:[...c.dynamicRegionRequests]},
+    interaction_requests:[...c.interactions.requests].map(([id,row])=>[id,row.frame]),
+    native_cells:c.plugin.state.data.cells.size,representations:c.plugin.canvas3d.reprCount.value};
+  };
+  const monitor=window.__postMovingReadiness={initial:read(),draws:[]};
+  let replay=true;
+  monitor.subscription=c.plugin.canvas3d.didDraw.subscribe(()=>{
+   if(replay)return;
+   monitor.draws.push(read());if(monitor.draws.length>32)monitor.draws.shift();
+  });replay=false;
+ });
  // Delay actual rendered replies, never supply fake camera/scientific data.
  await page.bringToFront();const work=await openWork(page);
  await delayedReply(work,'cancel');await delayedReply(work,'timeout');
@@ -264,4 +310,4 @@ try{
  report.unexpected_page_errors=report.page_errors.filter(error=>error.message!=='No active debugger session');
  assert.deepEqual(report.unexpected_page_errors,[]);report.outcome='passed';
 }catch(error){report.outcome='failed';report.stage=stage;report.error_type=error?.name;report.error=String(error);report.stack=error?.stack;process.exitCode=1;await page?.screenshot({path:config.output+'/failure.png'}).catch(()=>{});}
-finally{await writeFile(config.output+'/observations.json',JSON.stringify(report,null,2));await browser?.close();console.log(JSON.stringify({outcome:report.outcome,stage,save_restore:report.capture_restore_cases,studio:report.studio_cases}));}
+finally{await page?.evaluate(()=>window.__postMovingReadiness?.subscription.unsubscribe()).catch(()=>{});await writeFile(config.output+'/observations.json',JSON.stringify(report,null,2));await browser?.close();console.log(JSON.stringify({outcome:report.outcome,stage,save_restore:report.capture_restore_cases,studio:report.studio_cases}));}

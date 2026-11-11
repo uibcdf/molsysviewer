@@ -143,8 +143,21 @@ do not credit E2 or run the full thirty-cycle gate as though #356 were closed.
 The [receiving record](../widget_controller_release_receiving_20261111.json)
 separates native receiving, fixture correction #362, integration and custody.
 
-Next isolate the backing-buffer owner with matched direct/widget controls and
-an independent unowned-buffer GC control, without full heap snapshots. Receive
-the residual disposition and the complete same-kernel gate within the agreed
-resource stops. This finding does not claim universal memory/VRAM bounds,
-installed/human qualification or a cause of the original shared pressure stop.
+The [buffer-isolation receipt](../jupyter_buffer_isolation_receiving_20261111.json)
+receives the smaller direct controls `478`, `480` and `481`. The controller,
+plugin, structure/model, trajectory and all three coordinate axes collect; the
+744-byte input buffer remains reachable without Jupyter. Equal-size unowned
+decoded/planar controls collect. Targeted prototype queries find no matching
+Float32Array, Uint8Array or DataView; clearing the console and four separate
+collection tasks without dereferencing the targets do not release the buffer.
+This narrows the comparison but identifies neither its owner nor its scaling.
+The direct control does not qualify actual-notebook memory release.
+
+The heap diagnostic `479` terminates before producing a usable snapshot; its
+native SIGTERM and unknown cause remain recorded. The installed Chromium does
+not support `482`'s targeted V8 tracing intrinsic. Neither attempt supplies a
+retaining path or evidence of a product failure. Do not repeat full snapshots
+on this shared host. Next isolate native/input-buffer ownership with a bounded
+control, then receive the residual disposition and complete same-kernel gate
+within the agreed resource stops. Universal memory/VRAM bounds, installed/human
+qualification and a cause of the original pressure stop remain unestablished.

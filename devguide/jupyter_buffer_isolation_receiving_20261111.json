@@ -1,0 +1,601 @@
+{
+  "schema": "molsysviewer.jupyter_buffer_isolation_receiving@1",
+  "date": "2026-11-11",
+  "issues": [
+    "uibcdf/molsysviewer#344",
+    "uibcdf/molsysviewer#356",
+    "uibcdf/molsysviewer#315"
+  ],
+  "scope": "Diagnostic isolation on controlled sources; no product correction, consolidated Jupyter pass, prolonged-session acceptance, installed/hosted/Qt/human qualification or original-outcome credit.",
+  "sources": {
+    "molsysviewer_base": "d0d52c942bbe475061098045c59c63142506d9cd",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "pyunitwizard": "editable 0.29.4+2.g9bb4f5f; cached public support as in prior receiving",
+    "sha256": {
+      "tests/_jupyter_live_capture.mjs": "1027f7e1f526a5452b800cc6c999ef8ca63e49ad86c696f5ebd6d21c76f643fd",
+      "tests/_jupyter_live_capture.py": "c654c16af4a70b07deca764bf2409632358c4a7eb5591f6f12632910ecec20dc",
+      "tests/_jupyter_widget_lifecycle.mjs": "5294a73d00f6dbdc759e6760307f20295ae3c156af75d413562c6d6fc71c9985",
+      "molsysviewer/viewer.js": "8a296f3013a544d6f94298c63e4eccc03908e3af953fba08c989cfe9bfe19a48",
+      "molsysviewer/js/tests/e2e/harness.bundle.js": "b5615ae50d689990f539b6ae71724c14df1becf72860c6deb875f30458266eeb"
+    }
+  },
+  "capture": {
+    "complete_entry_471": "Failed in sixth moving Studio popup session at unchanged request_timeout; six stopped and five moving cases received. Not a global pass.",
+    "factor_controls": [
+      {
+        "profile": 473,
+        "scope": "Moving setup/play/popup/stop; no stopped or moving saves",
+        "cancel_and_autonomous_timeout": "passed"
+      },
+      {
+        "profile": 474,
+        "scope": "One popup moving-session capture; no initial stopped prefix",
+        "cancel_and_autonomous_timeout": "passed"
+      },
+      {
+        "profile": 475,
+        "scope": "Six stopped round trips plus moving setup/play/stop; no moving saves",
+        "cancel_and_autonomous_timeout": "passed"
+      },
+      {
+        "profile": 476,
+        "scope": "All six moving saves; no initial stopped prefix",
+        "cancel_and_autonomous_timeout": "passed"
+      }
+    ],
+    "interpretation": "Neither prefix independently reproduces the complete-entry failure. No deterministic stop/close cause or product fix established. Original deadlines, real scientific replies, native draws and independent recoveries retained.",
+    "interruption_477": {
+      "schema": "molsysviewer.interrupted_receiving_recovery@1",
+      "time": "2026-11-11T23:20:01.862134+00:00",
+      "profile": "probe-477-post-moving-readiness",
+      "outer_supervisor": "interrupted; original running receipt retained without fabricated exit/resource/cleanup result",
+      "child": {
+        "scope": "Actual Jupyter/kernel/anywidget/Mol* work-file receiving; no installed or visible Qt claim.",
+        "state": "completed",
+        "exit_code": 1,
+        "process_cleanup": {
+          "tracked": 17,
+          "survivors": [],
+          "errors": []
+        },
+        "browser_summary": {
+          "status": "available",
+          "outcome": "failed",
+          "phase": "plain-kernel baseline",
+          "error_type": "TimeoutError",
+          "capture_restore_cases": 0,
+          "strong_restore_cases": 0,
+          "studio_cases": 0
+        },
+        "seconds": 81.0886352499947
+      },
+      "recovery_input_check": {
+        "selected": 5971,
+        "changed": [],
+        "missing": []
+      },
+      "process_inventory": "No exact-scope supervisor/test or process with this private receiving cwd remains; checked before any repeat.",
+      "scope": "Child failed in plain-kernel baseline before importing MolSysViewer; zero molecular/save cases. No product or final gate qualification.",
+      "ephemeral_settings_removed": true
+    },
+    "diagnostics": "Bounded passive post-moving didDraw observations and failed held-reply-precondition details added. They issue no repair seek/draw, fake reply or deadline change. The new full attempt did not reach them."
+  },
+  "buffer": {
+    "direct_scope": "Two actual direct Mol* controllers with single-structure bundled dialanine/pentalanine, array-native decoding and completed native draws; no AnyWidget/Jupyter.",
+    "owners_478": {
+      "scope": "Direct MolSysViewer controllers, single-frame bundled dialanine and pentalanine, array-native coordinate decode and actual Mol* draws, no AnyWidget/Jupyter.",
+      "before": [
+        22,
+        62
+      ],
+      "retired": {
+        "disposed": true,
+        "connected": false
+      },
+      "after": [
+        {
+          "retired": null,
+          "witness": {
+            "connected": true,
+            "atoms": 22
+          },
+          "native": {
+            "plugin": false,
+            "structure": false,
+            "model": false,
+            "x": false,
+            "y": false,
+            "z": false,
+            "buffer": true,
+            "trajectory": false,
+            "control": false
+          }
+        },
+        {
+          "retired": null,
+          "witness": {
+            "connected": true,
+            "atoms": 22
+          },
+          "native": {
+            "plugin": false,
+            "structure": false,
+            "model": false,
+            "x": false,
+            "y": false,
+            "z": false,
+            "buffer": true,
+            "trajectory": false,
+            "control": false
+          }
+        }
+      ],
+      "afterConsole": {
+        "plugin": false,
+        "structure": false,
+        "model": false,
+        "x": false,
+        "y": false,
+        "z": false,
+        "buffer": true,
+        "trajectory": false,
+        "control": false
+      }
+    },
+    "views_480": {
+      "scope": "Direct MolSysViewer controllers, single-frame bundled dialanine and pentalanine, array-native coordinate decode and actual Mol* draws, no AnyWidget/Jupyter.",
+      "before": [
+        22,
+        62
+      ],
+      "retired": {
+        "disposed": true,
+        "connected": false
+      },
+      "after": [
+        {
+          "retired": null,
+          "witness": {
+            "connected": true,
+            "atoms": 22
+          },
+          "native": {
+            "plugin": false,
+            "structure": false,
+            "model": false,
+            "x": false,
+            "y": false,
+            "z": false,
+            "buffer": true,
+            "trajectory": false,
+            "control": false
+          }
+        },
+        {
+          "retired": null,
+          "witness": {
+            "connected": true,
+            "atoms": 22
+          },
+          "native": {
+            "plugin": false,
+            "structure": false,
+            "model": false,
+            "x": false,
+            "y": false,
+            "z": false,
+            "buffer": true,
+            "trajectory": false,
+            "control": false
+          }
+        }
+      ],
+      "afterConsole": {
+        "plugin": false,
+        "structure": false,
+        "model": false,
+        "x": false,
+        "y": false,
+        "z": false,
+        "buffer": true,
+        "trajectory": false,
+        "control": false
+      },
+      "wire": {
+        "input": false,
+        "inputBuffer": true,
+        "sameWire": false,
+        "sameWireBuffer": false,
+        "planar": false,
+        "planarAxis": false,
+        "planarBuffer": false
+      },
+      "owners": {
+        "Float32Array": [],
+        "Uint8Array": [],
+        "DataView": []
+      }
+    },
+    "unobserved_481": {
+      "scope": "Direct MolSysViewer controllers, single-frame bundled dialanine and pentalanine, array-native coordinate decode and actual Mol* draws, no AnyWidget/Jupyter.",
+      "before": [
+        22,
+        62
+      ],
+      "retired": {
+        "disposed": true,
+        "connected": false
+      },
+      "after": [
+        {
+          "retired": null,
+          "witness": {
+            "connected": true,
+            "atoms": 22
+          },
+          "native": {
+            "plugin": false,
+            "structure": false,
+            "model": false,
+            "x": false,
+            "y": false,
+            "z": false,
+            "buffer": true,
+            "trajectory": false,
+            "control": false
+          }
+        },
+        {
+          "retired": null,
+          "witness": {
+            "connected": true,
+            "atoms": 22
+          },
+          "native": {
+            "plugin": false,
+            "structure": false,
+            "model": false,
+            "x": false,
+            "y": false,
+            "z": false,
+            "buffer": true,
+            "trajectory": false,
+            "control": false
+          }
+        }
+      ],
+      "afterConsole": {
+        "plugin": false,
+        "structure": false,
+        "model": false,
+        "x": false,
+        "y": false,
+        "z": false,
+        "buffer": true,
+        "trajectory": false,
+        "control": false
+      }
+    },
+    "interpretation": "Controller/plugin/structure/model/trajectory/all three axes become unreachable while the 744-byte input backing buffer remains. Unowned equal-size decoded and planar controls collect. No matching Float32Array/Uint8Array/DataView is found by targeted CDP prototype queries. Console clearing and four separate unobserved collection tasks do not release it. Owner, native lifetime/scaling and relation to E2 pressure remain unknown.",
+    "unsuccessful_diagnostics": {
+      "479": "Heap diagnostic exits by SIGTERM before producing a usable snapshot; original native exit -15 and unknown cause retained. No further heap snapshots selected.",
+      "482": "Installed Chromium rejects track-retaining-path and DebugTrackRetainingPath; native exit 1 is diagnostic capability failure, not a product failure."
+    }
+  },
+  "profiles": [
+    {
+      "state": "preflight_refused",
+      "native_exit": null,
+      "profile": "probe-470-post-moving-diagnostic",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 6,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "seconds": 144.8608647531364,
+      "peak_owned_rss_mib": 3445.2,
+      "selected_inputs": 5960,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-471-post-moving-diagnostic",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 5,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "preflight_refused",
+      "native_exit": null,
+      "profile": "probe-472-moving-stop-subset",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 5,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 72.57817154703662,
+      "peak_owned_rss_mib": 2950.0,
+      "selected_inputs": 5963,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-473-moving-stop-subset",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 64.34828309179284,
+      "peak_owned_rss_mib": 3008.9,
+      "selected_inputs": 5966,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-474-one-moving-stop",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 152.65112365107052,
+      "peak_owned_rss_mib": 3068.6,
+      "selected_inputs": 5968,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-475-restored-moving-stop",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 95.70091941207647,
+      "peak_owned_rss_mib": 3265.9,
+      "selected_inputs": 5971,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-476-six-moving-stop",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "running",
+      "native_exit": null,
+      "seconds": null,
+      "peak_owned_rss_mib": null,
+      "selected_inputs": null,
+      "inputs_unchanged": null,
+      "cleanup": null,
+      "resource_stop": null,
+      "profile": "probe-477-post-moving-readiness",
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 48.61766018578783,
+      "peak_owned_rss_mib": 1856.2,
+      "selected_inputs": 5973,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-478-direct-buffer-owners",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": -15,
+      "seconds": 26.78082784707658,
+      "peak_owned_rss_mib": 4039.5,
+      "selected_inputs": 5975,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-479-direct-buffer-heap",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 27.396554733160883,
+      "peak_owned_rss_mib": 1857.8,
+      "selected_inputs": 5977,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-480-direct-buffer-views",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 25.18786853388883,
+      "peak_owned_rss_mib": 1866.1,
+      "selected_inputs": 5979,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-481-direct-buffer-unobserved",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "seconds": 21.555792964994907,
+      "peak_owned_rss_mib": 1857.8,
+      "selected_inputs": 5981,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-482-direct-buffer-retaining",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "preflight_refused",
+      "native_exit": null,
+      "profile": "probe-483-diagnostic-quality",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 25.057925059925765,
+      "peak_owned_rss_mib": 203.2,
+      "selected_inputs": 5982,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "probe-484-diagnostic-quality",
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    }
+  ],
+  "validation": {
+    "state": "scoped_pass",
+    "profile": 484,
+    "passed": 436,
+    "skipped": 3,
+    "failed": 0,
+    "skip_scope": "Explicit actual Jupyter opt-ins unselected; not full-entry qualification.",
+    "checks": [
+      "node --check tests/_jupyter_live_capture.mjs",
+      "ruff check .",
+      "ruff format --check .",
+      "devguide_index.py --check",
+      "reporting, devguide links/architecture and Jupyter receiver unit checks",
+      "git diff --check"
+    ]
+  },
+  "custody": {
+    "state": "verified",
+    "private_leaf": "jupyter-buffer-isolation-20261111",
+    "custodian": "Diego Prada Gracia",
+    "files": 215,
+    "bytes": 28910037,
+    "manifest_sha256": "b9fc5fb78e7973bda21d356efab6b890582653585da81eaeb99d4b85976504d9",
+    "originals": "preserved",
+    "permissions": "directories 0700; files 0600",
+    "evidence_boundary": "Original diagnostic traces, interrupted record/recovery, rejected preflights and native failures preserved separately; no overwritten gate result."
+  },
+  "remaining": [
+    "#344 complete original actual-Jupyter guard, with causal owner or evidenced receiver correction. Passing diagnostic subsets cannot be combined.",
+    "#356 backing-buffer ownership/disposition, then complete thirty-cycle E2 receiving within resource stops.",
+    "Current hosted/installed/human gates remain separate; publications paused."
+  ]
+}

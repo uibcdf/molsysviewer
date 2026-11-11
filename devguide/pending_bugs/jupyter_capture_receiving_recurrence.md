@@ -42,6 +42,25 @@ precise product/fixture owner or a causal relation to #356's cleanup.
 The [receipt](../widget_controller_release_receiving_20261111.json) preserves
 both traces and keeps the passing controller-release regression separate.
 
+The [isolation receipt](../jupyter_buffer_isolation_receiving_20261111.json)
+preserves complete-entry failure `471`: six stopped and five moving captures
+pass, then the sixth moving Studio popup session reaches its unchanged
+deadline. Four explicitly reduced controls pass cancellation and autonomous
+timeout: moving setup/play/stop alone, one moving popup save, the complete
+stopped prefix without moving saves, and all six moving saves without the
+stopped prefix. Neither prefix independently reproduces the failure. These
+controls cannot be combined into full-entry acceptance or a deterministic
+pause/teardown diagnosis.
+
+The later `477` child fails at the plain-kernel baseline before importing
+MolSysViewer. Its outer supervisor is interrupted and retains its original
+running record; recovery independently verifies unchanged inputs, removal of
+ephemeral settings, the child's cleanup and no surviving exact-scope process.
+No outer exit, resource peak or product result is inferred from that recovery.
+Passive bounded readiness/draw diagnostics now preserve a failed held-reply
+precondition without repairing frames or changing replies/deadlines; `477`
+does not reach that diagnostic target.
+
 Next isolate readiness immediately after the moving fixture's real stop and
 transport teardown, before installing the held-reply control. Receive the
 current frame, outstanding scientific queries, capture reservation and actual

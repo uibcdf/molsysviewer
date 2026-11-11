@@ -426,6 +426,12 @@ comparison receives all six moving cases, then fails the delayed-reply setup.
 These distinct failed entries qualify neither the current combined gate nor
 complete cancellation/deadline receiving. Preserve the earlier exact-source
 font correction and diagnose this recurrence without assuming its cause.
+The [isolation receipt](../jupyter_buffer_isolation_receiving_20261111.json)
+adds passing diagnostic prefixes, not a complete-entry pass. Direct native
+controls narrow #356 to a reachable input buffer after native-owner collection;
+its owner and scaling remain unknown. Kernel-baseline interruption and
+unsupported diagnostics retain their native scopes. No original outcome or
+final acceptance is added by this investigation.
 MolSysMT has additionally owner-closed #709/#710 in `f0dbb58e0`: its private
 selective reader accepts supported modular H5MSM roots and its addon mirrors
 current native defaults/options. Its directed receiving does not replace the

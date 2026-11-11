@@ -907,6 +907,14 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [Jupyter/buffer isolation receipt](jupyter_buffer_isolation_receiving_20261111.json)
+keeps #344 and #356 open. Capture prefixes pass separately but the complete
+entry remains failed. Direct Mol* controls release the native owners while
+retaining the input buffer; no retaining path or scaling is established.
+Interrupted, unsupported and preflight-refused attempts retain their distinct
+outcomes. The only executable change is passive bounded failure diagnostics;
+no product correction or original-plan outcome is credited.
+
 The [widget-controller receipt](widget_controller_release_receiving_20261111.json)
 receives the partial #356 correction: closing outputs retire their owned popup
 methods, resize resources and target. The actual-notebook regression checks
