@@ -209,6 +209,16 @@ it does not itself qualify movie export or solve all animation scheduling.
 
 ## Scope and progress
 
+**Current source scope:** reviewed version-2 target/frame imports are received
+in [the import receipt](../movie_import_receiving_20261111.json), including
+explicit scientific associations, region-definition checks, private-ticket
+acceptance and retained session/media provenance. The
+[timeline contract](../movie_timeline_design.md#reviewed-version-2-imports)
+owns those rules. Legacy migration, richer renderer channels, Studio authoring,
+portable web playback and the complete integrated story remain open. The
+receiving entries below retain their original source/date scope; earlier
+remapping/appearance gaps are not a claim about current implementation.
+
 The first M1 tranche is source-delivered. `tests/test_movie_timeline.py` exercises
 arbitrary seeks and independent channels on a bundled trajectory, detached
 inspection, rejection of incompatible inputs and exact session recovery.

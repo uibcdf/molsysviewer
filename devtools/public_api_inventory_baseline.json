@@ -1,10 +1,10 @@
 {
   "totals": {
-    "public_callables": 757,
-    "digested": 757,
+    "public_callables": 759,
+    "digested": 759,
     "undigested": 0,
     "exempt": 0,
-    "declared_digesters": 456,
+    "declared_digesters": 457,
     "missing_digesters": 0
   },
   "undigested": [],

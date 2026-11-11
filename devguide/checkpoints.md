@@ -925,8 +925,19 @@ release their retained observation. Captured environment constants replay
 alongside tracks and survive sessions, retaining declared intent separately.
 The [observation receipt](movie_observation_receiving_20261111.json) separates
 protocol, compiler, native/media and wider receiving. #360 corrects the typed
-Movie screenshot task-manager call. Explicit target mapping, richer recipes,
-Studio and portable web remain open.
+Movie screenshot task-manager call. Reviewed version-2 imports now follow
+the explicit target/frame correspondence route described below.
+
+Experimental `review_import()`/`apply_import(review)` adopt a prepared
+destination baseline without editing the scene or scientific data. Explicit
+domain/tag maps resolve substitutions; new-to-old frame maps reject missing
+or ambiguous referenced frames. Region identity also checks its molecular
+definition/dependency closure because UIDs are local to a View. One private
+ticket prevents edited/foreign/stale acceptance; compact provenance survives
+edits, sessions and media. The [import receipt](movie_import_receiving_20261111.json)
+separates headless, compiler, native/media and wider source receiving. Legacy
+migration, richer renderer recipes, Studio authoring and portable web remain
+open under #320; no candidate/public artifact is qualified here.
 
 Experimental `review_rebase()`/`rebase(review)` preserve all tracks and keys
 while reviewing/accepting a current Python-scene baseline. Live Movie operations
@@ -934,8 +945,9 @@ now check the untracked serialized scene before sending commands. The
 [rebase receipt](movie_rebase_receiving_20261111.json) keeps API, conflict,
 native/media and wider receiving separate. #359 corrects layer reversal by
 composing final member visibility from baseline intent and layer/member tracks;
-ordinary layer APIs are unchanged. Target remapping and richer renderer
-catalogues remain open; supported live environment/rebase work is described above.
+ordinary layer APIs are unchanged. Supported live environment/rebase and
+explicit version-2 remapping are described above; richer renderer catalogues
+remain open.
 
 Experimental `capture_baseline_async()` starts an empty Movie recipe from an
 acknowledged live camera/structure. `reset_async()` restores the recorded scene

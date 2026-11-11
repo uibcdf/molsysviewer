@@ -1,0 +1,492 @@
+{
+  "schema": "molsysviewer.movie_import_receiving@1",
+  "date": "2026-11-11",
+  "completed_utc": "2026-11-11T20:45:24.740452+00:00",
+  "issue": "uibcdf/molsysviewer#320",
+  "status": "source_received",
+  "scope": "Experimental reviewed version-2 import into a prepared scene. Headless real molecular/scientific owners, strict TypeScript, native Mol*/Chromium persistent Python bridge, canvas popup, sessions and encoded media. Not actual Jupyter, native Qt, hosted, installed-package or human qualification.",
+  "sources": {
+    "molsysviewer_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "molsysmt_native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "route": "Explicit molsyssuite@uibcdf_3.14 interpreter, exact archived MolSysMT runtime, receipt-matched native backend and recorded cached public support; no artifact qualification.",
+    "sha256": {
+      "molsysviewer/viewer/_movie_import.py": "ef629d7185406613b87c606211f2202ec981fcbb195a4f9c1ed0c484d94c18c8",
+      "molsysviewer/viewer/_movie_timeline.py": "c33318804614f6967fb6462d9366f38798af994e62d4096552ca8504422b99fb",
+      "molsysviewer/viewer/movie.py": "bcfaabcb6ca2458e61506bccb24c5a0e7fe69a0a4b6f06cbdf9e5d8cb0899654",
+      "molsysviewer/_private/argdigest/argument/target_map.py": "57a285e043aa020dd4a95a5cda1132a4c092f1ccf20746e3553ad81f73a9cde2",
+      "molsysviewer/_private/argdigest/argument/review.py": "a4c4db7abb1edb69c6ec94d11ceae6291d84461cb769fdc75ccf7c7242e17b86",
+      "molsysviewer/js/src/managers/movie-import-provenance.ts": "666854eedd41d8042950ba3b2a78c4f164a490ef981b2e306bce69272993fb80",
+      "molsysviewer/js/src/managers/movie-timeline.ts": "88fb2d4f7e50a9a43f2ecf64203a8587198f9fea430329396cdb44003ffa33ed",
+      "molsysviewer/js/tests/unit/movie-timeline.test.ts": "bcf23fe569680c9449eb6ba8b2251023e4a3285bd0b838d4dbe8cb25148ad88f",
+      "molsysviewer/js/tests/e2e/movie-appearance-bridge.py": "1a381ec67573bde23542196985e8c7fd4f115afcdaf94ff8e1d09656163682a9",
+      "molsysviewer/js/tests/e2e/movie-appearance.e2e.ts": "8aca5da6ba38757bf0352da00bc92cec502159c1c00411790b5dc228426b37c8",
+      "tests/test_movie_import.py": "d25a690d65b0caf14d2cfd1e1617335fe3001acdde5aa1bbed267769987098b4",
+      "devtools/public_api_contract_baseline.json": "4d9baae63f4fe08dff8c71f1ecd0e457601ec4eacd45d237442fbeffc1240611",
+      "devtools/public_api_inventory_baseline.json": "7f37e99009478febad62350250f204d2e9dfa447084ea60b70822bbecf38fe55",
+      "devtools/public_api_stability.json": "3c573245976fe16ddbe0a0943f5dd5c30d92b51feffc31a64c1c041c1383d861",
+      "molsysviewer/js/package.json": "ec5bfaad7792f530e1d3b9ad7310ff42e5fca769fe7c4e0a8d78c24dfcc9e426",
+      "molsysviewer/js/package-lock.json": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd"
+    },
+    "generated_runtime_sha256": "6894451501a820b33ae93447ec726b17acda5e9e83235227fd2bdd9971137bde",
+    "harness_sha256": "1a5990f26cd3ac0789fcce85a44bdb64f12103c6062b3edd340acf4ce7635927",
+    "generated_entry_sha256": "49f79770d26e8d371563fb9449dbc33fc4917e40879f79ae610d440b62535e29",
+    "runtime_notice": "Regenerated with build:runtime/build:harness and scoped E2E esbuild, without version synchronization or manual generated-bundle reading/editing."
+  },
+  "results": {
+    "headless_import": {
+      "passed": 44,
+      "failed": 0,
+      "skipped": 0,
+      "guard": "tests/test_movie_import.py"
+    },
+    "javascript": {
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "owners": [
+        "molsysviewer/js/tests/unit/frontend-requests.test.ts",
+        "molsysviewer/js/tests/unit/movie-appearance.test.ts",
+        "molsysviewer/js/tests/unit/movie-timeline.test.ts"
+      ]
+    },
+    "strict_types": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "guard": "tests/test_movie_baseline.py::test_movie_frontend_type_contract"
+    },
+    "native": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "guard": "tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+      "source_receiving": "Current imported recipe keeps tracks and provenance across native arbitrary/reverse seek, primary and canvas popup, preview, session reopen and decoded 1280x720 MP4; existing live capture/rebase and 320x180 MP4 controls also pass.",
+      "imported_sampling": {
+        "rule": "constant-rate-half-open@1",
+        "fps": {
+          "numerator": 4,
+          "denominator": 1
+        },
+        "duration_ms": 1000,
+        "frame_count": 4,
+        "first_time_ms": 0,
+        "last_time_ms": 750,
+        "encoded_duration_seconds": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      "resolution": {
+        "width": 1280,
+        "height": 720
+      },
+      "encoder": {
+        "name": "FFmpeg",
+        "provider": "imageio-ffmpeg",
+        "provider_version": "0.6.0",
+        "executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+        "version": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers",
+        "codec": "libx264",
+        "pixel_format": "yuv420p",
+        "threads": 1,
+        "color": {
+          "input": "srgb",
+          "primaries": "bt709",
+          "transfer": "iec61966-2-1",
+          "matrix": "bt709",
+          "range": "limited"
+        },
+        "crf": 18,
+        "preset": "medium",
+        "faststart": true
+      },
+      "source_frame_binding": {
+        "n_atoms": 62,
+        "n_structures": 3,
+        "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+      }
+    },
+    "broader_regression": {
+      "passed": 1484,
+      "failed": 0,
+      "skipped": 3,
+      "notice": "62 directed Movie/session/state/scene/API/dependency/reporting/reference files, not the complete repository suite. Native and types opt-ins are received separately; installed-imageio missing-dependency branch remains unselected.",
+      "warnings": 1049,
+      "root_checks": [
+        "ruff check .",
+        "ruff format --check .",
+        "dependency contract audit",
+        "devguide indexes",
+        "git diff HEAD --check"
+      ]
+    },
+    "api": {
+      "public_callables": 759,
+      "digested": 759,
+      "missing_digesters": 0,
+      "declarations": 972,
+      "new_routes": [
+        "view.movie.review_import",
+        "view.movie.apply_import"
+      ],
+      "stability": "experimental",
+      "existing_declarations_changed": false
+    },
+    "diagnostic_history": {
+      "profile": "probe-432-movie-import",
+      "passed": 37,
+      "failed": 1,
+      "reason": "New regression expected an atom-index list, but the established public property returns a tuple. Only the expectation was corrected; final 44-case and wider scopes pass."
+    },
+    "documentation": {
+      "passed": 417,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Final links, clean-checkout index, reporting, public API reference and executable documented example."
+    },
+    "documentation_initial_failure": {
+      "profile": "probe-443-import-docs",
+      "passed": 416,
+      "failed": 1,
+      "reason": "Clean-checkout link guard correctly rejected the newly created, unstaged receiving record. Staging the reviewed new files fixes the index availability; unchanged documentation and product sources pass in 444."
+    }
+  },
+  "profiles": {
+    "probe-432-movie-import": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_import.py",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt432"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 1,
+      "seconds": 22.267076425021514,
+      "selected_inputs": 5769,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 405.6,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 13.84
+    },
+    "probe-439-import-identities": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_import.py",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt439"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 24.677547017112374,
+      "selected_inputs": 5772,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 431.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 13.83
+    },
+    "probe-440-import-regression": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=2G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/receive_movie_import_regression.py"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 352.35395837482065,
+      "selected_inputs": 5774,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 953.8,
+      "cleanup": {
+        "tracked": 42,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 10.31
+    },
+    "build-441-import-final": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/check_movie_import_final.py"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 22.0340541920159,
+      "selected_inputs": 5772,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 608.1,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 13.05
+    },
+    "probe-442-import-native-final": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=200%",
+        "-p",
+        "MemoryMax=4G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0,1",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt442"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 128.5813899131026,
+      "selected_inputs": 5774,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2756.0,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 9.31
+    },
+    "probe-443-import-docs": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_devguide_links.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_reporting_protocol.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_public_api_docs.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_public_reference_imports.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_import.py::test_documented_import_example_runs_headlessly",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt443"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 1,
+      "seconds": 18.502316296100616,
+      "selected_inputs": 5774,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 550.9,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "probe-444-import-docs-staged": {
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "--quiet",
+        "-p",
+        "CPUQuota=100%",
+        "-p",
+        "MemoryMax=1G",
+        "-p",
+        "MemorySwapMax=0",
+        "-p",
+        "TasksMax=256",
+        "taskset",
+        "--cpu-list",
+        "0",
+        "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+        "-m",
+        "pytest",
+        "--receptor=llm",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_devguide_links.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_reporting_protocol.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_public_api_docs.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_public_reference_imports.py",
+        "/home/diego/repos@uibcdf/molsysviewer/tests/test_movie_import.py::test_documented_import_example_runs_headlessly",
+        "--basetemp=/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/pt444"
+      ],
+      "source_base": "7d29efda6345e2a555402596e9762740a2a257b9",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 17.32833655993454,
+      "selected_inputs": 5774,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 543.8,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    }
+  },
+  "custody": {
+    "root": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-import-20261111",
+    "custodian": "Diego Prada Gracia",
+    "file_count": 36,
+    "bytes": 11266843,
+    "manifest_sha256": "554acbd4a4c68bc2742ae461f29d492f81bd0109e01074a6ea2e2e2ebdb8bed0",
+    "private": true,
+    "originals_retained": true,
+    "documentation": {
+      "file_count": 10,
+      "bytes": 4421522,
+      "manifest_sha256": "5a01acf657d5274309e616135536f57fd2ad633e0191095c545b4b2abe3ac5fc",
+      "originals_retained": true
+    }
+  },
+  "limits": [
+    "Legacy version-1 migration remains pending; its reader/playback are unchanged.",
+    "Maps declare correspondence; neither identity/provenance authenticates a molecular origin or supplies spatial alignment.",
+    "Import does not edit the molecular system, recalculate/remap analyses, create scene objects or send scene commands.",
+    "Richer renderer channels, Studio Movie authoring, portable web presentation and complete #320 workflow remain open.",
+    "No remote CI dispatched, package build, candidate freeze, tag, release or promotion."
+  ]
+}

@@ -48,8 +48,25 @@ def main():
                     assert review["can_apply"] and view.movie.to_dict() == recipe
                     view.movie.rebase(review)
                     assert view.movie.to_dict()["tracks"] == recipe["tracks"]
+                    imported = view.movie.review_import(
+                        view.movie.to_dict(),
+                        target_map=[
+                            {
+                                "source": {"domain": "region", "tag": "site"},
+                                "target": {"domain": "region", "tag": "site"},
+                            }
+                        ],
+                    )
+                    assert imported["can_apply"]
+                    view.movie.apply_import(imported)
+                    assert view.movie.to_dict()["tracks"] == recipe["tracks"]
                     view.movie.validate()
-                    result = {"ok": True, "changes": review["changes"], "tracks_retained": True}
+                    result = {
+                        "ok": True,
+                        "changes": review["changes"],
+                        "tracks_retained": True,
+                        "import_provenance": view.movie.to_dict()["provenance"],
+                    }
                 elif "seek" in event:
                     sample = await view.movie.seek_async(event["seek"], timeout=20)
                     result = {"ok": True, "sample": sample}

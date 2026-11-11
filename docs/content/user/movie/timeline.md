@@ -210,6 +210,59 @@ reviewing their effects on the recipe.
 scene objects. A JSON recipe can be loaded onto a matching system and scene.
 A session keeps the recipe with its molecular data and scene.
 
+### Reviewing a recipe for a prepared scene
+
+Use `review_import()` when the destination scene has different object names
+or identities. Prepare its objects first. A map explicitly relates the source
+and destination domain/tag; it does not create scene objects or modify the
+molecular system. For example, rename the region controlled by a recipe:
+
+```python
+import molsysviewer as msv
+
+with msv.demo["pentalanine"] as view:
+    view.regions.add(tag="site", atom_indices=[0, 1, 2])
+    view.movie.set_baseline(1000, camera={
+        "position": [0, 0, 30], "target": [0, 0, 0], "up": [0, 1, 0]
+    })
+    view.movie.add_track({
+        "tag": "hide-site", "target": {"domain": "region", "tag": "site"},
+        "property": "visible", "keys": [{"time_ms": 500, "value": False}]
+    })
+    recipe = view.movie.to_dict()
+    view.regions["site"].delete()
+    view.regions.add(tag="pocket", atom_indices=[0, 1, 2])
+    review = view.movie.review_import(recipe, target_map=[{
+        "source": {"domain": "region", "tag": "site"},
+        "target": {"domain": "region", "tag": "pocket"}
+    }])
+    assert review["can_apply"], review["conflicts"]
+    view.movie.apply_import(review)
+    assert view.movie.evaluate(500)["visibility"][-1]["visible"] is False
+```
+
+Inspect `changes`, `affected_tracks`, `targets`, `warnings` and `conflicts`
+before accepting a review. An implicit start value can change with the new
+baseline. A same-name replacement of a region or named analysis requires an
+explicit map too. Scientific-target associations are reported; their data are
+not calculated, aligned or rewritten.
+Region identifiers are local to a View. Changing their molecular definition
+or dependency definitions also requires explicit correspondence.
+
+If the destination molecular binding differs, declare all tagged targets and
+provide `structure_index_map`: one source local structure index (or `None` for
+a new structure) per destination structure. Every frame used by the recipe,
+including its initial frame, must have exactly one destination. Missing or
+ambiguous frames are conflicts. Camera coordinates stay in their original
+ångström world space; a correspondence is not a spatial alignment.
+
+Only the latest successful review belongs to that View. Scene or recipe edits
+can make it stale. Acceptance rechecks the private source/options and preserves
+the old Movie on error. It changes the recipe only; use `reset_async()` when
+ready to apply its baseline. The compact import record survives JSON/session
+save and media export. Reviewed import currently accepts version 2; legacy
+version-1 recipes continue to use their existing reader and playback.
+
 ### Animating appearance
 
 You can also change the scene's appearance without changing molecular data:

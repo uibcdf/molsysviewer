@@ -119,6 +119,8 @@ async function run() {
             await popup.waitForFunction(() => (window as any).__mirrorController?.state.regionIndex.get("site")?.representations.length === 1);
             const rebase = await operation(page, { rebase_setup: true });
             assert.equal(rebase.tracks_retained, true);
+            assert.equal(rebase.import_provenance.schema, "molsysviewer.movie_import@1");
+            assert.ok(rebase.import_provenance.targets.some((row: any) => row.target.domain === "region" && row.target.tag === "site"));
             assert.ok(rebase.changes.some((row: any) => row.domain === "annotation" && row.tag === "rebase-note"));
             const snapshots: any[] = [];
             for (const time of [500, 1000, 250, 0]) {

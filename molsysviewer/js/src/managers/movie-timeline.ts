@@ -198,6 +198,7 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
     { duration_ms: number; evaluate(time_ms: number): MovieSample } {
     const fields = ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"];
     if (value && typeof value === "object" && owns(value, "color_interpolation")) fields.push("color_interpolation");
+    if (value && typeof value === "object" && owns(value, "provenance")) fields.push("provenance");
     const recipe = record(value, "Movie recipe", fields);
     if (owns(recipe, "color_interpolation") && recipe.color_interpolation !== colorInterpolation) {
         throw new Error("Unsupported Movie colour interpolation contract.");
@@ -222,6 +223,7 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
         throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
     }
     const scene = record(baseline.scene, "Movie scene");
+    if (owns(recipe, "provenance")) validateMovieImportProvenance(recipe.provenance, count as number);
     if (scene.environment !== undefined) validateMovieEnvironment(scene.environment);
     if (owns(baseline, "environment_capture")) validateMovieEnvironmentCapture(baseline.environment_capture, scene.environment);
     if (scene.version !== 2 || owns(scene, "movie")) {
@@ -319,3 +321,4 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
         },
     };
 }
+import { validateMovieImportProvenance } from "./movie-import-provenance";

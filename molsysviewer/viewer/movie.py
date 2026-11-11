@@ -54,6 +54,7 @@ class MovieManager:
         self._playback = None
         self._export_job = None
         self._rebase_capture = None
+        self._import_review = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -330,7 +331,7 @@ class MovieManager:
         """Remove the current recipe without changing the visible scene."""
         self._keyframes = []
         self._timeline = None
-        self._rebase_capture = None
+        self._invalidate_observation()
 
     # ── Properties ────────────────────────────────────────────────────────
 
@@ -504,6 +505,46 @@ class MovieManager:
 
         rebase(self, review)
 
+    @signal(tags=["movie"])
+    @digest()
+    def review_import(
+        self,
+        data: dict,
+        *,
+        target_map: list | None = None,
+        structure_index_map: list | None = None,
+        camera: dict | None = None,
+        skip_digestion: bool = False,
+    ) -> dict:
+        """Review a version-2 recipe against this View's prepared scene.
+
+        Target maps contain source/target domain and tag records, within the
+        same domain. Structure correspondence is new-to-old, one entry per
+        destination structure. Each referenced source frame needs exactly one
+        destination. Changed molecular bindings require both explicit maps;
+        no molecular, scientific or spatial correspondence is inferred.
+        Camera keys keep their angstrom world coordinates; camera optionally
+        replaces only the baseline pose. The returned report is detached and
+        does not change either the scene or the current Movie. Only the latest
+        successful review belongs to this View and can be accepted.
+        """
+        from ._movie_import import review_import
+
+        return review_import(self, data, target_map=target_map, structure_index_map=structure_index_map, camera=camera)
+
+    @signal(tags=["movie"])
+    @digest()
+    def apply_import(self, review: dict, *, skip_digestion: bool = False) -> None:
+        """Accept an unchanged current import review without scene commands.
+
+        Reject stale, edited, foreign or conflicted reviews and active Movie
+        operations. Preserve the existing recipe on failure. Use reset_async()
+        separately when ready to apply the imported baseline to the renderer.
+        """
+        from ._movie_import import apply_import
+
+        apply_import(self, review)
+
     @signal()
     @digest()
     def evaluate(self, time_ms: float, *, skip_digestion: bool = False) -> dict:
@@ -624,6 +665,7 @@ class MovieManager:
                 )
         self._keyframes = [deepcopy(dict(kf)) for kf in keyframes]
         self._timeline = None
+        self._invalidate_observation()
 
     @signal()
     @digest()
@@ -884,11 +926,12 @@ class MovieManager:
     def _install_timeline(self, timeline: _MovieTimeline) -> None:
         self._keyframes = []
         self._timeline = timeline
-        self._rebase_capture = None
+        self._invalidate_observation()
 
     def _invalidate_observation(self) -> None:
         """Release a stale live review, including its reference to molecular data."""
         self._rebase_capture = None
+        self._import_review = None
 
     def _session_recipe(self, state):
         if self._timeline is None:

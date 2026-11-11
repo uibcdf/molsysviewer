@@ -3555,9 +3555,9 @@ BitmapIndexedNode.prototype.update = function update3(ownerID, shift2, keyHash, 
   }
   return new BitmapIndexedNode(ownerID, newBitmap, newNodes);
 };
-var HashArrayMapNode = function HashArrayMapNode2(ownerID, count3, nodes) {
+var HashArrayMapNode = function HashArrayMapNode2(ownerID, count4, nodes) {
   this.ownerID = ownerID;
-  this.count = count3;
+  this.count = count4;
   this.nodes = nodes;
 };
 HashArrayMapNode.prototype.get = function get3(shift2, keyHash, key2, notSetValue) {
@@ -3913,10 +3913,10 @@ function createNodes(ownerID, entries3, key2, value) {
   }
   return node;
 }
-function packNodes(ownerID, nodes, count3, excluding) {
+function packNodes(ownerID, nodes, count4, excluding) {
   var bitmap = 0;
   var packedII = 0;
-  var packedNodes = new Array(count3);
+  var packedNodes = new Array(count4);
   for (var ii = 0, bit = 1, len = nodes.length; ii < len; ii++, bit <<= 1) {
     var node = nodes[ii];
     if (node !== void 0 && ii !== excluding) {
@@ -3927,13 +3927,13 @@ function packNodes(ownerID, nodes, count3, excluding) {
   return new BitmapIndexedNode(ownerID, bitmap, packedNodes);
 }
 function expandNodes(ownerID, nodes, bitmap, including, node) {
-  var count3 = 0;
+  var count4 = 0;
   var expandedNodes = new Array(SIZE);
   for (var ii = 0; bitmap !== 0; ii++, bitmap >>>= 1) {
-    expandedNodes[ii] = bitmap & 1 ? nodes[count3++] : void 0;
+    expandedNodes[ii] = bitmap & 1 ? nodes[count4++] : void 0;
   }
   expandedNodes[including] = node;
-  return new HashArrayMapNode(ownerID, count3 + 1, expandedNodes);
+  return new HashArrayMapNode(ownerID, count4 + 1, expandedNodes);
 }
 function popCount(x) {
   x -= x >> 1 & 1431655765;
@@ -6217,17 +6217,17 @@ RecordPrototype.inspect = RecordPrototype.toSource = function() {
   return this.toString();
 };
 function makeRecord(likeRecord, values2, ownerID) {
-  var record5 = Object.create(Object.getPrototypeOf(likeRecord));
-  record5._values = values2;
-  record5.__ownerID = ownerID;
-  return record5;
+  var record6 = Object.create(Object.getPrototypeOf(likeRecord));
+  record6._values = values2;
+  record6.__ownerID = ownerID;
+  return record6;
 }
-function recordName(record5) {
-  return record5.constructor.displayName || record5.constructor.name || "Record";
+function recordName(record6) {
+  return record6.constructor.displayName || record6.constructor.name || "Record";
 }
-function recordSeq(record5) {
-  return keyedSeqFromValue(record5._keys.map(function(k) {
-    return [k, record5.get(k)];
+function recordSeq(record6) {
+  return keyedSeqFromValue(record6._keys.map(function(k) {
+    return [k, record6.get(k)];
   }));
 }
 function setProp(prototype, name) {
@@ -8074,15 +8074,15 @@ function debounceTime(dueTime, scheduler) {
 }
 
 // node_modules/rxjs/dist/esm5/internal/operators/take.js
-function take2(count3) {
-  return count3 <= 0 ? function() {
+function take2(count4) {
+  return count4 <= 0 ? function() {
     return EMPTY;
   } : operate(function(source, subscriber) {
     var seen = 0;
     source.subscribe(createOperatorSubscriber(subscriber, function(value) {
-      if (++seen <= count3) {
+      if (++seen <= count4) {
         subscriber.next(value);
-        if (count3 <= seen) {
+        if (count4 <= seen) {
           subscriber.complete();
         }
       }
@@ -11891,16 +11891,16 @@ var Mask;
   }
   Mask2.hasAny = hasAny;
   function complement2(mask, against) {
-    let count3 = 0;
+    let count4 = 0;
     let max5 = 0;
     against.forEach((i) => {
       if (!mask.has(i)) {
-        count3++;
+        count4++;
         if (i > max5)
           max5 = i;
       }
     });
-    if (count3 / max5 < 1 / 12) {
+    if (count4 / max5 < 1 / 12) {
       const set4 = /* @__PURE__ */ new Set();
       against.forEach((i) => {
         if (!mask.has(i)) {
@@ -11915,7 +11915,7 @@ var Mask;
           target[i] = 1;
         }
       });
-      return ofMask(target, count3);
+      return ofMask(target, count4);
     }
   }
   Mask2.complement = complement2;
@@ -14827,25 +14827,25 @@ var Column;
   }
   Column2.ofStringListArray = ofStringListArray;
   function ofIntTokens(tokens) {
-    const { count: count3, data, indices: indices3 } = tokens;
+    const { count: count4, data, indices: indices3 } = tokens;
     return lambdaColumn({
       value: (row3) => parseInt2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0,
-      rowCount: count3,
+      rowCount: count4,
       schema: Schema9.int
     });
   }
   Column2.ofIntTokens = ofIntTokens;
   function ofFloatTokens(tokens) {
-    const { count: count3, data, indices: indices3 } = tokens;
+    const { count: count4, data, indices: indices3 } = tokens;
     return lambdaColumn({
       value: (row3) => parseFloat2(data, indices3[2 * row3], indices3[2 * row3 + 1]) || 0,
-      rowCount: count3,
+      rowCount: count4,
       schema: Schema9.float
     });
   }
   Column2.ofFloatTokens = ofFloatTokens;
   function ofStringTokens(tokens) {
-    const { count: count3, data, indices: indices3 } = tokens;
+    const { count: count4, data, indices: indices3 } = tokens;
     return lambdaColumn({
       value: (row3) => {
         const ret = data.substring(indices3[2 * row3], indices3[2 * row3 + 1]);
@@ -14853,7 +14853,7 @@ var Column;
           return "";
         return ret;
       },
-      rowCount: count3,
+      rowCount: count4,
       schema: Schema9.str
     });
   }
@@ -15987,14 +15987,14 @@ function subtract(a8, b8) {
 function deduplicate(xs) {
   if (xs.length < 2)
     return xs;
-  let count3 = 1;
+  let count4 = 1;
   for (let i = 0, _i = xs.length - 1; i < _i; i++) {
     if (xs[i] !== xs[i + 1])
-      count3++;
+      count4++;
   }
-  if (count3 === xs.length)
+  if (count4 === xs.length)
     return xs;
-  const ret = new Int32Array(count3);
+  const ret = new Int32Array(count4);
   let o = 0;
   for (let i = 0, _i = xs.length - 1; i < _i; i++) {
     if (xs[i] !== xs[i + 1])
@@ -16562,8 +16562,8 @@ function ofOffsets(offsets, bounds) {
   segments2[offsets.length] = Interval.end(bounds) - s;
   return create2(segments2);
 }
-function count2({ count: count3 }) {
-  return count3;
+function count2({ count: count4 }) {
+  return count4;
 }
 function getSegment({ index }, value) {
   return index[value];
@@ -17291,28 +17291,28 @@ function utf8ReadLong(data, offset4 = 0, length2 = data.length) {
   return out.length <= MAX_STRING_LENGTH ? out.toString() : out;
 }
 function utf8ByteCount(str11) {
-  let count3 = 0;
+  let count4 = 0;
   for (let i = 0, l = str11.length; i < l; i++) {
     const codePoint = str11.charCodeAt(i);
     if (codePoint < 128) {
-      count3 += 1;
+      count4 += 1;
       continue;
     }
     if (codePoint < 2048) {
-      count3 += 2;
+      count4 += 2;
       continue;
     }
     if (codePoint < 65536) {
-      count3 += 3;
+      count4 += 3;
       continue;
     }
     if (codePoint < 1114112) {
-      count3 += 4;
+      count4 += 4;
       continue;
     }
     throwError("bad codepoint " + codePoint);
   }
-  return count3;
+  return count4;
 }
 
 // node_modules/molstar/lib/mol-task/util/scheduler.js
@@ -18141,11 +18141,11 @@ function InflateContext(data, buf) {
     pos: 0
   };
 }
-function inflateBlocks(ctx, count3) {
+function inflateBlocks(ctx, count4) {
   const { data, noBuf } = ctx;
   let { buf, BFINAL, off, pos } = ctx;
   let iBlock = 0;
-  while (BFINAL === 0 && iBlock < count3) {
+  while (BFINAL === 0 && iBlock < count4) {
     let lmap, dmap;
     let ML = 0, MD = 0;
     BFINAL = _bitsF(data, pos, 1);
@@ -18476,11 +18476,11 @@ function DeflateContext(data, out, opos, lvl) {
     prev
   };
 }
-function deflateChunk(ctx, count3) {
+function deflateChunk(ctx, count4) {
   const { data, dlen, out, opt } = ctx;
   let { i, pos, cvrd, li, lc, bs, ebits, c: c8, nc } = ctx;
   const { lits, strt, prev } = U;
-  const end4 = Math.min(i + count3, dlen);
+  const end4 = Math.min(i + count4, dlen);
   for (; i < end4; i++) {
     c8 = nc;
     if (i + 1 < dlen - 2) {
@@ -20152,12 +20152,12 @@ function arraySetRemove(xs, x) {
   return true;
 }
 function arrayIntersectionSize(xs, ys) {
-  let count3 = 0;
+  let count4 = 0;
   for (let i = 0, il = xs.length; i < il; ++i) {
     if (ys.includes(xs[i]))
-      count3 += 1;
+      count4 += 1;
   }
-  return count3;
+  return count4;
 }
 function arrayEqual2(xs, ys) {
   if (!xs || xs.length === 0)
@@ -23679,16 +23679,16 @@ var FibonacciHeap = class {
   * @return The size of the node list.
   */
   _getNodeListSize(node) {
-    let count3 = 0;
+    let count4 = 0;
     let current2 = node;
     do {
-      count3++;
+      count4++;
       if (current2.child) {
-        count3 += this._getNodeListSize(current2.child);
+        count4 += this._getNodeListSize(current2.child);
       }
       current2 = current2.next;
     } while (current2 !== node);
-    return count3;
+    return count4;
   }
 };
 
@@ -24028,8 +24028,8 @@ function query(ctx, result2) {
           continue;
         const k = bucketIdx - 1;
         const offset4 = bucketOffset[k];
-        const count3 = bucketCounts[k];
-        const end4 = offset4 + count3;
+        const count4 = bucketCounts[k];
+        const end4 = offset4 + count4;
         for (let i = offset4; i < end4; i++) {
           const idx = OrderedSet2.getAt(indices3, bucketArray[i]);
           const dx = px[idx] - x;
@@ -24091,8 +24091,8 @@ function approxQueryNearest(ctx, result2) {
       continue;
     const k = bucketIdx - 1;
     const offset4 = bucketOffset[k];
-    const count3 = bucketCounts[k];
-    const end4 = offset4 + count3;
+    const count4 = bucketCounts[k];
+    const end4 = offset4 + count4;
     let minDistSq = Number.MAX_VALUE;
     for (let i2 = offset4; i2 < end4; i2++) {
       const idx = OrderedSet2.getAt(indices3, bucketArray[i2]);
@@ -24158,8 +24158,8 @@ function queryNearest(ctx, result2) {
           const _maxRange = maxRange;
           const ki = bucketIdx - 1;
           const offset4 = bucketOffset[ki];
-          const count3 = bucketCounts[ki];
-          const end4 = offset4 + count3;
+          const count4 = bucketCounts[ki];
+          const end4 = offset4 + count4;
           for (let i = offset4; i < end4; i++) {
             const bIdx = bucketArray[i];
             const idx = OrderedSet2.getAt(indices3, bIdx);
@@ -24310,19 +24310,19 @@ var RendererParams = {
 var tmpDir = Vec3();
 var tmpColor = Vec3();
 function getLight(props, light) {
-  const count3 = props.length;
+  const count4 = props.length;
   const { direction, color } = light || {
-    direction: new Array(count3 * 3).fill(0),
-    color: new Array(count3 * 3).fill(0)
+    direction: new Array(count4 * 3).fill(0),
+    color: new Array(count4 * 3).fill(0)
   };
-  for (let i = 0; i < count3; ++i) {
+  for (let i = 0; i < count4; ++i) {
     const p6 = props[i];
     Vec3.directionFromSpherical(tmpDir, degToRad(p6.inclination), degToRad(p6.azimuth), 1);
     Vec3.toArray(tmpDir, direction, i * 3);
     Vec3.scale(tmpColor, Color.toVec3Normalized(tmpColor, p6.color), p6.intensity);
     Vec3.toArray(tmpColor, color, i * 3);
   }
-  return { count: count3, direction, color };
+  return { count: count4, direction, color };
 }
 function getTransformedLightDirection(light, t5) {
   const tld = new Array(light.count * 3);
@@ -29967,8 +29967,8 @@ var reUnrollLoop = /#pragma unroll_loop_start\s+for\s*\(\s*int\s+i\s*=\s*(\d+)\s
 var reSingleLineComment = /[ \t]*\/\/.*\n/g;
 var reMultiLineComment = /[ \t]*\/\*[\s\S]*?\*\//g;
 var reMultipleLinebreaks = /\n{2,}/g;
-function addIncludes(text) {
-  return text.replace(reInclude, (_, p13) => {
+function addIncludes(text2) {
+  return text2.replace(reInclude, (_, p13) => {
     const chunk = ShaderChunks[p13];
     if (!chunk)
       throw new Error(`empty chunk, '${p13}'`);
@@ -31046,12 +31046,12 @@ function createBuffer(gl, array2, usageHint, bufferType) {
     },
     getBuffer: () => _buffer,
     updateData,
-    updateSubData: (array3, offset4, count3) => {
+    updateSubData: (array3, offset4, count4) => {
       gl.bindBuffer(_bufferType, _buffer);
-      if (count3 - offset4 === array3.length) {
+      if (count4 - offset4 === array3.length) {
         gl.bufferSubData(_bufferType, 0, array3);
       } else {
-        gl.bufferSubData(_bufferType, offset4 * _bpe, array3.subarray(offset4, offset4 + count3));
+        gl.bufferSubData(_bufferType, offset4 * _bpe, array3.subarray(offset4, offset4 + count4));
       }
     },
     reset: () => {
@@ -33086,9 +33086,9 @@ function createRenderTarget(gl, resources, _width, _height, depth = true, type3 
 }
 
 // node_modules/molstar/lib/mol-gl/webgl/timer.js
-function movingAverage(avg, sample, count3) {
-  avg -= avg / count3;
-  avg += sample / count3;
+function movingAverage(avg, sample, count4) {
+  avg -= avg / count4;
+  avg += sample / count4;
   return avg;
 }
 var MovingAverage = class {
@@ -33107,8 +33107,8 @@ var MovingAverage = class {
   clear() {
     this.avgs.clear();
   }
-  constructor(count3) {
-    this.count = count3;
+  constructor(count4) {
+    this.count = count4;
     this.avgs = /* @__PURE__ */ new Map();
   }
 };
@@ -40662,12 +40662,12 @@ var SetUtils;
       return setA.size;
     if (setA.size < setB.size)
       [setA, setB] = [setB, setA];
-    let count3 = 0;
+    let count4 = 0;
     for (const elem of setB) {
       if (setA.has(elem))
-        count3 += 1;
+        count4 += 1;
     }
-    return count3;
+    return count4;
   }
   SetUtils2.intersectionSize = intersectionSize4;
   function difference(setA, setB) {
@@ -40682,12 +40682,12 @@ var SetUtils;
   function differenceSize(setA, setB) {
     if (setA === setB)
       return 0;
-    let count3 = setA.size;
+    let count4 = setA.size;
     for (const elem of setA) {
       if (setB.has(elem))
-        count3 -= 1;
+        count4 -= 1;
     }
-    return count3;
+    return count4;
   }
   SetUtils2.differenceSize = differenceSize;
   function areEqual4(setA, setB) {
@@ -41520,8 +41520,8 @@ var ResidueHydrophobicity = {
 };
 
 // node_modules/molstar/lib/mol-model-formats/structure/property/bonds/index-pair.js
-function getGraph(indexA, indexB, props, count3) {
-  const builder = new IntAdjacencyGraph.EdgeBuilder(count3, indexA, indexB);
+function getGraph(indexA, indexB, props, count4) {
+  const builder = new IntAdjacencyGraph.EdgeBuilder(count4, indexA, indexB);
   const key2 = new Int32Array(builder.slotCount);
   const operatorA = new Array(builder.slotCount);
   const operatorB = new Array(builder.slotCount);
@@ -41560,7 +41560,7 @@ var IndexPairBonds;
   };
   function fromData(data, props = {}) {
     const p6 = { ...IndexPairBonds2.DefaultProps, ...props };
-    const { pairs, count: count3 } = data;
+    const { pairs, count: count4 } = data;
     const indexA = pairs.indexA.toArray();
     const indexB = pairs.indexB.toArray();
     const key2 = pairs.key && pairs.key.toArray();
@@ -41579,7 +41579,7 @@ var IndexPairBonds;
         }
       }
     }
-    const bonds = getGraph(indexA, indexB, { key: key2, operatorA, operatorB, order, distance: distance2, flag }, count3);
+    const bonds = getGraph(indexA, indexB, { key: key2, operatorA, operatorB, order, distance: distance2, flag }, count4);
     const bySameOperator = /* @__PURE__ */ new Map();
     if (hasOperators) {
       const { operatorA: operatorA2, operatorB: operatorB2 } = bonds.edgeProps;
@@ -41661,8 +41661,8 @@ function areValuesEqualProvider(tokens) {
   };
 }
 function areTokensEmpty(tokens) {
-  const { count: count3, indices: indices3 } = tokens;
-  for (let i = 0; i < count3; ++i) {
+  const { count: count4, indices: indices3 } = tokens;
+  for (let i = 0; i < count4; ++i) {
     if (indices3[2 * i] !== indices3[2 * i + 1])
       return false;
   }
@@ -43132,14 +43132,14 @@ var CentroidHelper = class {
     return to;
   }
   CentroidHelper2.fromArrays = fromArrays;
-  function fromProvider(count3, getter, to) {
+  function fromProvider(count4, getter, to) {
     helper.reset();
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       getter(i, posA2);
       helper.includeStep(posA2);
     }
     helper.finishedIncludeStep();
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       getter(i, posA2);
       helper.radiusStep(posA2);
     }
@@ -43148,15 +43148,15 @@ var CentroidHelper = class {
     return to;
   }
   CentroidHelper2.fromProvider = fromProvider;
-  function fromPairProvider(count3, getter, to) {
+  function fromPairProvider(count4, getter, to) {
     helper.reset();
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       getter(i, posA2, posB2);
       helper.includeStep(posA2);
       helper.includeStep(posB2);
     }
     helper.finishedIncludeStep();
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       getter(i, posA2, posB2);
       helper.radiusStep(posA2);
       helper.radiusStep(posB2);
@@ -43199,13 +43199,13 @@ var InterUnitGraph = class _InterUnitGraph {
   }
   constructor(map4) {
     this.map = map4;
-    let count3 = 0;
+    let count4 = 0;
     const edges = [];
     const edgeKeyIndex = /* @__PURE__ */ new Map();
     const vertexKeyIndex = /* @__PURE__ */ new Map();
     this.map.forEach((pairEdgesArray) => {
       pairEdgesArray.forEach((pairEdges) => {
-        count3 += pairEdges.edgeCount;
+        count4 += pairEdges.edgeCount;
         pairEdges.connectedIndices.forEach((indexA) => {
           pairEdges.getEdges(indexA).forEach((edgeInfo) => {
             const { unitA, unitB } = pairEdges;
@@ -43227,7 +43227,7 @@ var InterUnitGraph = class _InterUnitGraph {
         });
       });
     });
-    this.edgeCount = count3;
+    this.edgeCount = count4;
     this.edges = edges;
     this.edgeKeyIndex = edgeKeyIndex;
     this.vertexKeyIndex = vertexKeyIndex;
@@ -45737,12 +45737,12 @@ function findBonds(unit2, props) {
     const aeI = getElementIdx(elemA);
     const atomIdA = label_atom_id.value(aI);
     const componentPairs = componentMap ? componentMap.get(atomIdA) : void 0;
-    const { indices: indices3, count: count3, squaredDistances } = query3d.find(x[aI], y[aI], z[aI], maxRadius);
+    const { indices: indices3, count: count4, squaredDistances } = query3d.find(x[aI], y[aI], z[aI], maxRadius);
     const isHa = isHydrogen(aeI);
     const thresholdA = getElementThreshold(aeI);
     const altA = label_alt_id.value(aI);
     const metalA = MetalsSet.has(aeI);
-    for (let ni = 0; ni < count3; ni++) {
+    for (let ni = 0; ni < count4; ni++) {
       const _bI = indices3[ni];
       if (hasStructConn && structConnAdded.has(_bI))
         continue;
@@ -45973,8 +45973,8 @@ function findPairBonds(unitA, unitB, props, builder) {
       continue;
     const occA = occupancyA.value(aI);
     const { lookup3d } = unitB;
-    const { indices: indices3, count: count3, squaredDistances } = lookup3d.find(_imageA[0], _imageA[1], _imageA[2], maxRadius);
-    if (count3 === 0)
+    const { indices: indices3, count: count4, squaredDistances } = lookup3d.find(_imageA[0], _imageA[1], _imageA[2], maxRadius);
+    if (count4 === 0)
       continue;
     const aeI = getElementIdx(type_symbolA.value(aI));
     const isHa = isHydrogen(aeI);
@@ -45983,7 +45983,7 @@ function findPairBonds(unitA, unitB, props, builder) {
     const metalA = MetalsSet.has(aeI);
     const atomIdA = label_atom_idA.value(aI);
     const compIdA = label_comp_idA.value(residueIndexA[aI]);
-    for (let ni = 0; ni < count3; ni++) {
+    for (let ni = 0; ni < count4; ni++) {
       const _bI = indices3[ni];
       const bI = atomsB[_bI];
       const altB = label_alt_idB.value(bI);
@@ -46321,14 +46321,14 @@ var Bond;
   }
   Bond2.getOrder = getOrder;
   function getIntraUnitBondCount(structure) {
-    let count3 = 0;
+    let count4 = 0;
     for (const ug of structure.unitSymmetryGroups) {
       const u2 = ug.units[0];
       if (Unit.isAtomic(u2)) {
-        count3 += u2.bonds.edgeCount * ug.units.length;
+        count4 += u2.bonds.edgeCount * ug.units.length;
       }
     }
-    return count3;
+    return count4;
   }
   Bond2.getIntraUnitBondCount = getIntraUnitBondCount;
   class ElementBondIterator {
@@ -47133,10 +47133,10 @@ var SortedRanges;
     return size5;
   }
   SortedRanges2.size = size4;
-  function count3(ranges) {
+  function count4(ranges) {
     return ranges.length / 2;
   }
-  SortedRanges2.count = count3;
+  SortedRanges2.count = count4;
   function startAt(ranges, index) {
     return ranges[index * 2];
   }
@@ -47188,7 +47188,7 @@ var SortedRanges;
   function firstIntersectionIndexFrom(ranges, set4, from2) {
     if (minAt(ranges, from2) > OrderedSet2.max(set4) || max5(ranges) < OrderedSet2.min(set4))
       return -1;
-    for (let i = from2, il = count3(ranges); i < il; ++i) {
+    for (let i = from2, il = count4(ranges); i < il; ++i) {
       const interval = Interval.ofRange(minAt(ranges, i), maxAt(ranges, i));
       if (OrderedSet2.areIntersecting(interval, set4))
         return i;
@@ -47528,8 +47528,8 @@ var Type122 = [
 var v3set2 = Vec3.set;
 var boundaryHelperCoarse = new BoundaryHelper("14");
 var boundaryHelperFine = new BoundaryHelper("98");
-function getBoundaryHelper(count3) {
-  return count3 > 1e4 ? boundaryHelperCoarse : boundaryHelperFine;
+function getBoundaryHelper(count4) {
+  return count4 > 1e4 ? boundaryHelperCoarse : boundaryHelperFine;
 }
 function getFastBoundary(data) {
   const box5 = Box3D.computeBounding(data);
@@ -47872,8 +47872,8 @@ function getDelocalizedTriplets(unit2) {
   for (let i = 0; i < unit2.elements.length; i++) {
     if (elementAromaticRingIndices.has(i))
       continue;
-    const count3 = offset4[i + 1] - offset4[i] + 1;
-    if (count3 < 2)
+    const count4 = offset4[i + 1] - offset4[i] + 1;
+    if (count4 < 2)
       continue;
     const deloBonds = [];
     for (let t5 = offset4[i], _t2 = offset4[i + 1]; t5 < _t2; t5++) {
@@ -50083,8 +50083,8 @@ function calcUnitBackboneHbonds(unit2, proteinInfo, lookup3d) {
     c8.invariantPosition(oAtom, oPos);
     c8.invariantPosition(cAtom, cPos);
     c8.invariantPosition(caAtom, caPos);
-    const { indices: indices3, count: count3 } = lookup3d.find(caPos[0], caPos[1], caPos[2], caMaxDist);
-    for (let j = 0; j < count3; ++j) {
+    const { indices: indices3, count: count4 } = lookup3d.find(caPos[0], caPos[1], caPos[2], caMaxDist);
+    for (let j = 0; j < count4; ++j) {
       const nPI = indices3[j];
       if (nPI === oPI || nPI - 1 === oPI || nPI + 1 === oPI)
         continue;
@@ -50863,8 +50863,8 @@ function zhangSkolnickAtomicSS(unit2, residueIndices, i, distances, delta2) {
   return true;
 }
 async function computeUnitZhangSkolnik(unit2) {
-  const count3 = unit2.proteinElements.length;
-  const type3 = new Uint32Array(count3);
+  const count4 = unit2.proteinElements.length;
+  const type3 = new Uint32Array(count4);
   const keys3 = [];
   const elements = [];
   const { proteinElements, residueIndex: residueIndex2 } = unit2;
@@ -52374,9 +52374,9 @@ var Predicates;
         return (l) => a8(l) && b8(l) && c8(l) && d5(l) && e(l) && f(l);
       }
       default: {
-        const count3 = ps.length;
+        const count4 = ps.length;
         return (l) => {
-          for (let i = 0; i < count3; i++)
+          for (let i = 0; i < count4; i++)
             if (!ps[i])
               return false;
           return true;
@@ -52412,9 +52412,9 @@ var Predicates;
         return (l) => a8(l) || b8(l) || c8(l) || d5(l) || e(l) || f(l);
       }
       default: {
-        const count3 = ps.length;
+        const count4 = ps.length;
         return (l) => {
-          for (let i = 0; i < count3; i++)
+          for (let i = 0; i < count4; i++)
             if (ps[i])
               return true;
           return false;
@@ -52821,18 +52821,18 @@ var CombinationIterator = class {
     }
     return this.value;
   }
-  constructor(array2, count3) {
+  constructor(array2, count4) {
     this.array = array2;
     this.hasNext = false;
-    this.index = (1 << count3) - 1;
-    this.size = C(array2.length, count3);
-    this.maxIndex = 1 << array2.length, this.value = new Array(count3);
-    this.hasNext = count3 > 0 && count3 <= array2.length;
+    this.index = (1 << count4) - 1;
+    this.size = C(array2.length, count4);
+    this.maxIndex = 1 << array2.length, this.value = new Array(count4);
+    this.hasNext = count4 > 0 && count4 <= array2.length;
   }
 };
-function combinations(array2, count3) {
+function combinations(array2, count4) {
   const out = [];
-  const combinationIt = new CombinationIterator(array2, count3);
+  const combinationIt = new CombinationIterator(array2, count4);
   while (combinationIt.hasNext)
     out.push(combinationIt.move().slice());
   return out;
@@ -53185,8 +53185,8 @@ function buildLookups(elements, links, terminalLinks) {
 var tmpSphere = Sphere3D();
 var boundaryHelperCoarse2 = new BoundaryHelper("14");
 var boundaryHelperFine2 = new BoundaryHelper("98");
-function getBoundaryHelper2(count3) {
-  return count3 > 500 ? boundaryHelperCoarse2 : boundaryHelperFine2;
+function getBoundaryHelper2(count4) {
+  return count4 > 500 ? boundaryHelperCoarse2 : boundaryHelperFine2;
 }
 function computeStructureBoundary(s) {
   const { units } = s;
@@ -53874,7 +53874,7 @@ function getAtomicResidueCount(structure) {
       return Structure6.Empty;
     const units = [];
     let first4 = void 0;
-    let count3 = 0;
+    let count4 = 0;
     for (let i = 0, il = trajectory.frameCount; i < il; ++i) {
       const frame2 = await Task.resolveInContext(trajectory.getFrameAtIndex(i), ctx);
       if (!first4)
@@ -53882,12 +53882,12 @@ function getAtomicResidueCount(structure) {
       const structure = ofModel(frame2);
       for (let j = 0, jl = structure.units.length; j < jl; ++j) {
         const u2 = structure.units[j];
-        const invariantId = u2.invariantId + count3;
-        const chainGroupId = u2.chainGroupId + count3;
+        const invariantId = u2.invariantId + count4;
+        const chainGroupId = u2.chainGroupId + count4;
         const newUnit = Unit.create(units.length, invariantId, chainGroupId, u2.traits, u2.kind, u2.model, u2.conformation.operator, u2.elements);
         units.push(newUnit);
       }
-      count3 = units.length;
+      count4 = units.length;
     }
     return create3(units, { representativeModel: first4, label: first4.label });
   }
@@ -55197,8 +55197,8 @@ var Stats;
   }
   Stats2.create = create3;
   function addCountHelper(map4, key2, inc) {
-    const count3 = map4.get(key2) || 0;
-    map4.set(key2, count3 + inc);
+    const count4 = map4.get(key2) || 0;
+    map4.set(key2, count4 + inc);
   }
   function handleElement(stats, structure, element) {
     const { indices: indices3, unit: unit2 } = element;
@@ -55370,8 +55370,8 @@ var Stats;
       }
     }
     let firstCI = -1;
-    chainCounts.forEach((count3, cI) => {
-      if (offsets[cI + 1] - offsets[cI] === count3) {
+    chainCounts.forEach((count4, cI) => {
+      if (offsets[cI + 1] - offsets[cI] === count4) {
         stats.chainCount += 1;
         if (stats.chainCount === 1) {
           firstCI = cI;
@@ -55584,9 +55584,9 @@ function Tokenizer(data) {
     return getTokenString3(state);
   }
   Tokenizer2.readLineTrim = readLineTrim;
-  function readLinesChunk(state, count3, tokens) {
+  function readLinesChunk(state, count4, tokens) {
     let read = 0;
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       if (!markLine4(state))
         return read;
       TokenBuilder.addUnchecked(tokens, state.tokenStart, state.tokenEnd);
@@ -55594,25 +55594,25 @@ function Tokenizer(data) {
     }
     return read;
   }
-  function markLines(state, count3) {
-    const lineTokens = TokenBuilder.create(state.data, count3 * 2);
-    readLinesChunk(state, count3, lineTokens);
+  function markLines(state, count4) {
+    const lineTokens = TokenBuilder.create(state.data, count4 * 2);
+    readLinesChunk(state, count4, lineTokens);
     return lineTokens;
   }
   Tokenizer2.markLines = markLines;
-  function readLines(state, count3) {
+  function readLines(state, count4) {
     const ret = [];
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       ret.push(Tokenizer2.readLine(state));
     }
     return ret;
   }
   Tokenizer2.readLines = readLines;
-  async function readLinesAsync(state, count3, ctx, initialLineCount = 1e5) {
-    const lineTokens = TokenBuilder.create(state.data, count3 * 2);
+  async function readLinesAsync(state, count4, ctx, initialLineCount = 1e5) {
+    const lineTokens = TokenBuilder.create(state.data, count4 * 2);
     let linesAlreadyRead = 0;
     await chunkedSubtask(ctx, initialLineCount, state, (chunkSize, state2) => {
-      const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
+      const linesToRead = Math.min(count4 - linesAlreadyRead, chunkSize);
       readLinesChunk(state2, linesToRead, lineTokens);
       linesAlreadyRead += linesToRead;
       return linesToRead;
@@ -55629,9 +55629,9 @@ function Tokenizer(data) {
     return tokens;
   }
   Tokenizer2.readAllLines = readAllLines;
-  function readLinesChunkChecked(state, count3, tokens) {
+  function readLinesChunkChecked(state, count4, tokens) {
     let read = 0;
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       if (!markLine4(state))
         return read;
       TokenBuilder.add(tokens, state.tokenStart, state.tokenEnd);
@@ -59311,12 +59311,12 @@ var SIFTSMapping;
     if (!db_name.isDefined || !db_acc.isDefined || !db_num.isDefined || !db_res.isDefined)
       return;
     const { atomSourceIndex } = model.atomicHierarchy;
-    const { count: count3, offsets: residueOffsets } = model.atomicHierarchy.residueAtomSegments;
-    const dbName = new Array(count3);
-    const accession = new Array(count3);
-    const num = new Array(count3);
-    const residue2 = new Array(count3);
-    for (let i = 0; i < count3; i++) {
+    const { count: count4, offsets: residueOffsets } = model.atomicHierarchy.residueAtomSegments;
+    const dbName = new Array(count4);
+    const accession = new Array(count4);
+    const num = new Array(count4);
+    const residue2 = new Array(count4);
+    for (let i = 0; i < count4; i++) {
       const row3 = atomSourceIndex.value(residueOffsets[i]);
       if (db_name.valueKind(row3) !== Column.ValueKinds.Present) {
         dbName[i] = "";
@@ -59953,9 +59953,9 @@ var Index2 = class {
     this._gaussianMapping = void 0;
   }
 };
-function buildMapping({ count: count3, entity_id, asym_id, seq_id_begin, seq_id_end }) {
+function buildMapping({ count: count4, entity_id, asym_id, seq_id_begin, seq_id_end }) {
   const ret = {};
-  for (let i = 0; i < count3; i++) {
+  for (let i = 0; i < count4; i++) {
     const entityId = entity_id.value(i);
     const asymId = asym_id.value(i);
     if (!ret[entityId])
@@ -60045,13 +60045,13 @@ function missingEntity2(k) {
   throw new Error(`Missing entity entry for entity id '${k}'.`);
 }
 function getCoarseKeys(data, entities) {
-  const { entity_id, asym_id, seq_id_begin, seq_id_end, count: count3, chainElementSegments } = data;
+  const { entity_id, asym_id, seq_id_begin, seq_id_end, count: count4, chainElementSegments } = data;
   const seqMaps = /* @__PURE__ */ new Map();
   const chainMaps = /* @__PURE__ */ new Map(), chainCounter = { index: 0 };
-  const chainKey = new Int32Array(count3);
-  const entityKey = new Int32Array(count3);
+  const chainKey = new Int32Array(count4);
+  const entityKey = new Int32Array(count4);
   const chainToEntity = new Int32Array(chainElementSegments.count);
-  for (let i = 0; i < count3; i++) {
+  for (let i = 0; i < count4; i++) {
     entityKey[i] = entities.getEntityIndex(entity_id.value(i));
     if (entityKey[i] < 0)
       missingEntity2(entity_id.value(i));
@@ -60391,16 +60391,16 @@ var Sequence;
         if (maxSeqId < idEnd)
           maxSeqId = idEnd;
       }
-      const count3 = maxSeqId - minSeqId + 1;
-      this.code = Column.ofConst("X", count3, Column.Schema.str);
-      this.label = Column.ofConst("", count3, Column.Schema.str);
+      const count4 = maxSeqId - minSeqId + 1;
+      this.code = Column.ofConst("X", count4, Column.Schema.str);
+      this.label = Column.ofConst("", count4, Column.Schema.str);
       this.seqId = Column.ofLambda({
         value: (row3) => row3 + minSeqId + 1,
-        rowCount: count3,
+        rowCount: count4,
         schema: Column.Schema.int
       });
-      this.compId = Column.ofConst("", count3, Column.Schema.str);
-      this.length = count3;
+      this.compId = Column.ofConst("", count4, Column.Schema.str);
+      this.length = count4;
       this.minSeqId = minSeqId;
     }
   }
@@ -60429,10 +60429,10 @@ var StructureSequence;
     const { label_comp_id } = hierarchy.atoms;
     const { label_seq_id } = hierarchy.residues;
     const { chainAtomSegments, residueAtomSegments } = hierarchy;
-    const { count: count3, offsets } = chainAtomSegments;
+    const { count: count4, offsets } = chainAtomSegments;
     const byEntityKey = {};
     const sequences = [];
-    if (count3 === 1 && offsets[0] === 0 && offsets[1] === 0) {
+    if (count4 === 1 && offsets[0] === 0 && offsets[1] === 0) {
       return { byEntityKey, sequences };
     }
     for (let cI = 0, _cI = hierarchy.chains._rowCount; cI < _cI; cI++) {
@@ -60470,13 +60470,13 @@ var StructureSequence;
   StructureSequence2.fromCoarseHierarchy = fromCoarseHierarchy;
   function fromCoarseElements(entities, elements) {
     const { chainElementSegments, seq_id_begin, seq_id_end } = elements;
-    const { count: count3, offsets } = chainElementSegments;
+    const { count: count4, offsets } = chainElementSegments;
     const byEntityKey = {};
     const sequences = [];
-    if (count3 === 1 && offsets[0] === 0 && offsets[1] === 0) {
+    if (count4 === 1 && offsets[0] === 0 && offsets[1] === 0) {
       return { byEntityKey, sequences };
     }
-    for (let cI = 0, _cI = count3; cI < _cI; cI++) {
+    for (let cI = 0, _cI = count4; cI < _cI; cI++) {
       const eK2 = elements.getEntityFromChain(cI);
       if (byEntityKey[eK2] !== void 0)
         continue;
@@ -60509,11 +60509,11 @@ function getSequence(data, entities, atomicHierarchy, coarseHierarchy) {
   const { entity_id, num, mon_id } = data.entity_poly_seq;
   const byEntityKey = {};
   const sequences = [];
-  const count3 = entity_id.rowCount;
+  const count4 = entity_id.rowCount;
   let i = 0;
-  while (i < count3) {
+  while (i < count4) {
     const start4 = i;
-    while (i < count3 - 1 && entity_id.areValuesEqual(i, i + 1))
+    while (i < count4 - 1 && entity_id.areValuesEqual(i, i + 1))
       i++;
     i++;
     const id = entity_id.value(start4);
@@ -61944,9 +61944,9 @@ function sortByContrast(colors) {
   }
   return sortedColors;
 }
-function getSamples(count3, p6) {
+function getSamples(count4, p6) {
   const samples = /* @__PURE__ */ new Map();
-  const rangeDivider = Math.ceil(Math.cbrt(count3));
+  const rangeDivider = Math.ceil(Math.cbrt(count4));
   const hcl = Hcl();
   const hStep = Math.max((p6.hue[1] - p6.hue[0]) / rangeDivider, 1);
   const cStep = Math.max((p6.chroma[1] - p6.chroma[0]) / rangeDivider, 1);
@@ -61974,22 +61974,22 @@ function getClosestIndex(colors, color) {
   }
   return nearest;
 }
-function distinctColors(count3, props = {}) {
+function distinctColors(count4, props = {}) {
   const p6 = { ...ParamDefinition.getDefaultValues(DistinctColorsParams), ...props };
-  if (count3 <= 0)
+  if (count4 <= 0)
     return [];
-  const samples = getSamples(Math.max(p6.minSampleCount, count3 * p6.sampleCountFactor), p6);
-  if (samples.length < count3) {
+  const samples = getSamples(Math.max(p6.minSampleCount, count4 * p6.sampleCountFactor), p6);
+  if (samples.length < count4) {
     console.warn("Not enough samples to generate distinct colors, increase sample count.");
-    return new Array(count3).fill(ColorNames.lightgrey);
+    return new Array(count4).fill(ColorNames.lightgrey);
   }
   const colors = [];
   const zonesProto = [];
-  const sliceSize = Math.floor(samples.length / count3);
+  const sliceSize = Math.floor(samples.length / count4);
   for (let i = 0; i < samples.length; i += sliceSize) {
     colors.push(samples[i]);
     zonesProto.push([]);
-    if (colors.length >= count3)
+    if (colors.length >= count4)
       break;
   }
   for (let step = 1; step <= p6.clusteringStepCount; ++step) {
@@ -62060,13 +62060,13 @@ var DefaultLabelOptions = {
   minLabel: "Start",
   maxLabel: "End"
 };
-function getPalette(count3, props, labelOptions = {}) {
+function getPalette(count4, props, labelOptions = {}) {
   var _a;
   let color;
   let legend;
   if (props.palette.name === "colors" && props.palette.params.list.kind === "interpolate") {
     const { list: list3 } = props.palette.params;
-    const domain = [0, count3 - 1];
+    const domain = [0, count4 - 1];
     const { minLabel, maxLabel } = { ...DefaultLabelOptions, ...labelOptions };
     let colors = list3.colors;
     if (colors.length === 0)
@@ -62081,13 +62081,13 @@ function getPalette(count3, props, labelOptions = {}) {
       if (colors.length === 0)
         colors = getColorListFromName("dark-2").list.map((c8) => Array.isArray(c8) ? c8[0] : c8);
     } else {
-      count3 = Math.min(count3, props.palette.params.maxCount);
-      colors = distinctColors(count3, props.palette.params);
+      count4 = Math.min(count4, props.palette.params.maxCount);
+      colors = distinctColors(count4, props.palette.params);
     }
     const valueLabel = (_a = labelOptions.valueLabel) !== null && _a !== void 0 ? _a : DefaultLabelOptions.valueLabel;
     const colorsLength = colors.length;
     const table = [];
-    for (let i = 0; i < count3; ++i) {
+    for (let i = 0; i < count4; ++i) {
       const j = i % colorsLength;
       if (table[j] === void 0) {
         table[j] = [valueLabel(i), colors[j]];
@@ -62138,13 +62138,13 @@ function getAsymIdSerialMap(structure, type3) {
   for (const m of structure.models) {
     const asymIdOffset = Model.AsymIdOffset.get(m).value;
     const offset4 = (type3 === "auth" ? asymIdOffset === null || asymIdOffset === void 0 ? void 0 : asymIdOffset.auth : asymIdOffset === null || asymIdOffset === void 0 ? void 0 : asymIdOffset.label) || 0;
-    let count3 = 0;
+    let count4 = 0;
     m.properties.structAsymMap.forEach(({ auth_id }, label_id) => {
       const asymId = type3 === "auth" ? auth_id : label_id;
       const k = structure.models.length > 1 ? getKey(m, asymId) : asymId;
       if (!map4.has(k)) {
-        map4.set(k, count3 + offset4);
-        ++count3;
+        map4.set(k, count4 + offset4);
+        ++count4;
       }
     });
   }
@@ -62345,11 +62345,11 @@ function key(entityId, sourceSerial) {
 }
 function getSourceSerialMap(structure) {
   const map4 = /* @__PURE__ */ new WeakMap();
-  let count3 = 0;
+  let count4 = 0;
   for (let i = 0, il = structure.models.length; i < il; ++i) {
     const sd = structure.models[i].sourceData;
     if (!map4.has(sd))
-      map4.set(sd, count3++);
+      map4.set(sd, count4++);
   }
   return map4;
 }
@@ -63608,8 +63608,8 @@ var SequenceIdColorThemeProvider = {
 };
 
 // node_modules/molstar/lib/mol-geo/util.js
-function normalizeVec3Array(a8, count3) {
-  for (let i = 0, il = count3 * 3; i < il; i += 3) {
+function normalizeVec3Array(a8, count4) {
+  for (let i = 0, il = count4 * 3; i < il; i += 3) {
     const x = a8[i];
     const y = a8[i + 1];
     const z = a8[i + 2];
@@ -63621,15 +63621,15 @@ function normalizeVec3Array(a8, count3) {
   return a8;
 }
 var tmpV3 = Vec3();
-function transformPositionArray(t5, array2, offset4, count3) {
-  for (let i = 0, il = count3 * 3; i < il; i += 3) {
+function transformPositionArray(t5, array2, offset4, count4) {
+  for (let i = 0, il = count4 * 3; i < il; i += 3) {
     Vec3.fromArray(tmpV3, array2, offset4 + i);
     Vec3.transformMat4(tmpV3, tmpV3, t5);
     Vec3.toArray(tmpV3, array2, offset4 + i);
   }
 }
-function transformDirectionArray(n, array2, offset4, count3) {
-  for (let i = 0, il = count3 * 3; i < il; i += 3) {
+function transformDirectionArray(n, array2, offset4, count4) {
+  for (let i = 0, il = count4 * 3; i < il; i += 3) {
     Vec3.fromArray(tmpV3, array2, offset4 + i);
     Vec3.transformMat3(tmpV3, tmpV3, n);
     Vec3.toArray(tmpV3, array2, offset4 + i);
@@ -63713,8 +63713,8 @@ function createTextureImage(n, itemSize, arrayCtor, array2) {
 var v = Vec3();
 var boundaryHelperCoarse3 = new BoundaryHelper("14");
 var boundaryHelperFine3 = new BoundaryHelper("98");
-function getHelper(count3) {
-  return count3 > 1e5 ? boundaryHelperCoarse3 : boundaryHelperFine3;
+function getHelper(count4) {
+  return count4 > 1e5 ? boundaryHelperCoarse3 : boundaryHelperFine3;
 }
 function calculateInvariantBoundingSphere(position, positionCount, stepFactor) {
   const step = stepFactor * 3;
@@ -63794,15 +63794,15 @@ MarkerCountLut[770] = 2;
 MarkerCountLut[259] = 2;
 MarkerCountLut[515] = 2;
 MarkerCountLut[771] = 2;
-function getMarkersAverage(array2, count3) {
-  if (count3 === 0)
+function getMarkersAverage(array2, count4) {
+  if (count4 === 0)
     return 0;
   const view2 = new Uint32Array(array2.buffer, 0, array2.buffer.byteLength >> 2);
-  const viewEnd = count3 - 4 >> 2;
+  const viewEnd = count4 - 4 >> 2;
   const backStart = 4 * viewEnd;
   let sum = 0;
   if (viewEnd < 0) {
-    for (let i = 0; i < count3; ++i) {
+    for (let i = 0; i < count4; ++i) {
       sum += array2[i] && 1;
     }
   } else {
@@ -63810,15 +63810,15 @@ function getMarkersAverage(array2, count3) {
       const v4 = view2[i];
       sum += MarkerCountLut[v4 & 65535] + MarkerCountLut[v4 >> 16];
     }
-    for (let i = backStart; i < count3; ++i) {
+    for (let i = backStart; i < count4; ++i) {
       sum += array2[i] && 1;
     }
   }
-  return sum / count3;
+  return sum / count4;
 }
-function createMarkers(count3, type3, markerData) {
-  const markers = createTextureImage(Math.max(1, count3), 1, Uint8Array, markerData && markerData.tMarker.ref.value.array);
-  const average = getMarkersAverage(markers.array, count3);
+function createMarkers(count4, type3, markerData) {
+  const markers = createTextureImage(Math.max(1, count4), 1, Uint8Array, markerData && markerData.tMarker.ref.value.array);
+  const average = getMarkersAverage(markers.array, count4);
   const status = average === 0 ? 0 : -1;
   if (markerData) {
     ValueCell.updateIfChanged(markerData.uMarker, 0);
@@ -64106,8 +64106,8 @@ function createGroupColor(locationIt, color, colorData) {
 }
 function createGroupInstanceColor(locationIt, color, colorData) {
   const { groupCount, instanceCount, hasLocation2 } = locationIt;
-  const count3 = instanceCount * groupCount * (hasLocation2 ? 2 : 1);
-  const colors = createTextureImage(Math.max(1, count3), 3, Uint8Array, colorData && colorData.tColor.ref.value.array);
+  const count4 = instanceCount * groupCount * (hasLocation2 ? 2 : 1);
+  const colors = createTextureImage(Math.max(1, count4), 3, Uint8Array, colorData && colorData.tColor.ref.value.array);
   locationIt.reset();
   const indexMultiplier = hasLocation2 ? 6 : 3;
   while (locationIt.hasNext) {
@@ -64134,8 +64134,8 @@ function createVertexColor(locationIt, color, colorData) {
 }
 function createVertexInstanceColor(locationIt, color, colorData) {
   const { groupCount, instanceCount, stride } = locationIt;
-  const count3 = instanceCount * groupCount;
-  const colors = createTextureImage(Math.max(1, count3), 3, Uint8Array, colorData && colorData.tColor.ref.value.array);
+  const count4 = instanceCount * groupCount;
+  const colors = createTextureImage(Math.max(1, count4), 3, Uint8Array, colorData && colorData.tColor.ref.value.array);
   locationIt.reset();
   while (locationIt.hasNext) {
     const { location: location2, isSecondary, index } = locationIt.move();
@@ -64224,12 +64224,12 @@ function calcInstanceGrid(instanceData, cellSize, batchSize) {
     const cellIdx = topGrid.batchCell[i];
     const start4 = bottomGrid.cellOffsets[cellIdx];
     const end4 = bottomGrid.cellOffsets[cellIdx + 1];
-    const count3 = end4 - start4;
-    cellOffsets[i + 1] = cellOffsets[i] + count3;
+    const count4 = end4 - start4;
+    cellOffsets[i + 1] = cellOffsets[i] + count4;
     for (let j = 0; j < 4; ++j) {
       cellSpheres[i * 4 + j] = bottomGrid.cellSpheres[cellIdx * 4 + j];
     }
-    for (let j = 0; j < count3; ++j) {
+    for (let j = 0; j < count4; ++j) {
       const idx = start4 + j;
       const id = bottomGrid.cellInstance[idx];
       for (let k = 0; k < 16; ++k) {
@@ -64275,7 +64275,7 @@ function calcBottomGrid(instanceData, cellSize) {
   const positionData = { x, y, z, indices: indices3 };
   const boundary = { box: box5, sphere: Sphere3D.fromBox3D(Sphere3D(), box5) };
   const lookup = GridLookup3D(positionData, boundary, Vec3.create(cellSize, cellSize, cellSize));
-  const { array: array2, offset: offset4, count: count3 } = lookup.buckets;
+  const { array: array2, offset: offset4, count: count4 } = lookup.buckets;
   const cellCount = offset4.length;
   const cellOffsets = new Uint32Array(cellCount + 1);
   const cellSpheres = new Float32Array(cellCount * 4);
@@ -64286,7 +64286,7 @@ function calcBottomGrid(instanceData, cellSize) {
   let k = 0;
   for (let i = 0; i < cellCount; ++i) {
     const start4 = offset4[i];
-    const size4 = count3[i];
+    const size4 = count4[i];
     cellOffsets[i] = start4;
     const kStart = k;
     for (let j = start4, jl = start4 + size4; j < jl; ++j) {
@@ -64312,7 +64312,7 @@ function calcBottomGrid(instanceData, cellSize) {
       Sphere3D.toArray(s, cellSpheres, i * 4);
     }
   }
-  cellOffsets[cellCount] = offset4[cellCount - 1] + count3[cellCount - 1];
+  cellOffsets[cellCount] = offset4[cellCount - 1] + count4[cellCount - 1];
   return {
     cellSize,
     cellCount,
@@ -64345,7 +64345,7 @@ function calcTopGrid(bottomGrid, batchSize) {
   const positionData = { x, y, z, indices: indices3 };
   const boundary = { box: box5, sphere: Sphere3D.fromBox3D(Sphere3D(), box5) };
   const lookup = GridLookup3D(positionData, boundary, Vec3.create(batchSize, batchSize, batchSize));
-  const { array: array2, offset: offset4, count: count3 } = lookup.buckets;
+  const { array: array2, offset: offset4, count: count4 } = lookup.buckets;
   const batchCount = offset4.length;
   const batchOffsets = new Uint32Array(batchCount + 1);
   const batchSpheres = new Float32Array(batchCount * 4);
@@ -64355,7 +64355,7 @@ function calcTopGrid(bottomGrid, batchSize) {
   let k = 0;
   for (let i = 0; i < batchCount; ++i) {
     const start4 = offset4[i];
-    const size4 = count3[i];
+    const size4 = count4[i];
     batchOffsets[i] = start4;
     for (let j = start4, jl = start4 + size4; j < jl; ++j) {
       batchCell[k] = array2[j];
@@ -64384,7 +64384,7 @@ function calcTopGrid(bottomGrid, batchSize) {
       Sphere3D.toArray(s, batchSpheres, i * 4);
     }
   }
-  batchOffsets[batchCount] = offset4[batchCount - 1] + count3[batchCount - 1];
+  batchOffsets[batchCount] = offset4[batchCount - 1] + count4[batchCount - 1];
   return {
     batchSize,
     batchCount,
@@ -64442,8 +64442,8 @@ Mat4.toArray(Mat4.identity(), identityTransform, 0);
 function createIdentityTransform(transformData) {
   return createTransform(new Float32Array(identityTransform), 1, void 0, 0, 0, transformData);
 }
-function fillIdentityTransform(transform3, count3) {
-  for (let i = 0; i < count3; i++) {
+function fillIdentityTransform(transform3, count4) {
+  for (let i = 0; i < count4; i++) {
     transform3.set(identityTransform, i * 16);
   }
   return transform3;
@@ -64567,15 +64567,15 @@ function Clip() {
       transform: ParamDefinition.Mat4(Mat4.identity())
     }, (o) => stringToWords(o.type))
   };
-  function createClipObjects(count3) {
+  function createClipObjects(count4) {
     return {
       count: 0,
-      type: new Array(count3).fill(1),
-      invert: new Array(count3).fill(false),
-      position: new Array(count3 * 3).fill(0),
-      rotation: new Array(count3 * 4).fill(0),
-      scale: new Array(count3 * 3).fill(1),
-      transform: new Array(count3 * 16).fill(0)
+      type: new Array(count4).fill(1),
+      invert: new Array(count4).fill(false),
+      position: new Array(count4 * 3).fill(0),
+      rotation: new Array(count4 * 4).fill(0),
+      scale: new Array(count4 * 3).fill(1),
+      transform: new Array(count4 * 16).fill(0)
     };
   }
   const qA = Quat();
@@ -64585,9 +64585,9 @@ function Clip() {
   const mA = Mat4();
   const mB = Mat4();
   function getClip(props, clip) {
-    const count3 = props.objects.length;
-    const { type: type3, invert, position, rotation, scale, transform: transform3 } = (clip === null || clip === void 0 ? void 0 : clip.objects) || createClipObjects(count3);
-    for (let i = 0; i < count3; ++i) {
+    const count4 = props.objects.length;
+    const { type: type3, invert, position, rotation, scale, transform: transform3 } = (clip === null || clip === void 0 ? void 0 : clip.objects) || createClipObjects(count4);
+    for (let i = 0; i < count4; ++i) {
       const p6 = props.objects[i];
       type3[i] = Clip2.Type[p6.type];
       invert[i] = p6.invert;
@@ -64598,7 +64598,7 @@ function Clip() {
     }
     return {
       variant: props.variant,
-      objects: { count: count3, type: type3, invert, position, rotation, scale, transform: transform3 }
+      objects: { count: count4, type: type3, invert, position, rotation, scale, transform: transform3 }
     };
   }
   Clip2.getClip = getClip;
@@ -64788,19 +64788,19 @@ function clearOverpaint(array2, start4, end4) {
   array2.fill(0, start4 * 4, end4 * 4);
   return true;
 }
-function createOverpaint(count3, type3, overpaintData) {
-  const overpaint = createTextureImage(Math.max(1, count3), 4, Uint8Array, overpaintData && overpaintData.tOverpaint.ref.value.array);
+function createOverpaint(count4, type3, overpaintData) {
+  const overpaint = createTextureImage(Math.max(1, count4), 4, Uint8Array, overpaintData && overpaintData.tOverpaint.ref.value.array);
   if (overpaintData) {
     ValueCell.update(overpaintData.tOverpaint, overpaint);
     ValueCell.update(overpaintData.uOverpaintTexDim, Vec2.create(overpaint.width, overpaint.height));
-    ValueCell.updateIfChanged(overpaintData.dOverpaint, count3 > 0);
+    ValueCell.updateIfChanged(overpaintData.dOverpaint, count4 > 0);
     ValueCell.updateIfChanged(overpaintData.dOverpaintType, type3);
     return overpaintData;
   } else {
     return {
       tOverpaint: ValueCell.create(overpaint),
       uOverpaintTexDim: ValueCell.create(Vec2.create(overpaint.width, overpaint.height)),
-      dOverpaint: ValueCell.create(count3 > 0),
+      dOverpaint: ValueCell.create(count4 > 0),
       tOverpaintGrid: ValueCell.create(createNullTexture()),
       uOverpaintGridDim: ValueCell.create(Vec3.create(1, 1, 1)),
       uOverpaintGridTransform: ValueCell.create(Vec4.create(0, 0, 0, 1)),
@@ -64836,20 +64836,20 @@ function applyTransparencyValue(array2, start4, end4, value) {
   }
   return true;
 }
-function getTransparencyAverage(array2, count3) {
-  if (count3 === 0 || array2.length < count3)
+function getTransparencyAverage(array2, count4) {
+  if (count4 === 0 || array2.length < count4)
     return 0;
   let sum = 0;
-  for (let i = 0; i < count3; ++i) {
+  for (let i = 0; i < count4; ++i) {
     sum += array2[i];
   }
-  return sum / (255 * count3);
+  return sum / (255 * count4);
 }
-function getTransparencyMin(array2, count3) {
-  if (count3 === 0 || array2.length < count3)
+function getTransparencyMin(array2, count4) {
+  if (count4 === 0 || array2.length < count4)
     return 1;
   let min5 = 255;
-  for (let i = 0; i < count3; ++i) {
+  for (let i = 0; i < count4; ++i) {
     if (array2[i] > 0 && array2[i] < min5)
       min5 = array2[i];
   }
@@ -64858,21 +64858,21 @@ function getTransparencyMin(array2, count3) {
 function clearTransparency(array2, start4, end4) {
   array2.fill(0, start4, end4);
 }
-function createTransparency(count3, type3, transparencyData) {
-  const transparency = createTextureImage(Math.max(1, count3), 1, Uint8Array, transparencyData && transparencyData.tTransparency.ref.value.array);
+function createTransparency(count4, type3, transparencyData) {
+  const transparency = createTextureImage(Math.max(1, count4), 1, Uint8Array, transparencyData && transparencyData.tTransparency.ref.value.array);
   if (transparencyData) {
     ValueCell.update(transparencyData.tTransparency, transparency);
     ValueCell.update(transparencyData.uTransparencyTexDim, Vec2.create(transparency.width, transparency.height));
-    ValueCell.updateIfChanged(transparencyData.dTransparency, count3 > 0);
-    ValueCell.updateIfChanged(transparencyData.transparencyAverage, getTransparencyAverage(transparency.array, count3));
-    ValueCell.updateIfChanged(transparencyData.transparencyMin, getTransparencyMin(transparency.array, count3));
+    ValueCell.updateIfChanged(transparencyData.dTransparency, count4 > 0);
+    ValueCell.updateIfChanged(transparencyData.transparencyAverage, getTransparencyAverage(transparency.array, count4));
+    ValueCell.updateIfChanged(transparencyData.transparencyMin, getTransparencyMin(transparency.array, count4));
     ValueCell.updateIfChanged(transparencyData.dTransparencyType, type3);
     return transparencyData;
   } else {
     return {
       tTransparency: ValueCell.create(transparency),
       uTransparencyTexDim: ValueCell.create(Vec2.create(transparency.width, transparency.height)),
-      dTransparency: ValueCell.create(count3 > 0),
+      dTransparency: ValueCell.create(count4 > 0),
       transparencyAverage: ValueCell.create(0),
       transparencyMin: ValueCell.create(1),
       tTransparencyGrid: ValueCell.create(createNullTexture()),
@@ -64913,19 +64913,19 @@ function applyClippingGroups(array2, start4, end4, groups) {
 function clearClipping(array2, start4, end4) {
   array2.fill(0, start4, end4);
 }
-function createClipping(count3, type3, clippingData) {
-  const clipping = createTextureImage(Math.max(1, count3), 1, Uint8Array, clippingData && clippingData.tClipping.ref.value.array);
+function createClipping(count4, type3, clippingData) {
+  const clipping = createTextureImage(Math.max(1, count4), 1, Uint8Array, clippingData && clippingData.tClipping.ref.value.array);
   if (clippingData) {
     ValueCell.update(clippingData.tClipping, clipping);
     ValueCell.update(clippingData.uClippingTexDim, Vec2.create(clipping.width, clipping.height));
-    ValueCell.updateIfChanged(clippingData.dClipping, count3 > 0);
+    ValueCell.updateIfChanged(clippingData.dClipping, count4 > 0);
     ValueCell.updateIfChanged(clippingData.dClippingType, type3);
     return clippingData;
   } else {
     return {
       tClipping: ValueCell.create(clipping),
       uClippingTexDim: ValueCell.create(Vec2.create(clipping.width, clipping.height)),
-      dClipping: ValueCell.create(count3 > 0),
+      dClipping: ValueCell.create(count4 > 0),
       dClippingType: ValueCell.create(type3)
     };
   }
@@ -64959,19 +64959,19 @@ function clearSubstance(array2, start4, end4) {
   array2.fill(0, start4 * 4, end4 * 4);
   return true;
 }
-function createSubstance(count3, type3, substanceData) {
-  const substance = createTextureImage(Math.max(1, count3), 4, Uint8Array, substanceData && substanceData.tSubstance.ref.value.array);
+function createSubstance(count4, type3, substanceData) {
+  const substance = createTextureImage(Math.max(1, count4), 4, Uint8Array, substanceData && substanceData.tSubstance.ref.value.array);
   if (substanceData) {
     ValueCell.update(substanceData.tSubstance, substance);
     ValueCell.update(substanceData.uSubstanceTexDim, Vec2.create(substance.width, substance.height));
-    ValueCell.updateIfChanged(substanceData.dSubstance, count3 > 0);
+    ValueCell.updateIfChanged(substanceData.dSubstance, count4 > 0);
     ValueCell.updateIfChanged(substanceData.dSubstanceType, type3);
     return substanceData;
   } else {
     return {
       tSubstance: ValueCell.create(substance),
       uSubstanceTexDim: ValueCell.create(Vec2.create(substance.width, substance.height)),
-      dSubstance: ValueCell.create(count3 > 0),
+      dSubstance: ValueCell.create(count4 > 0),
       tSubstanceGrid: ValueCell.create(createNullTexture()),
       uSubstanceGridDim: ValueCell.create(Vec3.create(1, 1, 1)),
       uSubstanceGridTransform: ValueCell.create(Vec4.create(0, 0, 0, 1)),
@@ -65007,32 +65007,32 @@ function applyEmissiveValue(array2, start4, end4, value) {
   }
   return true;
 }
-function getEmissiveAverage(array2, count3) {
-  if (count3 === 0 || array2.length < count3)
+function getEmissiveAverage(array2, count4) {
+  if (count4 === 0 || array2.length < count4)
     return 0;
   let sum = 0;
-  for (let i = 0; i < count3; ++i) {
+  for (let i = 0; i < count4; ++i) {
     sum += array2[i];
   }
-  return sum / (255 * count3);
+  return sum / (255 * count4);
 }
 function clearEmissive(array2, start4, end4) {
   array2.fill(0, start4, end4);
 }
-function createEmissive(count3, type3, emissiveData) {
-  const emissive = createTextureImage(Math.max(1, count3), 1, Uint8Array, emissiveData && emissiveData.tEmissive.ref.value.array);
+function createEmissive(count4, type3, emissiveData) {
+  const emissive = createTextureImage(Math.max(1, count4), 1, Uint8Array, emissiveData && emissiveData.tEmissive.ref.value.array);
   if (emissiveData) {
     ValueCell.update(emissiveData.tEmissive, emissive);
     ValueCell.update(emissiveData.uEmissiveTexDim, Vec2.create(emissive.width, emissive.height));
-    ValueCell.updateIfChanged(emissiveData.dEmissive, count3 > 0);
-    ValueCell.updateIfChanged(emissiveData.emissiveAverage, getEmissiveAverage(emissive.array, count3));
+    ValueCell.updateIfChanged(emissiveData.dEmissive, count4 > 0);
+    ValueCell.updateIfChanged(emissiveData.emissiveAverage, getEmissiveAverage(emissive.array, count4));
     ValueCell.updateIfChanged(emissiveData.dEmissiveType, type3);
     return emissiveData;
   } else {
     return {
       tEmissive: ValueCell.create(emissive),
       uEmissiveTexDim: ValueCell.create(Vec2.create(emissive.width, emissive.height)),
-      dEmissive: ValueCell.create(count3 > 0),
+      dEmissive: ValueCell.create(count4 > 0),
       emissiveAverage: ValueCell.create(0),
       tEmissiveGrid: ValueCell.create(createNullTexture()),
       uEmissiveGridDim: ValueCell.create(Vec3.create(1, 1, 1)),
@@ -65156,10 +65156,10 @@ var Mesh;
     for (let i = 0, il = mesh.vertexCount; i < il; ++i) {
       Vec3.fromArray(a8, v4, i * 3);
       const k = hash5(a8, fractionDigits);
-      const count3 = map4.get(k);
-      if (count3 !== void 0) {
+      const count4 = map4.get(k);
+      if (count4 !== void 0) {
         duplicates += 1;
-        map4.set(k, count3 + 1);
+        map4.set(k, count4 + 1);
       } else {
         map4.set(k, 1);
       }
@@ -65812,8 +65812,8 @@ function createGroupSize(locationIt, sizeFn, sizeData) {
 }
 function createGroupInstanceSize(locationIt, sizeFn, sizeData) {
   const { groupCount, instanceCount } = locationIt;
-  const count3 = instanceCount * groupCount;
-  const sizes = createTextureImage(Math.max(1, count3), 3, Uint8Array, sizeData && sizeData.tSize.ref.value.array);
+  const count4 = instanceCount * groupCount;
+  const sizes = createTextureImage(Math.max(1, count4), 3, Uint8Array, sizeData && sizeData.tSize.ref.value.array);
   locationIt.reset();
   while (locationIt.hasNext) {
     const v4 = locationIt.move();
@@ -66162,31 +66162,31 @@ function createCanvasContext(width, height, options) {
 // node_modules/molstar/lib/mol-geo/geometry/text/text.js
 var Text;
 (function(Text2) {
-  function create3(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text) {
-    return text ? update10(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text) : fromData(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount);
+  function create3(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text2) {
+    return text2 ? update10(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text2) : fromData(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount);
   }
   Text2.create = create3;
-  function createEmpty(text) {
-    const ft = text ? text.fontTexture.ref.value : createTextureImage(0, 1, Uint8Array);
-    const cb2 = text ? text.centerBuffer.ref.value : new Float32Array(0);
-    const mb = text ? text.mappingBuffer.ref.value : new Float32Array(0);
-    const db = text ? text.depthBuffer.ref.value : new Float32Array(0);
-    const ib = text ? text.indexBuffer.ref.value : new Uint32Array(0);
-    const gb = text ? text.groupBuffer.ref.value : new Float32Array(0);
-    const tb = text ? text.tcoordBuffer.ref.value : new Float32Array(0);
-    return create3(ft, cb2, mb, db, ib, gb, tb, 0, text);
+  function createEmpty(text2) {
+    const ft = text2 ? text2.fontTexture.ref.value : createTextureImage(0, 1, Uint8Array);
+    const cb2 = text2 ? text2.centerBuffer.ref.value : new Float32Array(0);
+    const mb = text2 ? text2.mappingBuffer.ref.value : new Float32Array(0);
+    const db = text2 ? text2.depthBuffer.ref.value : new Float32Array(0);
+    const ib = text2 ? text2.indexBuffer.ref.value : new Uint32Array(0);
+    const gb = text2 ? text2.groupBuffer.ref.value : new Float32Array(0);
+    const tb = text2 ? text2.tcoordBuffer.ref.value : new Float32Array(0);
+    return create3(ft, cb2, mb, db, ib, gb, tb, 0, text2);
   }
   Text2.createEmpty = createEmpty;
-  function hashCode6(text) {
+  function hashCode6(text2) {
     return hashFnv32a([
-      text.charCount,
-      text.fontTexture.ref.version,
-      text.centerBuffer.ref.version,
-      text.mappingBuffer.ref.version,
-      text.depthBuffer.ref.version,
-      text.indexBuffer.ref.version,
-      text.groupBuffer.ref.version,
-      text.tcoordBuffer.ref.version
+      text2.charCount,
+      text2.fontTexture.ref.version,
+      text2.centerBuffer.ref.version,
+      text2.mappingBuffer.ref.version,
+      text2.depthBuffer.ref.version,
+      text2.indexBuffer.ref.version,
+      text2.groupBuffer.ref.version,
+      text2.tcoordBuffer.ref.version
     ]);
   }
   function fromData(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount) {
@@ -66194,7 +66194,7 @@ var Text;
     let groupMapping;
     let currentHash = -1;
     let currentGroup = -1;
-    const text = {
+    const text2 = {
       kind: "text",
       charCount,
       fontTexture: ValueCell.create(fontTexture),
@@ -66205,38 +66205,38 @@ var Text;
       groupBuffer: ValueCell.create(groups),
       tcoordBuffer: ValueCell.create(tcoords),
       get boundingSphere() {
-        const newHash = hashCode6(text);
+        const newHash = hashCode6(text2);
         if (newHash !== currentHash) {
-          const b8 = calculateInvariantBoundingSphere(text.centerBuffer.ref.value, text.charCount * 4, 4);
+          const b8 = calculateInvariantBoundingSphere(text2.centerBuffer.ref.value, text2.charCount * 4, 4);
           Sphere3D.copy(boundingSphere, b8);
           currentHash = newHash;
         }
         return boundingSphere;
       },
       get groupMapping() {
-        if (text.groupBuffer.ref.version !== currentGroup) {
-          groupMapping = createGroupMapping(text.groupBuffer.ref.value, text.charCount, 4);
-          currentGroup = text.groupBuffer.ref.version;
+        if (text2.groupBuffer.ref.version !== currentGroup) {
+          groupMapping = createGroupMapping(text2.groupBuffer.ref.value, text2.charCount, 4);
+          currentGroup = text2.groupBuffer.ref.version;
         }
         return groupMapping;
       },
       setBoundingSphere(sphere) {
         Sphere3D.copy(boundingSphere, sphere);
-        currentHash = hashCode6(text);
+        currentHash = hashCode6(text2);
       }
     };
-    return text;
+    return text2;
   }
-  function update10(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text) {
-    text.charCount = charCount;
-    ValueCell.update(text.fontTexture, fontTexture);
-    ValueCell.update(text.centerBuffer, centers);
-    ValueCell.update(text.mappingBuffer, mappings);
-    ValueCell.update(text.depthBuffer, depths);
-    ValueCell.update(text.indexBuffer, indices3);
-    ValueCell.update(text.groupBuffer, groups);
-    ValueCell.update(text.tcoordBuffer, tcoords);
-    return text;
+  function update10(fontTexture, centers, mappings, depths, indices3, groups, tcoords, charCount, text2) {
+    text2.charCount = charCount;
+    ValueCell.update(text2.fontTexture, fontTexture);
+    ValueCell.update(text2.centerBuffer, centers);
+    ValueCell.update(text2.mappingBuffer, mappings);
+    ValueCell.update(text2.depthBuffer, depths);
+    ValueCell.update(text2.indexBuffer, indices3);
+    ValueCell.update(text2.groupBuffer, groups);
+    ValueCell.update(text2.tcoordBuffer, tcoords);
+    return text2;
   }
   Text2.Params = {
     ...BaseGeometry.Params,
@@ -66277,12 +66277,12 @@ var Text;
     updateRenderableState,
     createPositionIterator
   };
-  function createPositionIterator(text, transform3) {
-    const groupCount = text.charCount * 4;
+  function createPositionIterator(text2, transform3) {
+    const groupCount = text2.charCount * 4;
     const instanceCount = transform3.instanceCount.ref.value;
     const location2 = PositionLocation();
     const p6 = location2.position;
-    const v4 = text.centerBuffer.ref.value;
+    const v4 = text2.centerBuffer.ref.value;
     const m = transform3.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
@@ -66294,9 +66294,9 @@ var Text;
     };
     return LocationIterator(groupCount, instanceCount, 4, getLocation);
   }
-  function createValues(text, transform3, locationIt, theme, props) {
+  function createValues(text2, transform3, locationIt, theme, props) {
     const { instanceCount, groupCount } = locationIt;
-    const positionIt = createPositionIterator(text, transform3);
+    const positionIt = createPositionIterator(text2, transform3);
     const color = createColors(locationIt, positionIt, theme.color);
     const size4 = createSizes(locationIt, theme.size);
     const marker = props.instanceGranularity ? createMarkers(instanceCount, "instance") : createMarkers(instanceCount * groupCount, "groupInstance");
@@ -66305,18 +66305,18 @@ var Text;
     const emissive = createEmptyEmissive();
     const substance = createEmptySubstance();
     const clipping = createEmptyClipping();
-    const counts = { drawCount: text.charCount * 2 * 3, vertexCount: text.charCount * 4, groupCount, instanceCount };
+    const counts = { drawCount: text2.charCount * 2 * 3, vertexCount: text2.charCount * 4, groupCount, instanceCount };
     const scale = getMaxSize(size4) * props.sizeFactor;
-    const padding2 = getPadding(text.mappingBuffer.ref.value, text.depthBuffer.ref.value, text.charCount, scale);
-    const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), text.boundingSphere, padding2);
+    const padding2 = getPadding(text2.mappingBuffer.ref.value, text2.depthBuffer.ref.value, text2.charCount, scale);
+    const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), text2.boundingSphere, padding2);
     const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, transform3.aTransform.ref.value, instanceCount, 0);
     return {
       dGeometryType: ValueCell.create("text"),
-      aPosition: text.centerBuffer,
-      aMapping: text.mappingBuffer,
-      aDepth: text.depthBuffer,
-      aGroup: text.groupBuffer,
-      elements: text.indexBuffer,
+      aPosition: text2.centerBuffer,
+      aMapping: text2.mappingBuffer,
+      aDepth: text2.depthBuffer,
+      aGroup: text2.groupBuffer,
+      elements: text2.indexBuffer,
       boundingSphere: ValueCell.create(boundingSphere),
       invariantBoundingSphere: ValueCell.create(invariantBoundingSphere),
       uInvariantBoundingSphere: ValueCell.create(Vec4.ofSphere(invariantBoundingSphere)),
@@ -66329,8 +66329,8 @@ var Text;
       ...substance,
       ...clipping,
       ...transform3,
-      aTexCoord: text.tcoordBuffer,
-      tFont: text.fontTexture,
+      aTexCoord: text2.tcoordBuffer,
+      tFont: text2.fontTexture,
       padding: ValueCell.create(padding2),
       ...BaseGeometry.createValues(props, counts),
       uSizeFactor: ValueCell.create(props.sizeFactor),
@@ -66343,10 +66343,10 @@ var Text;
       uBackgroundOpacity: ValueCell.create(props.backgroundOpacity)
     };
   }
-  function createValuesSimple(text, props, colorValue, sizeValue, transform3) {
+  function createValuesSimple(text2, props, colorValue, sizeValue, transform3) {
     const s = BaseGeometry.createSimple(colorValue, sizeValue, transform3);
     const p6 = { ...ParamDefinition.getDefaultValues(Text2.Params), ...props };
-    return createValues(text, s.transform, s.locationIterator, s.theme, p6);
+    return createValues(text2, s.transform, s.locationIterator, s.theme, p6);
   }
   function updateValues(values2, props) {
     BaseGeometry.updateValues(values2, props);
@@ -66365,10 +66365,10 @@ var Text;
     }
     ValueCell.updateIfChanged(values2.uBackgroundOpacity, props.backgroundOpacity);
   }
-  function updateBoundingSphere(values2, text) {
+  function updateBoundingSphere(values2, text2) {
     const scale = getMaxSize(values2) * values2.uSizeFactor.ref.value;
-    const padding2 = getPadding(values2.aMapping.ref.value, values2.aDepth.ref.value, text.charCount, scale);
-    const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), text.boundingSphere, padding2);
+    const padding2 = getPadding(values2.aMapping.ref.value, values2.aDepth.ref.value, text2.charCount, scale);
+    const invariantBoundingSphere = Sphere3D.expand(Sphere3D(), text2.boundingSphere, padding2);
     const boundingSphere = calculateTransformBoundingSphere(invariantBoundingSphere, values2.aTransform.ref.value, values2.instanceCount.ref.value, 0);
     if (!Sphere3D.equals(boundingSphere, values2.boundingSphere.ref.value)) {
       ValueCell.update(values2.boundingSphere, boundingSphere);
@@ -66713,9 +66713,9 @@ var a2 = Vec3();
 var b2 = Vec3();
 var c2 = Vec3();
 function createPrimitive(vertices2, indices3) {
-  const count3 = indices3.length;
-  const builder = PrimitiveBuilder(count3 / 3);
-  for (let i = 0; i < count3; i += 3) {
+  const count4 = indices3.length;
+  const builder = PrimitiveBuilder(count4 / 3);
+  for (let i = 0; i < count4; i += 3) {
     Vec3.fromArray(a2, vertices2, indices3[i] * 3);
     Vec3.fromArray(b2, vertices2, indices3[i + 1] * 3);
     Vec3.fromArray(c2, vertices2, indices3[i + 2] * 3);
@@ -67907,10 +67907,10 @@ var Spheres;
     spheres2.shaderData.update();
     return spheres2;
   }
-  function getStrideOffsetsAndSetPositionGroup(out, centers, groups, count3, strides) {
+  function getStrideOffsetsAndSetPositionGroup(out, centers, groups, count4, strides) {
     const { array: array2 } = out;
     if (strides.length === 0) {
-      for (let i = 0; i < count3; ++i) {
+      for (let i = 0; i < count4; ++i) {
         array2[i * 4 + 0] = centers[i * 3 + 0];
         array2[i * 4 + 1] = centers[i * 3 + 1];
         array2[i * 4 + 2] = centers[i * 3 + 2];
@@ -67922,7 +67922,7 @@ var Spheres;
     let o = 0;
     for (let i = 0, il = strides.length; i < il; ++i) {
       const s = strides[i];
-      for (let j = 0; j < count3; ++j) {
+      for (let j = 0; j < count4; ++j) {
         let handled = false;
         for (let k = 0; k < i; ++k) {
           if (j % strides[k] === 0) {
@@ -67959,7 +67959,7 @@ var Spheres;
     }
     return true;
   }
-  function getLodLevelsValue(prop, sizeFactor, offsets, count3) {
+  function getLodLevelsValue(prop, sizeFactor, offsets, count4) {
     return prop.map((l, i) => {
       const stride = getAdjustedStride(l, sizeFactor);
       return [
@@ -67967,7 +67967,7 @@ var Spheres;
         l.maxDistance,
         l.overlap,
         offsets[offsets.length - 1 - i],
-        Math.pow(Math.min(count3, stride), 1 / l.scaleBias),
+        Math.pow(Math.min(count4, stride), 1 / l.scaleBias),
         l.stride,
         l.scaleBias
       ];
@@ -68113,10 +68113,10 @@ var Spheres;
     ValueCell.updateIfChanged(values2.uBumpAmplitude, props.bumpAmplitude);
     const lodLevels = getLodLevels(values2.lodLevels.ref.value);
     if (!areLodLevelsEqual(props.lodLevels, lodLevels)) {
-      const count3 = values2.uVertexCount.ref.value / 6;
+      const count4 = values2.uVertexCount.ref.value / 6;
       const strides = getStrides(props.lodLevels, props.sizeFactor);
-      const offsets = getStrideOffsetsAndSetPositionGroup(values2.tPositionGroup.ref.value, values2.centerBuffer.ref.value, values2.groupBuffer.ref.value, count3, strides);
-      const lodLevels2 = offsets ? getLodLevelsValue(props.lodLevels, props.sizeFactor, offsets, count3) : [];
+      const offsets = getStrideOffsetsAndSetPositionGroup(values2.tPositionGroup.ref.value, values2.centerBuffer.ref.value, values2.groupBuffer.ref.value, count4, strides);
+      const lodLevels2 = offsets ? getLodLevelsValue(props.lodLevels, props.sizeFactor, offsets, count4) : [];
       ValueCell.update(values2.tPositionGroup, values2.tPositionGroup.ref.value);
       ValueCell.update(values2.lodLevels, lodLevels2);
     }
@@ -68777,19 +68777,19 @@ function createRenderItem(ctx, drawMode, shaderCode, schema, values2, materialId
     id,
     materialId,
     getByteCount() {
-      let count3 = 0;
+      let count4 = 0;
       for (let i = 0, il = attributeBuffers.length; i < il; ++i) {
-        count3 += attributeBuffers[i][1].getByteCount();
+        count4 += attributeBuffers[i][1].getByteCount();
       }
       if (elementsBuffer)
-        count3 += elementsBuffer.getByteCount();
+        count4 += elementsBuffer.getByteCount();
       for (let i = 0, il = textures.length; i < il; ++i) {
-        count3 += textures[i][1].getByteCount();
+        count4 += textures[i][1].getByteCount();
       }
       for (let i = 0, il = materialTextures.length; i < il; ++i) {
-        count3 += materialTextures[i][1].getByteCount();
+        count4 += materialTextures[i][1].getByteCount();
       }
-      return count3;
+      return count4;
     },
     getProgram: (variant) => programs[variant],
     setTransparency: (value) => {
@@ -68897,13 +68897,13 @@ function createRenderItem(ctx, drawMode, shaderCode, schema, values2, materialId
       } else {
         let offset4 = 0;
         while (true) {
-          const count3 = Math.min(drawCount - offset4, MaxDrawCount);
+          const count4 = Math.min(drawCount - offset4, MaxDrawCount);
           if (elementsBuffer) {
-            instancedArrays.drawElementsInstanced(glDrawMode, count3, elementsBuffer._dataType, offset4 * elementsBuffer._bpe, instanceCount);
+            instancedArrays.drawElementsInstanced(glDrawMode, count4, elementsBuffer._dataType, offset4 * elementsBuffer._bpe, instanceCount);
           } else {
-            instancedArrays.drawArraysInstanced(glDrawMode, offset4, count3, instanceCount);
+            instancedArrays.drawArraysInstanced(glDrawMode, offset4, count4, instanceCount);
           }
-          offset4 += count3;
+          offset4 += count4;
           if (offset4 >= drawCount)
             break;
         }
@@ -69154,28 +69154,28 @@ function createRenderable(renderItem, values2, state) {
             const i = batchCell[q];
             const begin = cellOffsets[i];
             const end4 = cellOffsets[i + 1];
-            const count3 = end4 - begin;
-            if (count3 === 0)
+            const count4 = end4 - begin;
+            if (count4 === 0)
               continue;
             s3fromArray(s, cellSpheres, i * 4);
             const d6 = p3distanceToPoint(cameraPlane, s.center);
             if (hasLod) {
               if (d6 + s.radius < minDistance || d6 - s.radius > maxDistance) {
                 if (isTimingMode) {
-                  stats.culled.lod += count3;
+                  stats.culled.lod += count4;
                 }
                 continue;
               }
             }
             if (!f3intersectsSphere3D(frustum, s)) {
               if (isTimingMode) {
-                stats.culled.frustum += count3;
+                stats.culled.frustum += count4;
               }
               continue;
             }
             if (isOccluded !== null && d6 - s.radius < checkCellOccludedDistance && isOccluded(s)) {
               if (isTimingMode) {
-                stats.culled.occlusion += count3;
+                stats.culled.occlusion += count4;
               }
               continue;
             }
@@ -69185,10 +69185,10 @@ function createRenderable(renderItem, values2, state) {
               const l = mdbDataList[j];
               const o = l.count;
               if (o > 0 && l.baseInstances[o - 1] + l.instanceCounts[o - 1] === begin && l.counts[o - 1] === lodLevels[j][3]) {
-                l.instanceCounts[o - 1] += count3;
+                l.instanceCounts[o - 1] += count4;
               } else {
                 l.counts[o] = lodLevels[j][3];
-                l.instanceCounts[o] = count3;
+                l.instanceCounts[o] = count4;
                 l.baseInstances[o] = begin;
                 l.count += 1;
               }
@@ -69231,36 +69231,36 @@ function createRenderable(renderItem, values2, state) {
             const i = batchCell[q];
             const begin = cellOffsets[i];
             const end4 = cellOffsets[i + 1];
-            const count3 = end4 - begin;
-            if (count3 === 0)
+            const count4 = end4 - begin;
+            if (count4 === 0)
               continue;
             s3fromArray(s, cellSpheres, i * 4);
             const d5 = p3distanceToPoint(cameraPlane, s.center);
             if (hasLod) {
               if (d5 + s.radius < minDistance || d5 - s.radius > maxDistance) {
                 if (isTimingMode) {
-                  stats.culled.lod += count3;
+                  stats.culled.lod += count4;
                 }
                 continue;
               }
             }
             if (!f3intersectsSphere3D(frustum, s)) {
               if (isTimingMode) {
-                stats.culled.frustum += count3;
+                stats.culled.frustum += count4;
               }
               continue;
             }
             if (isOccluded !== null && d5 - s.radius < checkCellOccludedDistance && isOccluded(s)) {
               if (isTimingMode) {
-                stats.culled.occlusion += count3;
+                stats.culled.occlusion += count4;
               }
               continue;
             }
             if (o > 0 && baseInstances[o - 1] + instanceCounts[o - 1] === begin) {
-              instanceCounts[o - 1] += count3;
+              instanceCounts[o - 1] += count4;
             } else {
               counts[o] = values2.drawCount.ref.value;
-              instanceCounts[o] = count3;
+              instanceCounts[o] = count4;
               baseInstances[o] = begin;
               o += 1;
             }
@@ -74969,10 +74969,10 @@ async function parseInternal2(file, size4, ctx) {
   const offset4 = getCcp4DataOffset(header2);
   const dataType = getCcp4DataType(header2.MODE);
   const valueType = getCcp4ValueType(header2);
-  const count3 = header2.NC * header2.NR * header2.NS;
+  const count4 = header2.NC * header2.NR * header2.NS;
   const elementByteSize = getElementByteSize(dataType);
-  const byteCount = count3 * elementByteSize;
-  const buffer = createTypedArrayBufferContext(count3, valueType);
+  const byteCount = count4 * elementByteSize;
+  const buffer = createTypedArrayBufferContext(count4, valueType);
   readCcp4Slices(header2, buffer, file, offset4, byteCount, littleEndian);
   const result2 = { header: header2, values: buffer.values, name: file.name };
   return result2;
@@ -75088,10 +75088,10 @@ function getDsn6Counts(header2) {
   const { xExtent, yExtent, zExtent } = header2;
   const { xBlocks, yBlocks, zBlocks } = getBlocks(header2);
   const valueCount = xExtent * yExtent * zExtent;
-  const count3 = xBlocks * 8 * yBlocks * 8 * zBlocks * 8;
+  const count4 = xBlocks * 8 * yBlocks * 8 * zBlocks * 8;
   const elementByteSize = 1;
-  const byteCount = count3 * elementByteSize;
-  return { count: count3, byteCount, valueCount };
+  const byteCount = count4 * elementByteSize;
+  return { count: count4, byteCount, valueCount };
 }
 async function parseInternal3(file, size4, ctx) {
   await ctx.update({ message: "Parsing DSN6/BRIX file..." });
@@ -75284,17 +75284,17 @@ function getColumnSchema(type3) {
 }
 function parseTableElement(state, spec) {
   const { elements, tokenizer } = state;
-  const { count: count3, properties: properties5 } = spec;
+  const { count: count4, properties: properties5 } = spec;
   const propertyCount = properties5.length;
   const propertyNames = [];
   const propertyTypes = [];
   const propertyTokens = [];
   const propertyColumns = /* @__PURE__ */ new Map();
   for (let i = 0, il = propertyCount; i < il; ++i) {
-    const tokens = TokenBuilder.create(tokenizer.data, count3 * 2);
+    const tokens = TokenBuilder.create(tokenizer.data, count4 * 2);
     propertyTokens.push(tokens);
   }
-  for (let i = 0, il = count3; i < il; ++i) {
+  for (let i = 0, il = count4; i < il; ++i) {
     for (let j = 0, jl = propertyCount; j < jl; ++j) {
       Tokenizer.skipWhitespace(tokenizer);
       Tokenizer.markStart(tokenizer);
@@ -75311,7 +75311,7 @@ function parseTableElement(state, spec) {
   }
   elements.push({
     kind: "table",
-    rowCount: count3,
+    rowCount: count4,
     propertyNames,
     propertyTypes,
     getProperty: (name) => propertyColumns.get(name)
@@ -75319,11 +75319,11 @@ function parseTableElement(state, spec) {
 }
 function parseListElement(state, spec) {
   const { elements, tokenizer } = state;
-  const { count: count3, property: property2 } = spec;
-  const tokens = TokenBuilder.create(tokenizer.data, count3 * 2 * 3);
-  const offsets = new Uint32Array(count3 + 1);
+  const { count: count4, property: property2 } = spec;
+  const tokens = TokenBuilder.create(tokenizer.data, count4 * 2 * 3);
+  const offsets = new Uint32Array(count4 + 1);
   let entryCount = 0;
-  for (let i = 0, il = count3; i < il; ++i) {
+  for (let i = 0, il = count4; i < il; ++i) {
     Tokenizer.skipWhitespace(tokenizer);
     Tokenizer.markStart(tokenizer);
     while (Tokenizer.skipWhitespace(tokenizer) !== 10) {
@@ -75341,16 +75341,16 @@ function parseListElement(state, spec) {
   const column = TokenColumn(tokens, getColumnSchema(property2.dataType));
   elements.push({
     kind: "list",
-    rowCount: count3,
+    rowCount: count4,
     name: property2.name,
     type: property2.dataType,
     value: (row3) => {
       const offset4 = offsets[row3] + 1;
-      const count4 = column.value(offset4 - 1);
-      for (let i = offset4, il = offset4 + count4; i < il; ++i) {
+      const count5 = column.value(offset4 - 1);
+      for (let i = offset4, il = offset4 + count5; i < il; ++i) {
         listValue.entries[i - offset4] = column.value(i);
       }
-      listValue.count = count4;
+      listValue.count = count5;
       return listValue;
     }
   });
@@ -75381,16 +75381,16 @@ function State4(tokenizer, runtimeCtx) {
     runtimeCtx
   };
 }
-async function handleAtoms(state, count3) {
+async function handleAtoms(state, count4) {
   const { tokenizer } = state;
-  const atomId2 = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const segmentName = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const residueId = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const residueName = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomName = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomType = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const charge = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const mass = TokenBuilder.create(tokenizer.data, count3 * 2);
+  const atomId2 = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const segmentName = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const residueId = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const residueName = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomName = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomType = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const charge = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const mass = TokenBuilder.create(tokenizer.data, count4 * 2);
   const { position } = tokenizer;
   const line = readLine(tokenizer).trim();
   tokenizer.position = position;
@@ -75399,7 +75399,7 @@ async function handleAtoms(state, count3) {
   const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
-    const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
+    const linesToRead = Math.min(count4 - linesAlreadyRead, chunkSize);
     for (let i = 0; i < linesToRead; ++i) {
       for (let j = 0; j < n; ++j) {
         skipWhitespace2(tokenizer);
@@ -75462,7 +75462,7 @@ async function handleAtoms(state, count3) {
     return linesToRead;
   }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
-    count: count3,
+    count: count4,
     atomId: TokenColumnProvider(atomId2)(Column.Schema.int),
     segmentName: isLammpsFull ? TokenColumnProvider(residueId)(Column.Schema.str) : TokenColumnProvider(segmentName)(Column.Schema.str),
     residueId: TokenColumnProvider(residueId)(Column.Schema.int),
@@ -75473,14 +75473,14 @@ async function handleAtoms(state, count3) {
     mass: TokenColumnProvider(mass)(Column.Schema.float)
   };
 }
-async function handleBonds(state, count3) {
+async function handleBonds(state, count4) {
   const { tokenizer } = state;
-  const atomIdA = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomIdB = TokenBuilder.create(tokenizer.data, count3 * 2);
+  const atomIdA = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomIdB = TokenBuilder.create(tokenizer.data, count4 * 2);
   const { length: length2 } = tokenizer;
   let bondsAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 10, void 0, (chunkSize) => {
-    const bondsToRead = Math.min(count3 - bondsAlreadyRead, chunkSize);
+    const bondsToRead = Math.min(count4 - bondsAlreadyRead, chunkSize);
     for (let i = 0; i < bondsToRead; ++i) {
       for (let j = 0; j < 2; ++j) {
         skipWhitespace2(tokenizer);
@@ -75500,14 +75500,14 @@ async function handleBonds(state, count3) {
     return bondsToRead;
   }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
-    count: count3,
+    count: count4,
     atomIdA: TokenColumnProvider(atomIdA)(Column.Schema.int),
     atomIdB: TokenColumnProvider(atomIdB)(Column.Schema.int)
   };
 }
-function parseTitle(state, count3) {
+function parseTitle(state, count4) {
   const title = [];
-  for (let i = 0; i < count3; ++i) {
+  for (let i = 0; i < count4; ++i) {
     const line = readLine(state.tokenizer);
     title.push(line.replace(reTitle, "").trim());
   }
@@ -75602,13 +75602,13 @@ function readHeader(tokenizer) {
   const header2 = { orbitals: rawAtomCount < 0, comment1, comment2, atomCount: atomCount2, origin, dim: Vec3.create(NVX, NVY, NVZ), basisX, basisY, basisZ, dataSetIds };
   return { header: header2, atoms: atoms2 };
 }
-function readAtoms(tokenizer, count3, scaleFactor) {
-  const number = new Int32Array(count3);
-  const value = new Float64Array(count3);
-  const x = new Float32Array(count3);
-  const y = new Float32Array(count3);
-  const z = new Float32Array(count3);
-  for (let i = 0; i < count3; i++) {
+function readAtoms(tokenizer, count4, scaleFactor) {
+  const number = new Int32Array(count4);
+  const value = new Float64Array(count4);
+  const x = new Float32Array(count4);
+  const y = new Float32Array(count4);
+  const z = new Float32Array(count4);
+  for (let i = 0; i < count4; i++) {
     const fields = Tokenizer.readLine(tokenizer).trim().split(/\s+/g);
     number[i] = +fields[0];
     value[i] = +fields[1];
@@ -75617,7 +75617,7 @@ function readAtoms(tokenizer, count3, scaleFactor) {
     z[i] = +fields[4] * scaleFactor;
   }
   return {
-    count: count3,
+    count: count4,
     number: Column.ofArray({ array: number, schema: Column.Schema.int }),
     nuclearCharge: Column.ofArray({ array: value, schema: Column.Schema.float }),
     x: Column.ofArray({ array: x, schema: Column.Schema.float }),
@@ -75630,8 +75630,8 @@ function readValues(ctx, tokenizer, header2) {
   const chunkSize = 100 * 100 * 100;
   const data = new Float64Array(N);
   let offset4 = 0;
-  return chunkedSubtask(ctx, chunkSize, data, (count3, data2) => {
-    const max5 = Math.min(N, offset4 + count3);
+  return chunkedSubtask(ctx, chunkSize, data, (count4, data2) => {
+    const max5 = Math.min(N, offset4 + count4);
     for (let i = offset4; i < max5; i++) {
       Tokenizer.skipWhitespace(tokenizer);
       tokenizer.tokenStart = tokenizer.position;
@@ -75690,8 +75690,8 @@ function readValuesText(ctx, tokenizer, header2) {
   const chunkSize = 100 * 100 * 100;
   const data = new Float64Array(N);
   let offset4 = 0;
-  return chunkedSubtask(ctx, chunkSize, data, (count3, data2) => {
-    const max5 = Math.min(N, offset4 + count3);
+  return chunkedSubtask(ctx, chunkSize, data, (count4, data2) => {
+    const max5 = Math.min(N, offset4 + count4);
     for (let i = offset4; i < max5; i++) {
       Tokenizer.skipWhitespace(tokenizer);
       tokenizer.tokenStart = tokenizer.position;
@@ -75805,15 +75805,15 @@ function handlePointers(state) {
   }
   return pointers;
 }
-function handleTokens(state, count3, countPerLine, itemSize) {
+function handleTokens(state, count4, countPerLine, itemSize) {
   const { tokenizer } = state;
-  const tokens = TokenBuilder.create(tokenizer.data, count3 * 2);
+  const tokens = TokenBuilder.create(tokenizer.data, count4 * 2);
   let curIdx = 0;
   while (tokenizer.tokenEnd < tokenizer.length) {
     if (tokenizer.data.charAt(tokenizer.position) === "%")
       break;
     tokenizer.tokenStart = tokenizer.position;
-    const n = Math.min(curIdx + countPerLine, count3);
+    const n = Math.min(curIdx + countPerLine, count4);
     for (let i = 0; curIdx < n; ++i, ++curIdx) {
       const p6 = tokenizer.position;
       trim(tokenizer, tokenizer.position, tokenizer.position + itemSize);
@@ -77793,10 +77793,10 @@ function addVerticesRange(begI, endI, state, vertex, groupIds) {
 function addFacesRange(begI, endI, state, face) {
   const { indices: indices3 } = state;
   for (let i = begI; i < endI; ++i) {
-    const { entries: entries3, count: count3 } = face.value(i);
-    if (count3 === 3) {
+    const { entries: entries3, count: count4 } = face.value(i);
+    if (count4 === 3) {
       ChunkedArray.add3(indices3, entries3[0], entries3[1], entries3[2]);
-    } else if (count3 === 4) {
+    } else if (count4 === 4) {
       ChunkedArray.add3(indices3, entries3[2], entries3[1], entries3[0]);
       ChunkedArray.add3(indices3, entries3[2], entries3[0], entries3[3]);
     }
@@ -78182,8 +78182,8 @@ function trajectoryFromGRO(gro) {
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/assembly.js
-function parseCryst1(id, record5) {
-  const get11 = (s, l) => (record5.substr(s, l) || "").trim();
+function parseCryst1(id, record6) {
+  const get11 = (s, l) => (record6.substr(s, l) || "").trim();
   const cell = {
     entry_id: CifField.ofString(id),
     length_a: CifField.ofString(get11(6, 9)),
@@ -78583,9 +78583,9 @@ function parseHetnam(lines, lineStart, lineEnd) {
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/atom-site.js
-function getAtomSiteTemplate(data, count3) {
+function getAtomSiteTemplate(data, count4) {
   const str11 = () => [];
-  const ts = () => TokenBuilder.create(data, 2 * count3);
+  const ts = () => TokenBuilder.create(data, 2 * count4);
   return {
     index: 0,
     group_PDB: ts(),
@@ -78795,13 +78795,13 @@ function addAtom(sites, model, data, s, e, isPdbqt) {
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/anisotropic.js
-function getAnisotropicTemplate(data, count3) {
+function getAnisotropicTemplate(data, count4) {
   const str11 = () => [];
-  const float7 = () => new Float32Array(count3);
-  const ts = () => TokenBuilder.create(data, 2 * count3);
+  const float7 = () => new Float32Array(count4);
+  const ts = () => TokenBuilder.create(data, 2 * count4);
   return {
     index: 0,
-    count: count3,
+    count: count4,
     id: str11(),
     type_symbol: ts(),
     pdbx_label_atom_id: ts(),
@@ -82707,11 +82707,11 @@ var operators2 = [
     abbr: ["xt."],
     type: postfix,
     rule: postfixOp(/(EXTEND|xt\.)\s+([0-9]+)/i, 2).map((x) => parseInt(x)),
-    map: (count3, selection) => {
+    map: (count4, selection) => {
       return asAtoms(B9.struct.modifier.includeConnected({
         "0": B9.struct.modifier.union({ 0: selection }),
         "bond-test": true,
-        "layer-count": count3
+        "layer-count": count4
       }));
     }
   }
@@ -84475,13 +84475,13 @@ function formalChargeMapper(key2) {
       return 0;
   }
 }
-function handleAtoms4(tokenizer, count3) {
-  const x = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const y = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const z = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const type_symbol = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const formal_charge = TokenBuilder.create(tokenizer.data, count3 * 2);
-  for (let i = 0; i < count3; ++i) {
+function handleAtoms4(tokenizer, count4) {
+  const x = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const y = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const z = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const type_symbol = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const formal_charge = TokenBuilder.create(tokenizer.data, count4 * 2);
+  for (let i = 0; i < count4; ++i) {
     Tokenizer.markLine(tokenizer);
     const { tokenStart: s, position } = tokenizer;
     Tokenizer.trim(tokenizer, s, s + 10);
@@ -84497,7 +84497,7 @@ function handleAtoms4(tokenizer, count3) {
     tokenizer.position = position;
   }
   return {
-    count: count3,
+    count: count4,
     x: TokenColumnProvider(x)(Column.Schema.float),
     y: TokenColumnProvider(y)(Column.Schema.float),
     z: TokenColumnProvider(z)(Column.Schema.float),
@@ -84505,11 +84505,11 @@ function handleAtoms4(tokenizer, count3) {
     formal_charge: TokenColumnProvider(formal_charge)(Column.Schema.int)
   };
 }
-function handleBonds3(tokenizer, count3) {
-  const atomIdxA = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomIdxB = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const order = TokenBuilder.create(tokenizer.data, count3 * 2);
-  for (let i = 0; i < count3; ++i) {
+function handleBonds3(tokenizer, count4) {
+  const atomIdxA = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomIdxB = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const order = TokenBuilder.create(tokenizer.data, count4 * 2);
+  for (let i = 0; i < count4; ++i) {
     Tokenizer.markLine(tokenizer);
     const { tokenStart: s, position } = tokenizer;
     Tokenizer.trim(tokenizer, s, s + 3);
@@ -84521,7 +84521,7 @@ function handleBonds3(tokenizer, count3) {
     tokenizer.position = position;
   }
   return {
-    count: count3,
+    count: count4,
     atomIdxA: TokenColumnProvider(atomIdxA)(Column.Schema.int),
     atomIdxB: TokenColumnProvider(atomIdxB)(Column.Schema.int),
     order: TokenColumnProvider(order)(Column.Schema.int)
@@ -85815,15 +85815,15 @@ function coordinatesFromXtc(file) {
 
 // node_modules/molstar/lib/mol-io/reader/xyz/parser.js
 function handleMolecule2(tokenizer) {
-  let count3 = tokenizer.position >= tokenizer.data.length - 1 ? 0 : +Tokenizer.readLine(tokenizer);
-  if (isNaN(count3))
-    count3 = 0;
+  let count4 = tokenizer.position >= tokenizer.data.length - 1 ? 0 : +Tokenizer.readLine(tokenizer);
+  if (isNaN(count4))
+    count4 = 0;
   const comment = Tokenizer.readLine(tokenizer);
-  const x = new Float64Array(count3);
-  const y = new Float64Array(count3);
-  const z = new Float64Array(count3);
-  const type_symbol = new Array(count3);
-  for (let i = 0; i < count3; ++i) {
+  const x = new Float64Array(count4);
+  const y = new Float64Array(count4);
+  const z = new Float64Array(count4);
+  const type_symbol = new Array(count4);
+  for (let i = 0; i < count4; ++i) {
     const line = Tokenizer.readLineTrim(tokenizer);
     const fields = line.split(/\s+/g);
     type_symbol[i] = fields[0];
@@ -85832,7 +85832,7 @@ function handleMolecule2(tokenizer) {
     z[i] = +fields[3];
   }
   return {
-    count: count3,
+    count: count4,
     comment,
     x: Column.ofFloatArray(x),
     y: Column.ofFloatArray(y),
@@ -85861,15 +85861,15 @@ function parseXyz(data) {
 // node_modules/molstar/lib/mol-model-formats/structure/xyz.js
 function getModels5(mol, ctx) {
   const { molecules } = mol;
-  let count3 = 0;
+  let count4 = 0;
   for (const m of molecules)
-    count3 += m.count;
-  const type_symbols = new Array(count3);
-  const id = new Int32Array(count3);
-  const x = new Float32Array(count3);
-  const y = new Float32Array(count3);
-  const z = new Float32Array(count3);
-  const model_num = new Int32Array(count3);
+    count4 += m.count;
+  const type_symbols = new Array(count4);
+  const id = new Int32Array(count4);
+  const x = new Float32Array(count4);
+  const y = new Float32Array(count4);
+  const z = new Float32Array(count4);
+  const model_num = new Int32Array(count4);
   let offset4 = 0;
   for (let i = 0; i < molecules.length; i++) {
     const m = molecules[i];
@@ -85883,9 +85883,9 @@ function getModels5(mol, ctx) {
       offset4++;
     }
   }
-  const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
-  const A = Column.ofConst("A", count3, Column.Schema.str);
-  const seq_id = Column.ofConst(1, count3, Column.Schema.int);
+  const MOL = Column.ofConst("MOL", count4, Column.Schema.str);
+  const A = Column.ofConst("A", count4, Column.Schema.str);
+  const seq_id = Column.ofConst(1, count4, Column.Schema.int);
   const type_symbol = Column.ofStringArray(type_symbols);
   const atom_site = Table.ofPartialColumns(BasicSchema.atom_site, {
     auth_asym_id: A,
@@ -85900,11 +85900,11 @@ function getModels5(mol, ctx) {
     label_atom_id: type_symbol,
     label_comp_id: MOL,
     label_seq_id: seq_id,
-    label_entity_id: Column.ofConst("1", count3, Column.Schema.str),
-    occupancy: Column.ofConst(1, count3, Column.Schema.float),
+    label_entity_id: Column.ofConst("1", count4, Column.Schema.str),
+    occupancy: Column.ofConst(1, count4, Column.Schema.float),
     type_symbol,
     pdbx_PDB_model_num: Column.ofIntArray(model_num)
-  }, count3);
+  }, count4);
   const entityBuilder = new EntityBuilder();
   entityBuilder.setNames([["MOL", "Unknown Entity"]]);
   entityBuilder.getEntityId("MOL", MoleculeType.Unknown, "A");
@@ -86084,15 +86084,15 @@ function State9(tokenizer, runtimeCtx) {
     runtimeCtx
   };
 }
-async function handleAtoms6(state, count3, atom_style) {
+async function handleAtoms6(state, count4, atom_style) {
   const { tokenizer } = state;
-  const atomId2 = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const moleculeId = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomType = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const charge = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const x = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const y = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const z = TokenBuilder.create(tokenizer.data, count3 * 2);
+  const atomId2 = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const moleculeId = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomType = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const charge = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const x = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const y = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const z = TokenBuilder.create(tokenizer.data, count4 * 2);
   const columns = {
     full: [atomId2, moleculeId, atomType, charge, x, y, z],
     atomic: [atomId2, atomType, x, y, z],
@@ -86105,7 +86105,7 @@ async function handleAtoms6(state, count3, atom_style) {
   const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
-    const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
+    const linesToRead = Math.min(count4 - linesAlreadyRead, chunkSize);
     for (let i = 0; i < linesToRead; ++i) {
       for (let j = 0; j < n; ++j) {
         skipWhitespace5(tokenizer);
@@ -86123,7 +86123,7 @@ async function handleAtoms6(state, count3, atom_style) {
     return linesToRead;
   }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
-    count: count3,
+    count: count4,
     atomId: TokenColumnProvider(atomId2)(Column.Schema.int),
     moleculeId: TokenColumnProvider(moleculeId)(Column.Schema.int),
     atomType: TokenColumnProvider(atomType)(Column.Schema.int),
@@ -86133,16 +86133,16 @@ async function handleAtoms6(state, count3, atom_style) {
     z: TokenColumnProvider(z)(Column.Schema.float)
   };
 }
-async function handleBonds5(state, count3) {
+async function handleBonds5(state, count4) {
   const { tokenizer } = state;
-  const bondId = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const bondType = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomIdA = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomIdB = TokenBuilder.create(tokenizer.data, count3 * 2);
+  const bondId = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const bondType = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomIdA = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomIdB = TokenBuilder.create(tokenizer.data, count4 * 2);
   const { length: length2 } = tokenizer;
   let bondsAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 10, void 0, (chunkSize) => {
-    const bondsToRead = Math.min(count3 - bondsAlreadyRead, chunkSize);
+    const bondsToRead = Math.min(count4 - bondsAlreadyRead, chunkSize);
     for (let i = 0; i < bondsToRead; ++i) {
       for (let j = 0; j < 4; ++j) {
         skipWhitespace5(tokenizer);
@@ -86168,7 +86168,7 @@ async function handleBonds5(state, count3) {
     return bondsToRead;
   }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
-    count: count3,
+    count: count4,
     bondId: TokenColumnProvider(bondId)(Column.Schema.int),
     bondType: TokenColumnProvider(bondType)(Column.Schema.int),
     atomIdA: TokenColumnProvider(atomIdA)(Column.Schema.int),
@@ -86234,16 +86234,16 @@ function parseLammpsData(data) {
 async function getModels6(mol, ctx, unitsStyle = "real") {
   const { atoms: atoms2, bonds } = mol;
   const models = [];
-  const count3 = atoms2.count;
+  const count4 = atoms2.count;
   const scale = lammpsUnitStyles[unitsStyle].scale;
-  const type_symbols = new Array(count3);
-  const id = new Int32Array(count3);
-  const cx = new Float32Array(count3);
-  const cy = new Float32Array(count3);
-  const cz = new Float32Array(count3);
-  const model_num = new Int32Array(count3);
+  const type_symbols = new Array(count4);
+  const id = new Int32Array(count4);
+  const cx = new Float32Array(count4);
+  const cy = new Float32Array(count4);
+  const cz = new Float32Array(count4);
+  const model_num = new Int32Array(count4);
   let offset4 = 0;
-  for (let j = 0; j < count3; j++) {
+  for (let j = 0; j < count4; j++) {
     type_symbols[offset4] = atoms2.atomType.value(j).toString();
     cx[offset4] = atoms2.x.value(j) * scale;
     cy[offset4] = atoms2.y.value(j) * scale;
@@ -86252,13 +86252,13 @@ async function getModels6(mol, ctx, unitsStyle = "real") {
     model_num[offset4] = 0;
     offset4++;
   }
-  const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
+  const MOL = Column.ofConst("MOL", count4, Column.Schema.str);
   const asym_id = Column.ofLambda({
     value: (row3) => atoms2.moleculeId.value(row3).toString(),
-    rowCount: count3,
+    rowCount: count4,
     schema: Column.Schema.str
   });
-  const seq_id = Column.ofConst(1, count3, Column.Schema.int);
+  const seq_id = Column.ofConst(1, count4, Column.Schema.int);
   const type_symbol = Column.ofStringArray(type_symbols);
   const atom_site = Table.ofPartialColumns(BasicSchema.atom_site, {
     auth_asym_id: asym_id,
@@ -86273,11 +86273,11 @@ async function getModels6(mol, ctx, unitsStyle = "real") {
     label_atom_id: type_symbol,
     label_comp_id: MOL,
     label_seq_id: seq_id,
-    label_entity_id: Column.ofConst("1", count3, Column.Schema.str),
-    occupancy: Column.ofConst(1, count3, Column.Schema.float),
+    label_entity_id: Column.ofConst("1", count4, Column.Schema.str),
+    occupancy: Column.ofConst(1, count4, Column.Schema.float),
     type_symbol,
     pdbx_PDB_model_num: Column.ofIntArray(model_num)
-  }, count3);
+  }, count4);
   const entityBuilder = new EntityBuilder();
   entityBuilder.setNames([["MOL", "Unknown Entity"]]);
   entityBuilder.getEntityId("MOL", MoleculeType.Unknown, "A");
@@ -86334,26 +86334,26 @@ function State10(tokenizer, runtimeCtx) {
     runtimeCtx
   };
 }
-async function handleAtoms7(state, count3, parts) {
+async function handleAtoms7(state, count4, parts) {
   const { tokenizer } = state;
   const columnIndexMap = Object.fromEntries(parts.map((colName, index) => [colName, index]));
   const xCol = parts.findIndex((p6) => p6[0] === "x");
   const yCol = parts.findIndex((p6) => p6[0] === "y");
   const zCol = parts.findIndex((p6) => p6[0] === "z");
   const atomMode = parts[xCol];
-  const atomId2 = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const moleculeType = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const atomType = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const x = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const y = TokenBuilder.create(tokenizer.data, count3 * 2);
-  const z = TokenBuilder.create(tokenizer.data, count3 * 2);
+  const atomId2 = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const moleculeType = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const atomType = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const x = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const y = TokenBuilder.create(tokenizer.data, count4 * 2);
+  const z = TokenBuilder.create(tokenizer.data, count4 * 2);
   const { position } = tokenizer;
   tokenizer.position = position;
   const n = parts.length;
   const { length: length2 } = tokenizer;
   let linesAlreadyRead = 0;
   await chunkedSubtask(state.runtimeCtx, 1e5, void 0, (chunkSize) => {
-    const linesToRead = Math.min(count3 - linesAlreadyRead, chunkSize);
+    const linesToRead = Math.min(count4 - linesAlreadyRead, chunkSize);
     for (let i = 0; i < linesToRead; ++i) {
       for (let j = 0; j < n; ++j) {
         skipWhitespace6(tokenizer);
@@ -86387,7 +86387,7 @@ async function handleAtoms7(state, count3, parts) {
     return linesToRead;
   }, (ctx) => ctx.update({ message: "Parsing...", current: tokenizer.position, max: length2 }));
   return {
-    count: count3,
+    count: count4,
     atomMode,
     atomId: TokenColumnProvider(atomId2)(Column.Schema.int),
     moleculeId: TokenColumnProvider(moleculeType)(Column.Schema.int),
@@ -86478,12 +86478,12 @@ function coordinatesFromLammpsTrajectory(file, unitsStyle = "real") {
         offset_pos.y = box5.lower[1];
         offset_pos.z = box5.lower[2];
       }
-      const count3 = file.frames[i].count;
-      const cx = new Float32Array(count3);
-      const cy = new Float32Array(count3);
-      const cz = new Float32Array(count3);
+      const count4 = file.frames[i].count;
+      const cx = new Float32Array(count4);
+      const cy = new Float32Array(count4);
+      const cz = new Float32Array(count4);
       let offset4 = 0;
-      for (let j = 0; j < count3; j++) {
+      for (let j = 0; j < count4; j++) {
         cx[offset4] = (file.frames[i].x.value(j) * offset_scale.x + offset_pos.x) * scale;
         cy[offset4] = (file.frames[i].y.value(j) * offset_scale.y + offset_pos.y) * scale;
         cz[offset4] = (file.frames[i].z.value(j) * offset_scale.z + offset_pos.z) * scale;
@@ -86503,7 +86503,7 @@ function coordinatesFromLammpsTrajectory(file, unitsStyle = "real") {
 }
 async function getModels7(mol, ctx, unitsStyle = "real") {
   const atoms2 = mol.frames[0];
-  const count3 = atoms2.count;
+  const count4 = atoms2.count;
   const atomsMode = atoms2.atomMode;
   const box5 = mol.bounds[0];
   const offset_pos = { x: 0, y: 0, z: 0 };
@@ -86517,14 +86517,14 @@ async function getModels7(mol, ctx, unitsStyle = "real") {
     offset_pos.y = box5.lower[1];
     offset_pos.z = box5.lower[2];
   }
-  const type_symbols = new Array(count3);
-  const id = new Int32Array(count3);
-  const cx = new Float32Array(count3);
-  const cy = new Float32Array(count3);
-  const cz = new Float32Array(count3);
-  const model_num = new Int32Array(count3);
+  const type_symbols = new Array(count4);
+  const id = new Int32Array(count4);
+  const cx = new Float32Array(count4);
+  const cy = new Float32Array(count4);
+  const cz = new Float32Array(count4);
+  const model_num = new Int32Array(count4);
   let offset4 = 0;
-  for (let j = 0; j < count3; j++) {
+  for (let j = 0; j < count4; j++) {
     type_symbols[offset4] = atoms2.atomType.value(j).toString();
     cx[offset4] = (atoms2.x.value(j) * offset_scale.x + offset_pos.x) * scale;
     cy[offset4] = (atoms2.y.value(j) * offset_scale.y + offset_pos.y) * scale;
@@ -86533,13 +86533,13 @@ async function getModels7(mol, ctx, unitsStyle = "real") {
     model_num[offset4] = 0;
     offset4++;
   }
-  const MOL = Column.ofConst("MOL", count3, Column.Schema.str);
+  const MOL = Column.ofConst("MOL", count4, Column.Schema.str);
   const asym_id = Column.ofLambda({
     value: (row3) => atoms2.moleculeId.value(row3).toString(),
-    rowCount: count3,
+    rowCount: count4,
     schema: Column.Schema.str
   });
-  const seq_id = Column.ofConst(1, count3, Column.Schema.int);
+  const seq_id = Column.ofConst(1, count4, Column.Schema.int);
   const type_symbol = Column.ofStringArray(type_symbols);
   const atom_site = Table.ofPartialColumns(BasicSchema.atom_site, {
     auth_asym_id: asym_id,
@@ -86554,11 +86554,11 @@ async function getModels7(mol, ctx, unitsStyle = "real") {
     label_atom_id: type_symbol,
     label_comp_id: MOL,
     label_seq_id: seq_id,
-    label_entity_id: Column.ofConst("1", count3, Column.Schema.str),
-    occupancy: Column.ofConst(1, count3, Column.Schema.float),
+    label_entity_id: Column.ofConst("1", count4, Column.Schema.str),
+    occupancy: Column.ofConst(1, count4, Column.Schema.float),
     type_symbol,
     pdbx_PDB_model_num: Column.ofIntArray(model_num)
-  }, count3);
+  }, count4);
   const entityBuilder = new EntityBuilder();
   entityBuilder.setNames([["MOL", "Unknown Entity"]]);
   entityBuilder.getEntityId("MOL", MoleculeType.Unknown, "A");
@@ -87843,12 +87843,12 @@ function getBasic4(top) {
   let atomCount2 = 0;
   for (let i = 0, il = molecules._rowCount; i < il; ++i) {
     const mol = molecules.compound.value(i);
-    const count3 = molecules.molCount.value(i);
+    const count4 = molecules.molCount.value(i);
     const { atoms: atoms2 } = compounds[mol];
     Column.asArrayColumn(atoms2.atom);
     Column.asArrayColumn(atoms2.resnr);
     Column.asArrayColumn(atoms2.residu);
-    atomCount2 += count3 * atoms2._rowCount;
+    atomCount2 += count4 * atoms2._rowCount;
     let prevResnr = atoms2.resnr.value(0);
     singleResidue[mol] = true;
     for (let j = 1, jl = atoms2._rowCount; j < jl; ++j) {
@@ -87866,10 +87866,10 @@ function getBasic4(top) {
   let k = 0;
   for (let i = 0, il = molecules._rowCount; i < il; ++i) {
     const mol = molecules.compound.value(i);
-    const count3 = molecules.molCount.value(i);
+    const count4 = molecules.molCount.value(i);
     const { atoms: atoms2 } = compounds[mol];
     const isSingleResidue = singleResidue[mol];
-    for (let j = 0; j < count3; ++j) {
+    for (let j = 0; j < count4; ++j) {
       for (let l = 0, ll = atoms2._rowCount; l < ll; ++l) {
         atomNames[k] = atoms2.atom.value(l);
         residueIds[k] = atoms2.resnr.value(l);
@@ -87950,10 +87950,10 @@ function getBonds(top) {
   let atomOffset = 0;
   for (let i = 0, il = molecules._rowCount; i < il; ++i) {
     const mol = molecules.compound.value(i);
-    const count3 = molecules.molCount.value(i);
+    const count4 = molecules.molCount.value(i);
     const { atoms: atoms2, bonds } = compounds[mol];
     if (bonds) {
-      for (let j = 0; j < count3; ++j) {
+      for (let j = 0; j < count4; ++j) {
         for (let l = 0, ll = bonds._rowCount; l < ll; ++l) {
           indexA.push(bonds.ai.value(l) - 1 + atomOffset);
           indexB.push(bonds.aj.value(l) - 1 + atomOffset);
@@ -87961,7 +87961,7 @@ function getBonds(top) {
         atomOffset += atoms2._rowCount;
       }
     } else if (mol === "TIP3") {
-      for (let j = 0; j < count3; ++j) {
+      for (let j = 0; j < count4; ++j) {
         indexA.push(0 + atomOffset);
         indexB.push(1 + atomOffset);
         indexA.push(0 + atomOffset);
@@ -87969,7 +87969,7 @@ function getBonds(top) {
         atomOffset += atoms2._rowCount;
       }
     } else {
-      atomOffset += count3 * atoms2._rowCount;
+      atomOffset += count4 * atoms2._rowCount;
     }
   }
   return {
@@ -90009,8 +90009,8 @@ var MarkerActions;
   }
   MarkerActions2.isReverse = isReverse;
 })(MarkerActions || (MarkerActions = {}));
-function setMarkerValue(array2, status, count3) {
-  array2.fill(status, 0, count3);
+function setMarkerValue(array2, status, count4) {
+  array2.fill(status, 0, count4);
 }
 function applyMarkerActionAtPosition(array2, i, action) {
   switch (action) {
@@ -90919,7 +90919,7 @@ function calcMeshColorSmoothing(input, resolution, stride, webgl, texture) {
   const [xn, yn] = gridDim;
   const { width, height } = getVolumeTexture2dLayout(gridDim);
   const data = new Float32Array(width * height * itemSize);
-  const count3 = new Float32Array(width * height);
+  const count4 = new Float32Array(width * height);
   const grid = new Uint8Array(width * height * itemSize);
   const textureImage = { array: grid, width, height, filter: "linear" };
   const instanceCount = isInstanceType ? input.instanceCount : 1;
@@ -90966,15 +90966,15 @@ function calcMeshColorSmoothing(input, resolution, stride, webgl, texture) {
             for (let k = 0; k < itemSize; ++k) {
               data[index + k] += colors[ci + k] * s;
             }
-            count3[index / itemSize] += s;
+            count4[index / itemSize] += s;
           }
         }
       }
     }
   }
-  for (let i = 0, il = count3.length; i < il; ++i) {
+  for (let i = 0, il = count4.length; i < il; ++i) {
     const is4 = i * itemSize;
-    const c8 = count3[i];
+    const c8 = count4[i];
     for (let k = 0; k < itemSize; ++k) {
       grid[is4 + k] = Math.round(data[is4 + k] / c8);
     }
@@ -91430,23 +91430,23 @@ var ColorNormalizeSchema = {
   uTexSize: UniformSpec("v2")
 };
 var ColorNormalizeName = "color-normalize";
-function getNormalizeRenderable(ctx, color, count3) {
+function getNormalizeRenderable(ctx, color, count4) {
   if (ctx.namedComputeRenderables[ColorNormalizeName]) {
     const v4 = ctx.namedComputeRenderables[ColorNormalizeName].values;
     ValueCell.update(v4.tColor, color);
-    ValueCell.update(v4.tCount, count3);
+    ValueCell.update(v4.tCount, count4);
     ValueCell.update(v4.uTexSize, Vec2.set(v4.uTexSize.ref.value, color.getWidth(), color.getHeight()));
     ctx.namedComputeRenderables[ColorNormalizeName].update();
   } else {
-    ctx.namedComputeRenderables[ColorNormalizeName] = createColorNormalizeRenderable(ctx, color, count3);
+    ctx.namedComputeRenderables[ColorNormalizeName] = createColorNormalizeRenderable(ctx, color, count4);
   }
   return ctx.namedComputeRenderables[ColorNormalizeName];
 }
-function createColorNormalizeRenderable(ctx, color, count3) {
+function createColorNormalizeRenderable(ctx, color, count4) {
   const values2 = {
     ...QuadValues,
     tColor: ValueCell.create(color),
-    tCount: ValueCell.create(count3),
+    tCount: ValueCell.create(count4),
     uTexSize: ValueCell.create(Vec2.create(color.getWidth(), color.getHeight()))
   };
   const schema = { ...ColorNormalizeSchema };
@@ -91773,7 +91773,7 @@ var Visual;
     if (!renderObject || isEmptyLoci(loci))
       return false;
     const { tMarker, uMarker, markerAverage, markerStatus, uGroupCount, instanceCount, instanceGranularity } = renderObject.values;
-    const count3 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
+    const count4 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
     const { array: array2 } = tMarker.ref.value;
     const currentStatus = markerStatus.ref.value;
     if (!isEveryLoci(loci)) {
@@ -91784,7 +91784,7 @@ var Visual;
       }, true);
       if (intervalSize === 0)
         return false;
-      if (intervalSize === count3)
+      if (intervalSize === count4)
         loci = EveryLoci;
     }
     let changed = false;
@@ -91795,9 +91795,9 @@ var Visual;
       if (info.status !== -1) {
         changed = currentStatus !== info.status;
         if (changed)
-          setMarkerValue(array2, info.status, count3);
+          setMarkerValue(array2, info.status, count4);
       } else {
-        changed = applyMarkerAction(array2, Interval.ofLength(count3), action);
+        changed = applyMarkerAction(array2, Interval.ofLength(count4), action);
       }
       average = info.average;
       status = info.status;
@@ -91813,7 +91813,7 @@ var Visual;
     }
     if (changed) {
       if (average === -1) {
-        average = getMarkersAverage(array2, count3);
+        average = getMarkersAverage(array2, count4);
         if (average === 0)
           status = 0;
       }
@@ -91835,12 +91835,12 @@ var Visual;
     if (!renderObject)
       return;
     const { tOverpaint, dOverpaintType, dOverpaint, uGroupCount, instanceCount, instanceGranularity } = renderObject.values;
-    const count3 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
+    const count4 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
     const type3 = instanceGranularity.ref.value ? "instance" : "groupInstance";
-    createOverpaint(overpaint.layers.length ? count3 : 0, type3, renderObject.values);
+    createOverpaint(overpaint.layers.length ? count4 : 0, type3, renderObject.values);
     const { array: array2 } = tOverpaint.ref.value;
     if (clear2)
-      clearOverpaint(array2, 0, count3);
+      clearOverpaint(array2, 0, count4);
     for (let i = 0, il = overpaint.layers.length; i < il; ++i) {
       const { loci, color, clear: clear3 } = overpaint.layers[i];
       const apply = (interval) => {
@@ -91881,12 +91881,12 @@ var Visual;
     if (!renderObject)
       return;
     const { tTransparency, dTransparencyType, transparencyAverage, transparencyMin, dTransparency, uGroupCount, instanceCount, instanceGranularity } = renderObject.values;
-    const count3 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
+    const count4 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
     const type3 = instanceGranularity.ref.value ? "instance" : "groupInstance";
-    createTransparency(transparency.layers.length ? count3 : 0, type3, renderObject.values);
+    createTransparency(transparency.layers.length ? count4 : 0, type3, renderObject.values);
     const { array: array2 } = tTransparency.ref.value;
     if (clear2)
-      clearTransparency(array2, 0, count3);
+      clearTransparency(array2, 0, count4);
     for (let i = 0, il = transparency.layers.length; i < il; ++i) {
       const { loci, value } = transparency.layers[i];
       const apply = (interval) => {
@@ -91897,8 +91897,8 @@ var Visual;
       lociApply(loci, apply, false);
     }
     ValueCell.update(tTransparency, tTransparency.ref.value);
-    ValueCell.updateIfChanged(transparencyAverage, getTransparencyAverage(array2, count3));
-    ValueCell.updateIfChanged(transparencyMin, getTransparencyMin(array2, count3));
+    ValueCell.updateIfChanged(transparencyAverage, getTransparencyAverage(array2, count4));
+    ValueCell.updateIfChanged(transparencyMin, getTransparencyMin(array2, count4));
     ValueCell.updateIfChanged(dTransparencyType, type3);
     ValueCell.updateIfChanged(dTransparency, transparency.layers.length > 0);
     if (transparency.layers.length === 0)
@@ -91929,12 +91929,12 @@ var Visual;
     if (!renderObject)
       return;
     const { tEmissive, dEmissiveType, emissiveAverage, dEmissive, uGroupCount, instanceCount, instanceGranularity } = renderObject.values;
-    const count3 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
+    const count4 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
     const type3 = instanceGranularity.ref.value ? "instance" : "groupInstance";
-    createEmissive(emissive.layers.length ? count3 : 0, type3, renderObject.values);
+    createEmissive(emissive.layers.length ? count4 : 0, type3, renderObject.values);
     const { array: array2 } = tEmissive.ref.value;
     if (clear2)
-      clearEmissive(array2, 0, count3);
+      clearEmissive(array2, 0, count4);
     for (let i = 0, il = emissive.layers.length; i < il; ++i) {
       const { loci, value } = emissive.layers[i];
       const apply = (interval) => {
@@ -91945,7 +91945,7 @@ var Visual;
       lociApply(loci, apply, false);
     }
     ValueCell.update(tEmissive, tEmissive.ref.value);
-    ValueCell.updateIfChanged(emissiveAverage, getEmissiveAverage(array2, count3));
+    ValueCell.updateIfChanged(emissiveAverage, getEmissiveAverage(array2, count4));
     ValueCell.updateIfChanged(dEmissiveType, type3);
     ValueCell.updateIfChanged(dEmissive, emissive.layers.length > 0);
     if (emissive.layers.length === 0)
@@ -91976,12 +91976,12 @@ var Visual;
     if (!renderObject)
       return;
     const { tSubstance, dSubstanceType, dSubstance, uGroupCount, instanceCount, instanceGranularity } = renderObject.values;
-    const count3 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
+    const count4 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
     const type3 = instanceGranularity.ref.value ? "instance" : "groupInstance";
-    createSubstance(substance.layers.length ? count3 : 0, type3, renderObject.values);
+    createSubstance(substance.layers.length ? count4 : 0, type3, renderObject.values);
     const { array: array2 } = tSubstance.ref.value;
     if (clear2)
-      clearSubstance(array2, 0, count3);
+      clearSubstance(array2, 0, count4);
     for (let i = 0, il = substance.layers.length; i < il; ++i) {
       const { loci, material, clear: clear3 } = substance.layers[i];
       const apply = (interval) => {
@@ -92022,13 +92022,13 @@ var Visual;
     if (!renderObject)
       return;
     const { tClipping, dClippingType, dClipping, uGroupCount, instanceCount, instanceGranularity } = renderObject.values;
-    const count3 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
+    const count4 = instanceGranularity.ref.value ? instanceCount.ref.value : uGroupCount.ref.value * instanceCount.ref.value;
     const { layers } = clipping;
     const type3 = instanceGranularity.ref.value ? "instance" : "groupInstance";
-    createClipping(layers.length ? count3 : 0, type3, renderObject.values);
+    createClipping(layers.length ? count4 : 0, type3, renderObject.values);
     const { array: array2 } = tClipping.ref.value;
     if (clear2)
-      clearClipping(array2, 0, count3);
+      clearClipping(array2, 0, count4);
     for (let i = 0, il = clipping.layers.length; i < il; ++i) {
       const { loci, groups } = clipping.layers[i];
       const apply = (interval) => {
@@ -92792,15 +92792,15 @@ var caAdd22 = ChunkedArray.add2;
 var caAdd4 = ChunkedArray.add;
 var TextBuilder;
 (function(TextBuilder2) {
-  function create3(props = {}, initialCount = 2048, chunkSize = 1024, text) {
+  function create3(props = {}, initialCount = 2048, chunkSize = 1024, text2) {
     initialCount *= 2;
     chunkSize *= 2;
-    const centers = ChunkedArray.create(Float32Array, 3, chunkSize, text ? text.centerBuffer.ref.value : initialCount);
-    const mappings = ChunkedArray.create(Float32Array, 2, chunkSize, text ? text.mappingBuffer.ref.value : initialCount);
-    const depths = ChunkedArray.create(Float32Array, 1, chunkSize, text ? text.depthBuffer.ref.value : initialCount);
-    const indices3 = ChunkedArray.create(Uint32Array, 3, chunkSize, text ? text.indexBuffer.ref.value : initialCount);
-    const groups = ChunkedArray.create(Float32Array, 1, chunkSize, text ? text.groupBuffer.ref.value : initialCount);
-    const tcoords = ChunkedArray.create(Float32Array, 2, chunkSize, text ? text.tcoordBuffer.ref.value : initialCount);
+    const centers = ChunkedArray.create(Float32Array, 3, chunkSize, text2 ? text2.centerBuffer.ref.value : initialCount);
+    const mappings = ChunkedArray.create(Float32Array, 2, chunkSize, text2 ? text2.mappingBuffer.ref.value : initialCount);
+    const depths = ChunkedArray.create(Float32Array, 1, chunkSize, text2 ? text2.depthBuffer.ref.value : initialCount);
+    const indices3 = ChunkedArray.create(Uint32Array, 3, chunkSize, text2 ? text2.indexBuffer.ref.value : initialCount);
+    const groups = ChunkedArray.create(Float32Array, 1, chunkSize, text2 ? text2.groupBuffer.ref.value : initialCount);
+    const tcoords = ChunkedArray.create(Float32Array, 2, chunkSize, text2 ? text2.tcoordBuffer.ref.value : initialCount);
     const p6 = { ...ParamDefinition.getDefaultValues(Text.Params), ...props };
     const { attachment, background, backgroundMargin, tether, tetherLength, tetherBaseWidth } = p6;
     const fontAtlas = getFontAtlas(p6);
@@ -93034,7 +93034,7 @@ var TextBuilder;
         const ib = ChunkedArray.compact(indices3, true);
         const gb = ChunkedArray.compact(groups, true);
         const tb = ChunkedArray.compact(tcoords, true);
-        return Text.create(ft, cb2, mb, db, ib, gb, tb, indices3.elementCount / 2, text);
+        return Text.create(ft, cb2, mb, db, ib, gb, tb, indices3.elementCount / 2, text2);
       }
     };
   }
@@ -93109,11 +93109,11 @@ function lociLabel(loci, options = {}) {
       ].join(" | ");
   }
 }
-function countLabel(count3, label2) {
-  return count3 === 1 ? `1 ${label2}` : `${count3} ${label2}s`;
+function countLabel(count4, label2) {
+  return count4 === 1 ? `1 ${label2}` : `${count4} ${label2}s`;
 }
-function otherLabel(count3, location2, granularity, hidePrefix, reverse3, condensed) {
-  return `${elementLabel(location2, { granularity, hidePrefix, reverse: reverse3, condensed })} <small>[+ ${countLabel(count3 - 1, `other ${capitalize(granularity)}`)}]</small>`;
+function otherLabel(count4, location2, granularity, hidePrefix, reverse3, condensed) {
+  return `${elementLabel(location2, { granularity, hidePrefix, reverse: reverse3, condensed })} <small>[+ ${countLabel(count4 - 1, `other ${capitalize(granularity)}`)}]</small>`;
 }
 function getResidueCount(unit2) {
   const { elements, model } = unit2;
@@ -93435,8 +93435,8 @@ function getLinesShape(ctx, data, props, shape) {
   const getLabel = (groupId) => distanceLabel(data.pairs[groupId], props);
   return Shape.create(name, data, lines, () => props.linesColor, () => props.linesSize, getLabel);
 }
-function buildText(data, props, text) {
-  const builder = TextBuilder.create(props, 128, 64, text);
+function buildText(data, props, text2) {
+  const builder = TextBuilder.create(props, 128, 64, text2);
   for (let i = 0, il = data.pairs.length; i < il; ++i) {
     setDistanceState(data.pairs[i], tmpState);
     const { center: center2, distance: distance2, sphereA, sphereB } = tmpState;
@@ -93448,10 +93448,10 @@ function buildText(data, props, text) {
   return builder.getText();
 }
 function getTextShape(ctx, data, props, shape) {
-  const text = buildText(data, props, shape && shape.geometry);
+  const text2 = buildText(data, props, shape && shape.geometry);
   const name = getDistanceName(data, props.unitLabel);
   const getLabel = (groupId) => distanceLabel(data.pairs[groupId], props);
-  return Shape.create(name, data, text, () => props.textColor, () => props.textSize, getLabel);
+  return Shape.create(name, data, text2, () => props.textColor, () => props.textSize, getLabel);
 }
 function DistanceRepresentation(ctx, getParams) {
   return Representation.createMulti("Distance", ctx, getParams, Representation.StateBuilder, DistanceVisuals);
@@ -93478,8 +93478,8 @@ function label(info, condensed = false) {
 function getLabelName(data) {
   return data.infos.length === 1 ? label(data.infos[0]) : `${data.infos.length} Labels`;
 }
-function buildText2(data, props, text) {
-  const builder = TextBuilder.create(props, 128, 64, text);
+function buildText2(data, props, text2) {
+  const builder = TextBuilder.create(props, 128, 64, text2);
   const customLabel = props.customText.trim();
   for (let i = 0, il = data.infos.length; i < il; ++i) {
     const info = data.infos[i];
@@ -93487,14 +93487,14 @@ function buildText2(data, props, text) {
     if (!sphere)
       continue;
     const { center: center2, radius } = sphere;
-    const text2 = customLabel || label(info, true);
-    builder.add(text2, center2[0], center2[1], center2[2], props.scaleByRadius ? radius / 0.9 : 0, props.scaleByRadius ? Math.max(1, radius) : 1, i);
+    const text3 = customLabel || label(info, true);
+    builder.add(text3, center2[0], center2[1], center2[2], props.scaleByRadius ? radius / 0.9 : 0, props.scaleByRadius ? Math.max(1, radius) : 1, i);
   }
   return builder.getText();
 }
 function getTextShape2(ctx, data, props, shape) {
   var _a, _b;
-  const text = buildText2(data, props, shape && shape.geometry);
+  const text2 = buildText2(data, props, shape && shape.geometry);
   const name = getLabelName(data);
   const tooltip = (_b = (_a = props.tooltip) === null || _a === void 0 ? void 0 : _a.trim()) !== null && _b !== void 0 ? _b : "";
   const customLabel = props.customText.trim();
@@ -93506,7 +93506,7 @@ function getTextShape2(ctx, data, props, shape) {
   } else {
     getLabel = (groupId) => label(data.infos[groupId]);
   }
-  return Shape.create(name, data, text, () => props.textColor, () => props.textSize, getLabel);
+  return Shape.create(name, data, text2, () => props.textColor, () => props.textSize, getLabel);
 }
 function LabelRepresentation(ctx, getParams) {
   return Representation.createMulti("Label", ctx, getParams, Representation.StateBuilder, LabelVisuals);
@@ -93708,9 +93708,9 @@ var DefaultCircleProps = {
 function Circle(props) {
   const { radius, segments: segments2, thetaStart, thetaLength } = { ...DefaultCircleProps, ...props };
   const isFull = thetaLength === Math.PI * 2;
-  const count3 = isFull ? segments2 + 1 : segments2 + 2;
-  const vertices2 = new Float32Array(count3 * 3);
-  const normals = new Float32Array(count3 * 3);
+  const count4 = isFull ? segments2 + 1 : segments2 + 2;
+  const vertices2 = new Float32Array(count4 * 3);
+  const normals = new Float32Array(count4 * 3);
   const indices3 = new Uint32Array(segments2 * 3);
   vertices2[0] = 0;
   vertices2[1] = 0;
@@ -93892,8 +93892,8 @@ function getSectorShape(ctx, data, props, shape) {
   const getLabel = (groupId) => angleLabel(data.triples[groupId]);
   return Shape.create(name, data, mesh, () => props.color, () => 1, getLabel);
 }
-function buildText3(data, props, text) {
-  const builder = TextBuilder.create(props, 128, 64, text);
+function buildText3(data, props, text2) {
+  const builder = TextBuilder.create(props, 128, 64, text2);
   for (let i = 0, il = data.triples.length; i < il; ++i) {
     setAngleState(data.triples[i], tmpState2, props.arcScale);
     Vec3.add(tmpVec3, tmpState2.arcDirA, tmpState2.arcDirC);
@@ -93908,10 +93908,10 @@ function buildText3(data, props, text) {
   return builder.getText();
 }
 function getTextShape3(ctx, data, props, shape) {
-  const text = buildText3(data, props, shape && shape.geometry);
+  const text2 = buildText3(data, props, shape && shape.geometry);
   const name = getAngleName(data);
   const getLabel = (groupId) => angleLabel(data.triples[groupId]);
-  return Shape.create(name, data, text, () => props.textColor, () => props.textSize, getLabel);
+  return Shape.create(name, data, text2, () => props.textColor, () => props.textSize, getLabel);
 }
 function AngleRepresentation(ctx, getParams) {
   return Representation.createMulti("Angle", ctx, getParams, Representation.StateBuilder, AngleVisuals);
@@ -94136,8 +94136,8 @@ function getSectorShape2(ctx, data, props, shape) {
   const getLabel = (groupId) => dihedralLabel(data.quads[groupId]);
   return Shape.create(name, data, mesh, () => props.color, () => 1, getLabel);
 }
-function buildText4(data, props, text) {
-  const builder = TextBuilder.create(props, 128, 64, text);
+function buildText4(data, props, text2) {
+  const builder = TextBuilder.create(props, 128, 64, text2);
   for (let i = 0, il = data.quads.length; i < il; ++i) {
     setDihedralState(data.quads[i], tmpState3, props.arcScale);
     Vec3.add(tmpVec5, tmpState3.arcDirA, tmpState3.arcDirD);
@@ -94154,10 +94154,10 @@ function buildText4(data, props, text) {
   return builder.getText();
 }
 function getTextShape4(ctx, data, props, shape) {
-  const text = buildText4(data, props, shape && shape.geometry);
+  const text2 = buildText4(data, props, shape && shape.geometry);
   const name = getDihedralName(data);
   const getLabel = (groupId) => dihedralLabel(data.quads[groupId]);
-  return Shape.create(name, data, text, () => props.textColor, () => props.textSize, getLabel);
+  return Shape.create(name, data, text2, () => props.textColor, () => props.textSize, getLabel);
 }
 function DihedralRepresentation(ctx, getParams) {
   return Representation.createMulti("Dihedral", ctx, getParams, Representation.StateBuilder, DihedralVisuals);
@@ -96735,7 +96735,7 @@ var ColorTheme;
             maxPrecision = p6;
         }
       }
-      const count3 = Math.pow(10, maxPrecision);
+      const count4 = Math.pow(10, maxPrecision);
       const sorted = [...list3];
       sorted.sort((a8, b8) => a8[1] - b8[1]);
       const src = sorted.map((c8) => c8[0]);
@@ -96746,8 +96746,8 @@ var ColorTheme;
       }
       _off.push(values2[values2.length - 1]);
       const off = SortedArray.ofSortedArray(_off);
-      for (let i = 0, il = Math.max(count3, list3.length); i < il; ++i) {
-        const t5 = normalize(i, 0, count3 - 1);
+      for (let i = 0, il = Math.max(count4, list3.length); i < il; ++i) {
+        const t5 = normalize(i, 0, count4 - 1);
         const j = SortedArray.findPredecessorIndex(off, t5);
         colors[i] = src[j];
       }
@@ -97719,34 +97719,34 @@ var Scene;
     function calculateMarkerAverage() {
       if (primitives.length === 0)
         return 0;
-      let count3 = 0;
+      let count4 = 0;
       let markerAverage2 = 0;
       for (let i = 0, il = primitives.length; i < il; ++i) {
         if (!primitives[i].state.visible)
           continue;
         markerAverage2 += primitives[i].values.markerAverage.ref.value;
-        count3 += 1;
+        count4 += 1;
       }
-      return count3 > 0 ? markerAverage2 / count3 : 0;
+      return count4 > 0 ? markerAverage2 / count4 : 0;
     }
     function calculateEmissiveAverage() {
       if (primitives.length === 0)
         return 0;
-      let count3 = 0;
+      let count4 = 0;
       let emissiveAverage2 = 0;
       for (let i = 0, il = primitives.length; i < il; ++i) {
         if (!primitives[i].state.visible)
           continue;
         emissiveAverage2 += primitives[i].values.emissiveAverage.ref.value + primitives[i].values.uEmissive.ref.value;
-        count3 += 1;
+        count4 += 1;
       }
-      return count3 > 0 ? emissiveAverage2 / count3 : 0;
+      return count4 > 0 ? emissiveAverage2 / count4 : 0;
     }
     function calculateOpacityAverage() {
       var _a, _b, _c;
       if (primitives.length === 0)
         return 0;
-      let count3 = 0;
+      let count4 = 0;
       let opacityAverage2 = 0;
       for (let i = 0, il = primitives.length; i < il; ++i) {
         const p6 = primitives[i];
@@ -97755,12 +97755,12 @@ var Scene;
         const alpha = clamp(p6.values.alpha.ref.value * p6.state.alphaFactor, 0, 1);
         const xray = ((_a = p6.values.dXrayShaded) === null || _a === void 0 ? void 0 : _a.ref.value) === "on" || ((_b = p6.values.dXrayShaded) === null || _b === void 0 ? void 0 : _b.ref.value) === "inverted" ? 0.5 : 1;
         const fuzzy = ((_c = p6.values.dPointStyle) === null || _c === void 0 ? void 0 : _c.ref.value) === "fuzzy" ? 0.5 : 1;
-        const text = p6.values.dGeometryType.ref.value === "text" ? 0.5 : 1;
+        const text2 = p6.values.dGeometryType.ref.value === "text" ? 0.5 : 1;
         const image = p6.values.dGeometryType.ref.value === "image" ? 0.5 : 1;
-        opacityAverage2 += (1 - p6.values.transparencyAverage.ref.value) * alpha * xray * fuzzy * text * image;
-        count3 += 1;
+        opacityAverage2 += (1 - p6.values.transparencyAverage.ref.value) * alpha * xray * fuzzy * text2 * image;
+        count4 += 1;
       }
-      return count3 > 0 ? opacityAverage2 / count3 : 0;
+      return count4 > 0 ? opacityAverage2 / count4 : 0;
     }
     function calculateTransparencyMin() {
       var _a, _b, _c;
@@ -102290,18 +102290,18 @@ var SsaoParams = {
   transparentThreshold: ParamDefinition.Numeric(0.4, { min: 0, max: 1, step: 0.05 })
 };
 function getLevels(props, scale, levels) {
-  const count3 = props.length;
+  const count4 = props.length;
   const { radius, bias } = levels || {
-    radius: new Array(count3 * 3).fill(0),
-    bias: new Array(count3 * 3).fill(0)
+    radius: new Array(count4 * 3).fill(0),
+    bias: new Array(count4 * 3).fill(0)
   };
   props = props.slice().sort((a8, b8) => a8.radius - b8.radius);
-  for (let i = 0; i < count3; ++i) {
+  for (let i = 0; i < count4; ++i) {
     const p6 = props[i];
     radius[i] = Math.pow(2, p6.radius) * scale;
     bias[i] = p6.bias;
   }
-  return { count: count3, radius, bias };
+  return { count: count4, radius, bias };
 }
 var SsaoPass = class _SsaoPass {
   static isEnabled(props) {
@@ -105369,8 +105369,8 @@ function createMeshRenderObject(props) {
     cellSize: 0
   });
 }
-function createAxesText(props, text) {
-  const builder = TextBuilder.create(props, 8, 8, text);
+function createAxesText(props, text2) {
+  const builder = TextBuilder.create(props, 8, 8, text2);
   const scale = 100 * props.scale;
   const x = Vec3.scale(Vec3(), Vec3.unitX, scale);
   const y = Vec3.scale(Vec3(), Vec3.unitY, scale);
@@ -105383,8 +105383,8 @@ function createAxesText(props, text) {
 }
 function getAxesTextShape(props, shape) {
   const scale = 100 * props.scale;
-  const text = createAxesText(props, shape === null || shape === void 0 ? void 0 : shape.geometry);
-  text.setBoundingSphere(Sphere3D.create(Vec3.create(scale / 2, scale / 2, scale / 2), scale));
+  const text2 = createAxesText(props, shape === null || shape === void 0 ? void 0 : shape.geometry);
+  text2.setBoundingSphere(Sphere3D.create(Vec3.create(scale / 2, scale / 2, scale / 2), scale));
   const getColor2 = (groupId) => {
     switch (groupId) {
       case CameraHelperAxis.X:
@@ -105397,7 +105397,7 @@ function getAxesTextShape(props, shape) {
         return ColorNames.grey;
     }
   };
-  return Shape.create("axes-text", {}, text, getColor2, () => 1, () => "");
+  return Shape.create("axes-text", {}, text2, getColor2, () => 1, () => "");
 }
 function createTextRenderObject(props) {
   const shape = getAxesTextShape(props);
@@ -110147,34 +110147,34 @@ function compId2(unit2, index) {
   return unit2.model.atomicHierarchy.atoms.label_comp_id.value(unit2.elements[index]);
 }
 function interBondCount(structure, unit2, index) {
-  let count3 = 0;
+  let count4 = 0;
   const indices3 = structure.interUnitBonds.getEdgeIndices(index, unit2.id);
   for (let i = 0, il = indices3.length; i < il; ++i) {
     const b8 = structure.interUnitBonds.edges[indices3[i]];
     if (BondType.isCovalent(b8.props.flag))
-      count3 += 1;
+      count4 += 1;
   }
-  return count3;
+  return count4;
 }
 function intraBondCount(unit2, index) {
-  let count3 = 0;
+  let count4 = 0;
   const { offset: offset4, edgeProps: { flags: flags2 } } = unit2.bonds;
   for (let i = offset4[index], il = offset4[index + 1]; i < il; ++i) {
     if (BondType.isCovalent(flags2[i]))
-      count3 += 1;
+      count4 += 1;
   }
-  return count3;
+  return count4;
 }
 function bondCount(structure, unit2, index) {
   return interBondCount(structure, unit2, index) + intraBondCount(unit2, index);
 }
 function bondToElementCount(structure, unit2, index, element) {
-  let count3 = 0;
+  let count4 = 0;
   eachBondedAtom(structure, unit2, index, (unit3, index2) => {
     if (typeSymbol(unit3, index2) === element)
-      count3 += 1;
+      count4 += 1;
   });
-  return count3;
+  return count4;
 }
 function intraConnectedTo(unit2, indexA, indexB) {
   const { offset: offset4, b: b8, edgeProps: { flags: flags2 } } = unit2.bonds;
@@ -112132,8 +112132,8 @@ var Features;
     const offsets = new Int32Array(elementsCount + 1);
     const bucketFill = new Int32Array(elementsCount);
     const bucketSizes = new Int32Array(elementsCount);
-    const { members, count: count3, offsets: featureOffsets } = data;
-    for (let i = 0, il = featureOffsets[count3]; i < il; ++i)
+    const { members, count: count4, offsets: featureOffsets } = data;
+    for (let i = 0, il = featureOffsets[count4]; i < il; ++i)
       ++bucketSizes[members[i]];
     let offset4 = 0;
     for (let i = 0; i < elementsCount; i++) {
@@ -112142,7 +112142,7 @@ var Features;
     }
     offsets[elementsCount] = offset4;
     const indices3 = new Int32Array(offset4);
-    for (let i = 0; i < count3; ++i) {
+    for (let i = 0; i < count4; ++i) {
       for (let j = featureOffsets[i], jl = featureOffsets[i + 1]; j < jl; ++j) {
         const a8 = members[j];
         const oa = offsets[a8] + bucketFill[a8];
@@ -112174,9 +112174,9 @@ var Features;
   Features2.create = create3;
   function createSubset(data, types2) {
     let lookup3d;
-    const { count: count3, types: _types } = data;
+    const { count: count4, types: _types } = data;
     const _indices = [];
-    for (let i = 0; i < count3; ++i) {
+    for (let i = 0; i < count4; ++i) {
       if (types2.has(_types[i]))
         _indices.push(i);
     }
@@ -112258,14 +112258,14 @@ var FeaturesBuilder;
         state.count += 1;
       },
       finishState: (type3, group) => {
-        const { count: count3 } = state;
-        if (count3 === 0)
+        const { count: count4 } = state;
+        if (count4 === 0)
           return;
         ChunkedArray.add(types2, type3);
         ChunkedArray.add(groups, group);
-        ChunkedArray.add(xCenters, state.x / count3);
-        ChunkedArray.add(yCenters, state.y / count3);
-        ChunkedArray.add(zCenters, state.z / count3);
+        ChunkedArray.add(xCenters, state.x / count4);
+        ChunkedArray.add(yCenters, state.y / count4);
+        ChunkedArray.add(zCenters, state.z / count4);
         ChunkedArray.add(offsets, state.offset);
       },
       add: (type3, group, x, y, z, member) => {
@@ -112282,12 +112282,12 @@ var FeaturesBuilder;
         const x = ChunkedArray.compact(xCenters, true);
         const y = ChunkedArray.compact(yCenters, true);
         const z = ChunkedArray.compact(zCenters, true);
-        const count3 = xCenters.elementCount;
+        const count4 = xCenters.elementCount;
         return Features.create(elementsCount, {
           x,
           y,
           z,
-          count: count3,
+          count: count4,
           types: ChunkedArray.compact(types2, true),
           groups: ChunkedArray.compact(groups, true),
           offsets: ChunkedArray.compact(offsets, true),
@@ -112621,10 +112621,10 @@ function checkLineOfSight(structure, infoA, infoB, distFactor) {
   Features.position(tmpVecB3, infoB);
   Vec3.scale(tmpVec6, Vec3.add(tmpVec6, tmpVecA3, tmpVecB3), 0.5);
   const distMax = distFactor * MAX_LINE_OF_SIGHT_DISTANCE;
-  const { count: count3, indices: indices3, units, squaredDistances } = structure.lookup3d.find(tmpVec6[0], tmpVec6[1], tmpVec6[2], distMax, lineOfSightLookupCtx);
-  if (count3 === 0)
+  const { count: count4, indices: indices3, units, squaredDistances } = structure.lookup3d.find(tmpVec6[0], tmpVec6[1], tmpVec6[2], distMax, lineOfSightLookupCtx);
+  if (count4 === 0)
     return true;
-  for (let r = 0; r < count3; ++r) {
+  for (let r = 0; r < count4; ++r) {
     const i = indices3[r];
     const unit2 = units[r];
     if (!Unit.isAtomic(unit2))
@@ -112659,11 +112659,11 @@ function _addUnitContacts(structure, unit2, features, builder, tester, props) {
   const distFactor = props.lineOfSightDistFactor;
   for (let t5 = 0, tl = OrderedSet2.size(subsetIndices); t5 < tl; ++t5) {
     const i = OrderedSet2.getAt(subsetIndices, t5);
-    const { count: count3, indices: indices3, squaredDistances } = lookup3d.find(x[i], y[i], z[i], tester.maxDistance);
-    if (count3 === 0)
+    const { count: count4, indices: indices3, squaredDistances } = lookup3d.find(x[i], y[i], z[i], tester.maxDistance);
+    if (count4 === 0)
       continue;
     infoA.feature = i;
-    for (let r = 0; r < count3; ++r) {
+    for (let r = 0; r < count4; ++r) {
       const j = OrderedSet2.getAt(subsetIndices, indices3[r]);
       if (j <= i)
         continue;
@@ -112697,11 +112697,11 @@ function addStructureContacts(structure, unitA, featuresA, unitB, featuresB, bui
       Vec3.transformMat4(imageA, imageA, imageTransform);
     if (Vec3.squaredDistance(imageA, center2) > testDistanceSq)
       continue;
-    const { indices: indices3, count: count3, squaredDistances } = lookup3d.find(imageA[0], imageA[1], imageA[2], maxDistance);
-    if (count3 === 0)
+    const { indices: indices3, count: count4, squaredDistances } = lookup3d.find(imageA[0], imageA[1], imageA[2], maxDistance);
+    if (count4 === 0)
       continue;
     infoA.feature = i;
-    for (let r = 0; r < count3; ++r) {
+    for (let r = 0; r < count4; ++r) {
       const j = indices3[r];
       infoB.feature = j;
       if (!validPair(structure, infoA, infoB))
@@ -113874,14 +113874,14 @@ function findUnitFeatures(structure, unit2, featureProviders, cacheKey) {
   if (unit2.transientCache.has(key2)) {
     return unit2.transientCache.get(key2);
   }
-  const count3 = unit2.elements.length;
-  const featuresBuilder = FeaturesBuilder.create(count3, count3 / 2);
+  const count4 = unit2.elements.length;
+  const featuresBuilder = FeaturesBuilder.create(count4, count4 / 2);
   if (Unit.isAtomic(unit2)) {
     for (const fp of featureProviders) {
       fp.add(structure, unit2, featuresBuilder);
     }
   }
-  const features = featuresBuilder.getFeatures(count3);
+  const features = featuresBuilder.getFeatures(count4);
   unit2.transientCache.set(key2, features);
   return features;
 }
@@ -114123,7 +114123,7 @@ function createLinkCylinderMesh(ctx, linkBuilder, props, mesh) {
   const vertexCountEstimate = radialSegments * 2 * linkCount * 2;
   const builderState = MeshBuilder.createState(vertexCountEstimate, vertexCountEstimate / 4, mesh);
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   let edgeIndex = 0;
   const addOptions = {
     builderState,
@@ -114147,7 +114147,7 @@ function createLinkCylinderMesh(ctx, linkBuilder, props, mesh) {
     position(addParams.a, addParams.b, edgeIndex, true);
     v3add2(center2, center2, addParams.a);
     v3add2(center2, center2, addParams.b);
-    count3 += 2;
+    count4 += 2;
     addParams.group = edgeIndex;
     addParams.linkStub = stubCap && (stub ? stub(edgeIndex) : false);
     addParams.linkRadius = radius(edgeIndex);
@@ -114155,9 +114155,9 @@ function createLinkCylinderMesh(ctx, linkBuilder, props, mesh) {
     addLinkCylinderMesh(addOptions, addParams);
   }
   const m = MeshBuilder.getMesh(builderState);
-  if (count3 === 0)
+  if (count4 === 0)
     return { mesh: m };
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = mesh ? Sphere3D.clone(mesh.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     return { mesh: m, boundingSphere: oldBoundingSphere };
@@ -114279,14 +114279,14 @@ function createLinkCylinderImpostors(ctx, linkBuilder, props, cylinders) {
   const vm = Vec3();
   const vShift = Vec3();
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   for (let edgeIndex = 0, _eI = linkCount; edgeIndex < _eI; ++edgeIndex) {
     if (ignore && ignore(edgeIndex))
       continue;
     position(va, vb, edgeIndex, true);
     v3add2(center2, center2, va);
     v3add2(center2, center2, vb);
-    count3 += 2;
+    count4 += 2;
     const linkRadius = radius(edgeIndex);
     const linkStyle = style ? style(edgeIndex) : LinkStyle.Solid;
     const linkStub = stubCap && (stub ? stub(edgeIndex) : false);
@@ -114342,9 +114342,9 @@ function createLinkCylinderImpostors(ctx, linkBuilder, props, cylinders) {
     }
   }
   const c8 = builder.getCylinders();
-  if (count3 === 0)
+  if (count4 === 0)
     return { cylinders: c8 };
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = cylinders ? Sphere3D.clone(cylinders.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     return { cylinders: c8, boundingSphere: oldBoundingSphere };
@@ -114364,7 +114364,7 @@ function createLinkLines(ctx, linkBuilder, props, lines) {
   const vm = Vec3();
   const vShift = Vec3();
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   const aromaticOffsetFactor = 4.5;
   const multipleOffsetFactor = 3;
   for (let edgeIndex = 0, _eI = linkCount; edgeIndex < _eI; ++edgeIndex) {
@@ -114373,7 +114373,7 @@ function createLinkLines(ctx, linkBuilder, props, lines) {
     position(va, vb, edgeIndex, true);
     v3add2(center2, center2, va);
     v3add2(center2, center2, vb);
-    count3 += 2;
+    count4 += 2;
     const linkStyle = style ? style(edgeIndex) : LinkStyle.Solid;
     if (linkStyle === LinkStyle.Solid) {
       v3scale2(vm, v3add2(vm, va, vb), 0.5);
@@ -114425,9 +114425,9 @@ function createLinkLines(ctx, linkBuilder, props, lines) {
     }
   }
   const l = builder.getLines();
-  if (count3 === 0)
+  if (count4 === 0)
     return { lines: l };
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = lines ? Sphere3D.clone(lines.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     return { lines: l, boundingSphere: oldBoundingSphere };
@@ -117351,11 +117351,11 @@ var StructureInfo = PluginBehavior.create({
       for (const c8 of cells) {
         const m = (_a = c8.obj) === null || _a === void 0 ? void 0 : _a.data;
         if (m) {
-          const count3 = Model.AsymIdCount.get(m);
+          const count4 = Model.AsymIdCount.get(m);
           const offset4 = Model.AsymIdOffset.get(m).value;
-          if (count3 !== void 0 && offset4 !== void 0) {
-            auth = Math.max(auth, offset4.auth + count3.auth);
-            label2 = Math.max(label2, offset4.label + count3.label);
+          if (count4 !== void 0 && offset4 !== void 0) {
+            auth = Math.max(auth, offset4.auth + count4.auth);
+            label2 = Math.max(label2, offset4.label + count4.label);
           }
         }
       }
@@ -117644,11 +117644,11 @@ function computeRange(ctx, begin, end4) {
     const aX = aUnit.conformation.x(aElementIndex);
     const aY = aUnit.conformation.y(aElementIndex);
     const aZ = aUnit.conformation.z(aElementIndex);
-    const { count: count3, units: lUnits, indices: indices3, squaredDistances } = lookup3d.find(aX, aY, aZ, maxLookupRadius);
+    const { count: count4, units: lUnits, indices: indices3, squaredDistances } = lookup3d.find(aX, aY, aZ, maxLookupRadius);
     const radius1 = probeSize + vdw1;
     const cutoff1 = probeSize + radius1;
     const neighbors = [];
-    for (let iI = 0; iI < count3; ++iI) {
+    for (let iI = 0; iI < count4; ++iI) {
       const bUnit = lUnits[iI];
       const bI = cumulativeUnitElementCount[unitIndexMap.get(bUnit.id)] + indices3[iI];
       const bElementIndex = elementIndices[bI];
@@ -121687,9 +121687,9 @@ var LociLabelManager = class {
       }
       this.labels.length = 0;
       this.groupedLabels.forEach((group, hash5) => {
-        const count3 = group.length;
-        const entry = count3 > 1 && group[0] !== group[1] ? hash5 : group[0];
-        this.labels.push(count3 === 1 ? entry : `${entry} <small>|| \xD7 ${count3}</small>`);
+        const count4 = group.length;
+        const entry = count4 > 1 && group[0] !== group[1] ? hash5 : group[0];
+        this.labels.push(count4 === 1 ? entry : `${entry} <small>|| \xD7 ${count4}</small>`);
       });
       this.isDirty = false;
     }
@@ -122657,11 +122657,11 @@ var StructureSelectionManager = class extends StatefulPluginComponent {
   }
   /** Count of all selected elements */
   elementCount() {
-    let count3 = 0;
+    let count4 = 0;
     this.entries.forEach((v4) => {
-      count3 += element_exports.Loci.size(v4.selection);
+      count4 += element_exports.Loci.size(v4.selection);
     });
-    return count3;
+    return count4;
   }
   getBoundary() {
     const min5 = Vec3.create(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
@@ -126180,7 +126180,7 @@ function createElementSphereMesh(ctx, unit2, structure, theme, props, mesh) {
   const themeSize = theme.size.size;
   const center2 = Vec3();
   let maxSize = 0;
-  let count3 = 0;
+  let count4 = 0;
   for (let i = 0; i < elementCount; i++) {
     if (stride && i % stride !== 0)
       continue;
@@ -126188,7 +126188,7 @@ function createElementSphereMesh(ctx, unit2, structure, theme, props, mesh) {
       continue;
     c8.invariantPosition(elements[i], v4);
     v3add3(center2, center2, v4);
-    count3 += 1;
+    count4 += 1;
     l.element = elements[i];
     const size4 = themeSize(l);
     if (size4 > maxSize)
@@ -126197,10 +126197,10 @@ function createElementSphereMesh(ctx, unit2, structure, theme, props, mesh) {
     addSphere(builderState, v4, size4 * sizeFactor, detail);
   }
   const m = MeshBuilder.getMesh(builderState);
-  if (count3 === 0)
+  if (count4 === 0)
     return m;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = mesh ? Sphere3D.clone(mesh.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     boundingSphere = oldBoundingSphere;
@@ -126225,7 +126225,7 @@ function createElementSphereImpostor(ctx, unit2, structure, theme, props, sphere
   const themeSize = theme.size.size;
   const center2 = Vec3();
   let maxSize = 0;
-  let count3 = 0;
+  let count4 = 0;
   if (stride && stride > 1 || ignore || theme.size.granularity !== "uniform") {
     for (let i = 0; i < elementCount; i++) {
       if (stride && i % stride !== 0)
@@ -126235,7 +126235,7 @@ function createElementSphereImpostor(ctx, unit2, structure, theme, props, sphere
       c8.invariantPosition(elements[i], v4);
       builder.add(v4[0], v4[1], v4[2], i);
       v3add3(center2, center2, v4);
-      count3 += 1;
+      count4 += 1;
       l.element = elements[i];
       const size4 = themeSize(l);
       if (size4 > maxSize)
@@ -126247,14 +126247,14 @@ function createElementSphereImpostor(ctx, unit2, structure, theme, props, sphere
       builder.add(v4[0], v4[1], v4[2], i);
       v3add3(center2, center2, v4);
     }
-    count3 = elementCount;
+    count4 = elementCount;
     maxSize = themeSize(l);
   }
   const s = builder.getSpheres();
-  if (count3 === 0)
+  if (count4 === 0)
     return s;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = spheres2 ? Sphere3D.clone(spheres2.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     boundingSphere = oldBoundingSphere;
@@ -126317,7 +126317,7 @@ function createStructureElementSphereMesh(ctx, structure, theme, props, mesh) {
   const themeSize = theme.size.size;
   const center2 = Vec3();
   let maxSize = 0;
-  let count3 = 0;
+  let count4 = 0;
   for (const unit2 of structure.units) {
     const childUnit = child === null || child === void 0 ? void 0 : child.unitMap.get(unit2.id);
     if (child && !childUnit)
@@ -126335,7 +126335,7 @@ function createStructureElementSphereMesh(ctx, structure, theme, props, mesh) {
         continue;
       c8.position(eI, v4);
       v3add3(center2, center2, v4);
-      count3 += 1;
+      count4 += 1;
       l.element = eI;
       const size4 = themeSize(l);
       if (size4 > maxSize)
@@ -126345,10 +126345,10 @@ function createStructureElementSphereMesh(ctx, structure, theme, props, mesh) {
     }
   }
   const m = MeshBuilder.getMesh(builderState);
-  if (count3 === 0)
+  if (count4 === 0)
     return m;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = mesh ? Sphere3D.clone(mesh.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 1) {
     boundingSphere = oldBoundingSphere;
@@ -126367,7 +126367,7 @@ function createStructureElementSphereImpostor(ctx, structure, theme, props, sphe
   const themeSize = theme.size.size;
   const center2 = Vec3();
   let maxSize = 0;
-  let count3 = 0;
+  let count4 = 0;
   for (const unit2 of structure.units) {
     const childUnit = child === null || child === void 0 ? void 0 : child.unitMap.get(unit2.id);
     if (child && !childUnit)
@@ -126387,7 +126387,7 @@ function createStructureElementSphereImpostor(ctx, structure, theme, props, sphe
         c8.position(eI, v4);
         builder.add(v4[0], v4[1], v4[2], getSerialIndex(unit2, eI));
         v3add3(center2, center2, v4);
-        count3 += 1;
+        count4 += 1;
         l.element = eI;
         const size4 = themeSize(l);
         if (size4 > maxSize)
@@ -126400,15 +126400,15 @@ function createStructureElementSphereImpostor(ctx, structure, theme, props, sphe
         builder.add(v4[0], v4[1], v4[2], getSerialIndex(unit2, eI));
         v3add3(center2, center2, v4);
       }
-      count3 += elementCount;
+      count4 += elementCount;
       maxSize = themeSize(l);
     }
   }
   const s = builder.getSpheres();
-  if (count3 === 0)
+  if (count4 === 0)
     return s;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = spheres2 ? Sphere3D.clone(spheres2.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 1) {
     boundingSphere = oldBoundingSphere;
@@ -130315,7 +130315,7 @@ function createEllipsoidMesh(ctx, unit2, structure, theme, props, mesh) {
   l.unit = unit2;
   const ignore = makeElementIgnoreTest(structure, unit2, props);
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   for (let i = 0; i < elementCount; i++) {
     const ei = elements[i];
     const ai = elementToAnsiotrop[ei];
@@ -130326,7 +130326,7 @@ function createEllipsoidMesh(ctx, unit2, structure, theme, props, mesh) {
     l.element = ei;
     c8.invariantPosition(ei, v4);
     v3add7(center2, center2, v4);
-    count3 += 1;
+    count4 += 1;
     builderState.currentGroup = i;
     Tensor.toMat3(mat, space, U2.value(ai));
     Mat3.symmtricFromLower(mat, mat);
@@ -130343,10 +130343,10 @@ function createEllipsoidMesh(ctx, unit2, structure, theme, props, mesh) {
     }
   }
   const m = MeshBuilder.getMesh(builderState);
-  if (count3 === 0)
+  if (count4 === 0)
     return m;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = mesh ? Sphere3D.clone(mesh.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     boundingSphere = oldBoundingSphere;
@@ -130389,7 +130389,7 @@ function createStructureEllipsoidMesh(ctx, structure, theme, props, mesh) {
   const eigvec1 = Vec3();
   const eigvec2 = Vec3();
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   for (const unit2 of structure.units) {
     const childUnit = child === null || child === void 0 ? void 0 : child.unitMap.get(unit2.id);
     if (child && !childUnit)
@@ -130416,7 +130416,7 @@ function createStructureEllipsoidMesh(ctx, structure, theme, props, mesh) {
       l.element = ei;
       c8.position(ei, v4);
       v3add7(center2, center2, v4);
-      count3 += 1;
+      count4 += 1;
       builderState.currentGroup = getSerialIndex(unit2, elements[i]);
       Tensor.toMat3(mat, space, U2.value(ai));
       Mat3.symmtricFromLower(mat, mat);
@@ -130434,10 +130434,10 @@ function createStructureEllipsoidMesh(ctx, structure, theme, props, mesh) {
     }
   }
   const m = MeshBuilder.getMesh(builderState);
-  if (count3 === 0)
+  if (count4 === 0)
     return m;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = mesh ? Sphere3D.clone(mesh.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 1) {
     boundingSphere = oldBoundingSphere;
@@ -132220,9 +132220,9 @@ function createHistogramPyramid(ctx, inputTexture, scale, gridTexDim) {
   gl.finish();
   if (isTimingMode)
     ctx.timer.markEnd("createHistogramPyramid");
-  const count3 = Math.max(1, getHistopyramidSum(ctx, levelTexturesFramebuffers[0].texture));
-  const height = Math.ceil(count3 / Math.pow(2, levels));
-  return { pyramidTex, count: count3, height, levels, scale };
+  const count4 = Math.max(1, getHistopyramidSum(ctx, levelTexturesFramebuffers[0].texture));
+  const height = Math.ceil(count4 / Math.pow(2, levels));
+  return { pyramidTex, count: count4, height, levels, scale };
 }
 
 // node_modules/molstar/lib/mol-gl/compute/marching-cubes/tables.js
@@ -132774,7 +132774,7 @@ var IsosurfaceName = "isosurface";
 function valueChannel2(ctx, volumeData) {
   return isWebGL2(ctx.gl) && volumeData.format === ctx.gl.RED ? "red" : "alpha";
 }
-function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
+function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count4, invert, packedGroup, axisOrder, constantGroup) {
   if (ctx.namedComputeRenderables[IsosurfaceName]) {
     const v4 = ctx.namedComputeRenderables[IsosurfaceName].values;
     ValueCell.update(v4.tActiveVoxelsPyramid, activeVoxelsPyramid);
@@ -132784,7 +132784,7 @@ function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, vol
     ValueCell.updateIfChanged(v4.uIsoValue, isoValue);
     ValueCell.updateIfChanged(v4.uSize, Math.pow(2, levels));
     ValueCell.updateIfChanged(v4.uLevels, levels);
-    ValueCell.updateIfChanged(v4.uCount, count3);
+    ValueCell.updateIfChanged(v4.uCount, count4);
     ValueCell.updateIfChanged(v4.uInvert, invert);
     ValueCell.update(v4.uGridDim, gridDim);
     ValueCell.update(v4.uGridTexDim, gridTexDim);
@@ -132797,11 +132797,11 @@ function getIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, vol
     ValueCell.updateIfChanged(v4.dConstantGroup, constantGroup);
     ctx.namedComputeRenderables[IsosurfaceName].update();
   } else {
-    ctx.namedComputeRenderables[IsosurfaceName] = createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
+    ctx.namedComputeRenderables[IsosurfaceName] = createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count4, invert, packedGroup, axisOrder, constantGroup);
   }
   return ctx.namedComputeRenderables[IsosurfaceName];
 }
-function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup) {
+function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count4, invert, packedGroup, axisOrder, constantGroup) {
   const values2 = {
     ...QuadValues,
     tTriIndices: ValueCell.create(getTriIndices()),
@@ -132812,7 +132812,7 @@ function createIsosurfaceRenderable(ctx, activeVoxelsPyramid, activeVoxelsBase, 
     uIsoValue: ValueCell.create(isoValue),
     uSize: ValueCell.create(Math.pow(2, levels)),
     uLevels: ValueCell.create(levels),
-    uCount: ValueCell.create(count3),
+    uCount: ValueCell.create(count4),
     uInvert: ValueCell.create(invert),
     uGridDim: ValueCell.create(gridDim),
     uGridTexDim: ValueCell.create(gridTexDim),
@@ -132846,7 +132846,7 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
   if (isTimingMode)
     ctx.timer.mark("createIsosurfaceBuffers");
   const { gl, state, resources, extensions } = ctx;
-  const { pyramidTex, height, levels, scale, count: count3 } = histogramPyramid;
+  const { pyramidTex, height, levels, scale, count: count4 } = histogramPyramid;
   const width = pyramidTex.getWidth();
   if (!ctx.namedFramebuffers[IsosurfaceName]) {
     ctx.namedFramebuffers[IsosurfaceName] = resources.framebuffer();
@@ -132879,7 +132879,7 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
   vertexTexture.attachFramebuffer(framebuffer, 0);
   groupTexture.attachFramebuffer(framebuffer, 1);
   normalTexture.attachFramebuffer(framebuffer, 2);
-  const renderable = getIsosurfaceRenderable(ctx, pyramidTex, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count3, invert, packedGroup, axisOrder, constantGroup);
+  const renderable = getIsosurfaceRenderable(ctx, pyramidTex, activeVoxelsBase, volumeData, gridDim, gridTexDim, gridDataDim, transform3, isoValue, levels, scale, count4, invert, packedGroup, axisOrder, constantGroup);
   ctx.state.currentRenderItemId = -1;
   framebuffer.bind();
   drawBuffers.drawBuffers([
@@ -132894,7 +132894,7 @@ function createIsosurfaceBuffers(ctx, activeVoxelsBase, volumeData, histogramPyr
   gl.finish();
   if (isTimingMode)
     ctx.timer.markEnd("createIsosurfaceBuffers");
-  return { vertexTexture, groupTexture, normalTexture, vertexCount: count3 };
+  return { vertexTexture, groupTexture, normalTexture, vertexCount: count4 };
 }
 function extractIsosurface(ctx, volumeData, gridDim, gridTexDim, gridDataDim, gridTexScale, transform3, isoValue, invert, packedGroup, axisOrder, constantGroup, vertexTexture, groupTexture, normalTexture) {
   if (isTimingMode)
@@ -133360,26 +133360,26 @@ function LabelTextVisual(materialId) {
     }
   }, materialId);
 }
-function createLabelText(ctx, structure, theme, props, text) {
+function createLabelText(ctx, structure, theme, props, text2) {
   switch (props.level) {
     case "chain":
-      return createChainText(ctx, structure, theme, props, text);
+      return createChainText(ctx, structure, theme, props, text2);
     case "residue":
-      return createResidueText(ctx, structure, theme, props, text);
+      return createResidueText(ctx, structure, theme, props, text2);
     case "element":
-      return createElementText(ctx, structure, theme, props, text);
+      return createElementText(ctx, structure, theme, props, text2);
   }
 }
 var tmpVec7 = Vec3();
 var boundaryHelper4 = new BoundaryHelper("98");
-function createChainText(ctx, structure, theme, props, text) {
+function createChainText(ctx, structure, theme, props, text2) {
   const l = element_exports.Location.create(structure);
   const { units, serialMapping } = structure;
   const { auth_asym_id, label_asym_id } = StructureProperties.chain;
   const { cumulativeUnitElementCount } = serialMapping;
-  const count3 = units.length;
+  const count4 = units.length;
   const { chainScale } = props;
-  const builder = TextBuilder.create(props, count3, count3 / 2, text);
+  const builder = TextBuilder.create(props, count4, count4 / 2, text2);
   for (let i = 0, il = units.length; i < il; ++i) {
     const unit2 = units[i];
     l.unit = unit2;
@@ -133388,20 +133388,20 @@ function createChainText(ctx, structure, theme, props, text) {
     Vec3.transformMat4(tmpVec7, center2, unit2.conformation.operator.matrix);
     const authId = auth_asym_id(l);
     const labelId = label_asym_id(l);
-    const text2 = authId === labelId ? labelId : `${labelId} [${authId}]`;
-    builder.add(text2, tmpVec7[0], tmpVec7[1], tmpVec7[2], radius, chainScale, cumulativeUnitElementCount[i]);
+    const text3 = authId === labelId ? labelId : `${labelId} [${authId}]`;
+    builder.add(text3, tmpVec7[0], tmpVec7[1], tmpVec7[2], radius, chainScale, cumulativeUnitElementCount[i]);
   }
   return builder.getText();
 }
-function createResidueText(ctx, structure, theme, props, text) {
+function createResidueText(ctx, structure, theme, props, text2) {
   const l = element_exports.Location.create(structure);
   const { units, serialMapping } = structure;
   const { label_comp_id } = StructureProperties.atom;
   const { auth_seq_id } = StructureProperties.residue;
   const { cumulativeUnitElementCount } = serialMapping;
-  const count3 = structure.polymerResidueCount * 2;
+  const count4 = structure.polymerResidueCount * 2;
   const { residueScale } = props;
-  const builder = TextBuilder.create(props, count3, count3 / 2, text);
+  const builder = TextBuilder.create(props, count4, count4 / 2, text2);
   for (let i = 0, il = units.length; i < il; ++i) {
     const unit2 = units[i];
     const c8 = unit2.conformation;
@@ -133431,21 +133431,21 @@ function createResidueText(ctx, structure, theme, props, text) {
       const { center: center2, radius } = boundaryHelper4.getSphere();
       const authSeqId = auth_seq_id(l);
       const compId3 = label_comp_id(l);
-      const text2 = `${compId3} ${authSeqId}`;
-      builder.add(text2, center2[0], center2[1], center2[2], radius, residueScale, groupOffset + start4);
+      const text3 = `${compId3} ${authSeqId}`;
+      builder.add(text3, center2[0], center2[1], center2[2], radius, residueScale, groupOffset + start4);
     }
   }
   return builder.getText();
 }
-function createElementText(ctx, structure, theme, props, text) {
+function createElementText(ctx, structure, theme, props, text2) {
   const l = element_exports.Location.create(structure);
   const { units, serialMapping } = structure;
   const { label_atom_id, label_alt_id } = StructureProperties.atom;
   const { cumulativeUnitElementCount } = serialMapping;
   const sizeTheme = theme.size;
-  const count3 = structure.elementCount;
+  const count4 = structure.elementCount;
   const { elementScale } = props;
-  const builder = TextBuilder.create(props, count3, count3 / 2, text);
+  const builder = TextBuilder.create(props, count4, count4 / 2, text2);
   for (let i = 0, il = units.length; i < il; ++i) {
     const unit2 = units[i];
     const c8 = unit2.conformation;
@@ -133460,8 +133460,8 @@ function createElementText(ctx, structure, theme, props, text) {
       c8.position(l.element, tmpVec7);
       const atomId2 = label_atom_id(l);
       const altId = label_alt_id(l);
-      const text2 = altId ? `${atomId2}%${altId}` : atomId2;
-      builder.add(text2, tmpVec7[0], tmpVec7[1], tmpVec7[2], sizeTheme.size(l), elementScale, groupOffset + j);
+      const text3 = altId ? `${atomId2}%${altId}` : atomId2;
+      builder.add(text3, tmpVec7[0], tmpVec7[1], tmpVec7[2], sizeTheme.size(l), elementScale, groupOffset + j);
     }
   }
   return builder.getText();
@@ -134176,7 +134176,7 @@ function createElementPoint(ctx, unit2, structure, theme, props, points3) {
   const c8 = unit2.conformation;
   const ignore = makeElementIgnoreTest(structure, unit2, props);
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   if (stride && stride > 1 || ignore) {
     for (let i = 0; i < n; ++i) {
       if (stride && i % stride !== 0)
@@ -134185,22 +134185,22 @@ function createElementPoint(ctx, unit2, structure, theme, props, points3) {
         continue;
       c8.invariantPosition(elements[i], p6);
       v3add8(center2, center2, p6);
-      count3 += 1;
+      count4 += 1;
       builder.add(p6[0], p6[1], p6[2], i);
     }
   } else {
     for (let i = 0; i < n; ++i) {
       c8.invariantPosition(elements[i], p6);
       v3add8(center2, center2, p6);
-      count3 += 1;
+      count4 += 1;
       builder.add(p6[0], p6[1], p6[2], i);
     }
   }
   const pt2 = builder.getPoints();
-  if (count3 === 0)
+  if (count4 === 0)
     return pt2;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = points3 ? Sphere3D.clone(points3.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     boundingSphere = oldBoundingSphere;
@@ -134229,7 +134229,7 @@ function createStructureElementPoint(ctx, structure, theme, props, points3) {
   const structureElementCount = structure.elementCount;
   const builder = PointsBuilder.create(structureElementCount, structureElementCount / 2, points3);
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   for (const unit2 of structure.units) {
     const childUnit = child === null || child === void 0 ? void 0 : child.unitMap.get(unit2.id);
     if (child && !childUnit)
@@ -134248,7 +134248,7 @@ function createStructureElementPoint(ctx, structure, theme, props, points3) {
         c8.position(eI, v4);
         builder.add(v4[0], v4[1], v4[2], getSerialIndex(unit2, eI));
         v3add8(center2, center2, v4);
-        count3 += 1;
+        count4 += 1;
       }
     } else {
       for (let i = 0; i < elementCount; i++) {
@@ -134257,14 +134257,14 @@ function createStructureElementPoint(ctx, structure, theme, props, points3) {
         builder.add(v4[0], v4[1], v4[2], getSerialIndex(unit2, eI));
         v3add8(center2, center2, v4);
       }
-      count3 += elementCount;
+      count4 += elementCount;
     }
   }
   const pt2 = builder.getPoints();
-  if (count3 === 0)
+  if (count4 === 0)
     return pt2;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = points3 ? Sphere3D.clone(points3.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 1) {
     boundingSphere = oldBoundingSphere;
@@ -134867,7 +134867,7 @@ function createElementCross(ctx, unit2, structure, theme, props, lines) {
   const r = props.crossSize / 2;
   const lone = props.crosses === "lone";
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   for (let i = 0; i < n; ++i) {
     if (ignore && ignore(elements[i]))
       continue;
@@ -134875,7 +134875,7 @@ function createElementCross(ctx, unit2, structure, theme, props, lines) {
       continue;
     c8.invariantPosition(elements[i], p6);
     v3add9(center2, center2, p6);
-    count3 += 1;
+    count4 += 1;
     v3scaleAndAdd3(s, p6, v3unitX2, r);
     v3scaleAndAdd3(e, p6, v3unitX2, -r);
     builder.add(s[0], s[1], s[2], e[0], e[1], e[2], i);
@@ -134887,10 +134887,10 @@ function createElementCross(ctx, unit2, structure, theme, props, lines) {
     builder.add(s[0], s[1], s[2], e[0], e[1], e[2], i);
   }
   const l = builder.getLines();
-  if (count3 === 0)
+  if (count4 === 0)
     return l;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = lines ? Sphere3D.clone(lines.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 0.1) {
     boundingSphere = oldBoundingSphere;
@@ -134923,7 +134923,7 @@ function createStructureElementCross(ctx, structure, theme, props, lines) {
   const r = props.crossSize / 2;
   const lone = props.crosses === "lone";
   const center2 = Vec3();
-  let count3 = 0;
+  let count4 = 0;
   for (const unit2 of structure.units) {
     const childUnit = child === null || child === void 0 ? void 0 : child.unitMap.get(unit2.id);
     if (child && !childUnit)
@@ -134938,7 +134938,7 @@ function createStructureElementCross(ctx, structure, theme, props, lines) {
         continue;
       c8.position(elements[i], p6);
       v3add9(center2, center2, p6);
-      count3 += 1;
+      count4 += 1;
       const si = getSerialIndex(unit2, elements[i]);
       v3scaleAndAdd3(s, p6, v3unitX2, r);
       v3scaleAndAdd3(e, p6, v3unitX2, -r);
@@ -134952,10 +134952,10 @@ function createStructureElementCross(ctx, structure, theme, props, lines) {
     }
   }
   const l = builder.getLines();
-  if (count3 === 0)
+  if (count4 === 0)
     return l;
   let boundingSphere;
-  Vec3.scale(center2, center2, 1 / count3);
+  Vec3.scale(center2, center2, 1 / count4);
   const oldBoundingSphere = lines ? Sphere3D.clone(lines.boundingSphere) : void 0;
   if (oldBoundingSphere && Vec3.distance(center2, oldBoundingSphere.center) / oldBoundingSphere.radius < 1) {
     boundingSphere = oldBoundingSphere;
@@ -137366,8 +137366,8 @@ function createVolumeSphereImpostor(ctx, volume, key2, theme, props, spheres2) {
   const isoVal = Volume.IsoValue.toAbsolute(props.isoValue, stats).absoluteValue;
   const p6 = Vec3();
   const [xn, yn, zn] = space.dimensions;
-  const count3 = Math.ceil(xn * yn * zn / 10);
-  const builder = SpheresBuilder.create(count3, Math.ceil(count3 / 2), spheres2);
+  const count4 = Math.ceil(xn * yn * zn / 10);
+  const builder = SpheresBuilder.create(count4, Math.ceil(count4 / 2), spheres2);
   const invert = isoVal < 0;
   const basis = props.perturbPositions ? getBasis(gridToCartn) : void 0;
   for (let z = 0; z < zn; ++z) {
@@ -137401,8 +137401,8 @@ function createVolumeSphereMesh(ctx, volume, key2, theme, props, mesh) {
   const isoVal = Volume.IsoValue.toAbsolute(props.isoValue, stats).absoluteValue;
   const p6 = Vec3();
   const [xn, yn, zn] = space.dimensions;
-  const count3 = Math.ceil(xn * yn * zn / 10);
-  const vertexCount = count3 * sphereVertexCount(detail);
+  const count4 = Math.ceil(xn * yn * zn / 10);
+  const vertexCount = count4 * sphereVertexCount(detail);
   const builderState = MeshBuilder.createState(vertexCount, Math.ceil(vertexCount / 2), mesh);
   const l = Volume.Cell.Location(volume);
   const themeSize = theme.size.size;
@@ -137458,8 +137458,8 @@ function createVolumePoint(ctx, volume, key2, theme, props, points3) {
   const isoVal = Volume.IsoValue.toAbsolute(props.isoValue, stats).absoluteValue;
   const p6 = Vec3();
   const [xn, yn, zn] = space.dimensions;
-  const count3 = Math.ceil(xn * yn * zn / 10);
-  const builder = PointsBuilder.create(count3, Math.ceil(count3 / 2), points3);
+  const count4 = Math.ceil(xn * yn * zn / 10);
+  const builder = PointsBuilder.create(count4, Math.ceil(count4 / 2), points3);
   const invert = isoVal < 0;
   const basis = props.perturbPositions ? getBasis(gridToCartn) : void 0;
   for (let z = 0; z < zn; ++z) {
@@ -142226,14 +142226,14 @@ var LoaderHandlers = class {
     this.callbacks = callbacks;
   }
   async loadFromString(msg) {
-    const text = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
-    if (!text || typeof text !== "string") {
+    const text2 = msg.data ?? msg.pdb ?? msg.pdb_text ?? "";
+    if (!text2 || typeof text2 !== "string") {
       console.warn("[MolSysViewer] load message without data/pdb/pdb_text");
       return;
     }
     const format = msg.format ?? "pdb";
     const label2 = msg.label ?? "Structure";
-    await this.loadFromStringInternal(text, format, label2);
+    await this.loadFromStringInternal(text2, format, label2);
   }
   async loadMolSysPayload(msg) {
     if (!msg.payload) {
@@ -142444,12 +142444,12 @@ function leaderShape(_ctx, data, _props, previous) {
     const end4 = Vec3.fromArray(Vec3(), data.position, 0);
     if (data.pattern === "solid") builder.addVec(start4, end4, 0);
     else {
-      const count3 = data.pattern === "dotted" ? 24 : 12;
+      const count4 = data.pattern === "dotted" ? 24 : 12;
       const fraction = data.pattern === "dotted" ? 0.12 : 0.5;
-      for (let i = 0; i < count3; i++) {
+      for (let i = 0; i < count4; i++) {
         builder.addVec(
-          Vec3.lerp(Vec3(), start4, end4, i / count3),
-          Vec3.lerp(Vec3(), start4, end4, (i + fraction) / count3),
+          Vec3.lerp(Vec3(), start4, end4, i / count4),
+          Vec3.lerp(Vec3(), start4, end4, (i + fraction) / count4),
           0
         );
       }
@@ -142580,7 +142580,7 @@ var AnnotationHandlers = class {
   }
   async addLabel(msg) {
     const structure = this.callbacks.getStructure();
-    const text = typeof msg.options?.text === "string" ? msg.options.text : "";
+    const text2 = typeof msg.options?.text === "string" ? msg.options.text : "";
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
     const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
     const layer_tag = msg.options?.layer_tag;
@@ -142600,9 +142600,9 @@ var AnnotationHandlers = class {
     if (position && (position.length !== 3 || position.some((v4) => !Number.isFinite(v4))) || offset4.length !== 3 || offset4.some((v4) => !Number.isFinite(v4))) {
       throw new Error("Annotation coordinates and offsets require finite triples.");
     }
-    if (!text.trim() && !position && atomIndices.length === 0) return;
+    if (!text2.trim() && !position && atomIndices.length === 0) return;
     this.specsByTag.set(tag2, {
-      text: text.trim(),
+      text: text2.trim(),
       atom_indices: [...atomIndices],
       tag: tag2,
       layer_tag,
@@ -142648,7 +142648,7 @@ var AnnotationHandlers = class {
     const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
       selectionTags: [tag2],
       reprTags: [tag2],
-      labelParams: { customText: text },
+      labelParams: { customText: text2 },
       visualParams: mergedVisualParams
     });
     if (!added) return;
@@ -142819,7 +142819,7 @@ var AnnotationHandlers = class {
       const wanted = new Set(spec.atom_indices);
       const center2 = Vec3();
       const point = Vec3();
-      let count3 = 0;
+      let count4 = 0;
       for (const unit2 of structure.units) {
         if (!Unit.isAtomic(unit2)) continue;
         for (let ordinal = 0; ordinal < OrderedSet2.size(unit2.elements); ordinal++) {
@@ -142827,11 +142827,11 @@ var AnnotationHandlers = class {
           if (!wanted.has(sourceAtomIndex(unit2.model, atom2))) continue;
           unit2.conformation.position(atom2, point);
           Vec3.add(center2, center2, point);
-          count3++;
+          count4++;
         }
       }
-      if (!count3) return;
-      anchor = Array.from(Vec3.scale(center2, center2, 1 / count3));
+      if (!count4) return;
+      anchor = Array.from(Vec3.scale(center2, center2, 1 / count4));
     }
     const offset4 = spec.offset ?? [0, 0, 0];
     const camera2 = this.plugin.canvas3d?.camera.state;
@@ -143720,11 +143720,11 @@ async function addTransparentSpheresFromPython(plugin, spheres2, alpha, tag2) {
   });
   return node.ref;
 }
-function buildPocketBlobColors(count3, values2, colorMap) {
+function buildPocketBlobColors(count4, values2, colorMap) {
   const colors = /* @__PURE__ */ new Map();
   const base = Color(ColorNames.lightgrey);
-  if (!values2 || values2.length !== count3) {
-    for (let i = 0; i < count3; i++) colors.set(i, base);
+  if (!values2 || values2.length !== count4) {
+    for (let i = 0; i < count4; i++) colors.set(i, base);
     return colors;
   }
   const min5 = Math.min(...values2);
@@ -144091,8 +144091,8 @@ function buildSmoothChannelTubeMesh(data, prev) {
     const prevPoint = points3[Math.max(0, i - 1)];
     const nextPoint = points3[Math.min(points3.length - 1, i + 1)];
     const tangent = normalizeTriplet(subTriplet(nextPoint, prevPoint));
-    const reference = Math.abs(tangent[2]) < 0.9 ? [0, 0, 1] : [0, 1, 0];
-    const normal3 = normalizeTriplet(crossTriplet(tangent, reference));
+    const reference2 = Math.abs(tangent[2]) < 0.9 ? [0, 0, 1] : [0, 1, 0];
+    const normal3 = normalizeTriplet(crossTriplet(tangent, reference2));
     const binormal = normalizeTriplet(crossTriplet(tangent, normal3));
     normalVectors[i * 3] = normal3[0];
     normalVectors[i * 3 + 1] = normal3[1];
@@ -144759,10 +144759,10 @@ function buildNetworkLinkMesh(data, _props, prev) {
   }
   return MeshBuilder.getMesh(state);
 }
-function getNetworkLinksName(count3) {
-  if (count3 === 0) return "Network Links (empty)";
-  if (count3 === 1) return "Network Link";
-  return `${count3} Network Links`;
+function getNetworkLinksName(count4) {
+  if (count4 === 0) return "Network Links (empty)";
+  if (count4 === 1) return "Network Link";
+  return `${count4} Network Links`;
 }
 function getNetworkLinksShape(_ctx, data, _props, shape) {
   const mesh = buildNetworkLinkMesh(data, _props, shape?.geometry);
@@ -144837,13 +144837,13 @@ function normalizeCoordinatePair(entry) {
   }
   return null;
 }
-function expandToList(value, count3, cast, fallback) {
+function expandToList(value, count4, cast, fallback) {
   if (Array.isArray(value)) {
-    if (value.length === count3) return value.map(cast);
-    console.warn(`[MolSysViewer] Expected ${count3} values but got ${value.length}. The first value will be reused.`);
-    return Array(count3).fill(cast(value[0]));
+    if (value.length === count4) return value.map(cast);
+    console.warn(`[MolSysViewer] Expected ${count4} values but got ${value.length}. The first value will be reused.`);
+    return Array(count4).fill(cast(value[0]));
   }
-  return Array(count3).fill(cast(value ?? fallback));
+  return Array(count4).fill(cast(value ?? fallback));
 }
 function normalizeCategoryKey(key2) {
   if (key2 === void 0) return void 0;
@@ -144869,8 +144869,8 @@ function buildUnitLookup(structure) {
   const map4 = /* @__PURE__ */ new Map();
   for (const unit2 of structure.units) {
     const { elements } = unit2;
-    const count3 = OrderedSet2.size(elements);
-    for (let i = 0; i < count3; i++) {
+    const count4 = OrderedSet2.size(elements);
+    for (let i = 0; i < count4; i++) {
       const element = OrderedSet2.getAt(elements, i);
       map4.set(sourceAtomIndex(unit2.model, element), { unit: unit2, elementIndex: element });
     }
@@ -144885,13 +144885,13 @@ function getChainId2(unit2, elementIndex) {
 function buildLinksFromCoordinates(options) {
   const pairs = options.coordinate_pairs ?? [];
   const normalizedPairs = pairs.map(normalizeCoordinatePair).filter((p6) => p6 !== null);
-  const count3 = normalizedPairs.length;
-  if (count3 === 0) return [];
-  const radii = expandToList(options.radii, count3, Number, 0.2);
-  const chainIds = expandToList(options.chain_ids, count3, String, "");
-  const pocketIds = expandToList(options.pocket_ids, count3, (v4) => v4, "");
+  const count4 = normalizedPairs.length;
+  if (count4 === 0) return [];
+  const radii = expandToList(options.radii, count4, Number, 0.2);
+  const chainIds = expandToList(options.chain_ids, count4, String, "");
+  const pocketIds = expandToList(options.pocket_ids, count4, (v4) => v4, "");
   const colorMode = options.color_by ?? options.color_mode ?? "link";
-  const colors = expandToList(options.colors, count3, Number, ColorNames.skyblue);
+  const colors = expandToList(options.colors, count4, Number, ColorNames.skyblue);
   const colorTable = options.color_table;
   const paletteLookup = prepareColorLookup(colorMode === "pocket" ? pocketIds : chainIds, colors[0], colorTable);
   return normalizedPairs.map((pair2, idx) => {
@@ -144909,19 +144909,19 @@ function buildLinksFromCoordinates(options) {
 }
 function buildLinksFromAtoms(structure, options) {
   const pairs = options.atom_pairs ?? [];
-  const count3 = pairs.length;
-  if (count3 === 0) return [];
+  const count4 = pairs.length;
+  if (count4 === 0) return [];
   const lookup = buildUnitLookup(structure);
-  const radii = expandToList(options.radii, count3, Number, 0.2);
-  const pocketIds = expandToList(options.pocket_ids, count3, (v4) => v4, "");
+  const radii = expandToList(options.radii, count4, Number, 0.2);
+  const pocketIds = expandToList(options.pocket_ids, count4, (v4) => v4, "");
   const colorMode = options.color_by ?? options.color_mode ?? "link";
-  const colors = expandToList(options.colors, count3, Number, ColorNames.skyblue);
+  const colors = expandToList(options.colors, count4, Number, ColorNames.skyblue);
   const colorTable = options.color_table;
   const positionsStart = Vec3();
   const positionsEnd = Vec3();
   const chainIdList = [];
   const specs = [];
-  for (let i = 0; i < count3; i++) {
+  for (let i = 0; i < count4; i++) {
     const [a8, b8] = pairs[i];
     const locA = lookup.get(a8);
     const locB = lookup.get(b8);
@@ -144962,7 +144962,7 @@ function computeCentroidFromAtoms(structure, atomIndices) {
   const lookup = buildUnitLookup(structure);
   const pos = Vec3();
   let sumX = 0, sumY = 0, sumZ = 0;
-  let count3 = 0;
+  let count4 = 0;
   for (const idx of atomIndices) {
     const loc = lookup.get(idx);
     if (loc) {
@@ -144970,11 +144970,11 @@ function computeCentroidFromAtoms(structure, atomIndices) {
       sumX += pos[0];
       sumY += pos[1];
       sumZ += pos[2];
-      count3++;
+      count4++;
     }
   }
-  if (count3 === 0) return { ok: false, reason: "invalid-indices", requested, used: 0 };
-  return { ok: true, center: [sumX / count3, sumY / count3, sumZ / count3], requested, used: count3 };
+  if (count4 === 0) return { ok: false, reason: "invalid-indices", requested, used: 0 };
+  return { ok: true, center: [sumX / count4, sumY / count4, sumZ / count4], requested, used: count4 };
 }
 async function addNetworkLinksFromPython(plugin, options, previous) {
   const mode = options.mode ?? (options.atom_pairs ? "atom-indices" : "coordinates");
@@ -145230,23 +145230,23 @@ function normalizeTriangle(entry) {
   }
   return null;
 }
-function expandOptionalToList(value, count3, cast) {
-  if (value === void 0) return Array(count3).fill(void 0);
+function expandOptionalToList(value, count4, cast) {
+  if (value === void 0) return Array(count4).fill(void 0);
   if (Array.isArray(value)) {
-    if (value.length === count3) return value.map(cast);
-    console.warn(`[MolSysViewer] Expected ${count3} values but got ${value.length}. The first value will be reused.`);
-    return Array(count3).fill(cast(value[0]));
+    if (value.length === count4) return value.map(cast);
+    console.warn(`[MolSysViewer] Expected ${count4} values but got ${value.length}. The first value will be reused.`);
+    return Array(count4).fill(cast(value[0]));
   }
-  return Array(count3).fill(cast(value));
+  return Array(count4).fill(cast(value));
 }
 function buildTrianglesFromVertices(options) {
   const input = options.vertices ?? [];
   const normalized2 = input.map(normalizeTriangle).filter((v4) => v4 !== null);
-  const count3 = normalized2.length;
-  if (count3 === 0) return [];
-  const colors = expandToList(options.colors, count3, Number, ColorNames.orange);
-  const labels = expandOptionalToList(options.labels, count3, String);
-  const alphas = expandOptionalToList(options.alphas, count3, Number);
+  const count4 = normalized2.length;
+  if (count4 === 0) return [];
+  const colors = expandToList(options.colors, count4, Number, ColorNames.orange);
+  const labels = expandOptionalToList(options.labels, count4, String);
+  const alphas = expandOptionalToList(options.alphas, count4, Number);
   return normalized2.map((verts, idx) => ({
     vertices: verts,
     color: colors[idx],
@@ -145680,11 +145680,11 @@ function normalizeTetraVertices(entry) {
 function buildTetrahedraFromCoords(options) {
   const coords = options.tetraCoords ?? options.tetra_coords ?? [];
   const normalized2 = coords.map(normalizeTetraVertices).filter((v4) => v4 !== null);
-  const count3 = normalized2.length;
-  if (count3 === 0) return [];
-  const colors = expandToList(options.colors, count3, Number, ColorNames.orange);
-  const alphas = expandToList(options.alphas, count3, (v4) => Math.max(0, Math.min(1, Number(v4))), 0.6);
-  const labels = expandOptionalToList(options.labels, count3, String);
+  const count4 = normalized2.length;
+  if (count4 === 0) return [];
+  const colors = expandToList(options.colors, count4, Number, ColorNames.orange);
+  const alphas = expandToList(options.alphas, count4, (v4) => Math.max(0, Math.min(1, Number(v4))), 0.6);
+  const labels = expandOptionalToList(options.labels, count4, String);
   return normalized2.map((verts, idx) => ({
     vertices: verts,
     color: colors[idx],
@@ -145972,8 +145972,8 @@ function prepareDisplacementVectorData(plugin, options) {
     console.warn("[MolSysViewer] add_displacement_vectors: no valid origins");
     return void 0;
   }
-  const count3 = Math.min(origins.length, vectors.length);
-  if (count3 === 0) {
+  const count4 = Math.min(origins.length, vectors.length);
+  if (count4 === 0) {
     console.warn("[MolSysViewer] add_displacement_vectors con longitudes incompatibles");
     return void 0;
   }
@@ -145985,7 +145985,7 @@ function prepareDisplacementVectorData(plugin, options) {
   const colorMode = options.color_by ?? options.color_mode ?? "norm";
   const colorComponent = Math.max(0, Math.min(2, Math.floor(options.color_component ?? 2)));
   const processed = [];
-  for (let i = 0; i < count3; i++) {
+  for (let i = 0; i < count4; i++) {
     const origin = origins[i];
     const vec = vectors[i];
     if (!origin || !vec || origin.length !== 3 || vec.length !== 3) continue;
@@ -146295,8 +146295,8 @@ function createSubsetFromAtomIndices(structure, atomIndices) {
   for (const unit2 of structure.units) {
     const match = [];
     const elements = unit2.elements;
-    const count3 = OrderedSet2.size(elements);
-    for (let i = 0; i < count3; i++) {
+    const count4 = OrderedSet2.size(elements);
+    for (let i = 0; i < count4; i++) {
       const element = OrderedSet2.getAt(elements, i);
       if (wanted.has(sourceAtomIndex(unit2.model, element))) match.push(i);
     }
@@ -146351,7 +146351,7 @@ function planeRotationFromNormal(normalInput) {
 }
 function centroid(structure) {
   const center2 = Vec3.create(0, 0, 0);
-  let count3 = 0;
+  let count4 = 0;
   const p6 = Vec3();
   for (const unit2 of structure.units) {
     const { elements, conformation } = unit2;
@@ -146359,10 +146359,10 @@ function centroid(structure) {
     for (let i = 0; i < size4; i++) {
       conformation.position(OrderedSet2.getAt(elements, i), p6);
       Vec3.add(center2, center2, p6);
-      count3 += 1;
+      count4 += 1;
     }
   }
-  if (count3 > 0) Vec3.scale(center2, center2, 1 / count3);
+  if (count4 > 0) Vec3.scale(center2, center2, 1 / count4);
   return center2;
 }
 function createGaussianSurfaceMeshes(structure, props, isoLevels, webgl) {
@@ -149761,8 +149761,8 @@ function structureOverlapsWithAtomIndices(structure, regionAtomSet) {
   for (const unit2 of structure.units) {
     if (unit2.kind !== 0) continue;
     const elements = unit2.elements;
-    const count3 = OrderedSet2.size(elements);
-    for (let i = 0; i < count3; i++) {
+    const count4 = OrderedSet2.size(elements);
+    for (let i = 0; i < count4; i++) {
       if (regionAtomSet.has(OrderedSet2.getAt(elements, i))) {
         return true;
       }
@@ -149842,14 +149842,14 @@ var TrajectoryHandlers = class {
     const trajectory = ref ? this.plugin.state.data.cells.get(ref)?.obj?.data : void 0;
     if (!loaded || !trajectory) throw new Error("No trajectory loaded for coordinate edit.");
     if (msg.coordinate_unit !== "angstrom") throw new Error("Coordinate edits require explicit angstrom units.");
-    const count3 = trajectory.frameCount;
-    if (!Array.isArray(msg.structure_indices) || new Set(msg.structure_indices).size !== msg.structure_indices.length || msg.structure_indices.some((i) => !Number.isInteger(i) || i < 0 || i >= count3) || msg.coordinates.length !== msg.structure_indices.length || msg.coordinates.some((frame2) => frame2.length !== msg.atom_indices.length || frame2.some((xyz) => xyz.length !== 3 || xyz.some((value) => !Number.isFinite(value))))) {
+    const count4 = trajectory.frameCount;
+    if (!Array.isArray(msg.structure_indices) || new Set(msg.structure_indices).size !== msg.structure_indices.length || msg.structure_indices.some((i) => !Number.isInteger(i) || i < 0 || i >= count4) || msg.coordinates.length !== msg.structure_indices.length || msg.coordinates.some((frame2) => frame2.length !== msg.atom_indices.length || frame2.some((xyz) => xyz.length !== 3 || xyz.some((value) => !Number.isFinite(value))))) {
       throw new Error("Invalid coordinate edit structures or dimensions.");
     }
     const replacements = new Map(msg.structure_indices.map((frame2, index) => [frame2, msg.coordinates[index]]));
     const models = await this.plugin.runTask(Task.create("Revise trajectory coordinates", async (ctx) => {
       const frames = [];
-      for (let index = 0; index < count3; index++) {
+      for (let index = 0; index < count4; index++) {
         const original = await Task.resolveInContext(trajectory.getFrameAtIndex(index), ctx);
         const coordinates = replacements.get(index);
         if (!coordinates) {
@@ -149876,7 +149876,7 @@ var TrajectoryHandlers = class {
           _staticPropertyData: { ...original._staticPropertyData },
           _dynamicPropertyData: /* @__PURE__ */ Object.create(null)
         };
-        Model.TrajectoryInfo.set(revised, { index, size: count3 });
+        Model.TrajectoryInfo.set(revised, { index, size: count4 });
         frames.push(revised);
       }
       return frames;
@@ -150519,6 +150519,83 @@ function interpolateAppearance(a8, b8, fraction, property2) {
   return (1 - fraction) * a8 + fraction * b8;
 }
 
+// src/managers/movie-import-provenance.ts
+var domains = /* @__PURE__ */ new Set(["annotation", "interaction", "layer", "measurement", "region", "shape"]);
+function record3(value, fields) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length !== fields.length || fields.some((key2) => !Object.hasOwn(value, key2))) {
+    throw new Error("Invalid Movie import provenance record.");
+  }
+  return value;
+}
+function text(value) {
+  if (typeof value !== "string" || !value.trim()) throw new Error("Movie import references require nonempty tags.");
+  return value;
+}
+function reference(value) {
+  const row3 = record3(value, ["domain", "tag"]);
+  if (typeof row3.domain !== "string" || !domains.has(row3.domain)) throw new Error("Invalid Movie import domain.");
+  return { domain: row3.domain, tag: text(row3.tag) };
+}
+function digest(value) {
+  if (typeof value !== "string" || !/^sha256:[0-9a-f]{64}$/.test(value)) throw new Error("Invalid Movie import SHA-256.");
+}
+function count3(value) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1) throw new Error("Invalid Movie import count.");
+  return value;
+}
+function validateMovieImportProvenance(value, destinationCount) {
+  const row3 = record3(value, [
+    "schema",
+    "source_sha256",
+    "source_version",
+    "source_binding",
+    "target_map",
+    "structure_index_map",
+    "warnings",
+    "targets"
+  ]);
+  if (row3.schema !== "molsysviewer.movie_import@1" || row3.source_version !== 2) {
+    throw new Error("Unsupported Movie import provenance.");
+  }
+  digest(row3.source_sha256);
+  const binding = record3(row3.source_binding, ["n_atoms", "n_structures", "fingerprint"]);
+  count3(binding.n_atoms);
+  const structures = count3(binding.n_structures);
+  digest(binding.fingerprint);
+  if (!Array.isArray(row3.target_map)) throw new Error("Movie target maps require a list.");
+  const sources = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new Set();
+  for (const entry of row3.target_map) {
+    const pair2 = record3(entry, ["source", "target"]);
+    const source = reference(pair2.source), target = reference(pair2.target);
+    const a8 = JSON.stringify(source), b8 = JSON.stringify(target);
+    if (source.domain !== target.domain || sources.has(a8) || targets.has(b8)) throw new Error("Invalid Movie target map.");
+    sources.add(a8);
+    targets.add(b8);
+  }
+  if (row3.structure_index_map !== null && (!Array.isArray(row3.structure_index_map) || row3.structure_index_map.length !== destinationCount || row3.structure_index_map.some((value2) => value2 !== null && (typeof value2 !== "number" || !Number.isSafeInteger(value2) || value2 < 0 || value2 >= structures)))) {
+    throw new Error("Invalid Movie structure correspondence.");
+  }
+  if (!Array.isArray(row3.warnings) || row3.warnings.some((code) => typeof code !== "string" || !code)) {
+    throw new Error("Invalid Movie import warning codes.");
+  }
+  if (!Array.isArray(row3.targets)) throw new Error("Invalid Movie import associations.");
+  const tracks = /* @__PURE__ */ new Set();
+  for (const entry of row3.targets) {
+    const target = record3(entry, ["track", "source", "target", "source_identity", "target_identity"]);
+    const track = text(target.track);
+    if (tracks.has(track) || reference(target.source).domain !== reference(target.target).domain) {
+      throw new Error("Invalid Movie import association.");
+    }
+    tracks.add(track);
+    for (const key2 of ["source_identity", "target_identity"]) {
+      const identity3 = target[key2];
+      if (!identity3 || typeof identity3 !== "object" || Array.isArray(identity3) || Object.entries(identity3).some(([field2, value2]) => !["uid", "definition_sha256", "analysis_name", "analysis_revision", "op"].includes(field2) || value2 !== null && typeof value2 !== "string")) throw new Error("Invalid Movie import identity.");
+      const definition = identity3.definition_sha256;
+      if (definition != null) digest(definition);
+    }
+  }
+}
+
 // src/managers/movie-timeline.ts
 var halfTurnTolerance = 1e-12;
 var collections = {
@@ -150529,7 +150606,7 @@ var collections = {
   region: "regions",
   shape: "shapes"
 };
-function record3(value, label2, fields) {
+function record4(value, label2, fields) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`${label2} must be an object.`);
   }
@@ -150551,9 +150628,9 @@ function time(value, maximum = Number.MAX_SAFE_INTEGER) {
   }
   return value;
 }
-function frame(value, count3) {
-  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= count3) {
-    throw new Error(`Movie structure index must be an integer in [0, ${count3}).`);
+function frame(value, count4) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= count4) {
+    throw new Error(`Movie structure index must be an integer in [0, ${count4}).`);
   }
   return value;
 }
@@ -150568,7 +150645,7 @@ function vector(value) {
   return Vec3.create(value[0], value[1], value[2]);
 }
 function camera(value) {
-  const pose = record3(value, "Movie camera pose");
+  const pose = record4(value, "Movie camera pose");
   const position = vector(pose.position);
   const target = vector(pose.target);
   const up3 = vector(pose.up);
@@ -150630,7 +150707,7 @@ function keys2(value, duration, read, continuous = false) {
   if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
   const result2 = [];
   for (const item2 of value) {
-    const key2 = record3(item2, "Movie key");
+    const key2 = record4(item2, "Movie key");
     if (Object.keys(key2).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
       throw new Error("Movie keys accept time_ms, value and optional easing.");
     }
@@ -150660,14 +150737,14 @@ function visibilityId(domain, name) {
   return JSON.stringify([domain, name]);
 }
 function sceneVisibility(scene) {
-  const whole = { domain: "whole", tag: null, visible: visibility(record3(scene.whole, "Movie whole").visible) };
+  const whole = { domain: "whole", tag: null, visible: visibility(record4(scene.whole, "Movie whole").visible) };
   const rows = /* @__PURE__ */ new Map([[visibilityId("whole", null), whole]]);
   for (const domain of Object.keys(collections)) {
     const name = collections[domain];
     const items = owns(scene, name) ? scene[name] : [];
     if (!Array.isArray(items)) throw new Error(`Movie scene ${name} must be a list.`);
     for (const value of items) {
-      const item2 = record3(value, `Movie ${domain}`);
+      const item2 = record4(value, `Movie ${domain}`);
       const name2 = tag(item2.tag);
       const id = visibilityId(domain, name2);
       if (rows.has(id)) throw new Error(`Ambiguous Movie target ${id}.`);
@@ -150679,14 +150756,15 @@ function sceneVisibility(scene) {
 function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
   const fields = ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"];
   if (value && typeof value === "object" && owns(value, "color_interpolation")) fields.push("color_interpolation");
-  const recipe = record3(value, "Movie recipe", fields);
+  if (value && typeof value === "object" && owns(value, "provenance")) fields.push("provenance");
+  const recipe = record4(value, "Movie recipe", fields);
   if (owns(recipe, "color_interpolation") && recipe.color_interpolation !== colorInterpolation) {
     throw new Error("Unsupported Movie colour interpolation contract.");
   }
   if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
   const duration = time(recipe.duration_ms);
   if (duration === 0) throw new Error("Movie duration must be positive.");
-  const units = record3(recipe.units, "Movie units", ["time", "camera_length"]);
+  const units = record4(recipe.units, "Movie units", ["time", "camera_length"]);
   if (units.time !== "ms" || units.camera_length !== "angstrom") {
     throw new Error("Movie recipes use milliseconds and angstroms.");
   }
@@ -150694,21 +150772,22 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
   if (recipe.baseline && typeof recipe.baseline === "object" && owns(recipe.baseline, "environment_capture")) {
     baselineFields.push("environment_capture");
   }
-  const baseline = record3(recipe.baseline, "Movie baseline", baselineFields);
-  const binding = record3(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
-  const count3 = binding.n_structures;
-  if (typeof count3 !== "number" || !Number.isSafeInteger(count3) || count3 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
+  const baseline = record4(recipe.baseline, "Movie baseline", baselineFields);
+  const binding = record4(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
+  const count4 = binding.n_structures;
+  if (typeof count4 !== "number" || !Number.isSafeInteger(count4) || count4 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
     throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
   }
-  const scene = record3(baseline.scene, "Movie scene");
+  const scene = record4(baseline.scene, "Movie scene");
+  if (owns(recipe, "provenance")) validateMovieImportProvenance(recipe.provenance, count4);
   if (scene.environment !== void 0) validateMovieEnvironment(scene.environment);
   if (owns(baseline, "environment_capture")) validateMovieEnvironmentCapture(baseline.environment_capture, scene.environment);
   if (scene.version !== 2 || owns(scene, "movie")) {
     throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
   }
   if (scene.sources != null) {
-    const source = record3(
-      record3(scene.sources, "Movie scene sources").binding,
+    const source = record4(
+      record4(scene.sources, "Movie scene sources").binding,
       "Movie source binding",
       ["n_atoms", "n_structures", "fingerprint"]
     );
@@ -150717,7 +150796,7 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
     }
   }
   const baseCamera = { time: 0, value: camera(baseline.camera), easing: "linear" };
-  const baseFrame = frame(record3(scene.view, "Movie view").structure_index, count3);
+  const baseFrame = frame(record4(scene.view, "Movie view").structure_index, count4);
   const rows = sceneVisibility(scene);
   const trackTags = /* @__PURE__ */ new Set();
   const visTracks = /* @__PURE__ */ new Map();
@@ -150726,11 +150805,11 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
   let frameTrack = [];
   if (!Array.isArray(recipe.tracks)) throw new Error("Movie tracks must be an ordered list.");
   for (const value2 of recipe.tracks) {
-    const track = record3(value2, "Movie track", ["tag", "target", "property", "keys"]);
+    const track = record4(value2, "Movie track", ["tag", "target", "property", "keys"]);
     const name = tag(track.tag);
     if (trackTags.has(name)) throw new Error("Movie track tags must be unique.");
     trackTags.add(name);
-    const target = record3(track.target, "Movie target");
+    const target = record4(track.target, "Movie target");
     const domain = target.domain;
     if (typeof domain !== "string" || Object.keys(target).some((field2) => field2 !== "domain" && field2 !== "tag")) {
       throw new Error("Movie targets require a domain and optionally a tag.");
@@ -150742,7 +150821,7 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
       poseTrack = keys2(track.keys, duration, camera, true);
     } else if (domain === "structure" && track.property === "index") {
       if (frameTrack.length) throw new Error("Movie permits only one track per target property.");
-      frameTrack = keys2(track.keys, duration, (value3) => frame(value3, count3));
+      frameTrack = keys2(track.keys, duration, (value3) => frame(value3, count4));
     } else if (track.property === "visible" && domain !== "camera" && domain !== "structure") {
       const id = visibilityId(domain, untagged ? null : tag(target.tag));
       if (!rows.has(id)) throw new Error(`Unknown Movie visibility target ${id}.`);
@@ -151227,8 +151306,8 @@ function targetTitle(target) {
     const chain2 = target.chain_name?.trim() || target.metadata?.chain_id?.trim();
     return [group, chain2 ? `chain ${chain2}` : "", target.source_label?.trim()].filter(Boolean).join(" \xB7 ");
   }
-  const count3 = target.atom_indices.length;
-  return count3 === 1 ? "Element (1 atom)" : `Element (${count3} atoms)`;
+  const count4 = target.atom_indices.length;
+  return count4 === 1 ? "Element (1 atom)" : `Element (${count4} atoms)`;
 }
 function selectionTitle(selection) {
   const parts = [`${selection.count_atoms} atom${selection.count_atoms === 1 ? "" : "s"}`];
@@ -152188,14 +152267,14 @@ var ViewerContextMenu = class {
       cursor: "pointer"
     });
     const submit = () => {
-      const text = String(input.value ?? "").trim();
-      if (text.length === 0 || !this.currentTarget) return;
+      const text2 = String(input.value ?? "").trim();
+      if (text2.length === 0 || !this.currentTarget) return;
       const label_style = {
         color: colorInput.value,
         size_em: parseFloat(sizeInput.value)
       };
       const action = fromTarget ? "create_annotation_from_target" : "add_label_from_selection";
-      const details = { text, label_style, ...scope ? { scope: scope.value } : {} };
+      const details = { text: text2, label_style, ...scope ? { scope: scope.value } : {} };
       this.onAction?.(action, this.currentTarget, details);
       this.notify?.({
         event: "interaction_context_action",
@@ -152992,9 +153071,9 @@ var FloatingDataCard = class {
   showPopupError(blocked) {
     this.status.setAttribute("data-molsysviewer-datacard-error", blocked ? "popup_blocked" : "popup_bootstrap_failed");
     this.status.replaceChildren();
-    const text = document.createElement("div");
-    text.textContent = blocked ? "The browser blocked this window. Allow popups for this page, then try again." : "The card window could not be prepared. Your data is still here. Try again or continue in this card.";
-    this.status.appendChild(text);
+    const text2 = document.createElement("div");
+    text2.textContent = blocked ? "The browser blocked this window. Allow popups for this page, then try again." : "The card window could not be prepared. Your data is still here. Try again or continue in this card.";
+    this.status.appendChild(text2);
     for (const [label2, action] of [
       ["Try again", () => this.openPopoutWindow()],
       ["Dismiss", () => {
@@ -153565,17 +153644,17 @@ var TrajectoryPlotOverlay = class {
     t5.textContent = content;
     return t5;
   }
-  setNumericText(text, display, raw2) {
+  setNumericText(text2, display, raw2) {
     const value = document.createElementNS(SVG_NS, "tspan");
     value.textContent = display;
     const title = document.createElementNS(SVG_NS, "title");
     title.textContent = raw2;
-    text.replaceChildren(value, title);
-    text.setAttribute("aria-label", raw2);
-    text.setAttribute("tabindex", "0");
-    text.style.userSelect = "text";
-    text.style.cursor = "text";
-    text.onclick = (event) => event.stopPropagation();
+    text2.replaceChildren(value, title);
+    text2.setAttribute("aria-label", raw2);
+    text2.setAttribute("tabindex", "0");
+    text2.style.userSelect = "text";
+    text2.style.cursor = "text";
+    text2.onclick = (event) => event.stopPropagation();
   }
   dispose() {
     this.clear();
@@ -153857,8 +153936,8 @@ function buildGroupItemsFromStructure(structure) {
   for (const unit2 of structure.units) {
     if (unit2.kind !== 0) continue;
     const elements = unit2.elements;
-    const count3 = OrderedSet2.size(elements);
-    for (let i = 0; i < count3; i++) {
+    const count4 = OrderedSet2.size(elements);
+    for (let i = 0; i < count4; i++) {
       presentAtoms.add(OrderedSet2.getAt(elements, i));
     }
   }
@@ -154262,8 +154341,8 @@ var ActiveSelectionController = class {
       if (unit2.kind !== 0) continue;
       const matched = [];
       const elements = unit2.elements;
-      const count3 = OrderedSet2.size(elements);
-      for (let i = 0; i < count3; i++) {
+      const count4 = OrderedSet2.size(elements);
+      for (let i = 0; i < count4; i++) {
         if (target.has(sourceAtomIndex(unit2.model, OrderedSet2.getAt(elements, i)))) matched.push(i);
       }
       if (matched.length > 0) {
@@ -154296,21 +154375,21 @@ function workflowHelp(key2, tips) {
   Object.assign(summary.style, { cursor: "pointer", fontSize: "11px", padding: "4px 0" });
   details.appendChild(summary);
   for (const tip of tips) {
-    const text = document.createElement("p");
-    text.textContent = tip;
-    Object.assign(text.style, { fontSize: "11px", lineHeight: "1.5", margin: "6px 0" });
-    details.appendChild(text);
+    const text2 = document.createElement("p");
+    text2.textContent = tip;
+    Object.assign(text2.style, { fontSize: "11px", lineHeight: "1.5", margin: "6px 0" });
+    details.appendChild(text2);
   }
   return details;
 }
 function scalarColorRangeFromInput(value) {
-  const text = value.trim();
-  if (!text) return void 0;
-  const parts = text.split(",").map((part) => part.trim());
+  const text2 = value.trim();
+  if (!text2) return void 0;
+  const parts = text2.split(",").map((part) => part.trim());
   if (parts.length === 2 && parts.every((part) => part !== "" && Number.isFinite(Number(part)))) {
     return parts.map(Number);
   }
-  return text;
+  return text2;
 }
 function formatUnitLabel(unit2) {
   switch (unit2.trim().toLowerCase()) {
@@ -154347,15 +154426,15 @@ function makeSectionHeader(title) {
     paddingBottom: "6px",
     marginBottom: "6px"
   });
-  const text = document.createElement("span");
-  text.textContent = title;
-  header2.appendChild(text);
+  const text2 = document.createElement("span");
+  text2.textContent = title;
+  header2.appendChild(text2);
   return header2;
 }
-function makeButton2(text, onClick) {
+function makeButton2(text2, onClick) {
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.textContent = text;
+  btn.textContent = text2;
   Object.assign(btn.style, {
     flex: "1 1 0",
     background: "rgba(255,255,255,0.06)",
@@ -154632,8 +154711,8 @@ function namePanelControls(host, domain) {
   }
   for (const button2 of host.querySelectorAll("button")) {
     if (button2.hasAttribute("aria-label")) continue;
-    const text = button2.textContent?.trim() || "";
-    if (/[A-Za-z]/.test(text)) continue;
+    const text2 = button2.textContent?.trim() || "";
+    if (/[A-Za-z]/.test(text2)) continue;
     const attr = Array.from(button2.attributes).find((item2) => item2.name.startsWith("data-molsysviewer-") && /delete|visibility|focus|remove/.test(item2.name));
     const verb = attr?.name.includes("delete") || attr?.name.includes("remove") ? "Delete" : attr?.name.includes("visibility") ? "Toggle visibility" : "Action";
     const name = button2.title || `${verb} ${domain}${attr?.value && attr.value !== "true" ? `: ${attr.value}` : ""}`;
@@ -155299,11 +155378,11 @@ var WorkFileControls = class {
   askRestore() {
     if (this.restore.disabled) return;
     this.cancelConfirmation();
-    const text = document.createElement("div");
-    text.textContent = `Restore ${this.path.value.trim()}? This replaces ${this.kind.value === "session" ? "the molecular system and scene" : "the scene on the current molecular system"} and clears Undo/Redo. Save current work first to keep it.`;
+    const text2 = document.createElement("div");
+    text2.textContent = `Restore ${this.path.value.trim()}? This replaces ${this.kind.value === "session" ? "the molecular system and scene" : "the scene on the current molecular system"} and clears Undo/Redo. Save current work first to keep it.`;
     const accept = makeButton2("Confirm restore", () => this.submit("restore_work_file"));
     accept.setAttribute("data-molsysviewer-work-file-confirm", "true");
-    this.confirmation.append(text, accept, makeButton2("Cancel", () => this.cancelConfirmation()));
+    this.confirmation.append(text2, accept, makeButton2("Cancel", () => this.cancelConfirmation()));
     accept.focus();
   }
   submit(action) {
@@ -155549,8 +155628,8 @@ var ListSearch = class {
   constructor() {
     this.query = "";
   }
-  matches(text) {
-    return text.toLocaleLowerCase().includes(this.query.toLocaleLowerCase().trim());
+  matches(text2) {
+    return text2.toLocaleLowerCase().includes(this.query.toLocaleLowerCase().trim());
   }
   field(label2, onInput) {
     const input = document.createElement("input");
@@ -156320,13 +156399,13 @@ function makeStyleControlRow(label2, control) {
     gap: "8px",
     width: "100%"
   });
-  const text = document.createElement("span");
-  text.textContent = label2;
-  Object.assign(text.style, {
+  const text2 = document.createElement("span");
+  text2.textContent = label2;
+  Object.assign(text2.style, {
     fontSize: "11px",
     color: "rgba(244,244,245,0.7)"
   });
-  row3.appendChild(text);
+  row3.appendChild(text2);
   nameControls(control, label2);
   row3.appendChild(control);
   return row3;
@@ -156659,10 +156738,10 @@ var ManualQueryComposer = class _ManualQueryComposer {
       this.status.setAttribute("data-molsysviewer-query-status-value", "pending");
       this.status.style.color = "rgba(244,244,245,0.72)";
     } else if (this.preview?.ok === true) {
-      const count3 = Number(this.preview.count ?? 0);
-      this.status.textContent = count3 === 1 ? "\u2713 1 atom" : `\u2713 ${count3} atoms`;
-      this.status.setAttribute("data-molsysviewer-query-status-value", count3 > 0 ? "ok" : "empty");
-      this.status.style.color = count3 > 0 ? "#86efac" : "#facc15";
+      const count4 = Number(this.preview.count ?? 0);
+      this.status.textContent = count4 === 1 ? "\u2713 1 atom" : `\u2713 ${count4} atoms`;
+      this.status.setAttribute("data-molsysviewer-query-status-value", count4 > 0 ? "ok" : "empty");
+      this.status.style.color = count4 > 0 ? "#86efac" : "#facc15";
     } else if (this.preview?.ok === false) {
       this.status.textContent = `\u2717 ${this.preview.error_message ?? "invalid syntax"}`;
       this.status.setAttribute("data-molsysviewer-query-status-value", "error");
@@ -158784,9 +158863,9 @@ function makeLociForItem(structure, item2) {
   for (const unit2 of structure.units) {
     if (!Unit.isAtomic(unit2)) continue;
     const elements = unit2.elements;
-    const count3 = OrderedSet2.size(elements);
+    const count4 = OrderedSet2.size(elements);
     const matched = [];
-    for (let i = 0; i < count3; i++) {
+    for (let i = 0; i < count4; i++) {
       if (target.has(sourceAtomIndex(unit2.model, OrderedSet2.getAt(elements, i)))) matched.push(i);
     }
     if (matched.length > 0) {
@@ -158922,14 +159001,14 @@ var GroupStrip = class {
     this.render();
   }
   addLabelOverlay(msg) {
-    const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
+    const text2 = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
     const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
-    if (!text || atomIndices.length === 0 || this.groupItems.length === 0) return;
+    if (!text2 || atomIndices.length === 0 || this.groupItems.length === 0) return;
     const key2 = this.findSelectionKeyFromAtomIndices(atomIndices);
     if (!key2) return;
     const records = this.annotationRecords.get(key2) ?? [];
-    records.push({ tag: tag2, text });
+    records.push({ tag: tag2, text: text2 });
     this.annotationRecords.set(key2, records);
     this.render();
   }
@@ -158945,7 +159024,7 @@ var GroupStrip = class {
     }
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.filter((record5) => record5.tag !== tag2);
+      const next = records.filter((record6) => record6.tag !== tag2);
       if (next.length === records.length) continue;
       changed = true;
       if (next.length === 0) {
@@ -158959,10 +159038,10 @@ var GroupStrip = class {
   retagAnnotationOverlays(oldTag, newTag) {
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.map((record5) => {
-        if (record5.tag !== oldTag) return record5;
+      const next = records.map((record6) => {
+        if (record6.tag !== oldTag) return record6;
         changed = true;
-        return { ...record5, tag: newTag };
+        return { ...record6, tag: newTag };
       });
       this.annotationRecords.set(key2, next);
     }
@@ -159186,9 +159265,9 @@ var GroupStrip = class {
             fontSize: "11px"
           });
           if (selected) button2.setAttribute("data-group-item-selected", "true");
-          const text = document.createElement("span");
-          text.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
-          button2.appendChild(text);
+          const text2 = document.createElement("span");
+          text2.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
+          button2.appendChild(text2);
           const annotationRecords = this.annotationRecords.get(key2) ?? [];
           if (annotationRecords.length > 0) {
             const badge = document.createElement("span");
@@ -159207,7 +159286,7 @@ var GroupStrip = class {
               boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none"
             });
             button2.appendChild(badge);
-            button2.title = annotationRecords.map((record5) => record5.text).join("\n");
+            button2.title = annotationRecords.map((record6) => record6.text).join("\n");
             badge.addEventListener("click", (event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -159759,11 +159838,11 @@ var LoadFilePicker = class {
 };
 
 // src/ui/panels/system-load-controls.ts
-function systemStructureIndices(text) {
-  text = text.trim();
-  if (text === "all") return text;
-  if (text.startsWith("[") !== text.endsWith("]")) throw new Error("Structure-list brackets must be paired.");
-  const parts = text.replace(/^\[/, "").replace(/\]$/, "").split(",").map((part) => part.trim());
+function systemStructureIndices(text2) {
+  text2 = text2.trim();
+  if (text2 === "all") return text2;
+  if (text2.startsWith("[") !== text2.endsWith("]")) throw new Error("Structure-list brackets must be paired.");
+  const parts = text2.replace(/^\[/, "").replace(/\]$/, "").split(",").map((part) => part.trim());
   if (!parts.length || parts.some((part) => !/^\d+$/.test(part))) {
     throw new Error("Structures must be 'all' or a comma-separated list of nonnegative integers.");
   }
@@ -159773,10 +159852,10 @@ function systemStructureIndices(text) {
   }
   return indices3;
 }
-function atomSelection(text) {
-  text = text.trim() || "all";
-  if (!text.startsWith("[")) return text;
-  const values2 = JSON.parse(text);
+function atomSelection(text2) {
+  text2 = text2.trim() || "all";
+  if (!text2.startsWith("[")) return text2;
+  const values2 = JSON.parse(text2);
   if (!Array.isArray(values2) || !values2.length || values2.some((value) => !Number.isSafeInteger(value) || value < 0)) {
     throw new Error("Atom indices must be a nonempty list of nonnegative integers.");
   }
@@ -160099,13 +160178,13 @@ function row(label2, control) {
     gap: "8px",
     width: "100%"
   });
-  const text = document.createElement("span");
-  text.textContent = label2;
-  Object.assign(text.style, {
+  const text2 = document.createElement("span");
+  text2.textContent = label2;
+  Object.assign(text2.style, {
     fontSize: "11px",
     color: "rgba(244,244,245,0.7)"
   });
-  item2.appendChild(text);
+  item2.appendChild(text2);
   nameControls(control, label2);
   item2.appendChild(control);
   return item2;
@@ -160123,9 +160202,9 @@ function card4() {
   });
   return el;
 }
-function note(text, warning = false) {
+function note(text2, warning = false) {
   const el = document.createElement("div");
-  el.textContent = text;
+  el.textContent = text2;
   Object.assign(el.style, {
     fontSize: "10px",
     color: warning ? "#fbbf24" : "rgba(244,244,245,0.6)",
@@ -160520,10 +160599,10 @@ function formatValue2(item2) {
   const digits = unit2 === "nanometer" || unit2 === "nanometers" || unit2 === "nm" || unit2 === "radian" || unit2 === "radians" ? 3 : item2.kind === "distance" ? 2 : 1;
   return `${item2.value.toFixed(digits)} ${formatUnitLabel(item2.unit)}`;
 }
-function makePurplishSegmentButton(text, isActive, onClick, padding2 = "6px 0", fontSize = "11px") {
+function makePurplishSegmentButton(text2, isActive, onClick, padding2 = "6px 0", fontSize = "11px") {
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.textContent = text;
+  btn.textContent = text2;
   const bgNormal = isActive ? "#6366f1" : "rgba(99, 102, 241, 0.16)";
   const bgHover = isActive ? "#4f46e5" : "rgba(99, 102, 241, 0.28)";
   const borderNormal = isActive ? "1px solid #818cf8" : "1px solid rgba(129, 140, 248, 0.3)";
@@ -160774,8 +160853,8 @@ var MeasuresPanel = class extends BasePanel {
     return this.measuresQueryComposer;
   }
   renderNewMeasurementElements(parent) {
-    const count3 = this.selection.atom_indices.length;
-    const hasActive = count3 > 0;
+    const count4 = this.selection.atom_indices.length;
+    const hasActive = count4 > 0;
     const modeRow = document.createElement("div");
     Object.assign(modeRow.style, {
       display: "flex",
@@ -160966,8 +161045,8 @@ var MeasuresPanel = class extends BasePanel {
       background: "rgba(0, 0, 0, 0.2)",
       border: "1px solid rgba(255, 255, 255, 0.08)"
     });
-    const count3 = this.selection.atom_indices.length;
-    const hasActive = count3 > 0;
+    const count4 = this.selection.atom_indices.length;
+    const hasActive = count4 > 0;
     const activeTab = this.inlineTab;
     const tabRow = document.createElement("div");
     Object.assign(tabRow.style, {
@@ -161027,7 +161106,7 @@ var MeasuresPanel = class extends BasePanel {
         flexShrink: "0"
       });
       leftWrap.appendChild(dot);
-      leftWrap.appendChild(document.createTextNode(hasActive ? `${count3} atom${count3 === 1 ? "" : "s"} selected` : "No active selection"));
+      leftWrap.appendChild(document.createTextNode(hasActive ? `${count4} atom${count4 === 1 ? "" : "s"} selected` : "No active selection"));
       activeCard.appendChild(leftWrap);
       const useBtn = document.createElement("button");
       useBtn.type = "button";
@@ -161063,10 +161142,10 @@ var MeasuresPanel = class extends BasePanel {
         e.preventDefault();
         e.stopPropagation();
         if (!hasActive) return;
-        const endpointType = count3 === 1 ? "Atom" : "Centroid";
+        const endpointType = count4 === 1 ? "Atom" : "Centroid";
         this.stagedSlots[slotIndex] = {
           atom_indices: [...this.selection.atom_indices],
-          summary: `${count3} atom${count3 === 1 ? "" : "s"} \xB7 ${endpointType}`,
+          summary: `${count4} atom${count4 === 1 ? "" : "s"} \xB7 ${endpointType}`,
           endpointType,
           policy: "centroid"
         };
@@ -161332,8 +161411,8 @@ function renderSelectionDock(options) {
     background: "rgba(0, 0, 0, 0.2)",
     border: "1px solid rgba(255, 255, 255, 0.08)"
   });
-  const count3 = options.activeSelection.atom_indices.length;
-  const hasActive = count3 > 0;
+  const count4 = options.activeSelection.atom_indices.length;
+  const hasActive = count4 > 0;
   const btnLabel = options.buttonLabel || "Set";
   const prefix2 = options.dataAttributePrefix || "selection-dock";
   const tabRow = document.createElement("div");
@@ -161393,7 +161472,7 @@ function renderSelectionDock(options) {
       flexShrink: "0"
     });
     leftWrap.appendChild(dot);
-    leftWrap.appendChild(document.createTextNode(hasActive ? `${count3} atom${count3 === 1 ? "" : "s"} selected` : "No active selection"));
+    leftWrap.appendChild(document.createTextNode(hasActive ? `${count4} atom${count4 === 1 ? "" : "s"} selected` : "No active selection"));
     activeCard.appendChild(leftWrap);
     const useBtn = document.createElement("button");
     useBtn.type = "button";
@@ -161643,13 +161722,13 @@ var AnnotationsPanel = class extends BasePanel {
     this.ctx.setBadge(String(items.length));
     this.scheduleRender();
   }
-  openObject(tag2, text = false) {
+  openObject(tag2, text2 = false) {
     if (!this.annotations.some((item2) => item2.tag === tag2)) return;
     this.selectedTag = tag2;
-    if (text) this.editTextTag = tag2;
+    if (text2) this.editTextTag = tag2;
     else this.editDetailsTag = tag2;
     this.scheduleRender();
-    if (text) this.focusTextEditor();
+    if (text2) this.focusTextEditor();
   }
   setSavedSelections(items) {
     this.savedSelections = [...items];
@@ -161769,11 +161848,11 @@ var AnnotationsPanel = class extends BasePanel {
     textInput.setAttribute("data-molsysviewer-annotation-create-text", "true");
     formRow.appendChild(textInput);
     const addBtn = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", () => {
-      const text = textInput.value.trim();
-      if (!text || !this.canCreateAnnotation()) return;
+      const text2 = textInput.value.trim();
+      if (!text2 || !this.canCreateAnnotation()) return;
       const atomIndices = this.anchorType === "selection" ? this.stagedAnchor || [] : void 0;
       this.creation.submit({
-        text,
+        text: text2,
         label_style: { ...this.nextStyle },
         position: this.anchorType === "coordinates" ? [...this.customPosition] : void 0,
         atom_indices: atomIndices,
@@ -162135,11 +162214,11 @@ var AnnotationsPanel = class extends BasePanel {
           color: "#34d399",
           fontWeight: "600"
         });
-        const count3 = this.stagedAnchor.length;
-        const desc = count3 === 1 ? "1 atom" : `${count3} atoms \xB7 Centroid`;
-        const text = document.createElement("span");
-        text.textContent = `\u2713 Staged anchor: ${desc}`;
-        statusCard.appendChild(text);
+        const count4 = this.stagedAnchor.length;
+        const desc = count4 === 1 ? "1 atom" : `${count4} atoms \xB7 Centroid`;
+        const text2 = document.createElement("span");
+        text2.textContent = `\u2713 Staged anchor: ${desc}`;
+        statusCard.appendChild(text2);
         const clearBtn = makeButton2("Clear", () => {
           this.stagedAnchor = null;
           this.scheduleRender();
@@ -162191,12 +162270,12 @@ var AnnotationsPanel = class extends BasePanel {
     if (this.editTextTag === item2.tag) {
       head.appendChild(this.renderTextEditor(item2));
     } else {
-      const text = document.createElement("button");
-      text.type = "button";
-      text.textContent = item2.broken ? `\u26A0 ${item2.text}` : item2.text;
-      text.title = "Edit annotation text";
-      text.setAttribute("data-molsysviewer-annotation-text", item2.tag);
-      Object.assign(text.style, {
+      const text2 = document.createElement("button");
+      text2.type = "button";
+      text2.textContent = item2.broken ? `\u26A0 ${item2.text}` : item2.text;
+      text2.title = "Edit annotation text";
+      text2.setAttribute("data-molsysviewer-annotation-text", item2.tag);
+      Object.assign(text2.style, {
         flex: "1 1 0",
         minWidth: "0",
         overflow: "hidden",
@@ -162211,7 +162290,7 @@ var AnnotationsPanel = class extends BasePanel {
         fontWeight: "650",
         cursor: "text"
       });
-      text.addEventListener("click", (event) => {
+      text2.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
         this.selectedTag = item2.tag;
@@ -162219,7 +162298,7 @@ var AnnotationsPanel = class extends BasePanel {
         this.scheduleRender();
         this.focusTextEditor();
       });
-      head.appendChild(text);
+      head.appendChild(text2);
     }
     row3.appendChild(head);
     const btnRow = document.createElement("div");
@@ -162277,8 +162356,8 @@ var AnnotationsPanel = class extends BasePanel {
     input.setAttribute("data-molsysviewer-annotation-text-input", item2.tag);
     input.addEventListener("focus", () => this.beginCoalescing());
     input.addEventListener("input", () => {
-      const text = input.value.trim();
-      if (text) this.ctx.onAction("set_annotation_text", { tag: item2.tag, text });
+      const text2 = input.value.trim();
+      if (text2) this.ctx.onAction("set_annotation_text", { tag: item2.tag, text: text2 });
     });
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") this.finishTextEdit();
@@ -162790,9 +162869,9 @@ function initialCalculationCriterion(kind, defaults2 = {}) {
   const criteria = calculationCriteria(kind);
   return (criteria.find((item2) => Object.entries(defaults2).every(([key2, value]) => item2.parameters[key2] === value)) ?? criteria[0])?.key ?? "";
 }
-function finiteNumber(text, label2) {
-  const value = Number(text);
-  if (!text.trim() || !Number.isFinite(value)) throw new Error(`${label2}: enter a finite number.`);
+function finiteNumber(text2, label2) {
+  const value = Number(text2);
+  if (!text2.trim() || !Number.isFinite(value)) throw new Error(`${label2}: enter a finite number.`);
   return value;
 }
 function unitFor(control, values2) {
@@ -162801,8 +162880,8 @@ function unitFor(control, values2) {
   if (!allowed.includes(unit2)) throw new Error(`${control.label}: unsupported unit.`);
   return unit2;
 }
-function angleValue(text, unit2, label2) {
-  const value = finiteNumber(text, label2);
+function angleValue(text2, unit2, label2) {
+  const value = finiteNumber(text2, label2);
   if (value < 0 || value > (unit2 === "degrees" ? 180 : Math.PI)) throw new Error(`${label2}: angle must be between 0 and 180 degrees.`);
   return value;
 }
@@ -162811,25 +162890,25 @@ function scientificParameters(kind, key2, values2) {
   if (!criterion) throw new Error("Select an available interaction criterion.");
   const parameters = { ...criterion.parameters };
   for (const control of criterion.controls) {
-    const text = (values2[control.key] || "").trim();
+    const text2 = (values2[control.key] || "").trim();
     if (control.type === "angle-range") {
       const low = (values2[`${control.key}-min`] || "").trim(), high = (values2[`${control.key}-max`] || "").trim();
       if (!low && !high) continue;
       const unit2 = unitFor(control, values2);
       if (angleValue(low, unit2, control.label) > angleValue(high, unit2, control.label)) throw new Error(`${control.label}: minimum must not exceed maximum.`);
       parameters[control.key] = [`${low} ${unit2}`, `${high} ${unit2}`];
-    } else if (!text) {
+    } else if (!text2) {
       if (control.required) throw new Error(`${control.label} is required for this criterion.`);
     } else if (control.type === "length" || control.type === "angle") {
       const unit2 = unitFor(control, values2);
-      const value = control.type === "angle" ? angleValue(text, unit2, control.label) : finiteNumber(text, control.label);
+      const value = control.type === "angle" ? angleValue(text2, unit2, control.label) : finiteNumber(text2, control.label);
       if (control.type === "length" && (value < 0 || !control.allowZero && value === 0)) throw new Error(`${control.label}: enter a ${control.allowZero ? "nonnegative" : "positive"} length.`);
-      parameters[control.key] = `${text} ${unit2}`;
+      parameters[control.key] = `${text2} ${unit2}`;
     } else if (control.type === "choice") {
-      if (!control.choices?.some(([key3]) => key3 === text)) throw new Error(`${control.label}: select an available value.`);
-      parameters[control.key] = control.key === "order" ? Number(text) : text;
+      if (!control.choices?.some(([key3]) => key3 === text2)) throw new Error(`${control.label}: select an available value.`);
+      parameters[control.key] = control.key === "order" ? Number(text2) : text2;
     } else {
-      const names = text.split(",").map((name) => name.trim());
+      const names = text2.split(",").map((name) => name.trim());
       if (names.some((name) => !name)) throw new Error(`${control.label}: use comma-separated names without empty entries.`);
       parameters[control.key] = names;
     }
@@ -162869,9 +162948,9 @@ var row2 = () => {
   Object.assign(el.style, { display: "flex", gap: "4px", flexWrap: "wrap" });
   return el;
 };
-var note2 = (text) => {
+var note2 = (text2) => {
   const el = document.createElement("div");
-  el.textContent = text;
+  el.textContent = text2;
   Object.assign(el.style, { fontSize: "11px", color: "rgba(244,244,245,0.65)", overflowWrap: "anywhere" });
   return el;
 };
@@ -162903,10 +162982,10 @@ function select(parent, values2, current2, change) {
   const el = document.createElement("select");
   Object.assign(el.style, { width: "100%", minWidth: "0", color: "#fff", background: "#272335", padding: "5px", borderRadius: "6px" });
   if (parent.tagName === "LABEL" && parent.firstElementChild?.textContent) el.setAttribute("aria-label", parent.firstElementChild.textContent);
-  for (const [value, text] of values2) {
+  for (const [value, text2] of values2) {
     const option = document.createElement("option");
     option.value = value;
-    option.textContent = text;
+    option.textContent = text2;
     el.appendChild(option);
   }
   el.value = current2;
@@ -162915,10 +162994,10 @@ function select(parent, values2, current2, change) {
   return el;
 }
 function indices2(value, allowCurrent = false) {
-  const text = value.trim();
-  if (text === "all" || allowCurrent && text === "current") return text;
-  if (!/^\d+(\s*,\s*\d+)*$/.test(text)) throw new Error("Use all, current (calculation), or comma-separated integer indices.");
-  return text.split(",").map((v4) => Number(v4.trim()));
+  const text2 = value.trim();
+  if (text2 === "all" || allowCurrent && text2 === "current") return text2;
+  if (!/^\d+(\s*,\s*\d+)*$/.test(text2)) throw new Error("Use all, current (calculation), or comma-separated integer indices.");
+  return text2.split(",").map((v4) => Number(v4.trim()));
 }
 var statusText = (item2) => {
   if (item2.status === "render-error") return "Interaction rendering failed. Check viewer diagnostics.";
@@ -163001,11 +163080,11 @@ var InteractionsPanel = class extends BasePanel {
     this.filtersOpen = true;
     if (this.filtersDetails) this.filtersDetails.open = true;
   }
-  metadata(parent, text) {
+  metadata(parent, text2) {
     const details = document.createElement("details"), summary = document.createElement("summary");
     summary.textContent = "Scientific metadata";
     details.appendChild(summary);
-    details.appendChild(note2(text));
+    details.appendChild(note2(text2));
     parent.appendChild(details);
   }
   setSummary(message) {
@@ -163285,8 +163364,8 @@ var InteractionsPanel = class extends BasePanel {
     creation.appendChild(form);
     if (!this.editing) {
       const tabs = row2();
-      for (const [value, text] of [["calculate", "Calculate"], ["stored", "Stored analysis"], ["file", "H5MSM file"]]) {
-        const btn = makeButton2(text, () => {
+      for (const [value, text2] of [["calculate", "Calculate"], ["stored", "Stored analysis"], ["file", "H5MSM file"]]) {
+        const btn = makeButton2(text2, () => {
           this.source = value;
           this.scheduleRender();
         });
@@ -163516,8 +163595,8 @@ var InteractionsPanel = class extends BasePanel {
       card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.analysis_name, item2.layer_tag].filter(Boolean).join(" "));
       append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.layer_hidden ? "Hidden by layer" : item2.hidden ? "Hidden" : "Visible"} \xB7 layer ${item2.layer_tag}`));
       const actions = row2();
-      for (const [text, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
-        const button2 = makeButton2(text, () => this.emit(action, { tag: item2.tag }));
+      for (const [text2, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
+        const button2 = makeButton2(text2, () => this.emit(action, { tag: item2.tag }));
         if (action === "focus_interaction") button2.disabled = !item2.n_supported;
         actions.appendChild(button2);
       }
@@ -166645,9 +166724,9 @@ var GroupPanel = class {
         }
         this.onAction?.(action, details);
       },
-      setBadge: (text) => {
+      setBadge: (text2) => {
         const badge = this.tabs.get(key2)?.badge;
-        if (badge) badge.textContent = text;
+        if (badge) badge.textContent = text2;
       }
     };
   }
@@ -166767,8 +166846,8 @@ var GroupPanel = class {
   // ── 2. Regions Section Rendering ─────────────────────────
   // ── 5. Viewport Section Rendering ────────────────────────
   // ── Helper UI Constructors ──────────────────────────────
-  makeButton(text, onClick) {
-    return makeButton2(text, onClick);
+  makeButton(text2, onClick) {
+    return makeButton2(text2, onClick);
   }
   makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility2, onStyle) {
     return makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility2, onStyle);
@@ -167531,7 +167610,7 @@ var AddonsPanel = class {
           opacity: addon.enabled ? "1" : "0.3"
         });
         row3.appendChild(chipRow);
-        const createChip = (text) => {
+        const createChip = (text2) => {
           const chip = document.createElement("span");
           Object.assign(chip.style, {
             fontSize: "8px",
@@ -167542,7 +167621,7 @@ var AddonsPanel = class {
             border: "1px solid rgba(255,255,255,0.06)",
             color: "rgba(244,244,245,0.5)"
           });
-          chip.textContent = text;
+          chip.textContent = text2;
           chipRow.appendChild(chip);
         };
         const panels = addon.panelTitles?.length || 0;
@@ -167606,13 +167685,13 @@ var AddonsPanel = class {
       const status = document.createElement("div");
       status.setAttribute("role", "status");
       const filter5 = () => {
-        let count3 = 0;
+        let count4 = 0;
         for (const row3 of rows) {
           const visible = this.addonSearch.matches(row3.textContent || "");
           row3.style.display = visible ? "flex" : "none";
-          if (visible) count3++;
+          if (visible) count4++;
         }
-        status.textContent = `${count3}/${rows.length} add-ons match${count3 === 0 && rows.length ? " \xB7 No matches" : ""}`;
+        status.textContent = `${count4}/${rows.length} add-ons match${count4 === 0 && rows.length ? " \xB7 No matches" : ""}`;
       };
       const search = this.addonSearch.field("Search add-ons", filter5);
       search.setAttribute("data-molsysviewer-addon-search", "true");
@@ -167998,12 +168077,12 @@ var HoverTooltip = class {
     }
   }
   setLabels(labels) {
-    const text = labels.filter((l) => !!l).join(" \xB7 ");
-    if (!text) {
+    const text2 = labels.filter((l) => !!l).join(" \xB7 ");
+    if (!text2) {
       this.el.style.display = "none";
       return;
     }
-    this.el.innerHTML = text;
+    this.el.innerHTML = text2;
     this.el.style.display = "block";
     this.reposition();
   }
@@ -170119,9 +170198,9 @@ var MolSysViewerController = class _MolSysViewerController {
     for (const unit2 of structure.units) {
       if (!Unit.isAtomic(unit2)) continue;
       const elements = unit2.elements;
-      const count3 = OrderedSet2.size(elements);
+      const count4 = OrderedSet2.size(elements);
       const matched = [];
-      for (let i = 0; i < count3; i++) {
+      for (let i = 0; i < count4; i++) {
         if (target.has(sourceAtomIndex(unit2.model, OrderedSet2.getAt(elements, i)))) matched.push(i);
       }
       if (matched.length > 0) {
@@ -173933,9 +174012,9 @@ var bootPopup = async (loadedModule) => {
       spinner.className = "spinner";
       loading.appendChild(spinner);
     }
-    const text = document.createElement("div");
-    text.textContent = failed ? "Your scene could not be loaded. You can try again." : "Loading your scene\u2026";
-    loading.appendChild(text);
+    const text2 = document.createElement("div");
+    text2.textContent = failed ? "Your scene could not be loaded. You can try again." : "Loading your scene\u2026";
+    loading.appendChild(text2);
     if (failed) {
       const retry = document.createElement("button");
       retry.type = "button";
@@ -176402,7 +176481,7 @@ var RemoteWorkbench = class {
       case "set_whole_summary":
         this.wholeSummary = {
           ...msg,
-          params: record4(msg.params),
+          params: record5(msg.params),
           visible: msg.visible !== false,
           available_attributes: strings(msg.available_attributes),
           color_schemes: strings(msg.color_schemes),
@@ -176438,8 +176517,8 @@ var RemoteWorkbench = class {
         this.refreshObjects();
         return;
       case "set_measurement_settings": {
-        const source = record4(msg.options ?? msg);
-        const atoms2 = record4(source.representative_atoms);
+        const source = record5(msg.options ?? msg);
+        const atoms2 = record5(source.representative_atoms);
         this.measurementSettings = {
           ...this.measurementSettings,
           endpointPolicyDefault: typeof source.endpoint_policy_default === "string" ? source.endpoint_policy_default : this.measurementSettings.endpointPolicyDefault,
@@ -176650,7 +176729,7 @@ var REMOTE_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
   "open_navigate"
 ]);
 function contextTarget(value) {
-  const item2 = record4(value);
+  const item2 = record5(value);
   if (!["empty", "structure", "shape", "measurement", "annotation"].includes(String(item2.kind))) return null;
   if (item2.event !== "interaction_context_menu") return null;
   return item2;
@@ -176674,7 +176753,7 @@ function strings(value) {
 function stringsToNumbers(value) {
   return Array.isArray(value) ? value.filter((item2) => typeof item2 === "number" && Number.isFinite(item2)) : [];
 }
-function record4(value) {
+function record5(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 function numberOr(value, fallback) {
@@ -176706,8 +176785,8 @@ function mapAnnotation(item2) {
     nAtoms: numberOr(item2.n_atoms, 0),
     atomIndices: stringsToNumbers(item2.atom_indices),
     hidden: !!item2.hidden,
-    style: record4(item2.style),
-    anchor: record4(item2.anchor),
+    style: record5(item2.style),
+    anchor: record5(item2.anchor),
     broken: !!item2.broken,
     brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
   };
@@ -176817,9 +176896,9 @@ async function bootRemoteBrowserClient(options) {
   let mediaRouteTimer = 0;
   let reconnectAttempt = 0;
   const maxReconnectAttempts = 3;
-  const setStatus = (state, text) => {
+  const setStatus = (state, text2) => {
     status.setAttribute("data-molsysviewer-remote-status", state);
-    status.textContent = text;
+    status.textContent = text2;
     status.style.display = state === "ready" ? "none" : "block";
   };
   const sendJson = (value) => {
@@ -177285,9 +177364,9 @@ async function bootRemoteRenderedClient(options) {
   let reconnectTimer = 0;
   let reconnectAttempt = 0;
   const maxReconnectAttempts = 3;
-  const setStatus = (state, text) => {
+  const setStatus = (state, text2) => {
     status.setAttribute("data-molsysviewer-remote-status", state);
-    status.textContent = text;
+    status.textContent = text2;
     status.style.display = state === "ready" ? "none" : "block";
   };
   const listeners = /* @__PURE__ */ new Map();

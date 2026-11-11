@@ -21,7 +21,10 @@ representations, annotation text, RGB background and ambient/diffuse lighting
 have their first implementation. Acknowledged baseline capture and explicit
 recorded-scene reset, serialized static-scene checks and reviewed headless
 rebasing are implemented. Supported live environment capture and asynchronous
-rebase reviews extend that route. Target remapping, richer renderer/style
+rebase reviews extend that route. Reviewed version-2 target/frame imports have
+their first [source receiving](movie_import_receiving_20261111.json), including
+headless correspondence, native popup/session and decoded-media checks.
+Legacy migration, richer renderer/style
 catalogues, Studio authoring and a portable interactive web player remain open.
 The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
 separate numerical, native-node, popup, session and media evidence.
@@ -247,6 +250,8 @@ await view.movie.pause_async()
 await view.movie.export_async(path, fps="30000/1001", width_px=1280, height_px=720)
 view.movie.to_dict()
 view.movie.from_dict(recipe)
+review = view.movie.review_import(recipe, target_map=target_map, structure_index_map=new_to_old)
+view.movie.apply_import(review)             # acceptance does not apply scene commands
 ```
 
 Live application, baseline capture and recorded-scene reset have draw
@@ -301,11 +306,75 @@ hides an absent baseline box. It may recreate object handles and does not
 promise rollback of accepted scene commands after a timeout. It is a restore
 of the recorded state catalogue, not a snapshot of arbitrary Mol* settings.
 
-Explicit target mapping and v1 migration remain pending. Proposed import extension:
+### Reviewed version-2 imports
+
+Keep `from_dict()` as strict restoration of an already corresponding recipe.
+The import boundary is `review_import(data, *, target_map=None,
+structure_index_map=None, camera=None)` followed by explicit
+`apply_import(review)`. It uses the prepared destination scene as its new
+baseline. Its initial frame retains the source baseline frame through the
+declared structure map. Its baseline camera keeps the source pose unless
+`camera` explicitly replaces it. It does not import old scene objects, edit
+molecular data, transform camera keys or recalculate/remap scientific analyses.
 
 ```python
-view.movie.from_dict(recipe, target_map=...)
+review = view.movie.review_import(recipe, target_map=[
+    {"source": {"domain": "region", "tag": "site"},
+     "target": {"domain": "region", "tag": "pocket"}}
+])
+view.movie.apply_import(review)  # after checking changes/conflicts/warnings
 ```
+
+Map records have explicit domain/tag pairs and are one-to-one. Version-2 maps
+retain the target domain. A changed molecular binding requires explicit maps
+for every tagged track target and a new-to-old `structure_index_map`, using
+the existing structure-correspondence convention. Each referenced source frame
+needs one destination; absent or duplicate destinations are conflicts. An
+unmapped same-name region/analysis must retain its existing identity. Region
+UIDs are local to a View: also compare the molecular definition and its region
+dependency closure, retaining a definition digest in the association record. An
+explicit scientific-target substitution reports both associations and does
+not claim global occurrence identity or authenticate the declared correspondence.
+Camera keys remain in their original world coordinates. The review exposes
+baseline and implicit-start changes; acceptance preserves keys except declared
+frame-index substitutions. Persist compact import provenance, not a recursive
+copy of every parent recipe.
+
+The optional `provenance` record uses `molsysviewer.movie_import@1`: source
+recipe SHA-256/version/binding, declared target and structure maps, per-track
+old/new associations and warning codes. It describes the import accepted at
+that moment, not the current validity of edited tracks or authentication of
+source data. Rebase and track edits retain it; another import replaces it with
+its direct parent's digest/associations rather than nesting parent recipes.
+Python and TypeScript validate it. Compact renderer recipes omit this history;
+JSON, sessions and media manifests retain it.
+
+Reviews retain one private source/options ticket per destination. Regenerate
+the full report against that ticket and the current destination before installing
+the candidate; reject edits, stale context and active Movie work. Failed review
+construction preserves the previous accepted plan and valid review. Accepted
+imports do not apply scene commands and remain headless/composable.
+
+### Legacy migration — pending
+
+The reviewed import implementation accepts version 2 only. Existing version-1
+`from_dict()` and playback remain available; the following is the migration
+design, not a delivered conversion route.
+
+Legacy version 1 has global keyframes, Cartesian camera interpolation and
+rounded structure sweeps. Migration must not silently substitute quaternion
+motion or held structure endpoints. The first admitted migration profile
+requires complete camera/structure channels across the global keys, whenever
+those channels occur. It retains Cartesian movement with an explicit camera
+interpolation marker and compiles rounded sweeps into bounded discrete events.
+Constant-up, nonsingular Cartesian segments are admitted; unsupported/unsafe
+paths and partial global channels are named conflicts, leaving legacy reading
+and playback available. Legacy visibility tags require explicit domain/tag
+mapping. A camera-free legacy recipe requires an explicit baseline camera.
+This bounded profile is not a claim that every historical artifact can migrate.
+It still needs implementation, cross-language boundary oracles and native
+receiving before being offered. `tests/test_movie_import.py` protects the
+current refusal rather than allowing a silent change of interpolation.
 
 The export job has a correlated identity, synchronous progress callbacks,
 task cancellation and a detached result manifest. Synchronous existing

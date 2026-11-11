@@ -46,6 +46,35 @@ test("compiled Movie owns its inputs and returns detached samples", () => {
     assert.deepEqual(timeline.evaluate(550), before);
 });
 
+test("Movie import provenance is checked, detached and has no effect on evaluation", () => {
+    const recipe = structuredClone(oracle.recipe);
+    const reference = { domain: "region", tag: "site" };
+    const provenance = {
+        schema: "molsysviewer.movie_import@1", source_sha256: "sha256:" + "0".repeat(64), source_version: 2,
+        source_binding: recipe.baseline.binding,
+        target_map: [{ source: reference, target: reference }], structure_index_map: [2, 0, 1],
+        warnings: ["molecular_binding_rebound"], targets: [{ track: "show-site", source: reference, target: reference,
+            source_identity: { uid: "old" }, target_identity: { uid: "new" } }],
+    };
+    const withHistory = { ...recipe, provenance };
+    const compiled = compileMovieTimeline(withHistory);
+    assert.deepEqual(compiled.evaluate(550), compileMovieTimeline(recipe).evaluate(550));
+    provenance.targets[0].source_identity.uid = "user-edit";
+    assert.deepEqual(compiled.evaluate(550), compileMovieTimeline(recipe).evaluate(550));
+    for (const [field, value] of [
+        ["schema", "unknown"], ["source_sha256", "sha256:bad"], ["source_version", true],
+        ["source_binding", { ...provenance.source_binding, n_atoms: true }], ["target_map", {}],
+        ["target_map", [provenance.target_map[0], provenance.target_map[0]]],
+        ["structure_index_map", [0]], ["structure_index_map", [0, true, 2]],
+        ["warnings", [true]], ["targets", [{ command: "untrusted" }]],
+        ["targets", [{ ...provenance.targets[0], target_identity: { op: 2 } }]],
+        ["targets", [provenance.targets[0], provenance.targets[0]]],
+    ]) {
+        assert.throws(() => compileMovieTimeline({ ...recipe, provenance: { ...provenance, [field as string]: value } }),
+            /Movie|movie/);
+    }
+});
+
 test("Movie compiler rejects invalid times, ambiguous targets and inconsistent source bindings", () => {
     const recipe = structuredClone(oracle.recipe);
     const timeline = compileMovieTimeline(recipe);

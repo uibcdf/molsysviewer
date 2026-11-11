@@ -19701,6 +19701,30 @@
       "reason": "Explicitly growing object API; public_api.md",
       "stability": "growing"
     },
+    "view.movie.apply_import": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "review"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Explicit Movie import acceptance; movie_timeline_design.md and #320",
+      "stability": "experimental"
+    },
     "view.movie.capture_baseline_async": {
       "async": true,
       "kind": "callable",
@@ -20196,6 +20220,57 @@
         }
       ],
       "reason": "Experimental acknowledged recorded-scene Movie reset; movie_timeline_design.md and #320",
+      "stability": "experimental"
+    },
+    "view.movie.review_import": {
+      "async": false,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "kind": "required"
+          },
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "name": "data"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "target_map"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "structure_index_map"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "NoneType",
+            "value": null
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "camera"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Explicit Movie target/frame import review; movie_timeline_design.md and #320",
       "stability": "experimental"
     },
     "view.movie.review_rebase": {

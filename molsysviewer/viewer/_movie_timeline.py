@@ -295,6 +295,22 @@ def _duration(value):
     return duration
 
 
+def _binding(value):
+    binding = _record(value, ("n_atoms", "n_structures", "fingerprint"), "Movie molecular binding")
+    for field in ("n_atoms", "n_structures"):
+        if type(binding[field]) is not int or not 0 < binding[field] <= _MAX_SAFE_INTEGER:
+            raise ValueError(f"Movie molecular binding requires a positive {field}.")
+    fingerprint = binding["fingerprint"]
+    if (
+        not isinstance(fingerprint, str)
+        or not fingerprint.startswith("sha256:")
+        or len(fingerprint) != 71
+        or any(c not in "0123456789abcdef" for c in fingerprint[7:])
+    ):
+        raise ValueError("Movie molecular binding requires a SHA-256 fingerprint.")
+    return dict(binding)
+
+
 def _tracked_visibility(tracks, visibility):
     targets = {(domain, tag) for domain, tag, prop in map(_channel, tracks) if prop == "visible"}
     return {key: row for key, row in visibility.items() if key in targets}
@@ -307,6 +323,8 @@ class _MovieTimeline:
         fields = ("molsysmovie_version", "duration_ms", "units", "baseline", "tracks")
         if isinstance(data, Mapping) and "color_interpolation" in data:
             fields += ("color_interpolation",)
+        if isinstance(data, Mapping) and "provenance" in data:
+            fields += ("provenance",)
         data = _record(data, fields, "Movie recipe")
         if "color_interpolation" in data and data["color_interpolation"] != COLOR_INTERPOLATION:
             raise ValueError("Unsupported Movie colour interpolation contract.")
@@ -319,18 +337,7 @@ class _MovieTimeline:
         if isinstance(data["baseline"], Mapping) and "environment_capture" in data["baseline"]:
             baseline_fields += ("environment_capture",)
         baseline = _record(data["baseline"], baseline_fields, "Movie baseline")
-        binding = _record(baseline["binding"], ("n_atoms", "n_structures", "fingerprint"), "Movie molecular binding")
-        for field in ("n_atoms", "n_structures"):
-            if type(binding[field]) is not int or not 0 < binding[field] <= _MAX_SAFE_INTEGER:
-                raise ValueError(f"Movie molecular binding requires a positive {field}.")
-        fingerprint = binding["fingerprint"]
-        if (
-            not isinstance(fingerprint, str)
-            or not fingerprint.startswith("sha256:")
-            or len(fingerprint) != 71
-            or any(c not in "0123456789abcdef" for c in fingerprint[7:])
-        ):
-            raise ValueError("Movie molecular binding requires a SHA-256 fingerprint.")
+        binding = _binding(baseline["binding"])
         scene = baseline["scene"]
         if not isinstance(scene, Mapping) or scene.get("version") != 2 or "movie" in scene:
             raise ValueError("Movie baseline requires a version-2 overlay scene without a nested Movie.")
@@ -370,6 +377,12 @@ class _MovieTimeline:
             "tracks": tracks,
             **({"color_interpolation": COLOR_INTERPOLATION} if has_color else {}),
         }
+        if "provenance" in data:
+            from ._movie_import import validate_provenance
+
+            self._data["provenance"] = validate_provenance(
+                data["provenance"], destination_count=binding["n_structures"]
+            )
         self._index = index
         self._visibility = visibility
         self._tracked_visibility = _tracked_visibility(self._data["tracks"], visibility)
@@ -417,7 +430,9 @@ class _MovieTimeline:
                     },
                 )
         baseline = {**self._data["baseline"], "scene": scene}
-        return deepcopy({**self._data, "baseline": baseline})
+        preview = {**self._data, "baseline": baseline}
+        preview.pop("provenance", None)  # The renderer needs no source/import history.
+        return deepcopy(preview)
 
     def edit(self, *, duration, tracks):
         """Keep the privately owned baseline and replace validated tracks as a unit."""
