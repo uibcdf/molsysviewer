@@ -343,7 +343,30 @@ class HistoryMixin:
     def _record_scene_look_message(self, msg: dict) -> None:
         key = self._SCENE_LOOK_KEYS.get(msg.get("op"))
         if key is not None:
-            self._scene_look[key] = dict(msg)
+            previous_record = self._scene_look.get(key)
+            if key == "lighting":
+                # The renderer applies partial updates. Keep their cumulative
+                # intent, with specular normalized to its actual diffuse alias.
+                previous = self._scene_look.get(key, {})
+                value = {"op": "set_lighting", **{k: previous[k] for k in ("ambient", "diffuse") if k in previous}}
+                if "ambient" in msg:
+                    value["ambient"] = msg["ambient"]
+                diffuse = msg.get("diffuse", msg.get("specular"))
+                if diffuse is not None:
+                    value["diffuse"] = diffuse
+                self._scene_look[key] = value
+            else:
+                self._scene_look[key] = dict(msg)
+            history = getattr(self, "history", None)
+            if (
+                history is not None
+                and not history._depth
+                and not history._suspended
+                and self._scene_look[key] != previous_record
+            ):
+                # Environment controls are not camera telemetry. A changed
+                # setting must retire a pending Movie/capture even between draws.
+                history._edit_revision += 1
 
     def _remap_scene_look_message(self, msg: dict, atom_index_map: dict[int, int] | None) -> dict | None:
         if atom_index_map is None or msg.get("op") != "set_focus_fade":

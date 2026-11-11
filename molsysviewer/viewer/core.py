@@ -2653,8 +2653,18 @@ class MolSysView(
         self._region_order_counter += 1
         return self._region_order_counter
 
+    @contextmanager
+    def _retain_region_order(self, region: Region):
+        previous = getattr(self, "_retained_region_orders", ())
+        self._retained_region_orders = (*previous, region)
+        try:
+            yield
+        finally:
+            self._retained_region_orders = previous
+
     def _bump_region_order(self, region: Region) -> None:
-        region.order = self._next_region_order()
+        if not any(item is region for item in getattr(self, "_retained_region_orders", ())):
+            region.order = self._next_region_order()
 
     def _emit_region_order(self, region: Region) -> None:
         region._send("set_region_order", order=region.order)  # noqa: SLF001

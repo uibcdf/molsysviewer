@@ -319,6 +319,9 @@ class SceneHistory:
         """
         state = self._view.export_state()
         state.pop("view", None)
+        # Like the camera, viewport environment is preserved in work files but
+        # must not jump backwards when an unrelated scene object is undone.
+        state.pop("environment", None)
         return state
 
     @staticmethod

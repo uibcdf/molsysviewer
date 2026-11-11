@@ -1,4 +1,6 @@
 import { Mat3, Quat, Vec3 } from "molstar/lib/mol-math/linear-algebra";
+import { appearanceBaseline, appearanceValue, colorInterpolation, continuousAppearance, interpolateAppearance, validateMovieEnvironment,
+    type Appearance, type AppearanceValue } from "./movie-appearance";
 
 const halfTurnTolerance = 1e-12;
 
@@ -22,6 +24,7 @@ type MovieSample = {
     camera: CameraPose;
     structure_index: number;
     visibility: Visibility[];
+    appearance?: Appearance[];
 };
 
 function record(value: unknown, label: string, fields?: readonly string[]): Record<string, unknown> {
@@ -132,7 +135,7 @@ function interpolateCamera(left: CameraKey, right: CameraKey, fraction: number):
     return camera({ position, target, up }).pose;
 }
 
-function keys<T>(value: unknown, duration: number, read: (value: unknown) => T, cameraTrack = false): Key<T>[] {
+function keys<T>(value: unknown, duration: number, read: (value: unknown) => T, continuous = false): Key<T>[] {
     if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
     const result: Key<T>[] = [];
     for (const item of value) {
@@ -145,8 +148,8 @@ function keys<T>(value: unknown, duration: number, read: (value: unknown) => T, 
             throw new Error("Movie keys in one track must be strictly increasing.");
         }
         const easing = owns(key, "easing") ? key.easing : "linear";
-        if (easing !== "linear" && (!cameraTrack || (easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out"))) {
-            throw new Error("Only camera pose keys admit a non-linear easing.");
+        if (easing !== "linear" && (!continuous || (easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out"))) {
+            throw new Error("Only continuous Movie properties admit a non-linear easing.");
         }
         result.push({ time: at, value: read(key.value), easing });
     }
@@ -192,7 +195,12 @@ function sceneVisibility(scene: Record<string, unknown>): Map<string, Visibility
  */
 export function compileMovieTimeline(value: unknown, { trackedVisibility = false } = {}):
     { duration_ms: number; evaluate(time_ms: number): MovieSample } {
-    const recipe = record(value, "Movie recipe", ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"]);
+    const fields = ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"];
+    if (value && typeof value === "object" && owns(value, "color_interpolation")) fields.push("color_interpolation");
+    const recipe = record(value, "Movie recipe", fields);
+    if (owns(recipe, "color_interpolation") && recipe.color_interpolation !== colorInterpolation) {
+        throw new Error("Unsupported Movie colour interpolation contract.");
+    }
     if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
     const duration = time(recipe.duration_ms);
     if (duration === 0) throw new Error("Movie duration must be positive.");
@@ -209,6 +217,7 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
         throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
     }
     const scene = record(baseline.scene, "Movie scene");
+    if (scene.environment !== undefined) validateMovieEnvironment(scene.environment);
     if (scene.version !== 2 || owns(scene, "movie")) {
         throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
     }
@@ -224,6 +233,8 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
     const rows = sceneVisibility(scene);
     const trackTags = new Set<string>();
     const visTracks = new Map<string, Key<boolean>[]>();
+    const appearanceTracks: { domain: string; tag: string | null; property: string;
+        baseline: AppearanceValue | undefined; keys: Key<AppearanceValue>[] }[] = [];
     let poseTrack: Key<CameraKey>[] = [];
     let frameTrack: Key<number>[] = [];
     if (!Array.isArray(recipe.tracks)) throw new Error("Movie tracks must be an ordered list.");
@@ -237,7 +248,7 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
         if (typeof domain !== "string" || Object.keys(target).some(field => field !== "domain" && field !== "tag")) {
             throw new Error("Movie targets require a domain and optionally a tag.");
         }
-        const untagged = domain === "camera" || domain === "structure" || domain === "whole";
+        const untagged = domain === "camera" || domain === "structure" || domain === "whole" || domain === "scene";
         if (untagged && target.tag != null) throw new Error(`Movie target ${domain} has no tag.`);
         if (domain === "camera" && track.property === "pose") {
             if (poseTrack.length) throw new Error("Movie permits only one track per target property.");
@@ -251,11 +262,25 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
             if (visTracks.has(id)) throw new Error("Movie permits only one track per target property.");
             visTracks.set(id, keys(track.keys, duration, visibility));
         } else {
-            throw new Error(`Unsupported Movie property for ${domain}.`);
+            const property = track.property;
+            if (typeof property !== "string") throw new Error("Invalid Movie property.");
+            const targetTag = untagged ? null : tag(target.tag);
+            const initial = appearanceBaseline(scene, domain, targetTag, property);
+            if (domain === "scene" && initial === undefined) throw new Error("Configure the Movie scene baseline explicitly.");
+            if (appearanceTracks.some(row => row.domain === domain && row.tag === targetTag && row.property === property)) {
+                throw new Error("Movie permits only one track per target property.");
+            }
+            const values = keys(track.keys, duration, value => appearanceValue(value, property), continuousAppearance.has(property));
+            if (initial === undefined && values[0].time !== 0) {
+                throw new Error("Movie appearance has no explicit baseline; provide a key at zero.");
+            }
+            appearanceTracks.push({ domain, tag: targetTag, property, baseline: initial, keys: values });
         }
     }
 
     const visibilityRows = trackedVisibility ? Array.from(rows).filter(([id]) => visTracks.has(id)) : Array.from(rows);
+    if (appearanceTracks.some(track => track.property === "color" || track.property === "background")
+        && recipe.color_interpolation !== colorInterpolation) throw new Error("Movie colour interpolation must be explicit.");
     return {
         duration_ms: duration,
         evaluate(time_ms) {
@@ -271,6 +296,15 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
                 time_ms: at,
                 camera: pose,
                 structure_index: frameTrack[upperBound(frameTrack, at) - 1]?.value ?? baseFrame,
+                ...(appearanceTracks.length ? { appearance: appearanceTracks.map(track => {
+                    const right = upperBound(track.keys, at);
+                    const start = track.keys[right - 1] ?? { time: 0, value: track.baseline!, easing: "linear" as const };
+                    const end = track.keys[right];
+                    const value = !continuousAppearance.has(track.property) || !end || start.time === at ? start.value
+                        : interpolateAppearance(start.value, end.value,
+                            ease((at - start.time) / (end.time - start.time), start.easing), track.property);
+                    return { domain: track.domain, tag: track.tag, property: track.property, value: structuredClone(value) };
+                }) } : {}),
                 visibility: visibilityRows.map(([id, row]) => {
                     const track = visTracks.get(id);
                     return { ...row, visible: (track && track[upperBound(track, at) - 1]?.value) ?? row.visible };

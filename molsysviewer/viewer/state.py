@@ -125,6 +125,8 @@ class StateMixin:
             ``uid_high_water_mark``, ``tag_high_water_marks``, ``structure``, ``view``.
             ``sources`` contains compact load records bound to the ordered system.
             Optional `figure` records the workbench PNG preset, scale and background.
+            Optional `environment` records declared background intent and configured
+            ambient/diffuse lighting. It is not a resolved Mol* renderer snapshot.
             Optional `box_display` records cell-display style and its selected
             structure, with width explicitly in angstrom. Scientific box vectors
             remain in the molecular system, rather than being copied here.
@@ -287,9 +289,12 @@ class StateMixin:
             "color_layer": self._color_layer_record("whole"),
         }
 
+        from .._scene_environment import export_environment
+
         return _to_python(
             {
                 "version": STATE_VERSION,
+                **({"environment": environment} if (environment := export_environment(self)) else {}),
                 **({"figure": self._export_figure_state()} if getattr(self, "_current_figure_spec", None) else {}),
                 **({"box_display": box} if (box := self._export_box_display()) is not None else {}),
                 **({"view": view_state} if (view_state := self._export_view_state()) else {}),
@@ -516,6 +521,9 @@ class StateMixin:
                 f"version {STATE_VERSION}; version 1 documents are no longer supported."
             )
         figure_spec = self._prepare_figure_import(state.get("figure"))
+        from .._scene_environment import apply_environment, validate_environment
+
+        environment = validate_environment(state["environment"]) if "environment" in state else None
         box_display = self._prepare_box_display_import(state.get("box_display"))
         if box_display is not None and box_display["structure_index"] >= self.player.n_structures:
             raise ValueError("State box display refers to a structure outside the loaded system.")
@@ -712,6 +720,8 @@ class StateMixin:
                 self._restore_active_selection(state.get("active_selection"))
                 self._restore_focus_overlays(state.get("focus"))
                 self.trajectory_plot._replace(plot_cards)
+                if environment is not None:
+                    apply_environment(self, environment)
                 self._restore_view_state(state.get("view"))
                 if box_display is not None:
                     self.show_box(

@@ -907,13 +907,22 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [bounded Movie appearance catalogue](movie_timeline_design.md#received-appearance-catalogue)
+now adds uniform colour/alpha, simple representations, annotation text and
+declared background/lighting to the same evaluator, preview and media route.
+The [appearance receipt](movie_appearance_receiving_20261110.json) keeps native
+stable-node/order, popup, session, numerical and video evidence separate.
+Final directed receiving passes 546 Python cases and 28 JavaScript cases;
+native region boundary geometry and adjacent region lifecycle receiving pass.
+Complete baseline/rebase/reset, richer recipes, Studio and web remain open.
+
 The first [version-2 Movie media route](movie_timeline_design.md) adds
 experimental `export_async()` for MP4/H.264, WebM/VP9 and PNG/manifest ZIP,
 using the existing camera/structure/visibility evaluator and coherent draw
 owner. The [receiving record](movie_export_receiving_20261110.json) separates
 actual encoder, molecular-browser, cancellation and API checks. Export streams
 one frame at a time, records explicit render/encoder settings and publishes
-atomically. This is an initial M4 slice: remaining appearance/lighting channels,
+atomically. This is an initial M4 slice: richer appearance recipes,
 full baseline/rebase behavior, Studio authoring, composited overlays and portable
 interactive web playback still belong to #320. Native/installed/human receiving
 and both 1.0 publications remain separate and pending.
@@ -2921,8 +2930,9 @@ chronological status narrative here.
 6. **Movie:** retain the [matched evaluators and acknowledged Python seek](movie_timeline_design.md)
    and bounded preview for camera, structure and visibility tracks. Retain
    preview/pause, popup convergence, save/reopen and initial bounded media
-   export receiving. Continue with the remaining #320 channels, Studio
-   authoring, composited overlays, portable web export and
+   export and bounded appearance receiving. Continue with
+   full baseline/rebase/reset, richer style recipes, Studio authoring,
+   composited overlays, portable web export and
    installed-host receiving.
 7. **G:** prepare #294's covering artifact and exact installed/downstream
    qualification when separately authorized. Candidate/tag/package actions and

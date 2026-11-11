@@ -11,6 +11,15 @@ from numbers import Real
 
 import numpy as np
 
+from ._movie_appearance import (
+    _CONTINUOUS,
+    COLOR_INTERPOLATION,
+    appearance_baseline,
+    appearance_value,
+    check_appearance_binding,
+    interpolate_appearance,
+)
+
 MOVIE_TIMELINE_VERSION = 2
 _MAX_SAFE_INTEGER = 2**53 - 1
 _HALF_TURN_TOLERANCE = 1e-12
@@ -197,12 +206,14 @@ def _value(value, channel, count):
         return _camera(value)[0]
     if channel == "index":
         return _index(value, count)
+    if channel != "visible":
+        return appearance_value(value, channel)
     if type(value) is not bool:
         raise ValueError("Movie visibility keys require boolean values.")
     return value
 
 
-def _track(track, visibility, count, duration):
+def _track(track, visibility, count, duration, scene):
     track = _record(track, ("tag", "target", "property", "keys"), "Movie track")
     tag = _tag(track["tag"])
     target = track["target"]
@@ -212,15 +223,24 @@ def _track(track, visibility, count, duration):
     target_tag = target.get("tag")
     prop = track["property"]
     expected = {"camera": "pose", "structure": "index"}.get(domain, "visible")
-    if prop != expected:
+    if (
+        not isinstance(prop, str)
+        or prop != expected
+        and (domain in {"camera", "structure"} or prop in {"pose", "index"})
+    ):
         raise ValueError(f"Movie property {prop!r} is unsupported for {domain!r}.")
-    if domain in {"camera", "structure", "whole"}:
+    if domain in {"camera", "structure", "whole", "scene"}:
         if target_tag is not None:
             raise ValueError(f"Movie target {domain!r} has no tag.")
     else:
         target_tag = _tag(target_tag)
     if prop == "visible" and (domain, target_tag) not in visibility:
         raise ValueError(f"Unknown Movie visibility target {(domain, target_tag)!r}.")
+    initial = appearance_baseline(scene, domain, target_tag, prop) if prop not in {"pose", "index", "visible"} else None
+    if domain == "scene" and initial is None:
+        raise ValueError(
+            "Configure an explicit RGB background or both lighting intensities before capturing the Movie baseline."
+        )
     if not isinstance(track["keys"], (list, tuple)) or not track["keys"]:
         raise ValueError("A Movie track requires at least one key.")
     keys = []
@@ -235,9 +255,15 @@ def _track(track, visibility, count, duration):
         if keys and time <= keys[-1]["time_ms"]:
             raise ValueError("Movie keys in one track must be strictly increasing.")
         easing = key.get("easing", "linear")
-        if not isinstance(easing, str) or easing not in _EASING or (prop != "pose" and easing != "linear"):
-            raise ValueError("Only camera pose keys admit a non-linear easing.")
+        if (
+            not isinstance(easing, str)
+            or easing not in _EASING
+            or (prop not in {"pose", *_CONTINUOUS} and easing != "linear")
+        ):
+            raise ValueError("Only continuous Movie properties admit a non-linear easing.")
         keys.append({"time_ms": time, "value": _value(key["value"], prop, count), "easing": easing})
+    if prop not in {"pose", "index", "visible"} and initial is None and keys[0]["time_ms"] != 0:
+        raise ValueError("This Movie appearance has no explicit baseline value; provide a key at time zero.")
     return {
         "tag": tag,
         "target": {"domain": domain, **({"tag": target_tag} if target_tag is not None else {})},
@@ -251,10 +277,10 @@ def _channel(track):
     return target["domain"], target.get("tag"), track["property"]
 
 
-def _tracks(records, visibility, count, duration):
+def _tracks(records, visibility, count, duration, scene):
     if not isinstance(records, (list, tuple)):
         raise ValueError("Movie tracks must be an ordered list.")
-    tracks = [_track(track, visibility, count, duration) for track in records]
+    tracks = [_track(track, visibility, count, duration, scene) for track in records]
     if len({track["tag"] for track in tracks}) != len(tracks):
         raise ValueError("Movie track tags must be unique.")
     if len({_channel(track) for track in tracks}) != len(tracks):
@@ -278,7 +304,12 @@ class _MovieTimeline:
     """Store validated, detached data and replace it only after a complete check."""
 
     def __init__(self, data):
-        data = _record(data, ("molsysmovie_version", "duration_ms", "units", "baseline", "tracks"), "Movie recipe")
+        fields = ("molsysmovie_version", "duration_ms", "units", "baseline", "tracks")
+        if isinstance(data, Mapping) and "color_interpolation" in data:
+            fields += ("color_interpolation",)
+        data = _record(data, fields, "Movie recipe")
+        if "color_interpolation" in data and data["color_interpolation"] != COLOR_INTERPOLATION:
+            raise ValueError("Unsupported Movie colour interpolation contract.")
         if type(data["molsysmovie_version"]) is not int or data["molsysmovie_version"] != MOVIE_TIMELINE_VERSION:
             raise ValueError("Unsupported Movie recipe version.")
         if data["units"] != {"time": "ms", "camera_length": "angstrom"}:
@@ -301,6 +332,10 @@ class _MovieTimeline:
         if not isinstance(scene, Mapping) or scene.get("version") != 2 or "movie" in scene:
             raise ValueError("Movie baseline requires a version-2 overlay scene without a nested Movie.")
         scene = json.loads(json.dumps(dict(scene), allow_nan=False))
+        if "environment" in scene:
+            from .._scene_environment import validate_environment
+
+            scene["environment"] = validate_environment(scene["environment"])
         sources = scene.get("sources")
         if sources is not None and (not isinstance(sources, dict) or sources.get("binding") != binding):
             raise ValueError("Movie baseline source records do not match its molecular binding.")
@@ -310,12 +345,17 @@ class _MovieTimeline:
         index = _index(view_state["structure_index"], binding["n_structures"])
         visibility = _scene_visibility(scene)
         camera = _camera(baseline["camera"])[0]
+        tracks = _tracks(data["tracks"], visibility, binding["n_structures"], duration, scene)
+        has_color = any(track["property"] in {"color", "background"} for track in tracks)
+        if has_color and data.get("color_interpolation") != COLOR_INTERPOLATION:
+            raise ValueError("Movie colour tracks require their explicit interpolation contract.")
         self._data = {
             "molsysmovie_version": MOVIE_TIMELINE_VERSION,
             "duration_ms": duration,
             "units": {"time": "ms", "camera_length": "angstrom"},
             "baseline": {"scene": scene, "camera": camera, "binding": dict(binding)},
-            "tracks": _tracks(data["tracks"], visibility, binding["n_structures"], duration),
+            "tracks": tracks,
+            **({"color_interpolation": COLOR_INTERPOLATION} if has_color else {}),
         }
         self._index = index
         self._visibility = visibility
@@ -334,15 +374,54 @@ class _MovieTimeline:
         for (domain, tag), (visible, _) in self._tracked_visibility.items():
             if domain != "whole":
                 scene.setdefault(_VISIBILITY_DOMAINS[domain], []).append({"tag": tag, "hidden": not visible})
+        original = self._data["baseline"]["scene"]
+        if "environment" in original:
+            scene["environment"] = original["environment"]
+        for track in self._data["tracks"]:
+            domain, tag, prop = _channel(track)
+            if prop in {"pose", "index", "visible"} or domain == "scene":
+                continue
+            if domain == "whole":
+                scene["whole"].update(
+                    {key: original["whole"].get(key) for key in ("representation", "preset", "params")}
+                )
+                continue
+            records = scene.setdefault(_VISIBILITY_DOMAINS[domain], [])
+            current = next((row for row in records if row["tag"] == tag), None)
+            if current is None:
+                current = {"tag": tag, "hidden": not self._visibility[domain, tag][0]}
+                records.append(current)
+            source = next(row for row in original[_VISIBILITY_DOMAINS[domain]] if row["tag"] == tag)
+            if domain == "region":
+                current.update({key: source.get(key) for key in ("representation", "preset", "params")})
+            elif domain == "interaction":
+                current["style"] = source["style"]
+            else:
+                current.update(
+                    op=source["op"],
+                    options={
+                        key: value for key, value in source["options"].items() if key in {"color", "alpha", "text"}
+                    },
+                )
         baseline = {**self._data["baseline"], "scene": scene}
         return deepcopy({**self._data, "baseline": baseline})
 
     def edit(self, *, duration, tracks):
         """Keep the privately owned baseline and replace validated tracks as a unit."""
         duration = _duration(duration)
-        tracks = _tracks(tracks, self._visibility, self._data["baseline"]["binding"]["n_structures"], duration)
+        tracks = _tracks(
+            tracks,
+            self._visibility,
+            self._data["baseline"]["binding"]["n_structures"],
+            duration,
+            self._data["baseline"]["scene"],
+        )
         revised = copy(self)
         revised._data = {**self._data, "duration_ms": duration, "tracks": tracks}
+        if any(track["property"] in {"color", "background"} for track in tracks):
+            revised._data["color_interpolation"] = COLOR_INTERPOLATION
+        else:
+            revised._data.pop("color_interpolation", None)
         revised._tracked_visibility = _tracked_visibility(tracks, self._visibility)
         return revised
 
@@ -360,6 +439,10 @@ class _MovieTimeline:
     def visibility_targets(self):
         return tuple(self._tracked_visibility)
 
+    @property
+    def has_appearance(self):
+        return any(track["property"] not in {"pose", "index", "visible"} for track in self._data["tracks"])
+
     def check_binding(self, binding, scene=None):
         if self._data["baseline"]["binding"] != binding:
             raise ValueError(
@@ -372,10 +455,13 @@ class _MovieTimeline:
         current = _scene_visibility(scene)
         for track in self._data["tracks"]:
             domain, tag, prop = _channel(track)
-            if prop == "visible":
+            if prop == "visible" or prop not in {"pose", "index"} and domain != "scene":
                 key = (domain, tag)
                 if key not in current or current[key][1] != self._visibility[key][1]:
                     raise ValueError(f"Movie scene target {key!r} is missing or changed.")
+                if prop != "visible":
+                    appearance_baseline(scene, domain, tag, prop)
+        check_appearance_binding(self._data["baseline"]["scene"], scene, self._data["tracks"])
 
     def evaluate(self, time_ms, *, tracked_visibility=False):
         time = _time(time_ms, "Movie time", self.duration_ms)
@@ -383,6 +469,7 @@ class _MovieTimeline:
         index = self._index
         targets = self._tracked_visibility if tracked_visibility else self._visibility
         visibility = {key: row[0] for key, row in targets.items()}
+        appearance = []
         for track in self._data["tracks"]:
             domain, tag, prop = _channel(track)
             keys = track["keys"]
@@ -395,6 +482,15 @@ class _MovieTimeline:
                     end = keys[right]
                     fraction = (time - left["time_ms"]) / (end["time_ms"] - left["time_ms"])
                     camera = _interpolate_camera(left["value"], end["value"], _ease(fraction, left["easing"]))
+            elif prop not in {"index", "visible"}:
+                initial = appearance_baseline(self._data["baseline"]["scene"], domain, tag, prop)
+                left = keys[right - 1] if right else {"time_ms": 0, "value": initial, "easing": "linear"}
+                value = left["value"]
+                if prop in _CONTINUOUS and right < len(keys) and left["time_ms"] != time:
+                    end = keys[right]
+                    fraction = _ease((time - left["time_ms"]) / (end["time_ms"] - left["time_ms"]), left["easing"])
+                    value = interpolate_appearance(value, end["value"], fraction, prop)
+                appearance.append({"domain": domain, "tag": tag, "property": prop, "value": deepcopy(value)})
             elif right:
                 value = keys[right - 1]["value"]
                 if prop == "index":
@@ -407,6 +503,7 @@ class _MovieTimeline:
             "time_ms": time,
             "camera": pose,
             "structure_index": index,
+            **({"appearance": appearance} if appearance else {}),
             "visibility": [
                 {"domain": domain, "tag": tag, "visible": value} for (domain, tag), value in visibility.items()
             ],

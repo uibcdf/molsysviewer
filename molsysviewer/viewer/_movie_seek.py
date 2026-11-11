@@ -5,6 +5,7 @@ import time
 from numbers import Real
 from uuid import uuid4
 
+from ._movie_appearance import appearance_commands
 from ._movie_timeline import _VISIBILITY_DOMAINS
 from .frontend_requests import FrontendRequestError
 from .visual_capture import (
@@ -64,8 +65,11 @@ def _apply_sample(movie, timeline, sample, visibility_commands, *, take_motion=T
         # Disabling spin also disables swing in the existing scene motion owner.
         view.scene.spin(False, skip_digestion=True)
         navigate(view.player.pause)
-    if visibility_commands:
+    appearance = appearance_commands(view, timeline, sample)
+    if appearance or visibility_commands:
         with view.history._atomic_operation(("movie", "", "seek" if take_motion else "preview")):
+            for command in appearance:
+                command()
             for command in visibility_commands:
                 command(skip_digestion=True)
     # Send even at the same cached Python index: the canvas may have advanced
@@ -112,6 +116,8 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
         ):
             raise FrontendRequestError(reason="movie_operation_pending")
         timeline = movie._require_timeline()
+        if timeline.has_appearance and 1 not in view._frontend_capabilities.get("movie_appearance", []):
+            raise FrontendRequestError(reason="movie_appearance_not_supported")
         if export_job is not None:
             export_job.validate(movie)
         scene = view.export_state(skip_digestion=True)

@@ -6217,17 +6217,17 @@ RecordPrototype.inspect = RecordPrototype.toSource = function() {
   return this.toString();
 };
 function makeRecord(likeRecord, values2, ownerID) {
-  var record4 = Object.create(Object.getPrototypeOf(likeRecord));
-  record4._values = values2;
-  record4.__ownerID = ownerID;
-  return record4;
+  var record5 = Object.create(Object.getPrototypeOf(likeRecord));
+  record5._values = values2;
+  record5.__ownerID = ownerID;
+  return record5;
 }
-function recordName(record4) {
-  return record4.constructor.displayName || record4.constructor.name || "Record";
+function recordName(record5) {
+  return record5.constructor.displayName || record5.constructor.name || "Record";
 }
-function recordSeq(record4) {
-  return keyedSeqFromValue(record4._keys.map(function(k) {
-    return [k, record4.get(k)];
+function recordSeq(record5) {
+  return keyedSeqFromValue(record5._keys.map(function(k) {
+    return [k, record5.get(k)];
   }));
 }
 function setProp(prototype, name) {
@@ -60896,8 +60896,8 @@ var ArrayTrajectory = class {
 
 // node_modules/molstar/lib/mol-model-formats/structure/basic/parser.js
 async function createModels(data, format, ctx) {
-  const properties4 = getCommonProperties(data, format);
-  const models = data.ihm_model_list._rowCount > 0 ? await readIntegrative(ctx, data, properties4, format) : await readStandard(ctx, data, properties4, format);
+  const properties5 = getCommonProperties(data, format);
+  const models = data.ihm_model_list._rowCount > 0 ? await readIntegrative(ctx, data, properties5, format) : await readStandard(ctx, data, properties5, format);
   for (let i = 0; i < models.length; i++) {
     Model.TrajectoryInfo.set(models[i], { index: i, size: models.length });
   }
@@ -60910,8 +60910,8 @@ function getCommonProperties(data, format) {
     saccharideComponentMap: getSaccharideComponentMap(data)
   };
 }
-function createStandardModel(data, atom_site, sourceIndex, entities, properties4, format, previous) {
-  const atomic = getAtomicHierarchyAndConformation(atom_site, sourceIndex, entities, properties4.chemicalComponentMap, format, previous);
+function createStandardModel(data, atom_site, sourceIndex, entities, properties5, format, previous) {
+  const atomic = getAtomicHierarchyAndConformation(atom_site, sourceIndex, entities, properties5.chemicalComponentMap, format, previous);
   const modelNum = atom_site.pdbx_PDB_model_num.value(0);
   if (previous && atomic.sameAsPrevious) {
     return {
@@ -60949,7 +60949,7 @@ function createStandardModel(data, atom_site, sourceIndex, entities, properties4
     coarseHierarchy: coarse3.hierarchy,
     coarseConformation: coarse3.conformation,
     properties: {
-      ...properties4,
+      ...properties5,
       structAsymMap
     },
     customProperties: new CustomProperties(),
@@ -60957,9 +60957,9 @@ function createStandardModel(data, atom_site, sourceIndex, entities, properties4
     _dynamicPropertyData: /* @__PURE__ */ Object.create(null)
   };
 }
-function createIntegrativeModel(data, ihm, properties4, format) {
-  const atomic = getAtomicHierarchyAndConformation(ihm.atom_site, ihm.atom_site_sourceIndex, ihm.entities, properties4.chemicalComponentMap, format);
-  const coarse3 = getCoarse(ihm, properties4.chemicalComponentMap);
+function createIntegrativeModel(data, ihm, properties5, format) {
+  const atomic = getAtomicHierarchyAndConformation(ihm.atom_site, ihm.atom_site_sourceIndex, ihm.entities, properties5.chemicalComponentMap, format);
+  const coarse3 = getCoarse(ihm, properties5.chemicalComponentMap);
   const sequence = getSequence(data, ihm.entities, atomic.hierarchy, coarse3.hierarchy);
   const atomicRanges = getAtomicRanges(atomic.hierarchy, ihm.entities, atomic.conformation, sequence);
   const entry = data.entry.id.valueKind(0) === Column.ValueKinds.Present ? data.entry.id.value(0) : format.name;
@@ -60990,7 +60990,7 @@ function createIntegrativeModel(data, ihm, properties4, format) {
     coarseHierarchy: coarse3.hierarchy,
     coarseConformation: coarse3.conformation,
     properties: {
-      ...properties4,
+      ...properties5,
       structAsymMap
     },
     customProperties: new CustomProperties(),
@@ -61007,7 +61007,7 @@ function findModelEnd(num, startIndex) {
     endIndex++;
   return endIndex;
 }
-async function readStandard(ctx, data, properties4, format) {
+async function readStandard(ctx, data, properties5, format) {
   const models = [];
   if (data.atom_site) {
     const atomCount2 = data.atom_site.id.rowCount;
@@ -61016,7 +61016,7 @@ async function readStandard(ctx, data, properties4, format) {
     while (modelStart < atomCount2) {
       const modelEnd = findModelEnd(data.atom_site.pdbx_PDB_model_num, modelStart);
       const { atom_site, sourceIndex } = await sortAtomSite(ctx, data.atom_site, modelStart, modelEnd);
-      const model = createStandardModel(data, atom_site, sourceIndex, entities, properties4, format, models.length > 0 ? models[models.length - 1] : void 0);
+      const model = createStandardModel(data, atom_site, sourceIndex, entities, properties5, format, models.length > 0 ? models[models.length - 1] : void 0);
       models.push(model);
       modelStart = modelEnd;
     }
@@ -61039,7 +61039,7 @@ function splitTable(table, col) {
   }
   return ret;
 }
-async function readIntegrative(ctx, data, properties4, format) {
+async function readIntegrative(ctx, data, properties5, format) {
   const entities = getEntityData(data);
   const atom_sites_modelColumn = data.atom_site.ihm_model_id.isDefined ? data.atom_site.ihm_model_id : data.atom_site.pdbx_PDB_model_num;
   const atom_sites = splitTable(data.atom_site, atom_sites_modelColumn);
@@ -61070,7 +61070,7 @@ async function readIntegrative(ctx, data, properties4, format) {
         ihm_sphere_obj_site: sphere_sites.has(id) ? sphere_sites.get(id).table : Table.window(data.ihm_sphere_obj_site, data.ihm_sphere_obj_site._schema, 0, 0),
         ihm_gaussian_obj_site: gauss_sites.has(id) ? gauss_sites.get(id).table : Table.window(data.ihm_gaussian_obj_site, data.ihm_gaussian_obj_site._schema, 0, 0)
       };
-      const model = createIntegrativeModel(data, ihm, properties4, format);
+      const model = createIntegrativeModel(data, ihm, properties5, format);
       models.push(model);
     }
   }
@@ -75284,8 +75284,8 @@ function getColumnSchema(type3) {
 }
 function parseTableElement(state, spec) {
   const { elements, tokenizer } = state;
-  const { count: count3, properties: properties4 } = spec;
-  const propertyCount = properties4.length;
+  const { count: count3, properties: properties5 } = spec;
+  const propertyCount = properties5.length;
   const propertyNames = [];
   const propertyTypes = [];
   const propertyTokens = [];
@@ -75303,7 +75303,7 @@ function parseTableElement(state, spec) {
     }
   }
   for (let i = 0, il = propertyCount; i < il; ++i) {
-    const { type: type3, name } = properties4[i];
+    const { type: type3, name } = properties5[i];
     const column = TokenColumn(propertyTokens[i], getColumnSchema(type3));
     propertyNames.push(name);
     propertyTypes.push(type3);
@@ -78182,8 +78182,8 @@ function trajectoryFromGRO(gro) {
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/assembly.js
-function parseCryst1(id, record4) {
-  const get11 = (s, l) => (record4.substr(s, l) || "").trim();
+function parseCryst1(id, record5) {
+  const get11 = (s, l) => (record5.substr(s, l) || "").trim();
   const cell = {
     entry_id: CifField.ofString(id),
     length_a: CifField.ofString(get11(6, 9)),
@@ -80448,10 +80448,10 @@ function getNamesRegex(name, abbr) {
   const names = (abbr ? [name].concat(abbr) : [name]).sort(strLenSortFn).map(escapeRegExp).join("|");
   return RegExp(`${names}`, "i");
 }
-function getPropertyRules(properties4) {
+function getPropertyRules(properties5) {
   const propertiesDict2 = {};
-  Object.keys(properties4).sort(strLenSortFn).forEach((name) => {
-    const ps = properties4[name];
+  Object.keys(properties5).sort(strLenSortFn).forEach((name) => {
+    const ps = properties5[name];
     const errorFn = makeError(`property '${name}' not supported`);
     const rule = MonadicParser.regexp(ps.regex).map((x) => {
       if (ps.isUnsupported)
@@ -80464,10 +80464,10 @@ function getPropertyRules(properties4) {
   });
   return propertiesDict2;
 }
-function getNamedPropertyRules(properties4) {
+function getNamedPropertyRules(properties5) {
   const namedPropertiesList = [];
-  Object.keys(properties4).sort(strLenSortFn).forEach((name) => {
-    const ps = properties4[name];
+  Object.keys(properties5).sort(strLenSortFn).forEach((name) => {
+    const ps = properties5[name];
     const errorFn = makeError(`property '${name}' not supported`);
     const rule = MonadicParser.regexp(ps.regex).map((x) => {
       if (ps.isUnsupported)
@@ -80510,10 +80510,10 @@ function getFunctionRules(functions2, argRule) {
   });
   return functionsList;
 }
-function getPropertyNameRules(properties4, lookahead) {
+function getPropertyNameRules(properties5, lookahead) {
   const list3 = [];
-  Object.keys(properties4).sort(strLenSortFn).forEach((name) => {
-    const ps = properties4[name];
+  Object.keys(properties5).sort(strLenSortFn).forEach((name) => {
+    const ps = properties5[name];
     const errorFn = makeError(`property '${name}' not supported`);
     const rule = MonadicParser.regexp(getNamesRegex(name, ps.abbr)).lookahead(lookahead).map(() => {
       if (ps.isUnsupported)
@@ -80524,12 +80524,12 @@ function getPropertyNameRules(properties4, lookahead) {
   });
   return list3;
 }
-function getReservedWords(properties4, keywords4, operators4, functions2) {
+function getReservedWords(properties5, keywords4, operators4, functions2) {
   const w = [];
-  for (const name in properties4) {
+  for (const name in properties5) {
     w.push(name);
-    if (properties4[name].abbr)
-      w.push(...properties4[name].abbr);
+    if (properties5[name].abbr)
+      w.push(...properties5[name].abbr);
   }
   for (const name in keywords4) {
     w.push(name);
@@ -86740,10 +86740,10 @@ function handleMolFile(tokenizer) {
   };
   const atoms2 = molIsV3 ? handleAtomsV3(tokenizer, atomCount2) : handleAtoms4(tokenizer, atomCount2);
   const bonds = molIsV3 ? handleBondsV3(tokenizer, bondCount2) : handleBonds3(tokenizer, bondCount2);
-  const properties4 = molIsV3 ? { formalCharges: nullFormalCharges } : handlePropertiesBlock(tokenizer);
+  const properties5 = molIsV3 ? { formalCharges: nullFormalCharges } : handlePropertiesBlock(tokenizer);
   const dataItems = handleDataItems(tokenizer);
   return {
-    molFile: { title, program, comment, atoms: atoms2, bonds, ...properties4 },
+    molFile: { title, program, comment, atoms: atoms2, bonds, ...properties5 },
     dataItems
   };
 }
@@ -89138,10 +89138,10 @@ var CustomModelProperties = PluginStateTransform.BuiltIn({
 });
 async function attachModelProps(model, ctx, taskCtx, params) {
   const propertyCtx = { runtime: taskCtx, assetManager: ctx.managers.asset, errorContext: ctx.errorContext };
-  const { autoAttach, properties: properties4 } = params;
-  for (const name of Object.keys(properties4)) {
+  const { autoAttach, properties: properties5 } = params;
+  for (const name of Object.keys(properties5)) {
     const property2 = ctx.customModelProperties.get(name);
-    const props = properties4[name];
+    const props = properties5[name];
     if (autoAttach.includes(name) || property2.isHidden) {
       try {
         await property2.attach(propertyCtx, model, props, true);
@@ -89192,10 +89192,10 @@ var CustomStructureProperties = PluginStateTransform.BuiltIn({
 });
 async function attachStructureProps(structure, ctx, taskCtx, params) {
   const propertyCtx = { runtime: taskCtx, assetManager: ctx.managers.asset, errorContext: ctx.errorContext };
-  const { autoAttach, properties: properties4 } = params;
-  for (const name of Object.keys(properties4)) {
+  const { autoAttach, properties: properties5 } = params;
+  for (const name of Object.keys(properties5)) {
     const property2 = ctx.customStructureProperties.get(name);
-    const props = properties4[name];
+    const props = properties5[name];
     if (autoAttach.includes(name) || property2.isHidden) {
       try {
         await property2.attach(propertyCtx, structure, props, true);
@@ -109429,9 +109429,9 @@ var Canvas3D;
       commitQueueSize,
       reprCount,
       resized,
-      setProps: (properties4, doNotRequestDraw = false) => {
+      setProps: (properties5, doNotRequestDraw = false) => {
         var _a2, _b2, _c, _d, _e, _f, _g;
-        const props2 = typeof properties4 === "function" ? produce(getProps(), properties4) : properties4;
+        const props2 = typeof properties5 === "function" ? produce(getProps(), properties5) : properties5;
         if (props2.sceneRadiusFactor !== void 0) {
           p6.sceneRadiusFactor = props2.sceneRadiusFactor;
           camera2.setState({ radiusMax: getSceneRadius() }, 0);
@@ -148683,11 +148683,19 @@ var StateHandlers = class {
       await this.applyComposedTransparency();
       return;
     }
+    const componentRef = StateObjectRef.resolveRef(entry.component);
+    const component = componentRef ? this.plugin.state.data.cells.get(componentRef) : void 0;
+    if (entry.representationState === "own" && !entry.preset && !entry.userPreset && !msg.preset && !msg.user_preset && msg.representation && msg.representation !== "inherit" && entry.representations.length === 1 && component?.obj && PluginStateObject.Molecule.Structure.is(component.obj) && await this.updateSimpleRepresentation(entry.representations[0], component.obj.data, msg.representation, msg.params, true)) {
+      this.setRegionRepresentationDefinition(entry, msg);
+      this.transparencyInitialized = false;
+      await this.applyComposedTransparency();
+      return;
+    }
     const structure = this.callbacks.getStructure();
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structure || !structureRef) return;
-    let componentRef = StateObjectRef.resolveRef(entry.component);
-    if (!componentRef || entry.representations.length > 0) {
+    let nextComponentRef = StateObjectRef.resolveRef(entry.component);
+    if (!nextComponentRef || entry.representations.length > 0) {
       await this.removeStateObject(entry.component);
       entry.component = void 0;
       entry.representations = [];
@@ -148695,26 +148703,26 @@ var StateHandlers = class {
       if (!selection) return;
       const bundle = element_exports.Bundle.fromSelection(selection);
       const root = this.plugin.state.data.build().to(structureRef);
-      const component = root.apply(StateTransforms.Model.StructureComponent, {
+      const component2 = root.apply(StateTransforms.Model.StructureComponent, {
         type: { name: "bundle", params: bundle },
         nullIfEmpty: true,
         label: tag2
       });
-      await component.commit({ revertOnError: false });
-      componentRef = component.selector?.ref;
-      if (!component.selector?.isOk || !componentRef) {
+      await component2.commit({ revertOnError: false });
+      nextComponentRef = component2.selector?.ref;
+      if (!component2.selector?.isOk || !nextComponentRef) {
         console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag2);
         return;
       }
-      entry.component = componentRef;
+      entry.component = nextComponentRef;
     } else {
       entry.representations = [];
     }
     this.setRegionRepresentationDefinition(entry, msg);
     if (entry.representationState === "inherit") {
-      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag2, msg.params, entry.atomIndices));
+      entry.representations.push(...await this.addInheritedRegionRepresentations(nextComponentRef, tag2, msg.params, entry.atomIndices));
     } else if (entry.representationState === "own") {
-      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag2, msg));
+      entry.representations.push(...await this.addOwnRegionRepresentations(nextComponentRef, tag2, msg));
     }
     const alpha = msg.params?.alpha;
     if ((msg.preset || msg.user_preset) && typeof alpha === "number") {
@@ -149153,13 +149161,22 @@ var StateHandlers = class {
     if (refs.length !== 1) return false;
     const structure = this.callbacks.getStructure();
     if (!structure) return false;
-    const structuralColor = this.getStructuralColorThemeFromParams(msg.representation, msg.params);
-    const structuralSize = this.getStructuralSizeThemeFromParams(msg.representation, msg.params);
-    const cleanParams = this.omitStructuralColorKeys(msg.params);
+    if (!await this.updateSimpleRepresentation(refs[0], structure, msg.representation, msg.params)) return false;
+    await this.handleShowHideGlobal(false);
+    await this.repaintInheritedRegions();
+    this.transparencyInitialized = false;
+    await this.applyComposedTransparency();
+    return true;
+  }
+  async updateSimpleRepresentation(ref, structure, representation, params, regionBoundary = false) {
+    const structuralColor = this.getStructuralColorThemeFromParams(representation, params);
+    const structuralSize = this.getStructuralSizeThemeFromParams(representation, params);
+    const cleanParams = this.omitStructuralColorKeys(params);
+    if (regionBoundary && (representation === "ball-and-stick" || representation === "line") && cleanParams.includeParent === void 0) cleanParams.includeParent = true;
     let next;
     try {
       next = createStructureRepresentationParams(this.plugin, structure, {
-        type: msg.representation,
+        type: representation,
         typeParams: cleanParams,
         ...structuralColor.color ? { color: structuralColor.color } : {},
         ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {},
@@ -149171,34 +149188,30 @@ var StateHandlers = class {
     }
     if (!next?.type?.name) return false;
     const update10 = this.plugin.state.data.build();
-    update10.to(refs[0]).update(
+    update10.to(ref).update(
       StateTransforms.Representation.StructureRepresentation3D,
-      (params) => {
-        params.type = next.type;
+      (params2) => {
+        params2.type = next.type;
         if (structuralColor.color) {
           const theme = {
             name: structuralColor.color,
             params: structuralColor.colorParams ?? {}
           };
-          params.colorTheme = params.colorTheme?.name === MsvPerAtomColorThemeName ? { name: MsvPerAtomColorThemeName, params: { base: theme } } : theme;
+          params2.colorTheme = params2.colorTheme?.name === MsvPerAtomColorThemeName ? { name: MsvPerAtomColorThemeName, params: { base: theme } } : theme;
         } else if (next.colorTheme) {
-          params.colorTheme = params.colorTheme?.name === MsvPerAtomColorThemeName ? { name: MsvPerAtomColorThemeName, params: { base: next.colorTheme } } : next.colorTheme;
+          params2.colorTheme = params2.colorTheme?.name === MsvPerAtomColorThemeName ? { name: MsvPerAtomColorThemeName, params: { base: next.colorTheme } } : next.colorTheme;
         }
         if (structuralSize.size) {
-          params.sizeTheme = {
+          params2.sizeTheme = {
             name: structuralSize.size,
             params: structuralSize.sizeParams ?? {}
           };
         } else if (next.sizeTheme) {
-          params.sizeTheme = next.sizeTheme;
+          params2.sizeTheme = next.sizeTheme;
         }
       }
     );
     await update10.commit({ revertOnError: false, doNotUpdateCurrent: true });
-    await this.handleShowHideGlobal(false);
-    await this.repaintInheritedRegions();
-    this.transparencyInitialized = false;
-    await this.applyComposedTransparency();
     return true;
   }
   async setWholeRepresentation(msg) {
@@ -150362,6 +150375,131 @@ var MovieHandlers = class {
   }
 };
 
+// src/managers/movie-appearance.ts
+var movieRepresentationTypes = [
+  "backbone",
+  "ball-and-stick",
+  "carbohydrate",
+  "cartoon",
+  "ellipsoid",
+  "gaussian-surface",
+  "gaussian-volume",
+  "line",
+  "molecular-surface",
+  "point",
+  "putty",
+  "spacefill"
+];
+var continuousAppearance = /* @__PURE__ */ new Set(["color", "alpha", "background", "lighting"]);
+var colorInterpolation = "linear-light-srgb-half-up@1";
+var properties4 = {
+  whole: ["representation", "color", "alpha"],
+  region: ["representation", "color", "alpha"],
+  shape: ["color", "alpha"],
+  interaction: ["color", "alpha"],
+  annotation: ["text"],
+  scene: ["background", "lighting"]
+};
+function record2(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid Movie appearance record.");
+  return value;
+}
+function validateMovieEnvironment(value) {
+  const environment = record2(value);
+  if (Object.keys(environment).some((key2) => key2 !== "background" && key2 !== "lighting")) throw new Error("Unsupported scene environment.");
+  if ("background" in environment) {
+    const background = record2(environment.background);
+    if (Object.keys(background).length !== 1) throw new Error("Invalid scene background.");
+    if ("color" in background) appearanceValue(background.color, "background");
+    else if (background.mode !== "light" && background.mode !== "dark") throw new Error("Invalid background mode.");
+  }
+  if ("lighting" in environment) {
+    const lighting = record2(environment.lighting);
+    if (!Object.keys(lighting).length || Object.keys(lighting).some((key2) => key2 !== "ambient" && key2 !== "diffuse")) {
+      throw new Error("Invalid scene lighting.");
+    }
+    for (const value2 of Object.values(lighting)) appearanceValue(value2, "alpha");
+  }
+}
+function appearanceValue(value, property2) {
+  if (property2 === "color" || property2 === "background") {
+    if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 16777215) {
+      throw new Error("Movie colours must be 24-bit RGB integers.");
+    }
+    return value;
+  }
+  if (property2 === "alpha") {
+    if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1) {
+      throw new Error("Movie alpha must be finite and in [0, 1].");
+    }
+    return value;
+  }
+  if (property2 === "lighting") {
+    const lighting = record2(value);
+    if (Object.keys(lighting).length !== 2 || !("ambient" in lighting) || !("diffuse" in lighting)) {
+      throw new Error("Movie lighting requires ambient and diffuse.");
+    }
+    return {
+      ambient: appearanceValue(lighting.ambient, "alpha"),
+      diffuse: appearanceValue(lighting.diffuse, "alpha")
+    };
+  }
+  if (property2 === "text" && typeof value === "string") return value;
+  if (property2 === "representation" && movieRepresentationTypes.includes(value)) return value;
+  throw new Error(`Unsupported Movie appearance value for ${property2}.`);
+}
+function appearanceBaseline(scene, domain, tag2, property2) {
+  if (!properties4[domain]?.includes(property2)) throw new Error(`Unsupported Movie property for ${domain}.`);
+  if (domain === "scene") {
+    const environment = scene.environment == null ? {} : record2(scene.environment);
+    let value2 = property2 === "background" ? environment.background?.color : environment.lighting;
+    if (property2 === "lighting" && (!value2 || Object.keys(value2).length !== 2 || !("ambient" in value2) || !("diffuse" in value2))) value2 = void 0;
+    return value2 == null ? void 0 : appearanceValue(value2, property2);
+  }
+  const collection = { region: "regions", shape: "shapes", interaction: "interactions", annotation: "annotations" };
+  const target = record2(domain === "whole" ? scene.whole : scene[collection[domain]]?.find((row3) => row3.tag === tag2));
+  let value;
+  if (domain === "whole" || domain === "region") {
+    if (target.preset != null || !movieRepresentationTypes.includes(target.representation)) {
+      throw new Error("Movie structural appearance requires an explicit simple baseline representation.");
+    }
+    if (property2 === "color" && target.color_layer) {
+      throw new Error("Movie uniform colour requires no per-atom colour layer on its target.");
+    }
+    const params = record2(target.params ?? {});
+    value = property2 === "representation" ? target.representation : property2 === "alpha" ? params.alpha ?? 1 : params.molstar_color_theme?.name === "uniform" ? params.molstar_color_theme.params?.value : void 0;
+  } else if (domain === "shape") {
+    if (target.op !== "add_sphere") throw new Error("Movie shape colour/alpha currently requires a sphere.");
+    value = target.options?.[property2];
+  } else if (domain === "interaction") value = target.style?.[property2];
+  else value = target.options?.text;
+  return value == null ? void 0 : appearanceValue(value, property2);
+}
+function interpolateAppearance(a8, b8, fraction, property2) {
+  if (property2 === "color" || property2 === "background") {
+    const linear = (byte) => {
+      const value = byte / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
+    let result2 = 0;
+    for (const shift2 of [16, 8, 0]) {
+      const left = linear(a8 >> shift2 & 255), right = linear(b8 >> shift2 & 255);
+      const value = (1 - fraction) * left + fraction * right;
+      const encoded = value <= 31308e-7 ? 12.92 * value : 1.055 * value ** (1 / 2.4) - 0.055;
+      result2 |= Math.min(255, Math.max(0, Math.floor(encoded * 255 + 0.5))) << shift2;
+    }
+    return result2;
+  }
+  if (property2 === "lighting") {
+    const left = a8, right = b8;
+    return {
+      ambient: (1 - fraction) * left.ambient + fraction * right.ambient,
+      diffuse: (1 - fraction) * left.diffuse + fraction * right.diffuse
+    };
+  }
+  return (1 - fraction) * a8 + fraction * b8;
+}
+
 // src/managers/movie-timeline.ts
 var halfTurnTolerance = 1e-12;
 var collections = {
@@ -150372,7 +150510,7 @@ var collections = {
   region: "regions",
   shape: "shapes"
 };
-function record2(value, label2, fields) {
+function record3(value, label2, fields) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`${label2} must be an object.`);
   }
@@ -150411,7 +150549,7 @@ function vector(value) {
   return Vec3.create(value[0], value[1], value[2]);
 }
 function camera(value) {
-  const pose = record2(value, "Movie camera pose");
+  const pose = record3(value, "Movie camera pose");
   const position = vector(pose.position);
   const target = vector(pose.target);
   const up3 = vector(pose.up);
@@ -150469,11 +150607,11 @@ function interpolateCamera(left, right, fraction) {
   const up3 = Vec3.transformQuat(Vec3(), Vec3.unitY, orientation);
   return camera({ position, target, up: up3 }).pose;
 }
-function keys2(value, duration, read, cameraTrack = false) {
+function keys2(value, duration, read, continuous = false) {
   if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
   const result2 = [];
   for (const item2 of value) {
-    const key2 = record2(item2, "Movie key");
+    const key2 = record3(item2, "Movie key");
     if (Object.keys(key2).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
       throw new Error("Movie keys accept time_ms, value and optional easing.");
     }
@@ -150482,8 +150620,8 @@ function keys2(value, duration, read, cameraTrack = false) {
       throw new Error("Movie keys in one track must be strictly increasing.");
     }
     const easing = owns(key2, "easing") ? key2.easing : "linear";
-    if (easing !== "linear" && (!cameraTrack || easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out")) {
-      throw new Error("Only camera pose keys admit a non-linear easing.");
+    if (easing !== "linear" && (!continuous || easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out")) {
+      throw new Error("Only continuous Movie properties admit a non-linear easing.");
     }
     result2.push({ time: at, value: read(key2.value), easing });
   }
@@ -150503,14 +150641,14 @@ function visibilityId(domain, name) {
   return JSON.stringify([domain, name]);
 }
 function sceneVisibility(scene) {
-  const whole = { domain: "whole", tag: null, visible: visibility(record2(scene.whole, "Movie whole").visible) };
+  const whole = { domain: "whole", tag: null, visible: visibility(record3(scene.whole, "Movie whole").visible) };
   const rows = /* @__PURE__ */ new Map([[visibilityId("whole", null), whole]]);
   for (const domain of Object.keys(collections)) {
     const name = collections[domain];
     const items = owns(scene, name) ? scene[name] : [];
     if (!Array.isArray(items)) throw new Error(`Movie scene ${name} must be a list.`);
     for (const value of items) {
-      const item2 = record2(value, `Movie ${domain}`);
+      const item2 = record3(value, `Movie ${domain}`);
       const name2 = tag(item2.tag);
       const id = visibilityId(domain, name2);
       if (rows.has(id)) throw new Error(`Ambiguous Movie target ${id}.`);
@@ -150520,27 +150658,33 @@ function sceneVisibility(scene) {
   return rows;
 }
 function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
-  const recipe = record2(value, "Movie recipe", ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"]);
+  const fields = ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"];
+  if (value && typeof value === "object" && owns(value, "color_interpolation")) fields.push("color_interpolation");
+  const recipe = record3(value, "Movie recipe", fields);
+  if (owns(recipe, "color_interpolation") && recipe.color_interpolation !== colorInterpolation) {
+    throw new Error("Unsupported Movie colour interpolation contract.");
+  }
   if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
   const duration = time(recipe.duration_ms);
   if (duration === 0) throw new Error("Movie duration must be positive.");
-  const units = record2(recipe.units, "Movie units", ["time", "camera_length"]);
+  const units = record3(recipe.units, "Movie units", ["time", "camera_length"]);
   if (units.time !== "ms" || units.camera_length !== "angstrom") {
     throw new Error("Movie recipes use milliseconds and angstroms.");
   }
-  const baseline = record2(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
-  const binding = record2(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
+  const baseline = record3(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
+  const binding = record3(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
   const count3 = binding.n_structures;
   if (typeof count3 !== "number" || !Number.isSafeInteger(count3) || count3 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
     throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
   }
-  const scene = record2(baseline.scene, "Movie scene");
+  const scene = record3(baseline.scene, "Movie scene");
+  if (scene.environment !== void 0) validateMovieEnvironment(scene.environment);
   if (scene.version !== 2 || owns(scene, "movie")) {
     throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
   }
   if (scene.sources != null) {
-    const source = record2(
-      record2(scene.sources, "Movie scene sources").binding,
+    const source = record3(
+      record3(scene.sources, "Movie scene sources").binding,
       "Movie source binding",
       ["n_atoms", "n_structures", "fingerprint"]
     );
@@ -150549,24 +150693,25 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
     }
   }
   const baseCamera = { time: 0, value: camera(baseline.camera), easing: "linear" };
-  const baseFrame = frame(record2(scene.view, "Movie view").structure_index, count3);
+  const baseFrame = frame(record3(scene.view, "Movie view").structure_index, count3);
   const rows = sceneVisibility(scene);
   const trackTags = /* @__PURE__ */ new Set();
   const visTracks = /* @__PURE__ */ new Map();
+  const appearanceTracks = [];
   let poseTrack = [];
   let frameTrack = [];
   if (!Array.isArray(recipe.tracks)) throw new Error("Movie tracks must be an ordered list.");
   for (const value2 of recipe.tracks) {
-    const track = record2(value2, "Movie track", ["tag", "target", "property", "keys"]);
+    const track = record3(value2, "Movie track", ["tag", "target", "property", "keys"]);
     const name = tag(track.tag);
     if (trackTags.has(name)) throw new Error("Movie track tags must be unique.");
     trackTags.add(name);
-    const target = record2(track.target, "Movie target");
+    const target = record3(track.target, "Movie target");
     const domain = target.domain;
     if (typeof domain !== "string" || Object.keys(target).some((field2) => field2 !== "domain" && field2 !== "tag")) {
       throw new Error("Movie targets require a domain and optionally a tag.");
     }
-    const untagged = domain === "camera" || domain === "structure" || domain === "whole";
+    const untagged = domain === "camera" || domain === "structure" || domain === "whole" || domain === "scene";
     if (untagged && target.tag != null) throw new Error(`Movie target ${domain} has no tag.`);
     if (domain === "camera" && track.property === "pose") {
       if (poseTrack.length) throw new Error("Movie permits only one track per target property.");
@@ -150580,10 +150725,23 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
       if (visTracks.has(id)) throw new Error("Movie permits only one track per target property.");
       visTracks.set(id, keys2(track.keys, duration, visibility));
     } else {
-      throw new Error(`Unsupported Movie property for ${domain}.`);
+      const property2 = track.property;
+      if (typeof property2 !== "string") throw new Error("Invalid Movie property.");
+      const targetTag = untagged ? null : tag(target.tag);
+      const initial = appearanceBaseline(scene, domain, targetTag, property2);
+      if (domain === "scene" && initial === void 0) throw new Error("Configure the Movie scene baseline explicitly.");
+      if (appearanceTracks.some((row3) => row3.domain === domain && row3.tag === targetTag && row3.property === property2)) {
+        throw new Error("Movie permits only one track per target property.");
+      }
+      const values2 = keys2(track.keys, duration, (value3) => appearanceValue(value3, property2), continuousAppearance.has(property2));
+      if (initial === void 0 && values2[0].time !== 0) {
+        throw new Error("Movie appearance has no explicit baseline; provide a key at zero.");
+      }
+      appearanceTracks.push({ domain, tag: targetTag, property: property2, baseline: initial, keys: values2 });
     }
   }
   const visibilityRows = trackedVisibility ? Array.from(rows).filter(([id]) => visTracks.has(id)) : Array.from(rows);
+  if (appearanceTracks.some((track) => track.property === "color" || track.property === "background") && recipe.color_interpolation !== colorInterpolation) throw new Error("Movie colour interpolation must be explicit.");
   return {
     duration_ms: duration,
     evaluate(time_ms) {
@@ -150600,6 +150758,18 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
         time_ms: at,
         camera: pose,
         structure_index: frameTrack[upperBound(frameTrack, at) - 1]?.value ?? baseFrame,
+        ...appearanceTracks.length ? { appearance: appearanceTracks.map((track) => {
+          const right2 = upperBound(track.keys, at);
+          const start5 = track.keys[right2 - 1] ?? { time: 0, value: track.baseline, easing: "linear" };
+          const end5 = track.keys[right2];
+          const value2 = !continuousAppearance.has(track.property) || !end5 || start5.time === at ? start5.value : interpolateAppearance(
+            start5.value,
+            end5.value,
+            ease((at - start5.time) / (end5.time - start5.time), start5.easing),
+            track.property
+          );
+          return { domain: track.domain, tag: track.tag, property: track.property, value: structuredClone(value2) };
+        }) } : {},
         visibility: visibilityRows.map(([id, row3]) => {
           const track = visTracks.get(id);
           return { ...row3, visible: (track && track[upperBound(track, at) - 1]?.value) ?? row3.visible };
@@ -158751,7 +158921,7 @@ var GroupStrip = class {
     }
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.filter((record4) => record4.tag !== tag2);
+      const next = records.filter((record5) => record5.tag !== tag2);
       if (next.length === records.length) continue;
       changed = true;
       if (next.length === 0) {
@@ -158765,10 +158935,10 @@ var GroupStrip = class {
   retagAnnotationOverlays(oldTag, newTag) {
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.map((record4) => {
-        if (record4.tag !== oldTag) return record4;
+      const next = records.map((record5) => {
+        if (record5.tag !== oldTag) return record5;
         changed = true;
-        return { ...record4, tag: newTag };
+        return { ...record5, tag: newTag };
       });
       this.annotationRecords.set(key2, next);
     }
@@ -159013,7 +159183,7 @@ var GroupStrip = class {
               boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none"
             });
             button2.appendChild(badge);
-            button2.title = annotationRecords.map((record4) => record4.text).join("\n");
+            button2.title = annotationRecords.map((record5) => record5.text).join("\n");
             badge.addEventListener("click", (event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -176195,7 +176365,7 @@ var RemoteWorkbench = class {
       case "set_whole_summary":
         this.wholeSummary = {
           ...msg,
-          params: record3(msg.params),
+          params: record4(msg.params),
           visible: msg.visible !== false,
           available_attributes: strings(msg.available_attributes),
           color_schemes: strings(msg.color_schemes),
@@ -176231,8 +176401,8 @@ var RemoteWorkbench = class {
         this.refreshObjects();
         return;
       case "set_measurement_settings": {
-        const source = record3(msg.options ?? msg);
-        const atoms2 = record3(source.representative_atoms);
+        const source = record4(msg.options ?? msg);
+        const atoms2 = record4(source.representative_atoms);
         this.measurementSettings = {
           ...this.measurementSettings,
           endpointPolicyDefault: typeof source.endpoint_policy_default === "string" ? source.endpoint_policy_default : this.measurementSettings.endpointPolicyDefault,
@@ -176443,7 +176613,7 @@ var REMOTE_CONTEXT_ACTIONS = /* @__PURE__ */ new Set([
   "open_navigate"
 ]);
 function contextTarget(value) {
-  const item2 = record3(value);
+  const item2 = record4(value);
   if (!["empty", "structure", "shape", "measurement", "annotation"].includes(String(item2.kind))) return null;
   if (item2.event !== "interaction_context_menu") return null;
   return item2;
@@ -176467,7 +176637,7 @@ function strings(value) {
 function stringsToNumbers(value) {
   return Array.isArray(value) ? value.filter((item2) => typeof item2 === "number" && Number.isFinite(item2)) : [];
 }
-function record3(value) {
+function record4(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 function numberOr(value, fallback) {
@@ -176499,8 +176669,8 @@ function mapAnnotation(item2) {
     nAtoms: numberOr(item2.n_atoms, 0),
     atomIndices: stringsToNumbers(item2.atom_indices),
     hidden: !!item2.hidden,
-    style: record3(item2.style),
-    anchor: record3(item2.anchor),
+    style: record4(item2.style),
+    anchor: record4(item2.anchor),
     broken: !!item2.broken,
     brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
   };
@@ -177814,7 +177984,8 @@ async function bootDocsView(opts) {
       array_native_molsys_ref: [1],
       visual_state_capture: [1, 2],
       movie_preview: [1],
-      movie_frame_capture: [1]
+      movie_frame_capture: [1],
+      movie_appearance: [1]
     } });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);
@@ -178528,7 +178699,8 @@ function render({ model, el, runtimeSource }) {
           transferable_array_buffer: false,
           visual_state_capture: [1, 2],
           movie_preview: [1],
-          movie_frame_capture: [1]
+          movie_frame_capture: [1],
+          movie_appearance: [1]
         }
       });
     } catch (err) {

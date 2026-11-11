@@ -80,6 +80,8 @@ class _MovieExport:
         ):
             raise FrontendRequestError(reason="movie_operation_pending")
         self.timeline = movie._require_timeline()
+        if self.timeline.has_appearance and 1 not in view._frontend_capabilities.get("movie_appearance", []):
+            raise FrontendRequestError(reason="movie_appearance_not_supported")
         scene = view.export_state(skip_digestion=True)
         self.timeline.check_binding(view._source_state_binding(), scene)
         excluded = _visible_overlays(view, scene)

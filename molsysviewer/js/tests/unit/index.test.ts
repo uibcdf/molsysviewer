@@ -3,6 +3,7 @@ import "./render-presentation.test";
 import "./box-display.test";
 import "./movie-handler.test";
 import "./movie-timeline.test";
+import "./movie-appearance.test";
 import "./playback-modes.test";
 import "./viewer-controller-message-refresh.test";
 import "./scene-object-summaries.test";

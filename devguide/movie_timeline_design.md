@@ -4,20 +4,24 @@ This refines the accepted pre-1.0
 [Movie requirement and M0 findings](pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md)
 under [#320](https://github.com/uibcdf/molsysviewer/issues/320).
 
-The experimental Python implementation supports three independent channels:
-camera pose, structure index and visibility. The
+The experimental Python implementation supports independent camera, structure,
+visibility and a bounded appearance catalogue. The
 [implemented API and recipe example](../docs/content/user/movie/timeline.md#independent-tracks-experimental)
 cover a detached baseline, edits, validation, arbitrary-time evaluation and
 JSON/session persistence. The JavaScript runtime exports
-`compileMovieTimeline(recipe)` for the same three channels. Python's live
+`compileMovieTimeline(recipe)` for the same channels. Python's live
 `seek_async()` validates binding and applies a sample through existing scene
 owners, with a version-2 visual capture barrier on the primary canvas. Existing
 version-1 playback uses its original recipe.
 The first version-2 export route, `await view.movie.export_async(...)`, streams
 correlated images to MP4/H.264, WebM/VP9 or a PNG/manifest ZIP. The
 [receiving record](movie_export_receiving_20261110.json) separates source
-encoder, browser and API scopes. Appearance, lighting, complete baseline
-rebasing, Studio authoring and a portable interactive web player remain open.
+encoder, browser and API scopes. Uniform colours/alpha, simple molecular
+representations, annotation text, RGB background and ambient/diffuse lighting
+have their first implementation. Complete baseline/rebase/reset, richer style
+recipes, Studio authoring and a portable interactive web player remain open.
+The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
+separate numerical, native-node, popup, session and media evidence.
 The sections below describe the broader M1–M6 design and its remaining work.
 
 ## One model, several consumers
@@ -96,8 +100,8 @@ rejected transactionally. Explicit key replacement is an edit operation.
 | Labels, measurements and overlays | Text/content/anchor recipes step; visibility and supported opacity have their own tracks. Reuse existing atom/coordinate anchor and quantity contracts. |
 | Lighting/background | Explicit supported renderer fields, with validated finite ranges. Discrete presets are expanded to recorded settings; unsupported controls fail validation. |
 
-The supported property catalogue starts with the three channels above;
-this table does not promise arbitrary Mol* settings. For continuous keys,
+The table describes the complete direction, not arbitrary Mol* settings. The
+currently admitted appearance catalogue is specified below. For continuous keys,
 interpolation uses the outgoing key's named easing. A baseline value is the
 implicit key at zero when no explicit zero key exists. Before the first explicit
 step key the baseline holds; after the last key the last value holds. Evaluation
@@ -112,6 +116,46 @@ threshold as Python. At a half-turn tie (`abs(dot) <= 1e-12`), both evaluators
 make the first quaternion component above that tolerance positive, in XYZW
 order, and interpolate as if the dot product were zero. This selects one of the
 equally short arcs consistently when roundoff changes the sign of the dot.
+
+### Received appearance catalogue
+
+| Target | Property | Initial contract |
+| --- | --- | --- |
+| Whole/region | `representation` | Canonical public simple type; discrete keys. A simple explicit baseline representation is required. Presets and inherit need a later recipe contract. |
+| Whole/region | `color`, `alpha` | Uniform structural RGB and opacity in `[0, 1]`. Reuse the existing representation setter with one combined material update per target; retain baseline parameters and region order. Own per-atom colour layers are refused for a uniform colour track. |
+| Sphere | `color`, `alpha` | Existing sphere mutators; other shape families await their own qualified adapters. |
+| Interaction visual | `color`, `alpha` | Existing style owner; no calculation or modification of named scientific results. |
+| Annotation | `text` | Discrete text through the existing anchored annotation owner. |
+| Scene | `background`, `lighting` | Explicit RGB; a complete `{ambient, diffuse}` record with intensities in `[0, 1]`. These baseline values must be configured explicitly. Specular is not an independent channel because the current renderer maps it to diffuse. |
+
+Colours are canonical 24-bit integers. Recipes using colour tracks record
+`color_interpolation: "linear-light-srgb-half-up@1"`: decode sRGB, interpolate
+linear-light components, encode sRGB and quantize to 8-bit with nearest/half-up
+rounding. The transfer follows the [W3C conversion definitions](https://www.w3.org/TR/css-color-4/#color-conversion-code);
+the rounding/versioned recipe rule belongs to MolSysViewer. A Decimal control
+and the real Python/TypeScript oracle guard it. Alpha and intensities interpolate
+independently; representation and text hold discrete values. If a uniform
+colour cannot be derived from the baseline theme, an explicit key at zero is
+required. No native defaults or scientific colour calculations are guessed.
+
+Samples add an `appearance` list only when such tracks exist. Older three-channel
+samples retain their shape. Live application requires `movie_appearance: [1]`;
+an older renderer is refused. The compact preview recipe carries only the
+required appearance fields, not molecular coordinates or analysis occurrences.
+Untracked material-parameter changes on an animated structural target require
+a reviewed new baseline; complete static-scene conflict/rebase handling remains
+pending. Simple region updates reuse the existing component/representation
+nodes, including type changes, rather than deleting them for each material key.
+They retain region priority throughout the update and preserve the existing
+parent-bond context for ball-and-stick/line representations. The native guard
+checks the actual boundary half-link mesh groups after reverse seeks.
+
+The optional state `environment` stores declared background intent and configured
+ambient/diffuse values. Parsing uses a closed field catalogue before mutation.
+Partial lighting calls accumulate; specular fallback is recorded as diffuse.
+Work files and Movie baselines preserve these settings. As with camera/navigation,
+ordinary object Undo does not restore viewport environment. This is not a full
+resolved renderer snapshot or qualification of arbitrary external Mol* edits.
 
 ## Time and physical quantities
 

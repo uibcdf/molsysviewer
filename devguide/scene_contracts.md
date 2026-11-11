@@ -1864,6 +1864,16 @@ The real-system state/session, rejection, history and unit guards live in
 `tests/test_box_state_persistence.py`; the registered Studio browser entry also
 receives the restored native mesh, style, camera and frame on completed draws.
 
+The optional **`environment`** key records declared viewport background intent
+(`{color: RGB}` or `{mode: light|dark}`) and configured ambient/diffuse lighting
+in `[0, 1]`. Its reader validates a closed field catalogue before modifying the
+destination. Partial lighting calls accumulate; the existing specular fallback
+is normalized to its effective diffuse control. An absent key leaves viewport
+settings unchanged. Work files preserve these values; object Undo, like camera
+navigation, leaves current viewport environment in place. This is declared
+Python intent, not a complete resolved renderer snapshot. The state/session,
+invalid-import and Undo guards are in `tests/test_movie_appearance.py`.
+
 Native trajectory navigation follows the actual applied frame without requiring
 Python feedback, including exported HTML. Retain raw row-vector cells: the
 Mol* Cell length/angle representation alone cannot retain their orientation.

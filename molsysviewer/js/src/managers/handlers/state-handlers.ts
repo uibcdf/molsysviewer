@@ -959,12 +959,27 @@ export class StateHandlers {
             return;
         }
 
+        // A simple region stays on its existing component and representation
+        // node. This is the same update route as Whole; Movie material tracks
+        // must not demolish geometry on each colour/opacity sample.
+        const componentRef = StateObjectRef.resolveRef(entry.component);
+        const component = componentRef ? this.plugin.state.data.cells.get(componentRef) : undefined;
+        if (entry.representationState === "own" && !entry.preset && !entry.userPreset
+            && !msg.preset && !msg.user_preset && msg.representation && msg.representation !== "inherit"
+            && entry.representations.length === 1 && component?.obj && PluginStateObject.Molecule.Structure.is(component.obj)
+            && await this.updateSimpleRepresentation(entry.representations[0], component.obj.data, msg.representation, msg.params, true)) {
+            this.setRegionRepresentationDefinition(entry, msg);
+            this.transparencyInitialized = false;
+            await this.applyComposedTransparency();
+            return;
+        }
+
         const structure = this.callbacks.getStructure();
         const structureRef = this.callbacks.getLoadedStructure()?.structure;
         if (!structure || !structureRef) return;
 
-        let componentRef = StateObjectRef.resolveRef(entry.component);
-        if (!componentRef || entry.representations.length > 0) {
+        let nextComponentRef = StateObjectRef.resolveRef(entry.component);
+        if (!nextComponentRef || entry.representations.length > 0) {
             // Delete the entire component (cascades to all representation children).
             // Removing only the representation refs with removeParentGhosts:true can
             // silently delete the parent component when it becomes empty, leaving
@@ -986,12 +1001,12 @@ export class StateHandlers {
                 label: tag,
             });
             await component.commit({ revertOnError: false });
-            componentRef = component.selector?.ref;
-            if (!component.selector?.isOk || !componentRef) {
+            nextComponentRef = component.selector?.ref;
+            if (!component.selector?.isOk || !nextComponentRef) {
                 console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
                 return;
             }
-            entry.component = componentRef;
+            entry.component = nextComponentRef;
         } else {
             entry.representations = [];
         }
@@ -999,9 +1014,9 @@ export class StateHandlers {
         this.setRegionRepresentationDefinition(entry, msg);
 
         if (entry.representationState === "inherit") {
-            entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, entry.atomIndices));
+            entry.representations.push(...await this.addInheritedRegionRepresentations(nextComponentRef, tag, msg.params, entry.atomIndices));
         } else if (entry.representationState === "own") {
-            entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
+            entry.representations.push(...await this.addOwnRegionRepresentations(nextComponentRef, tag, msg));
         }
 
         const alpha = msg.params?.alpha;
@@ -1520,14 +1535,27 @@ export class StateHandlers {
         const structure = this.callbacks.getStructure();
         if (!structure) return false;
 
-        const structuralColor = this.getStructuralColorThemeFromParams(msg.representation, msg.params);
-        const structuralSize = this.getStructuralSizeThemeFromParams(msg.representation, msg.params);
-        const cleanParams = this.omitStructuralColorKeys(msg.params);
+        if (!await this.updateSimpleRepresentation(refs[0], structure, msg.representation, msg.params)) return false;
+        await this.handleShowHideGlobal(false);
+        await this.repaintInheritedRegions();
+        this.transparencyInitialized = false;
+        await this.applyComposedTransparency();
+        return true;
+    }
+
+    private async updateSimpleRepresentation(ref: StateTransform.Ref, structure: Structure,
+        representation: string, params?: Record<string, unknown>, regionBoundary = false): Promise<boolean> {
+        const structuralColor = this.getStructuralColorThemeFromParams(representation, params);
+        const structuralSize = this.getStructuralSizeThemeFromParams(representation, params);
+        const cleanParams = this.omitStructuralColorKeys(params);
+        // Retain the region's boundary half-links on updates, as on creation.
+        if (regionBoundary && (representation === "ball-and-stick" || representation === "line")
+            && cleanParams.includeParent === undefined) cleanParams.includeParent = true;
 
         let next: any;
         try {
             next = createStructureRepresentationParams(this.plugin, structure, {
-                type: msg.representation as any,
+                type: representation as any,
                 typeParams: cleanParams as any,
                 ...(structuralColor.color ? { color: structuralColor.color } : {}),
                 ...(structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}),
@@ -1542,7 +1570,7 @@ export class StateHandlers {
         if (!next?.type?.name) return false;
 
         const update = this.plugin.state.data.build();
-        update.to(refs[0]).update(
+        update.to(ref).update(
             StateTransforms.Representation.StructureRepresentation3D,
             (params: any) => {
                 params.type = next.type;
@@ -1574,10 +1602,6 @@ export class StateHandlers {
         );
         await update.commit({ revertOnError: false, doNotUpdateCurrent: true });
 
-        await this.handleShowHideGlobal(false);
-        await this.repaintInheritedRegions();
-        this.transparencyInitialized = false;
-        await this.applyComposedTransparency();
         return true;
     }
 

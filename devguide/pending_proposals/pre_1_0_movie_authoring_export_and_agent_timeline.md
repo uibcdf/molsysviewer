@@ -14,7 +14,7 @@ supersedes: []
 
 # Movie authoring, export and future agent planning
 
-**Active requirement; camera/structure/visibility authoring, preview and initial
+**Active requirement; independent tracks, bounded appearance, preview and initial
 media export are source-delivered. The complete workflow remains pending.**
 The principal maintainer explicitly requires useful movie authoring
 and export before 1.0. [#320](https://github.com/uibcdf/molsysviewer/issues/320)
@@ -184,7 +184,8 @@ playback. The first slice should include:
    web and agent consumers must use this same model and one execution owner.
 
 The [M1 model](../movie_timeline_design.md) has its first experimental Python
-implementation for camera, structure and visibility. The design also covers
+implementation for camera, structure, visibility and the bounded appearance
+catalogue. The design also covers
 constant-rate endpoint sampling, migration, one execution owner and bounded
 exports. The progress section distinguishes implemented slices from remaining work.
 
@@ -288,6 +289,18 @@ ligand with an explicit representation, show calculated interactions and labels
 at chosen times, zoom out while rotating, and preserve/export the same story.
 Generating a pose or new interaction analysis is a separate explicit scientific
 operation, not an implicit side effect of playback.
+
+The [first appearance tranche](../movie_appearance_receiving_20261110.json)
+adds uniform colour/alpha, canonical simple representations, annotation text,
+explicit RGB background and ambient/diffuse lighting to the same evaluator,
+preview and export routes. It preserves region order and boundary bonds while
+updating simple native representation nodes in place. The recipe records its
+colour interpolation rule; Python/TypeScript numerical receiving and actual molecular browser/popup,
+session and 720p video receiving have distinct scopes. Declared viewport
+environment now travels in state/session files without making object Undo
+restore earlier camera/environment settings. Complete static baseline,
+rebase/reset, broader recipes, Studio, web and integrated M5 acceptance remain
+open; this does not complete #320.
 
 Post-1.0 agent planning translates instructions into this same inspectable,
 validated and editable plan, with preview and export through the same owner.

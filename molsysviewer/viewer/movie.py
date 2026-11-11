@@ -353,7 +353,8 @@ class MovieManager:
 
         The camera's position and target use angstroms. Its up vector is
         dimensionless. The duration is in milliseconds. Omit `state` to
-        capture the current Python overlay state. This starts an empty set of
+        capture the current Python scene state, including declared environment
+        settings. This starts an empty set of
         tracks, which is a valid static hold for the specified duration.
         """
         binding = self._view._source_state_binding()
@@ -406,7 +407,7 @@ class MovieManager:
     @signal()
     @digest()
     def remove_track(self, tag: str, *, skip_digestion: bool = False) -> None:
-        """Remove one track, restoring its property to the baseline on evaluation."""
+        """Remove one scheduled property track without changing the live scene."""
         timeline = self._require_timeline()
         tracks = [track for track in timeline.track_records() if track["tag"] != tag]
         if len(tracks) == timeline.n_tracks:
@@ -424,7 +425,7 @@ class MovieManager:
     @signal()
     @digest()
     def evaluate(self, time_ms: float, *, skip_digestion: bool = False) -> dict:
-        """Return the detached camera, structure and visibility at a time in milliseconds."""
+        """Return detached camera, structure, visibility and tracked appearance at a time in milliseconds."""
         return self._require_timeline().evaluate(time_ms)
 
     @signal(tags=["movie", "capture"])

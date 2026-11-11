@@ -1,0 +1,1666 @@
+{
+  "recipe": {
+    "molsysmovie_version": 2,
+    "duration_ms": 1000.0,
+    "units": {
+      "time": "ms",
+      "camera_length": "angstrom"
+    },
+    "baseline": {
+      "scene": {
+        "version": 2,
+        "view": {
+          "structure_index": 0
+        },
+        "whole": {
+          "visible": true,
+          "representation": "ball-and-stick",
+          "preset": null,
+          "params": {
+            "molstar_color_theme": {
+              "name": "uniform",
+              "params": {
+                "value": 0
+              }
+            }
+          }
+        },
+        "regions": [
+          {
+            "tag": "site",
+            "hidden": false,
+            "representation": "ball-and-stick",
+            "preset": null,
+            "params": {
+              "alpha": 0.8,
+              "molstar_color_theme": {
+                "name": "uniform",
+                "params": {
+                  "value": 2113632
+                }
+              }
+            }
+          }
+        ],
+        "environment": {
+          "background": {
+            "color": 0
+          },
+          "lighting": {
+            "ambient": 0.2,
+            "diffuse": 0.8
+          }
+        },
+        "shapes": [
+          {
+            "tag": "site",
+            "hidden": false,
+            "op": "add_sphere",
+            "options": {
+              "color": 16711680,
+              "alpha": 0.25
+            }
+          }
+        ],
+        "interactions": [
+          {
+            "tag": "contacts",
+            "hidden": false,
+            "style": {
+              "color": 3462041,
+              "alpha": 0.85,
+              "radius_nm": 0.025,
+              "radius_unit": "nm"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "tag": "note",
+            "hidden": false,
+            "op": "add_label",
+            "options": {
+              "text": "Beginning"
+            }
+          }
+        ]
+      },
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "binding": {
+        "n_atoms": 62,
+        "n_structures": 3,
+        "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+      }
+    },
+    "tracks": [
+      {
+        "tag": "whole-colour",
+        "target": {
+          "domain": "whole"
+        },
+        "property": "color",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 16777215,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "site-repr",
+        "target": {
+          "domain": "region",
+          "tag": "site"
+        },
+        "property": "representation",
+        "keys": [
+          {
+            "time_ms": 500.0,
+            "value": "spacefill",
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "site-alpha",
+        "target": {
+          "domain": "region",
+          "tag": "site"
+        },
+        "property": "alpha",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 0.2,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "sphere-colour",
+        "target": {
+          "domain": "shape",
+          "tag": "site"
+        },
+        "property": "color",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 255,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "sphere-alpha",
+        "target": {
+          "domain": "shape",
+          "tag": "site"
+        },
+        "property": "alpha",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 0.75,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "interaction-colour",
+        "target": {
+          "domain": "interaction",
+          "tag": "contacts"
+        },
+        "property": "color",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 16711680,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "interaction-alpha",
+        "target": {
+          "domain": "interaction",
+          "tag": "contacts"
+        },
+        "property": "alpha",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 0.2,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "caption",
+        "target": {
+          "domain": "annotation",
+          "tag": "note"
+        },
+        "property": "text",
+        "keys": [
+          {
+            "time_ms": 500.0,
+            "value": "Pocket open",
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "background",
+        "target": {
+          "domain": "scene"
+        },
+        "property": "background",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": 16777215,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "lighting",
+        "target": {
+          "domain": "scene"
+        },
+        "property": "lighting",
+        "keys": [
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "ambient": 0.6,
+              "diffuse": 0.2
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "frame",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 500.0,
+            "value": 2,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "hide-site",
+        "target": {
+          "domain": "region",
+          "tag": "site"
+        },
+        "property": "visible",
+        "keys": [
+          {
+            "time_ms": 750.0,
+            "value": false,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "color_interpolation": "linear-light-srgb-half-up@1"
+  },
+  "representation_types": [
+    "backbone",
+    "ball-and-stick",
+    "carbohydrate",
+    "cartoon",
+    "ellipsoid",
+    "gaussian-surface",
+    "gaussian-volume",
+    "line",
+    "molecular-surface",
+    "point",
+    "putty",
+    "spacefill"
+  ],
+  "samples": [
+    {
+      "time_ms": 0.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 0,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 0
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "ball-and-stick"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.8
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 16711680
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.25
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 3462041
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.85
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Beginning"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 0
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.2,
+            "diffuse": 0.8
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 1.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 0,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 197379
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "ball-and-stick"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.7994
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 16711683
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.2505
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 3527577
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.8493499999999999
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Beginning"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 197379
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.2004,
+            "diffuse": 0.7994
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 125.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 0,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 6513507
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "ball-and-stick"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.7250000000000001
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 15728739
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.3125
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 7260048
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.76875
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Beginning"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 6513507
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.25,
+            "diffuse": 0.7250000000000001
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 250.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 0,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 9013641
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "ball-and-stick"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.6500000000000001
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 14745737
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.375
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 9419398
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.6875
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Beginning"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 9013641
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.30000000000000004,
+            "diffuse": 0.6500000000000001
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 499.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 0,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 12303291
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "ball-and-stick"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.5006
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 12320955
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.49949999999999994
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 12491631
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.52565
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Beginning"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 12303291
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.3996,
+            "diffuse": 0.5006
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 500.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 2,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 12369084
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "spacefill"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.5
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 12320956
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.5
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 12491631
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.525
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Pocket open"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 12369084
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.4,
+            "diffuse": 0.5
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 749.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 2,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 14737632
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "spacefill"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.3506
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 8978656
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.6244999999999999
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 14839888
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.36315
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Pocket open"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 14737632
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.4996,
+            "diffuse": 0.3506
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 750.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 2,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 14803425
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "spacefill"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.35000000000000003
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 8978657
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.625
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 14839888
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.36250000000000004
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Pocket open"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 14803425
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.49999999999999994,
+            "diffuse": 0.35000000000000003
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": false
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 999.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 2,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 16777215
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "spacefill"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.2006
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 196863
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.7494999999999999
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 16712193
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.20065
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Pocket open"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 16777215
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.5995999999999999,
+            "diffuse": 0.2006
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": false
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 1000.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 2,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 16777215
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "spacefill"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.2
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 255
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.75
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 16711680
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.2
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Pocket open"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 16777215
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.6,
+            "diffuse": 0.2
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": false
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 500.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 2,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 12369084
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "spacefill"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.5
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 12320956
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.5
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 12491631
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.525
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Pocket open"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 12369084
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.4,
+            "diffuse": 0.5
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "time_ms": 0.0,
+      "camera": {
+        "position": [
+          8.323631275405166,
+          11.00643418488964,
+          35.11552731458959
+        ],
+        "target": [
+          8.323631275405166,
+          11.00643418488964,
+          0.11552731458958919
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "structure_index": 0,
+      "appearance": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "property": "color",
+          "value": 0
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "representation",
+          "value": "ball-and-stick"
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.8
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "color",
+          "value": 16711680
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "property": "alpha",
+          "value": 0.25
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "color",
+          "value": 3462041
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "property": "alpha",
+          "value": 0.85
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "property": "text",
+          "value": "Beginning"
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "background",
+          "value": 0
+        },
+        {
+          "domain": "scene",
+          "tag": null,
+          "property": "lighting",
+          "value": {
+            "ambient": 0.2,
+            "diffuse": 0.8
+          }
+        }
+      ],
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "annotation",
+          "tag": "note",
+          "visible": true
+        },
+        {
+          "domain": "interaction",
+          "tag": "contacts",
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    }
+  ]
+}

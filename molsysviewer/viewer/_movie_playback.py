@@ -23,6 +23,28 @@ def _revisions(view):
     )
 
 
+def _matching_appearance(actual, expected):
+    if isinstance(expected, list):
+        return (
+            isinstance(actual, list)
+            and len(actual) == len(expected)
+            and all(_matching_appearance(a, b) for a, b in zip(actual, expected, strict=True))
+        )
+    if isinstance(expected, dict):
+        return (
+            isinstance(actual, dict)
+            and actual.keys() == expected.keys()
+            and all(_matching_appearance(actual[key], expected[key]) for key in expected)
+        )
+    if isinstance(expected, float):
+        return (
+            not isinstance(actual, bool)
+            and isinstance(actual, Real)
+            and math.isclose(actual, expected, rel_tol=1e-12, abs_tol=1e-12)
+        )
+    return type(actual) is type(expected) and actual == expected
+
+
 class _MoviePlayback:
     def __init__(self, movie, *, loop, start_time_ms):
         view = movie._view
@@ -37,6 +59,8 @@ class _MoviePlayback:
         ):
             raise FrontendRequestError(reason="movie_operation_pending")
         self.timeline = movie._require_timeline()
+        if self.timeline.has_appearance and 1 not in view._frontend_capabilities.get("movie_appearance", []):
+            raise FrontendRequestError(reason="movie_appearance_not_supported")
         scene = view.export_state(skip_digestion=True)
         self.timeline.check_binding(view._source_state_binding(), scene)
         self.owners = _visibility_owners(view, self.timeline.visibility_targets())
@@ -115,6 +139,7 @@ class _MoviePlayback:
                 or type(next_sample["structure_index"]) is not int
                 or next_sample["structure_index"] != expected["structure_index"]
                 or next_sample["visibility"] != expected["visibility"]
+                or not _matching_appearance(next_sample.get("appearance", []), expected.get("appearance", []))
                 or not _matching_pose(_camera(next_sample["camera"]), expected["camera"])
             ):
                 raise ValueError("The renderer sample differs from the accepted Movie recipe.")

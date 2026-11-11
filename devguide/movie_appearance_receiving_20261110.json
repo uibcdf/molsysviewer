@@ -1,0 +1,412 @@
+{
+  "schema": "molsysviewer.movie_appearance_receiving@1",
+  "date": "2026-11-10",
+  "issue": "uibcdf/molsysviewer#320",
+  "scope": "Experimental source channels and declared environment persistence, real molecular browser/popup/preview/session/720p MP4 receiving. No native Qt, installed package, hosted or human qualification; not the complete M1-M6 story.",
+  "sources": {
+    "molsysviewer_base": "da92e4ed60cadac46482bb48fa6e4c96abbe7147",
+    "molsysmt": "8d05bc33e75327a2c4f55a8c06ed3a132627fb5b",
+    "molsysmt_native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "sha256": {
+      "molsysviewer/_scene_environment.py": "a0aa492dc2e8013a15a2b3dc3f308670c1859bf159cecfee60abbd19032f8e0c",
+      "molsysviewer/js/src/index.ts": "c1a6be678644e2b0268325bd86c39a4c4902d097d4e79228d3c93cef4b60c7cc",
+      "molsysviewer/js/src/managers/handlers/state-handlers.ts": "1647b29090e037afe8982f734c4d9421a2a542827a447a8fff3dad922305af31",
+      "molsysviewer/js/src/managers/movie-appearance.ts": "6218b510e9317edc9e8b5157073073eae4df0ef64d19e38765e59c04812a0ecc",
+      "molsysviewer/js/src/managers/movie-timeline.ts": "b55b6f102928ccf43bd3660e246c3bfd37626458a1a04c480abdab7afcd82842",
+      "molsysviewer/js/tests/e2e/movie-appearance-bridge.py": "8b41acd0bef5fb7fc57ae8ea3e01026e9933a2b9c42b5bfa07e1d892f5451bf6",
+      "molsysviewer/js/tests/e2e/movie-appearance.e2e.ts": "1df9f24d3a718cdb4a48d6f02678ec44bb67b5fd4cac326da3a0c2c431c3a0ae",
+      "molsysviewer/js/tests/fixtures/movie-appearance-oracle.json": "196d6ac0f97bb5f10a592d8dce12f55849862e6a58bbe8700d99025d49f06619",
+      "molsysviewer/js/tests/unit/movie-appearance.test.ts": "a30f752c56808e69d59191a6390c61b93f839ac0031e93251d4175ffdf0edbaf",
+      "molsysviewer/scene_history.py": "2606b4230de1304d2e67f96348af17a93ea1673360dd4c86b1684fdc6b14567b",
+      "molsysviewer/viewer/_movie_appearance.py": "437e45d5a8535c66ccf3241dff74f575e974b65c6e751bbdef39af473f80726f",
+      "molsysviewer/viewer/_movie_export.py": "fac5e6e065af9a07084f1db87d0cfe3e52dac5df3fb90f5f0bc6d8a66f3e83e1",
+      "molsysviewer/viewer/_movie_playback.py": "3ea8bee0aff69ce351914c565a6f9e6674ea94057ea1c06309c6bb9f29781faa",
+      "molsysviewer/viewer/_movie_seek.py": "f082df0d5db391c68092aadfefcff15bd102c91e1c1af4498dbb4575b355c065",
+      "molsysviewer/viewer/_movie_timeline.py": "aeaeff4bc8e2c6992b718836e32d54768fee5cd6972977b742e19cb307168821",
+      "molsysviewer/viewer/core.py": "8593a4d2d9716f21be33ad722be37f5ce12897360750d11aa2ab6aecce14f843",
+      "molsysviewer/viewer/history.py": "1a17b5f94fd2d9dfd8448258575bf937cdd87d89d44b229ecfd34cb8bdb641f8",
+      "molsysviewer/viewer/movie.py": "f217ac6381b096f675a5c27d139827403fc1a4d06928d366a167ab9337479aad",
+      "molsysviewer/viewer/state.py": "1dea9db795e5f6a74bda987e90beae83ab79bca3289221c230df9969d91a1db7",
+      "tests/test_movie_appearance.py": "eee1559c2ffdb41baac24cf12ae463dbba9e6b9c86173253db1d8539827df9c2"
+    },
+    "generated_runtime_sha256": "c9e0737aefb37b66ad8ed91505bb96e8b6aa08df0f579c092fa9e4827c897e12",
+    "identity": "Base commit plus listed changed source hashes; the integration commit can be located through Git history. No installed candidate is declared."
+  },
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "providers": "Isolated frozen MolSysMT source, published PyUnitWizard 0.29.2 and cached public support. Routine environment not modified.",
+    "runtime_version_notice": "Archived MolSysMT reports 0+unknown; existing editable Viewer metadata reports 0.24.0+97.gdf4bf477.dirty. Neither identifies an installed release candidate. Exact source commits and retained hashes establish this scope.",
+    "public_support": {
+      "pyunitwizard": "0.29.2",
+      "smonitor": "0.21.0",
+      "argdigest": "0.15.0",
+      "depdigest": "0.15.1",
+      "ackredit": "0.9.0",
+      "pytest-receptor": "1.2.1",
+      "imageio": "2.37.4",
+      "imageio-ffmpeg": "0.6.0"
+    },
+    "imageio_ffmpeg_wheel": {
+      "filename": "imageio_ffmpeg-0.6.0-py3-none-manylinux2014_x86_64.whl",
+      "sha256": "c7e46fcec401dd990405049d2e2f475e2b397779df2519b544b8aab515195282",
+      "bytes": 29498237
+    },
+    "encoder_executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+    "encoder_version": "FFmpeg 7.0.2-static",
+    "molstar": "5.4.1"
+  },
+  "resource_policy": {
+    "maximum_receiving_cpus": 2,
+    "ram_gib": 4,
+    "own_swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "execution": "Sequential user systemd scopes, CPU affinity, low-thread native/encoder settings, resource monitoring and owned-process cleanup. Free resources are not reservations."
+  },
+  "catalogue": {
+    "whole/region": [
+      "canonical simple representation (step)",
+      "uniform RGB colour",
+      "alpha"
+    ],
+    "shape/sphere": [
+      "uniform RGB colour",
+      "alpha"
+    ],
+    "interaction visual": [
+      "uniform RGB colour",
+      "alpha"
+    ],
+    "annotation": [
+      "text (step)"
+    ],
+    "scene": [
+      "explicit RGB background",
+      "complete ambient/diffuse lighting record"
+    ]
+  },
+  "contracts": {
+    "color_interpolation": "linear-light-srgb-half-up@1, recorded in colour-bearing recipes; independent Decimal transfer/rounding controls and common numerical oracle",
+    "primary_reference": "https://www.w3.org/TR/css-color-4/#color-conversion-code",
+    "baseline": "Explicit simple structural representations. Uniform colour requires no own per-atom colour layer; an unknown uniform theme requires an explicit colour key at zero. Scene tracks require their RGB/complete-lighting baseline to be declared first.",
+    "application": "One combined structural material update per target via existing owners; preserve region order and native component/representation nodes. Skip equal settings. Named scientific analyses are reused.",
+    "wire": "New movie_appearance:[1] capability required only for appearance-bearing plans; old three-channel recipes/samples retain their shape. Preview remains a single bounded renderer/authority clock.",
+    "environment": "Optional state environment with a closed safe field catalogue; background colour/mode intent and configured ambient/diffuse values. Partial lighting updates accumulate; legacy specular fallback canonicalizes to diffuse. Object Undo retains current viewport environment, like camera/navigation. Not a full resolved renderer snapshot.",
+    "conflicts": "Untracked structural material parameters may not silently change an animated target. Complete static-scene baseline/rebase/reset remains separate work."
+  },
+  "fixture": {
+    "system": "Bundled pentalanine, 62 atoms, structures [4999,0,73]",
+    "tracks": 12,
+    "scientific_data": "Explicit Buch calculation during fixture setup on all three structures; playback/styles do not recompute it.",
+    "numerical_samples": 12
+  },
+  "profiles": {
+    "probe-365-movie-appearance-regression": {
+      "native_exit": 0,
+      "seconds": 293.56606798502617,
+      "selected_inputs": 5752,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 982.3,
+      "cleanup": {
+        "tracked": 39,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "1,342 passed, 1 skipped before final priority/refusal/boundary refinements. Retain this broad Movie/capture/session/public API scope with final directed checks; do not present it as a full rerun of final sources. The skip is the absent-encoder branch in a provider-present environment.",
+      "invocation_sha256": "4bfa894599724c60d5ebd86b1404706dfef39ea6a8aab9baa0bdef173058ac2b",
+      "inputs_sha256": "6eb9ab15039c5617f38c306d63616c3aa09fb7a52cdfc8424badc573a7b7d8e0",
+      "stdout_sha256": "d42e7094945ac372b93d6d320f0fcb17eb39d8c2b0e7cbe10f472929f4f3550d"
+    },
+    "probe-371-movie-priority-regression": {
+      "native_exit": 0,
+      "seconds": 22.627049311995506,
+      "selected_inputs": 5753,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 418.9,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "114 passed after priority pinning; superseded for changed appearance rejection by final profile 381.",
+      "invocation_sha256": "cfd436acefc2c34aa4d80e9a9c6cb8691d951c96f50f363ca185c9236eba49e0",
+      "inputs_sha256": "769a576dd6ba6a063d1e1475881fb48c369b73b23455f86cfb1af4be0da0240f",
+      "stdout_sha256": "de554f6c2794335d31440278cb91e22956c81d2f59a9a88d3567fd1a56ddcdc8"
+    },
+    "probe-375-movie-export-regression": {
+      "native_exit": 0,
+      "seconds": 99.73002208210528,
+      "selected_inputs": 5753,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2105.5,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Original three-channel export with default AA2, independent PNG/decode/browser-video checks, cancellation/native abort/late/corrupt image/destination preservation. Before final appearance-only refusal/boundary adjustments; no region material track in this recipe.",
+      "invocation_sha256": "7bf9f4191110b2af579238a1a28337c8ead147db5260f6a8294c4663e2d158f4",
+      "inputs_sha256": "769a576dd6ba6a063d1e1475881fb48c369b73b23455f86cfb1af4be0da0240f",
+      "stdout_sha256": "86bebf53887e0feb0cb7578eac9ab97afa1c494ae0cf3f778347b730e761e1c7"
+    },
+    "probe-376-movie-seek-regression": {
+      "native_exit": 0,
+      "seconds": 38.09952290006913,
+      "selected_inputs": 5753,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2081.6,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Original three-channel seek/preview pause/popup/restored session/terminal draw. Before final appearance-only refusal/boundary adjustments.",
+      "invocation_sha256": "3f1af2d7616facfc16ae585dee6833479e53fb678df5a1a5269a3395cf4ffffc",
+      "inputs_sha256": "769a576dd6ba6a063d1e1475881fb48c369b73b23455f86cfb1af4be0da0240f",
+      "stdout_sha256": "b4e6c4b64a26bddec7ac00304e91b7a06160d15ea58cf6c1c27c012e7304978c"
+    },
+    "build-movie-appearance-379": {
+      "native_exit": 0,
+      "seconds": 15.040285053895786,
+      "selected_inputs": 5751,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 501.2,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Final runtime/harness build, strict numerical model types, 28 JavaScript cases; includes explicit per-atom layer refusal.",
+      "invocation_sha256": "48dd8ab58412d5c7d137ca7e9ec2e539f330eba9cff98bac5e3b932c6bbca07a",
+      "inputs_sha256": "d5e604eba0fa39aa08a9f7de58ef347109620e29afdfeb80318cc8665d4e2aa0",
+      "stdout_sha256": "b72029d64f5739bb0782c0275db9bf875f58f5cff7a2c5c4e32843ef77cfddce"
+    },
+    "probe-380-movie-boundary-appearance": {
+      "native_exit": 0,
+      "seconds": 71.6981029950548,
+      "selected_inputs": 5753,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2336.2,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Final 12-track real-MolSysMT/Mol* story: boundary half-links, native styles/text/lighting, uninterrupted region priority, popup, preview, restored session and 720p MP4.",
+      "invocation_sha256": "da37370ad7b14e78c1ab0dcbd85da9030ca03319544169c07c03c605c7274c64",
+      "inputs_sha256": "f6b63d0b089fc512b84a47a44188cf10a79570fa41f55d37f4141a84862a0f39",
+      "stdout_sha256": "b232f26049dcda249f4b7225dbea810ca7a068c71135cd56cabc1ce92c8dd62e"
+    },
+    "probe-381-movie-final-quality": {
+      "native_exit": 0,
+      "seconds": 36.485784214921296,
+      "selected_inputs": 5753,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 466.5,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Final root Ruff lint/format (1,018 formatted files), dependency inventory, devguide index, whitespace, 546 Python/docs/HTML passes and strict changed-module TypeScript checks. 134 warnings are native legacy H5MSM 0.4 reads.",
+      "invocation_sha256": "eba38e2ca00745a69bcfcca302b29cd056d1184578eb19efc68876b21b99eb90",
+      "inputs_sha256": "f6b63d0b089fc512b84a47a44188cf10a79570fa41f55d37f4141a84862a0f39",
+      "stdout_sha256": "387d609df87cc52fd1c79b5255db32e7d73211dbea3c923f120d6157c0ee4648"
+    },
+    "probe-382-region-regression": {
+      "native_exit": 0,
+      "seconds": 17.151528136106208,
+      "selected_inputs": 5753,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1830.1,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Final adjacent native region hide/show/ownership/style/enablement and membership-lifetime regression.",
+      "invocation_sha256": "e85b9094a554cf8420fff4c2c8cd2c8741aa18d426c0845e3f86f01d2839f944",
+      "inputs_sha256": "f6b63d0b089fc512b84a47a44188cf10a79570fa41f55d37f4141a84862a0f39",
+      "stdout_sha256": "3dce2decf49deae1a195609dd22ea5e68f946013b56bc8d47532d5ccc73f4ca2"
+    }
+  },
+  "browser": {
+    "native_and_popup_snapshots": [
+      {
+        "time": 500,
+        "frame": 2,
+        "regionRef": "wCa169KGivU-KE-UzaBu2A",
+        "component": "zfaGRUFZECSwKobPnj5PHQ",
+        "representation": "spacefill",
+        "alpha": 0.5,
+        "regionOrder": 2,
+        "regionHidden": false,
+        "sphereColor": 12320956,
+        "sphereAlpha": 0.5,
+        "caption": "Pocket open",
+        "glyphs": 11,
+        "boundary": null,
+        "interactionColor": 12491631,
+        "interactionAlpha": 0.525,
+        "background": 12369084,
+        "ambient": 0.4,
+        "diffuse": 0.5
+      },
+      {
+        "time": 1000,
+        "frame": 2,
+        "regionRef": "wCa169KGivU-KE-UzaBu2A",
+        "component": "zfaGRUFZECSwKobPnj5PHQ",
+        "representation": "spacefill",
+        "alpha": 0.2,
+        "regionOrder": 2,
+        "regionHidden": true,
+        "sphereColor": 255,
+        "sphereAlpha": 0.75,
+        "caption": "Pocket open",
+        "glyphs": 11,
+        "boundary": null,
+        "interactionColor": 16711680,
+        "interactionAlpha": 0.2,
+        "background": 16777215,
+        "ambient": 0.6,
+        "diffuse": 0.2
+      },
+      {
+        "time": 250,
+        "frame": 0,
+        "regionRef": "wCa169KGivU-KE-UzaBu2A",
+        "component": "zfaGRUFZECSwKobPnj5PHQ",
+        "representation": "ball-and-stick",
+        "alpha": 0.6500000000000001,
+        "regionOrder": 2,
+        "regionHidden": false,
+        "sphereColor": 14745737,
+        "sphereAlpha": 0.375,
+        "caption": "Beginning",
+        "glyphs": 9,
+        "boundary": {
+          "expected": 1,
+          "drawn": 1
+        },
+        "interactionColor": 9419398,
+        "interactionAlpha": 0.6875,
+        "background": 9013641,
+        "ambient": 0.30000000000000004,
+        "diffuse": 0.6500000000000001
+      },
+      {
+        "time": 0,
+        "frame": 0,
+        "regionRef": "wCa169KGivU-KE-UzaBu2A",
+        "component": "zfaGRUFZECSwKobPnj5PHQ",
+        "representation": "ball-and-stick",
+        "alpha": 0.8,
+        "regionOrder": 2,
+        "regionHidden": false,
+        "sphereColor": 16711680,
+        "sphereAlpha": 0.25,
+        "caption": "Beginning",
+        "glyphs": 9,
+        "boundary": {
+          "expected": 1,
+          "drawn": 1
+        },
+        "interactionColor": 3462041,
+        "interactionAlpha": 0.85,
+        "background": 0,
+        "ambient": 0.2,
+        "diffuse": 0.8
+      }
+    ],
+    "encoded_mean_brightness": [
+      0.6898130063657407,
+      136.17362485532408,
+      185.332705078125,
+      222.30449905960648
+    ],
+    "resolution": [
+      1280,
+      720
+    ],
+    "fps": 4,
+    "frames": 4,
+    "duration_seconds": 1,
+    "sample_level": 0,
+    "session_reopened": true,
+    "recipe_embedded_and_equal": true,
+    "preview_endpoint_ms": 1000,
+    "native_region_nodes_and_order_preserved": true,
+    "note": "This new story uses explicit AA level 0 for bounded software-rendering receiving. The earlier default-AA2 media gate remains its own scope.",
+    "draw_observations": 27,
+    "distinct_region_orders": [
+      2
+    ],
+    "boundary_geometry": "Every selected endpoint half-link crossing the region boundary remains drawn after reverse/material seeks; native mesh group check, not only a parameter field."
+  },
+  "media": {
+    "appearance.mp4": {
+      "bytes": 42499,
+      "sha256": "eecebbbb2a962c6d43de1ff3405163e29f1d1aac91e9f830e8f219ed1048de11"
+    },
+    "appearance.msv": {
+      "bytes": 18262,
+      "sha256": "3dbf028a15b731a8132d895a4fa3456b0f8f0a711050110325a1aa794b39ac72"
+    },
+    "verified.json": {
+      "bytes": 18260,
+      "sha256": "8e6716834ed854e9d6dade1bac2495e06d5a16101684303ca228d9f0b1bf2eb1"
+    }
+  },
+  "diagnostics": [
+    {
+      "profile": "probe-361-movie-appearance-browser",
+      "classification": "Test read sphere repr.props.alpha instead of actual repr.state.alphaFactor. Corrected assertion received; not a product rendering defect."
+    },
+    {
+      "profile": "probe-368-movie-appearance-final",
+      "classification": "Test treated an absent native isHidden flag as unequal to visible. Normalize the native flag with ===true; final receiving includes real visibility checks."
+    },
+    {
+      "profile": "probe-364-movie-appearance-state",
+      "classification": "Documented advanced sizeFactor produces ArgDigest DigestNotDigestedWarning in the existing public representation setter. Follow-up uibcdf/molsysviewer#357; this tranche does not fix that separate contract. The deliberate native-parameter mutation test uses explicit skip_digestion=True."
+    }
+  ],
+  "remaining": [
+    "Complete static baseline/rebase/reset and target remapping/v1 migration",
+    "Preset/inherited/full representation recipes, scientific colour-map recipes and other shape/label/camera controls",
+    "Composited DOM overlays",
+    "Studio authoring and portable interactive web player/assets",
+    "Full pocket/ligand/interactions/labels M5 story",
+    "Installed/native Qt/actual Jupyter media export/other-platform/human and applicable hosted receiving"
+  ],
+  "local_gates_pending": [],
+  "publication": {
+    "tags_created": false,
+    "packages_published": false,
+    "remote_ci_dispatched": false,
+    "both_1_0_publications_paused": true
+  },
+  "completed_utc": "2026-11-11T06:02:33.321067+00:00",
+  "evidence_custody": {
+    "state": "verified",
+    "custodian": "Diego",
+    "approved_private_root": "~/.local/state/molsysviewer/evidence/robustness-20261106",
+    "subdirectory": "movie-appearance-20261110",
+    "files": 181,
+    "bytes": 58719295,
+    "manifest_sha256": "18e5121a8d96201060648b63540479661ccc4080a84e6fbd73f42fdaa7a00648",
+    "all_hashes_verified": true,
+    "private_directories_mode": "0700",
+    "private_files_mode": "0600",
+    "originals_retained": true
+  }
+}

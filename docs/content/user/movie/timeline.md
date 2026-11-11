@@ -200,12 +200,61 @@ interpolate between keys. A `structure` track with property `index` and a
 visibility track with property `visible` take effect at their key times and hold
 until the next key. Visibility targets are `whole` or a tagged `region`, `layer`,
 `shape`, `annotation`, `measurement` or `interaction`. `update_track()` replaces
-a track's keys. `remove_track()` restores that property's baseline on evaluation.
+a track's keys. `remove_track()` removes its scheduled channel. The baseline
+remains in the recipe; complete live reset/rebase is still in progress.
 
 `evaluate()` returns detached values without changing the live scene.
 `validate()` checks the recipe against the current system and its referenced
 scene objects. A JSON recipe can be loaded onto a matching system and scene.
 A session keeps the recipe with its molecular data and scene.
+
+### Animating appearance
+
+You can also change the scene's appearance without changing molecular data:
+
+| Target domain | Properties |
+| --- | --- |
+| `whole`, `region` | `representation` (step), `color`, `alpha` |
+| `shape` (spheres) | `color`, `alpha` |
+| `interaction` | `color`, `alpha` |
+| `annotation` | `text` (step) |
+| `scene` | `background`, `lighting` |
+
+Use canonical representation names and RGB integers such as `0x34D399`.
+`alpha` ranges from 0 to 1. Colour transitions use linear-light sRGB; alpha
+and lighting intensities interpolate independently. The recipe records the
+colour interpolation rule. Text and representation changes happen at their
+key times.
+
+Configure a simple explicit representation before capturing a baseline for
+structural appearance tracks. Give it a uniform colour with
+`set_representation(..., color=...)` when you want a colour transition. A
+per-atom colour layer on the target must be cleared first. A colour track
+without a uniform baseline requires its first key at zero.
+
+For a background track, configure an explicit colour, such as `"#101010"`,
+rather than a light/dark preset. For a lighting track, set both `ambient` and
+`diffuse` before capturing the baseline. Each lighting key supplies both
+intensities, in the range 0 to 1. Example track values are:
+
+```python
+view.whole.set_representation("ball-and-stick", alpha=1.0)
+view.movie.set_baseline(
+    2000, camera={"position": [0, 0, 15], "target": [0, 0, 0], "up": [0, 1, 0]}
+)
+view.movie.add_track({
+    "tag": "fade-whole",
+    "target": {"domain": "whole"},
+    "property": "alpha",
+    "keys": [{"time_ms": 2000, "value": 0.2}],
+})
+```
+
+`evaluate()` includes these values in its detached `appearance` list.
+Seeking, preview and export apply them through the existing scene owners.
+They preserve region order and supplied interaction analyses. Editing an
+untracked material parameter on an animated structural target requires a
+reviewed new baseline. Complete scene rebasing and reset are still in progress.
 
 ### Preview an instant
 
@@ -216,7 +265,7 @@ sample = await view.movie.seek_async(750, timeout=5)
 ```
 
 The seek pauses running motion, applies the camera and structure, and changes
-visibility on targets with a visibility track. It returns the sample after the
+visibility and appearance on tracked targets. It returns the sample after the
 primary canvas confirms a completed draw with the requested camera and structure.
 The timeout is in seconds. If the wait is interrupted, scene commands already
 accepted can remain visible.
@@ -242,5 +291,5 @@ The primary canvas chooses the next preview time after each completed draw.
 Complex frames may skip intermediate samples during playback. Pause waits for
 the in-flight sample. You can resume with `start_time_ms=paused["time_ms"]` or
 jump to another time with `seek_async()`. The session stores the visible camera,
-structure and scene with the recipe. Media export currently uses version-1
-keyframes.
+structure and scene with the recipe. Use `await view.movie.export_async(...)`
+to [export these tracks](export.md#exporting-independent-tracks-experimental).

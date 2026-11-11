@@ -23,9 +23,10 @@ Install the optional Movie dependencies with `pip install 'molsysviewer[movie]'`
 MP4/H.264 and WebM/VP9 use `imageio-ffmpeg>=0.6.0`; all formats use ImageIO for
 PNG decoding. A missing renderer or encoder raises an error.
 
-This first implementation exports camera, structure and visibility tracks.
+This implementation exports camera, structure, visibility and the
+[admitted appearance tracks](timeline.md#animating-appearance).
 Keep untracked scene settings unchanged after authoring; complete baseline
-rebasing and timed appearance/lighting controls are still being developed.
+rebasing, richer style recipes and a Studio authoring panel remain in development.
 
 You can also export lossless images:
 
