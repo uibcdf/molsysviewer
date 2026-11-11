@@ -1,0 +1,312 @@
+{
+  "recipe": {
+    "molsysmovie_version": 2,
+    "duration_ms": 1200.0,
+    "units": {
+      "time": "ms",
+      "camera_length": "angstrom"
+    },
+    "baseline": {
+      "scene": {
+        "version": 2,
+        "structure": {
+          "n_atoms": 62,
+          "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+          "identity_schema": 2
+        },
+        "view": {
+          "structure_index": 0
+        },
+        "whole": {
+          "visible": true
+        },
+        "annotations": [],
+        "layers": [],
+        "measurements": [],
+        "regions": [
+          {
+            "tag": "site",
+            "hidden": false,
+            "uid": "region-uid-1"
+          }
+        ],
+        "shapes": [
+          {
+            "tag": "site",
+            "hidden": false
+          }
+        ],
+        "sources": {
+          "version": 1,
+          "binding": {
+            "n_atoms": 62,
+            "n_structures": 3,
+            "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+          }
+        }
+      },
+      "camera": {
+        "position": [
+          0.0,
+          0.0,
+          10.0
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "binding": {
+        "n_atoms": 62,
+        "n_structures": 3,
+        "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+      }
+    },
+    "tracks": [
+      {
+        "tag": "camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 200.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                10.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-in-out"
+          },
+          {
+            "time_ms": 400.0,
+            "value": {
+              "position": [
+                2.0,
+                0.0,
+                20.0
+              ],
+              "target": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                -1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-out"
+          },
+          {
+            "time_ms": 800.0,
+            "value": {
+              "position": [
+                1.0,
+                12.0,
+                15.0
+              ],
+              "target": [
+                1.0,
+                2.0,
+                3.0
+              ],
+              "up": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "easing": "ease-in"
+          },
+          {
+            "time_ms": 900.0,
+            "value": {
+              "position": [
+                1.02,
+                12.0,
+                15.0
+              ],
+              "target": [
+                1.0,
+                2.0,
+                3.0
+              ],
+              "up": [
+                0.0,
+                0.0,
+                1.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "frames",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 300.0,
+            "value": 2,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 700.0,
+            "value": 1,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "site-region",
+        "target": {
+          "domain": "region",
+          "tag": "site"
+        },
+        "property": "visible",
+        "keys": [
+          {
+            "time_ms": 250.0,
+            "value": false,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 650.0,
+            "value": true,
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "site-shape",
+        "target": {
+          "domain": "shape",
+          "tag": "site"
+        },
+        "property": "visible",
+        "keys": [
+          {
+            "time_ms": 500.0,
+            "value": false,
+            "easing": "linear"
+          }
+        ]
+      }
+    ]
+  },
+  "samples": [
+    {"time_ms":1200.0,"camera":{"position":[1.02,12.0,15.0],"target":[1.0,2.0,3.0],"up":[-0.0015364382269437737,-0.7682191134718861,0.6401851552902832]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":0.0,"camera":{"position":[0.0,0.0,10.0],"target":[0.0,0.0,0.0],"up":[0.0,1.0,0.0]},"structure_index":0,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":true}]},
+    {"time_ms":250.0,"camera":{"position":[0.25,0.0,11.25],"target":[0.25,0.0,0.0],"up":[-0.3826834323650897,0.9238795325112867,0.0]},"structure_index":0,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":false},{"domain":"shape","tag":"site","visible":true}]},
+    {"time_ms":300.0,"camera":{"position":[1.0,0.0,15.0],"target":[1.0,0.0,0.0],"up":[-1.0,-2.2204460492503126e-16,0.0]},"structure_index":2,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":false},{"domain":"shape","tag":"site","visible":true}]},
+    {"time_ms":1000.0,"camera":{"position":[1.02,12.0,15.0],"target":[1.0,2.0,3.0],"up":[-0.0015364382269437737,-0.7682191134718861,0.6401851552902832]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":850.0,"camera":{"position":[1.0049999975256185,12.000003749995322,15.000000000003062],"target":[1.0,2.0,3.0],"up":[-0.00038410989086363464,-0.7682210261479642,0.6401845885709533]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":275.0,"camera":{"position":[0.5625,0.0,12.8125],"target":[0.5625,0.0,0.0],"up":[-0.773010453362737,0.6343932841636455,0.0]},"structure_index":0,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":false},{"domain":"shape","tag":"site","visible":true}]},
+    {"time_ms":350.0,"camera":{"position":[1.75,0.0,18.75],"target":[1.75,0.0,0.0],"up":[-0.3826834323650897,-0.9238795325112867,0.0]},"structure_index":2,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":false},{"domain":"shape","tag":"site","visible":true}]},
+    {"time_ms":400.0,"camera":{"position":[2.0,0.0,20.0],"target":[2.0,0.0,0.0],"up":[0.0,-1.0,0.0]},"structure_index":2,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":false},{"domain":"shape","tag":"site","visible":true}]},
+    {"time_ms":550.0,"camera":{"position":[1.390625,8.338815857781091,17.629283319925413],"target":[1.390625,1.21875,1.828125],"up":[0.0,-0.9117153005593075,0.41082260250143443]},"structure_index":2,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":false},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":699.5,"camera":{"position":[1.0631265625,11.505528456547893,15.457445601935362],"target":[1.0631265625,1.8737468750000001,2.8106203125],"up":[0.0,-0.7955498133320222,0.6058881864728711]},"structure_index":2,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":700.0,"camera":{"position":[1.0625,11.510622267341239,15.452949116899688],"target":[1.0625,1.875,2.8125],"up":[0.0,-0.795285996688269,0.606234429467303]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":800.0,"camera":{"position":[1.0,12.0,15.0],"target":[1.0,2.0,3.0],"up":[0.0,-0.7682212795973759,0.6401843996644799]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":900.0,"camera":{"position":[1.02,12.0,15.0],"target":[1.0,2.0,3.0],"up":[-0.0015364382269437737,-0.7682191134718861,0.6401851552902832]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]},
+    {"time_ms":1200.0,"camera":{"position":[1.02,12.0,15.0],"target":[1.0,2.0,3.0],"up":[-0.0015364382269437737,-0.7682191134718861,0.6401851552902832]},"structure_index":1,"visibility":[{"domain":"whole","tag":null,"visible":true},{"domain":"region","tag":"site","visible":true},{"domain":"shape","tag":"site","visible":false}]}
+  ],
+  "half_turn": {
+    "begin": {
+      "position": [
+        3.668951851960558,
+        6.988059633782151,
+        6.140506075454991
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "up": [
+        -0.08545667580569233,
+        0.6826105039690569,
+        -0.7257685970275587
+      ]
+    },
+    "end": {
+      "position": [
+        6.506525568633032,
+        -1.636407017950339,
+        -7.4153420080484125
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "up": [
+        0.6495353757948508,
+        -0.3859410578531923,
+        0.6550979281406718
+      ]
+    },
+    "sample": {
+      "time_ms": 500.0,
+      "camera": {
+        "position": [
+          1.47669989943783,
+          8.481767490710702,
+          -5.087138453052303
+        ],
+        "target": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "up": [
+          0.5425848363577153,
+          -0.49951678026220153,
+          -0.6753404190415044
+        ]
+      },
+      "structure_index": 0,
+      "visibility": [
+        {
+          "domain": "whole",
+          "tag": null,
+          "visible": true
+        },
+        {
+          "domain": "region",
+          "tag": "site",
+          "visible": true
+        },
+        {
+          "domain": "shape",
+          "tag": "site",
+          "visible": true
+        }
+      ]
+    }
+  }
+}

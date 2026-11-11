@@ -214,8 +214,20 @@ public API and devguide reporting. Its one skip is the missing-`imageio` error
 branch because `imageio` is installed. All 10,949 selected inputs stay unchanged
 under 2 CPUs / 4 GiB with no resource stop. F1 records seven new experimental
 methods and preserves all existing signatures.
-Appearance and lighting tracks, remapping/migration, the shared browser evaluator
-and live playback/authoring/export remain open.
+
+The JavaScript runtime now compiles and evaluates the same version-2 recipe.
+The shared regression checks 16 samples against Python, including reversed
+seeks and a generic half turn. A separate 50-case half-turn differential had
+13 disagreements before the common tie rule and zero after it. The executable
+runtime still needs the application owner that binds an evaluated pose to the
+system and acknowledges the settled draw. Appearance and lighting tracks,
+remapping/migration, and live playback, Studio authoring and export remain open.
+
+Scoped receiving passes four JavaScript cases, 62 Python tests (one expected
+missing-`imageio` branch skipped), strict checking of the new TypeScript module,
+and the rebuilt runtime's 15 shared timeline samples. The complete JS unit run
+stopped during bundling at the launch scope's thread cap. Its retry and the live
+Jupyter retention probe were deferred by resource review while swap was full.
 
 The pre-1.0 result must let a user approach a known pocket, reveal a loaded
 ligand with an explicit representation, show calculated interactions and labels

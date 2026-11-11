@@ -8,7 +8,11 @@ The experimental Python implementation supports three independent channels:
 camera pose, structure index and visibility. The
 [implemented API and recipe example](../docs/content/user/movie/timeline.md#independent-tracks-experimental)
 cover a detached baseline, edits, validation, arbitrary-time evaluation and
-JSON/session persistence. Existing version-1 playback uses its original recipe.
+JSON/session persistence. The JavaScript runtime exports
+`compileMovieTimeline(recipe)` for the same three channels. It compiles a
+detached evaluator with `duration_ms` and `evaluate(time_ms)` and leaves binding
+to the current molecular system and final draw to the application owner.
+Existing version-1 playback uses its original recipe.
 The sections below describe the broader M1–M6 design and its remaining work.
 
 ## One model, several consumers
@@ -97,12 +101,12 @@ seeks produce the same values. Inserting a visibility key cannot split a camera
 segment. A full orbit uses intermediate keys to express its intended path,
 rather than asking shortest-arc interpolation to infer a complete turn.
 
-Camera orientation must not linearly interpolate opposite up vectors through
-zero. Inspect and reuse the supported Mol* quaternion/transition primitives;
-the newer local Mol* monorepo illustrates orientation slerp in
-`packages/graphics/src/canvas3d/camera/transition-functions.ts`, but that source
-does not establish availability in the current pinned runtime. No Mol*
-dependency update is implied by this proposal.
+Camera orientation uses shortest-arc quaternion interpolation. JavaScript uses
+the installed Mol* quaternion and vector primitives, with the same near-parallel
+threshold as Python. At a half-turn tie (`abs(dot) <= 1e-12`), both evaluators
+make the first quaternion component above that tolerance positive, in XYZW
+order, and interpolate as if the dot product were zero. This selects one of the
+equally short arcs consistently when roundoff changes the sign of the dot.
 
 ## Time and physical quantities
 
@@ -123,8 +127,10 @@ can evaluate the exact endpoint, and an explicit final hold supplies a desired
 ending. The manifest records duration, exact sampling rule, rate, sample count
 and actual encoded duration. Variable-rate exports need a separate contract.
 
-Python and TypeScript use the same easing and sampling definitions and receive
-cross-language numerical oracles, including boundaries and reversed seeks.
+Python and TypeScript share a numerical oracle authored on a three-structure
+pentalanine trajectory, with boundary and reversed seeks, same-tag targets in
+distinct domains, and a generic half turn. Frame sampling for encoded output
+will receive its own numerical tests alongside playback and export.
 Finite JSON and safe integer bounds apply at the transport boundary. No field
 silently changes under a different application unit policy.
 

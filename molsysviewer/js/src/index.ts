@@ -39,6 +39,7 @@ export { bootRemoteRenderedClient } from "./remote/client-rendering-entrypoint";
 export { RemoteWorkbench } from "./remote/remote-workbench";
 export { ProjectedTrajectoryControls } from "./ui/projected-trajectory-controls";
 export { RemoteFileControls } from "./ui/remote-file-controls";
+export { compileMovieTimeline } from "./managers/movie-timeline";
 
 /**
  * Given an `interaction_measurement_created` event, build the corresponding

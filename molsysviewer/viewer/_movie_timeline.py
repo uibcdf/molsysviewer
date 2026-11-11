@@ -13,6 +13,7 @@ import numpy as np
 
 MOVIE_TIMELINE_VERSION = 2
 _MAX_SAFE_INTEGER = 2**53 - 1
+_HALF_TURN_TOLERANCE = 1e-12
 _EASING = {"linear", "ease-in", "ease-out", "ease-in-out"}
 _VISIBILITY_DOMAINS = {
     "annotation": "annotations",
@@ -123,11 +124,21 @@ def _rotate(quaternion, axis):
     return axis + scalar * twice_cross + np.cross(vector, twice_cross)
 
 
+def _canonical_quaternion(quaternion):
+    first = next(component for component in quaternion if abs(component) > _HALF_TURN_TOLERANCE)
+    return -quaternion if first < 0 else quaternion
+
+
 def _interpolate_camera(left, right, fraction):
     _, (target_a, distance_a, basis_a) = _camera(left)
     _, (target_b, distance_b, basis_b) = _camera(right)
     a, b = _quaternion(basis_a), _quaternion(basis_b)
     dot = float(a @ b)
+    if abs(dot) <= _HALF_TURN_TOLERANCE:
+        # Both arcs have the same length at a half turn. A fixed quaternion
+        # sign and zero cosine prevent roundoff from choosing opposite arcs.
+        a, b = _canonical_quaternion(a), _canonical_quaternion(b)
+        dot = 0.0
     if dot < 0:
         b, dot = -b, -dot
     if dot > 0.9995:

@@ -2,6 +2,7 @@
 
 import json
 import zipfile
+from pathlib import Path
 
 import molsysmt as msm
 import numpy as np
@@ -151,3 +152,28 @@ def test_announced_coordinate_edit_invalidates_a_same_size_binding(authored):
     authored.apply_system_edit(authored.molsys)
     with pytest.raises(ValueError, match="molecular binding"):
         authored.movie.evaluate(500)
+
+
+def test_shared_movie_oracle_matches_real_python_recipe(authored):
+    path = Path(__file__).resolve().parents[1] / "molsysviewer/js/tests/fixtures/movie-timeline-oracle.json"
+    oracle = json.loads(path.read_text(encoding="utf-8"))
+    recipe = oracle["recipe"]
+    # Use this environment's system binding and full scene. The shared fixture
+    # contains only the fields needed to evaluate a recipe away from the view.
+    authored.movie.set_baseline(recipe["duration_ms"], camera=recipe["baseline"]["camera"])
+    for track in recipe["tracks"]:
+        authored.movie.add_track(track)
+    def check(expected):
+        observed = authored.movie.evaluate(expected["time_ms"])
+        np.testing.assert_allclose(
+            list(observed.pop("camera").values()), list(expected["camera"].values()), atol=1e-12, rtol=0
+        )
+        assert observed == {key: value for key, value in expected.items() if key != "camera"}
+
+    for expected in oracle["samples"]:
+        check(expected)
+
+    half_turn = oracle["half_turn"]
+    authored.movie.set_baseline(recipe["duration_ms"], camera=half_turn["begin"])
+    authored.movie.add_track(_track("half-turn", "camera", "pose", (1000, half_turn["end"])))
+    check(half_turn["sample"])

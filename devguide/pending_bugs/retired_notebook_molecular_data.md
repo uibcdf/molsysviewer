@@ -97,7 +97,11 @@ owned processes. Avoid further full heap snapshots on this shared host.
 
 Distinguish notebook output/model ownership from MolSysViewer-owned strong
 references. Use weak observation to trace the actual AnyWidget view, target
-and model lifetimes alongside the controller before changing the runtime. If
+and model lifetimes alongside the controller before changing the runtime. The
+next reduced probe records the lifetime of the model proxy, widget element,
+abort signal and returned cleanup in the same samples as the controller. It
+remains unexecuted after the resource review refused a new Chromium session
+with swap full and recent exchange activity. If
 MolSysViewer owns the lifetime, release the retained payload and verify
 the cause and actual release, including the still-open witness and popup
 independence. A disposed flag or an accessor that stops exposing data is not a

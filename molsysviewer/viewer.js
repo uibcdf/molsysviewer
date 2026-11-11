@@ -295,11 +295,11 @@ var require_mutative_cjs_development = __commonJS({
     function throwFrozenError() {
       throw new Error("Cannot modify frozen object");
     }
-    function deepFreeze(target, subKey, updatedValues, stack, keys2) {
+    function deepFreeze(target, subKey, updatedValues, stack, keys3) {
       {
         updatedValues = updatedValues !== null && updatedValues !== void 0 ? updatedValues : /* @__PURE__ */ new WeakMap();
         stack = stack !== null && stack !== void 0 ? stack : [];
-        keys2 = keys2 !== null && keys2 !== void 0 ? keys2 : [];
+        keys3 = keys3 !== null && keys3 !== void 0 ? keys3 : [];
         const value = updatedValues.has(target) ? updatedValues.get(target) : target;
         if (stack.length > 0) {
           const index = stack.indexOf(value);
@@ -307,7 +307,7 @@ var require_mutative_cjs_development = __commonJS({
             if (stack[0] === value) {
               throw new Error(`Forbids circular reference`);
             }
-            throw new Error(`Forbids circular reference: ~/${keys2.slice(0, index).map((key2, index2) => {
+            throw new Error(`Forbids circular reference: ~/${keys3.slice(0, index).map((key2, index2) => {
               if (typeof key2 === "symbol")
                 return `[${key2.toString()}]`;
               const parent = stack[index2];
@@ -317,7 +317,7 @@ var require_mutative_cjs_development = __commonJS({
             }).join("/")}`);
           }
           stack.push(value);
-          keys2.push(subKey);
+          keys3.push(subKey);
         } else {
           stack.push(value);
         }
@@ -325,7 +325,7 @@ var require_mutative_cjs_development = __commonJS({
       if (Object.isFrozen(target) || isDraft(target)) {
         {
           stack.pop();
-          keys2.pop();
+          keys3.pop();
         }
         return;
       }
@@ -333,14 +333,14 @@ var require_mutative_cjs_development = __commonJS({
       switch (type3) {
         case 2:
           for (const [key2, value] of target) {
-            deepFreeze(key2, key2, updatedValues, stack, keys2);
-            deepFreeze(value, key2, updatedValues, stack, keys2);
+            deepFreeze(key2, key2, updatedValues, stack, keys3);
+            deepFreeze(value, key2, updatedValues, stack, keys3);
           }
           target.set = target.clear = target.delete = throwFrozenError;
           break;
         case 3:
           for (const value of target) {
-            deepFreeze(value, value, updatedValues, stack, keys2);
+            deepFreeze(value, value, updatedValues, stack, keys3);
           }
           target.add = target.clear = target.delete = throwFrozenError;
           break;
@@ -348,7 +348,7 @@ var require_mutative_cjs_development = __commonJS({
           Object.freeze(target);
           let index = 0;
           for (const value of target) {
-            deepFreeze(value, index, updatedValues, stack, keys2);
+            deepFreeze(value, index, updatedValues, stack, keys3);
             index += 1;
           }
           break;
@@ -356,12 +356,12 @@ var require_mutative_cjs_development = __commonJS({
           Object.freeze(target);
           Object.keys(target).forEach((name) => {
             const value = target[name];
-            deepFreeze(value, name, updatedValues, stack, keys2);
+            deepFreeze(value, name, updatedValues, stack, keys3);
           });
       }
       {
         stack.pop();
-        keys2.pop();
+        keys3.pop();
       }
     }
     function forEach3(target, iter) {
@@ -1866,12 +1866,12 @@ var ArraySeq = /* @__PURE__ */ (function(IndexedSeq2) {
 })(IndexedSeq);
 var ObjectSeq = /* @__PURE__ */ (function(KeyedSeq2) {
   function ObjectSeq2(object) {
-    var keys2 = Object.keys(object).concat(
+    var keys3 = Object.keys(object).concat(
       Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(object) : []
     );
     this._object = object;
-    this._keys = keys2;
-    this.size = keys2.length;
+    this._keys = keys3;
+    this.size = keys3.length;
   }
   if (KeyedSeq2) ObjectSeq2.__proto__ = KeyedSeq2;
   ObjectSeq2.prototype = Object.create(KeyedSeq2 && KeyedSeq2.prototype);
@@ -1887,11 +1887,11 @@ var ObjectSeq = /* @__PURE__ */ (function(KeyedSeq2) {
   };
   ObjectSeq2.prototype.__iterate = function __iterate2(fn, reverse3) {
     var object = this._object;
-    var keys2 = this._keys;
-    var size4 = keys2.length;
+    var keys3 = this._keys;
+    var size4 = keys3.length;
     var i = 0;
     while (i !== size4) {
-      var key2 = keys2[reverse3 ? size4 - ++i : i++];
+      var key2 = keys3[reverse3 ? size4 - ++i : i++];
       if (fn(object[key2], key2, this) === false) {
         break;
       }
@@ -1900,14 +1900,14 @@ var ObjectSeq = /* @__PURE__ */ (function(KeyedSeq2) {
   };
   ObjectSeq2.prototype.__iterator = function __iterator2(type3, reverse3) {
     var object = this._object;
-    var keys2 = this._keys;
-    var size4 = keys2.length;
+    var keys3 = this._keys;
+    var size4 = keys3.length;
     var i = 0;
     return new Iterator2(function() {
       if (i === size4) {
         return iteratorDone();
       }
-      var key2 = keys2[reverse3 ? size4 - ++i : i++];
+      var key2 = keys3[reverse3 ? size4 - ++i : i++];
       return iteratorValue(type3, key2, object[key2]);
     });
   };
@@ -3131,10 +3131,10 @@ function mergeWith$1(merger) {
   }
   return mergeIntoKeyedWith(this, iters, merger);
 }
-function mergeIntoKeyedWith(collection, collections, merger) {
+function mergeIntoKeyedWith(collection, collections2, merger) {
   var iters = [];
-  for (var ii = 0; ii < collections.length; ii++) {
-    var collection$1 = KeyedCollection(collections[ii]);
+  for (var ii = 0; ii < collections2.length; ii++) {
+    var collection$1 = KeyedCollection(collections2[ii]);
     if (collection$1.size !== 0) {
       iters.push(collection$1);
     }
@@ -3348,8 +3348,8 @@ var Map2 = /* @__PURE__ */ (function(KeyedCollection2) {
   Map3.prototype.remove = function remove3(k) {
     return updateMap(this, k, NOT_SET);
   };
-  Map3.prototype.deleteAll = function deleteAll(keys2) {
-    var collection = Collection(keys2);
+  Map3.prototype.deleteAll = function deleteAll(keys3) {
+    var collection = Collection(keys3);
     if (collection.size === 0) {
       return this;
     }
@@ -5949,11 +5949,11 @@ mixin(IndexedCollection, {
     return reify(this, interposeFactory(this, separator));
   },
   interleave: function interleave() {
-    var collections = [this].concat(arrCopy(arguments));
-    var zipped = zipWithFactory(this.toSeq(), IndexedSeq.of, collections);
+    var collections2 = [this].concat(arrCopy(arguments));
+    var zipped = zipWithFactory(this.toSeq(), IndexedSeq.of, collections2);
     var interleaved = zipped.flatten(true);
     if (zipped.size) {
-      interleaved.size = zipped.size * collections.length;
+      interleaved.size = zipped.size * collections2.length;
     }
     return reify(this, interleaved);
   },
@@ -5967,17 +5967,17 @@ mixin(IndexedCollection, {
     return reify(this, skipWhileFactory(this, predicate, context2, false));
   },
   zip: function zip() {
-    var collections = [this].concat(arrCopy(arguments));
-    return reify(this, zipWithFactory(this, defaultZipper, collections));
+    var collections2 = [this].concat(arrCopy(arguments));
+    return reify(this, zipWithFactory(this, defaultZipper, collections2));
   },
   zipAll: function zipAll() {
-    var collections = [this].concat(arrCopy(arguments));
-    return reify(this, zipWithFactory(this, defaultZipper, collections, true));
+    var collections2 = [this].concat(arrCopy(arguments));
+    return reify(this, zipWithFactory(this, defaultZipper, collections2, true));
   },
   zipWith: function zipWith(zipper) {
-    var collections = arrCopy(arguments);
-    collections[0] = this;
-    return reify(this, zipWithFactory(this, zipper, collections));
+    var collections2 = arrCopy(arguments);
+    collections2[0] = this;
+    return reify(this, zipWithFactory(this, zipper, collections2));
   }
 });
 var IndexedCollectionPrototype = IndexedCollection.prototype;
@@ -6082,13 +6082,13 @@ var Record = function Record2(defaultValues, name) {
     }
     if (!hasInitialized) {
       hasInitialized = true;
-      var keys2 = Object.keys(defaultValues);
+      var keys3 = Object.keys(defaultValues);
       var indices3 = RecordTypePrototype._indices = {};
       RecordTypePrototype._name = name;
-      RecordTypePrototype._keys = keys2;
+      RecordTypePrototype._keys = keys3;
       RecordTypePrototype._defaultValues = defaultValues;
-      for (var i = 0; i < keys2.length; i++) {
-        var propName = keys2[i];
+      for (var i = 0; i < keys3.length; i++) {
+        var propName = keys3[i];
         indices3[propName] = i;
         if (RecordTypePrototype[propName]) {
           typeof console === "object" && console.warn && console.warn(
@@ -6117,10 +6117,10 @@ var Record = function Record2(defaultValues, name) {
 };
 Record.prototype.toString = function toString4() {
   var str11 = recordName(this) + " { ";
-  var keys2 = this._keys;
+  var keys3 = this._keys;
   var k;
-  for (var i = 0, l = keys2.length; i !== l; i++) {
-    k = keys2[i];
+  for (var i = 0, l = keys3.length; i !== l; i++) {
+    k = keys3[i];
     str11 += (i ? ", " : "") + k + ": " + quoteString(this.get(k));
   }
   return str11 + " }";
@@ -6217,17 +6217,17 @@ RecordPrototype.inspect = RecordPrototype.toSource = function() {
   return this.toString();
 };
 function makeRecord(likeRecord, values2, ownerID) {
-  var record3 = Object.create(Object.getPrototypeOf(likeRecord));
-  record3._values = values2;
-  record3.__ownerID = ownerID;
-  return record3;
+  var record4 = Object.create(Object.getPrototypeOf(likeRecord));
+  record4._values = values2;
+  record4.__ownerID = ownerID;
+  return record4;
 }
-function recordName(record3) {
-  return record3.constructor.displayName || record3.constructor.name || "Record";
+function recordName(record4) {
+  return record4.constructor.displayName || record4.constructor.name || "Record";
 }
-function recordSeq(record3) {
-  return keyedSeqFromValue(record3._keys.map(function(k) {
-    return [k, record3.get(k)];
+function recordSeq(record4) {
+  return keyedSeqFromValue(record4._keys.map(function(k) {
+    return [k, record4.get(k)];
   }));
 }
 function setProp(prototype, name) {
@@ -8691,10 +8691,10 @@ function Vec3() {
     return v4[0] === 0 && v4[1] === 0 && v4[2] === 0;
   }
   Vec32.isZero = isZero;
-  function projectPointOnVector(out, point, vector, origin) {
+  function projectPointOnVector(out, point, vector2, origin) {
     sub(out, point, origin);
-    const scalar = dot(vector, out) / squaredMagnitude(vector);
-    return add(out, scale(out, vector, scalar), origin);
+    const scalar = dot(vector2, out) / squaredMagnitude(vector2);
+    return add(out, scale(out, vector2, scalar), origin);
   }
   Vec32.projectPointOnVector = projectPointOnVector;
   const tmpProjectPlane = zero();
@@ -8704,9 +8704,9 @@ function Vec3() {
     return sub(out, point, scale(tmpProjectPlane, tmpProjectPlane, dot(out, tmpProjectPlane)));
   }
   Vec32.projectPointOnPlane = projectPointOnPlane;
-  function projectOnVector(out, p6, vector) {
-    const scalar = dot(vector, p6) / squaredMagnitude(vector);
-    return scale(out, vector, scalar);
+  function projectOnVector(out, p6, vector2) {
+    const scalar = dot(vector2, p6) / squaredMagnitude(vector2);
+    return scale(out, vector2, scalar);
   }
   Vec32.projectOnVector = projectOnVector;
   const tmpProject = zero();
@@ -12008,8 +12008,8 @@ function deepEqual2(a8, b8) {
   if (arrA !== arrB)
     return false;
   if (a8 && b8 && typeof a8 === "object" && typeof b8 === "object") {
-    const keys2 = Object.keys(a8);
-    if (keys2.length !== Object.keys(b8).length)
+    const keys3 = Object.keys(a8);
+    if (keys3.length !== Object.keys(b8).length)
       return false;
     const dateA = a8 instanceof Date;
     const dateB = b8 instanceof Date;
@@ -12023,12 +12023,12 @@ function deepEqual2(a8, b8) {
       return a8.toString() === b8.toString();
     if (regexpA !== regexpB)
       return false;
-    for (let i = 0; i < keys2.length; i++) {
-      if (!hasOwnProperty2.call(b8, keys2[i]))
+    for (let i = 0; i < keys3.length; i++) {
+      if (!hasOwnProperty2.call(b8, keys3[i]))
         return false;
     }
-    for (let i = 0; i < keys2.length; i++) {
-      if (!deepEqual2(a8[keys2[i]], b8[keys2[i]]))
+    for (let i = 0; i < keys3.length; i++) {
+      if (!deepEqual2(a8[keys3[i]], b8[keys3[i]]))
         return false;
     }
     return true;
@@ -12054,10 +12054,10 @@ function shallowEqualObjects(a8, b8) {
     return true;
   if (!a8 || !b8)
     return false;
-  const keys2 = Object.keys(a8);
-  if (Object.keys(b8).length !== keys2.length)
+  const keys3 = Object.keys(a8);
+  if (Object.keys(b8).length !== keys3.length)
     return false;
-  for (const k of keys2) {
+  for (const k of keys3) {
     if (!hasOwnProperty2.call(a8, k) || a8[k] !== b8[k])
       return false;
   }
@@ -14183,9 +14183,9 @@ function makeBuckets(indices3, getKey2, options) {
 var EquivalenceClassesImpl = class {
   createGroup(key2, value) {
     const id = this.id++;
-    const keys2 = [key2];
-    this.groups[id] = keys2;
-    return { id, keys: keys2, value };
+    const keys3 = [key2];
+    this.groups[id] = keys3;
+    return { id, keys: keys3, value };
   }
   // Return the group representative.
   add(key2, a8) {
@@ -14386,9 +14386,9 @@ var ObjectHasher256 = class {
     }
   }
   addObject(obj, depth) {
-    const keys2 = Object.keys(obj).sort();
-    this.addNumber(keys2.length);
-    for (const key2 of keys2) {
+    const keys3 = Object.keys(obj).sort();
+    this.addNumber(keys3.length);
+    for (const key2 of keys3) {
       this.addString(key2);
       this.hashValue(obj[key2], depth + 1);
     }
@@ -15155,11 +15155,11 @@ var Table;
   Table2.is = is4;
   function pickColumns(schema, table, guard = {}) {
     const ret = /* @__PURE__ */ Object.create(null);
-    const keys2 = Object.keys(schema);
+    const keys3 = Object.keys(schema);
     ret._rowCount = table._rowCount;
-    ret._columns = keys2;
+    ret._columns = keys3;
     ret._schema = schema;
-    for (const k of keys2) {
+    for (const k of keys3) {
       if (!!table[k])
         ret[k] = table[k];
       else if (!!guard[k])
@@ -15415,13 +15415,13 @@ var Table;
 var Database;
 (function(Database2) {
   function ofTables(name, schema, tables) {
-    const keys2 = Object.keys(tables);
+    const keys3 = Object.keys(tables);
     const ret = /* @__PURE__ */ Object.create(null);
     const tableNames = [];
     ret._name = name;
     ret._tableNames = tableNames;
     ret._schema = schema;
-    for (const k of keys2) {
+    for (const k of keys3) {
       if (!Table.is(tables[k]))
         continue;
       ret[k] = tables[k];
@@ -16980,10 +16980,10 @@ function shallowEqual2(a8, b8) {
   }
   if (!b8)
     return false;
-  const keys2 = Object.keys(a8);
-  if (Object.keys(b8).length !== keys2.length)
+  const keys3 = Object.keys(a8);
+  if (Object.keys(b8).length !== keys3.length)
     return false;
-  for (const k of keys2) {
+  for (const k of keys3) {
     if (!hasOwnProperty3.call(a8, k) || a8[k] !== b8[k])
       return false;
   }
@@ -17624,8 +17624,8 @@ function abortTree(root) {
   for (const c8 of root.children)
     abortTree(c8);
 }
-function notifyObserver(info, time) {
-  info.lastNotified = time;
+function notifyObserver(info, time2) {
+  info.lastNotified = time2;
   const snapshot = snapshotProgress(info);
   info.observer(snapshot);
 }
@@ -19493,11 +19493,11 @@ var AssetManager = class {
     if (entry.refCount <= 0 && !entry.isStatic)
       this._assets.delete(asset.id);
   }
-  clearTag(tag) {
-    const keys2 = Array.from(this._assets.keys());
-    for (const key2 of keys2) {
+  clearTag(tag2) {
+    const keys3 = Array.from(this._assets.keys());
+    for (const key2 of keys3) {
       const entry = this._assets.get(key2);
-      if (entry && entry.tag === tag) {
+      if (entry && entry.tag === tag2) {
         this._assets.delete(key2);
       }
     }
@@ -24537,55 +24537,55 @@ var Renderer;
       }
       r.render(variant, sharedTexturesList.length);
     };
-    const update10 = (camera, scene) => {
-      ValueCell.update(globalUniforms.uView, camera.view);
-      ValueCell.update(globalUniforms.uInvView, Mat4.invert(invView, camera.view));
-      ValueCell.update(globalUniforms.uProjection, camera.projection);
-      ValueCell.update(globalUniforms.uInvProjection, Mat4.invert(invProjection, camera.projection));
-      ValueCell.updateIfChanged(globalUniforms.uIsOrtho, camera.state.mode === "orthographic" ? 1 : 0);
-      ValueCell.update(globalUniforms.uViewOffset, camera.viewOffset.enabled ? Vec2.set(viewOffset, camera.viewOffset.offsetX * 16, camera.viewOffset.offsetY * 16) : Vec2.set(viewOffset, 0, 0));
-      ValueCell.updateIfChanged(globalUniforms.uModelScale, camera.scale);
+    const update10 = (camera2, scene) => {
+      ValueCell.update(globalUniforms.uView, camera2.view);
+      ValueCell.update(globalUniforms.uInvView, Mat4.invert(invView, camera2.view));
+      ValueCell.update(globalUniforms.uProjection, camera2.projection);
+      ValueCell.update(globalUniforms.uInvProjection, Mat4.invert(invProjection, camera2.projection));
+      ValueCell.updateIfChanged(globalUniforms.uIsOrtho, camera2.state.mode === "orthographic" ? 1 : 0);
+      ValueCell.update(globalUniforms.uViewOffset, camera2.viewOffset.enabled ? Vec2.set(viewOffset, camera2.viewOffset.offsetX * 16, camera2.viewOffset.offsetY * 16) : Vec2.set(viewOffset, 0, 0));
+      ValueCell.updateIfChanged(globalUniforms.uModelScale, camera2.scale);
       ValueCell.update(globalUniforms.uCameraPosition, Mat4.getTranslation(cameraPosition, invView));
-      Vec3.scale(cameraTarget, camera.state.target, camera.scale);
+      Vec3.scale(cameraTarget, camera2.state.target, camera2.scale);
       Vec3.normalize(cameraDir, Vec3.sub(cameraDir, cameraTarget, cameraPosition));
       ValueCell.update(globalUniforms.uCameraDir, cameraDir);
-      ValueCell.updateIfChanged(globalUniforms.uFar, camera.far);
-      ValueCell.updateIfChanged(globalUniforms.uNear, camera.near);
-      ValueCell.updateIfChanged(globalUniforms.uFog, camera.state.fog > 0);
-      ValueCell.updateIfChanged(globalUniforms.uFogFar, camera.fogFar);
-      ValueCell.updateIfChanged(globalUniforms.uFogNear, camera.fogNear);
+      ValueCell.updateIfChanged(globalUniforms.uFar, camera2.far);
+      ValueCell.updateIfChanged(globalUniforms.uNear, camera2.near);
+      ValueCell.updateIfChanged(globalUniforms.uFog, camera2.state.fog > 0);
+      ValueCell.updateIfChanged(globalUniforms.uFogFar, camera2.fogFar);
+      ValueCell.updateIfChanged(globalUniforms.uFogNear, camera2.fogNear);
       ValueCell.updateIfChanged(globalUniforms.uTransparentBackground, transparentBackground);
-      Frustum3D.fromProjectionMatrix(frustum, camera.projectionView);
+      Frustum3D.fromProjectionMatrix(frustum, camera2.projectionView);
       Plane3D.copy(cameraPlane, frustum[Frustum3D.PlaneIndex.Near]);
       cameraPlane.constant -= Plane3D.distanceToPoint(cameraPlane, cameraPosition);
       ValueCell.update(globalUniforms.uCameraPlane, Plane3D.toArray(cameraPlane, globalUniforms.uCameraPlane.ref.value, 0));
       ValueCell.updateIfChanged(globalUniforms.uMarkerAverage, scene.markerAverage);
-      const hasHeadRotation = !Mat4.isZero(camera.headRotation);
+      const hasHeadRotation = !Mat4.isZero(camera2.headRotation);
       if (hasHeadRotation) {
         ValueCell.updateIfChanged(globalUniforms.uHasHeadRotation, true);
-        ValueCell.update(globalUniforms.uInvHeadRotation, Mat4.invert(invHeadRotation, camera.headRotation));
+        ValueCell.update(globalUniforms.uInvHeadRotation, Mat4.invert(invHeadRotation, camera2.headRotation));
         ValueCell.update(globalUniforms.uLightDirection, getTransformedLightDirection(light, invHeadRotation));
       } else {
         ValueCell.updateIfChanged(globalUniforms.uHasHeadRotation, false);
         ValueCell.updateIfChanged(globalUniforms.uInvHeadRotation, Mat4.id);
         ValueCell.update(globalUniforms.uLightDirection, light.direction);
       }
-      ValueCell.update(globalUniforms.uIsAsymmetricProjection, camera.isAsymmetricProjection);
+      ValueCell.update(globalUniforms.uIsAsymmetricProjection, camera2.isAsymmetricProjection);
     };
-    const updateInternal = (group, camera, depthTexture, renderMask, markingDepthTest) => {
+    const updateInternal = (group, camera2, depthTexture, renderMask, markingDepthTest) => {
       arrayMapUpsert(sharedTexturesList, "tDepth", depthTexture || emptyDepthTexture);
-      modelScale = camera.scale;
+      modelScale = camera2.scale;
       ValueCell.update(globalUniforms.uModel, Mat4.scaleUniformly(model, group.view, modelScale));
-      ValueCell.update(globalUniforms.uModelView, Mat4.mul(modelView, camera.view, model));
+      ValueCell.update(globalUniforms.uModelView, Mat4.mul(modelView, camera2.view, model));
       ValueCell.update(globalUniforms.uInvModelView, Mat4.invert(invModelView, modelView));
-      ValueCell.update(globalUniforms.uModelViewProjection, Mat4.mul(modelViewProjection, modelView, camera.projection));
+      ValueCell.update(globalUniforms.uModelViewProjection, Mat4.mul(modelViewProjection, modelView, camera2.projection));
       ValueCell.update(globalUniforms.uInvModelViewProjection, Mat4.invert(invModelViewProjection, modelViewProjection));
       ValueCell.updateIfChanged(globalUniforms.uRenderMask, renderMask);
       ValueCell.updateIfChanged(globalUniforms.uMarkingDepthTest, markingDepthTest);
-      const hasEyeCamera = !Mat4.isZero(camera.viewEye);
+      const hasEyeCamera = !Mat4.isZero(camera2.viewEye);
       if (hasEyeCamera) {
         ValueCell.updateIfChanged(globalUniforms.uHasEyeCamera, true);
-        ValueCell.update(globalUniforms.uModelViewEye, Mat4.mul(modelViewEye, camera.viewEye, model));
+        ValueCell.update(globalUniforms.uModelViewEye, Mat4.mul(modelViewEye, camera2.viewEye, model));
         ValueCell.update(globalUniforms.uInvModelViewEye, Mat4.invert(invModelViewEye, modelViewEye));
       } else {
         ValueCell.updateIfChanged(globalUniforms.uHasEyeCamera, false);
@@ -24612,13 +24612,13 @@ var Renderer;
       const xrayShaded = ((_a = r.values.dXrayShaded) === null || _a === void 0 ? void 0 : _a.ref.value) === "on" || ((_b = r.values.dXrayShaded) === null || _b === void 0 ? void 0 : _b.ref.value) === "inverted";
       return alpha !== 0 && (alpha < 1 || r.values.transparencyAverage.ref.value > 0 || r.values.dGeometryType.ref.value === "directVolume" || ((_c = r.values.dPointStyle) === null || _c === void 0 ? void 0 : _c.ref.value) === "fuzzy" || r.values.dGeometryType.ref.value === "text" || r.values.dGeometryType.ref.value === "image" || xrayShaded);
     };
-    const renderPick = (group, camera, variant, pickType) => {
+    const renderPick = (group, camera2, variant, pickType) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderPick");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.All, false);
+      updateInternal(group, camera2, null, Mask2.All, false);
       ValueCell.updateIfChanged(globalUniforms.uPickType, pickType);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
@@ -24629,13 +24629,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderPick");
     };
-    const renderDepth = (group, camera) => {
+    const renderDepth = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderDepth");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.All, false);
+      updateInternal(group, camera2, null, Mask2.All, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         renderObject(renderables[i], "depth", Flag.None);
@@ -24643,13 +24643,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderDepth");
     };
-    const renderDepthOpaque = (group, camera) => {
+    const renderDepthOpaque = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderDepthOpaque");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.Opaque, false);
+      updateInternal(group, camera2, null, Mask2.Opaque, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24660,14 +24660,14 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderDepthOpaque");
     };
-    const renderDepthOpaqueBack = (group, camera) => {
+    const renderDepthOpaqueBack = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderDepthOpaqueBack");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
       state.depthFunc(gl.GREATER);
-      updateInternal(group, camera, null, Mask2.Opaque, false);
+      updateInternal(group, camera2, null, Mask2.Opaque, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24679,13 +24679,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderDepthOpaqueBack");
     };
-    const renderDepthTransparent = (group, camera, depthTexture) => {
+    const renderDepthTransparent = (group, camera2, depthTexture) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderDepthTransparent");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, depthTexture, Mask2.Transparent, false);
+      updateInternal(group, camera2, depthTexture, Mask2.Transparent, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24696,13 +24696,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderDepthTransparent");
     };
-    const renderMarkingDepth = (group, camera) => {
+    const renderMarkingDepth = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderMarkingDepth");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.All, false);
+      updateInternal(group, camera2, null, Mask2.All, false);
       ValueCell.updateIfChanged(globalUniforms.uMarkingType, MarkingType.Depth);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
@@ -24715,13 +24715,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderMarkingDepth");
     };
-    const renderMarkingMask = (group, camera, depthTexture) => {
+    const renderMarkingMask = (group, camera2, depthTexture) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderMarkingMask");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, depthTexture, Mask2.All, !!depthTexture);
+      updateInternal(group, camera2, depthTexture, Mask2.All, !!depthTexture);
       ValueCell.updateIfChanged(globalUniforms.uMarkingType, MarkingType.Mask);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
@@ -24733,13 +24733,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderMarkingMask");
     };
-    const renderEmissive = (group, camera) => {
+    const renderEmissive = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderEmissive");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.Opaque, false);
+      updateInternal(group, camera2, null, Mask2.Opaque, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24750,13 +24750,13 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderEmissive");
     };
-    const renderTracing = (group, camera) => {
+    const renderTracing = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderTracing");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.Opaque, false);
+      updateInternal(group, camera2, null, Mask2.Opaque, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24767,21 +24767,21 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderTracing");
     };
-    const renderBlended = (scene, camera) => {
+    const renderBlended = (scene, camera2) => {
       if (scene.hasOpaque) {
-        renderOpaque(scene, camera);
+        renderOpaque(scene, camera2);
       }
       if (scene.opacityAverage < 1) {
-        renderBlendedTransparent(scene, camera);
+        renderBlendedTransparent(scene, camera2);
       }
     };
-    const renderOpaque = (group, camera) => {
+    const renderOpaque = (group, camera2) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderOpaque");
       state.disable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(true);
-      updateInternal(group, camera, null, Mask2.Opaque, false);
+      updateInternal(group, camera2, null, Mask2.Opaque, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24792,7 +24792,7 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderOpaque");
     };
-    const renderBlendedTransparent = (group, camera) => {
+    const renderBlendedTransparent = (group, camera2) => {
       var _a, _b;
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderBlendedTransparent");
@@ -24804,7 +24804,7 @@ var Renderer;
       state.enable(gl.BLEND);
       state.enable(gl.DEPTH_TEST);
       state.depthMask(false);
-      updateInternal(group, camera, null, Mask2.Transparent, false);
+      updateInternal(group, camera2, null, Mask2.Transparent, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24822,14 +24822,14 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderBlendedTransparent");
     };
-    const renderVolume = (group, camera, depthTexture) => {
+    const renderVolume = (group, camera2, depthTexture) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderVolume");
       state.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       state.enable(gl.BLEND);
       state.disable(gl.DEPTH_TEST);
       state.depthMask(false);
-      updateInternal(group, camera, depthTexture, Mask2.Transparent, false);
+      updateInternal(group, camera2, depthTexture, Mask2.Transparent, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24840,10 +24840,10 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderVolume");
     };
-    const renderWboitTransparent = (group, camera, depthTexture) => {
+    const renderWboitTransparent = (group, camera2, depthTexture) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderWboitTransparent");
-      updateInternal(group, camera, depthTexture, Mask2.Transparent, false);
+      updateInternal(group, camera2, depthTexture, Mask2.Transparent, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -24854,14 +24854,14 @@ var Renderer;
       if (isTimingMode)
         ctx.timer.markEnd("Renderer.renderWboitTransparent");
     };
-    const renderDpoitTransparent = (group, camera, depthTexture, dpoitTextures) => {
+    const renderDpoitTransparent = (group, camera2, depthTexture, dpoitTextures) => {
       if (isTimingMode)
         ctx.timer.mark("Renderer.renderDpoitTransparent");
       state.enable(gl.BLEND);
       arrayMapUpsert(sharedTexturesList, "tDpoitDepth", dpoitTextures.depth);
       arrayMapUpsert(sharedTexturesList, "tDpoitFrontColor", dpoitTextures.frontColor);
       arrayMapUpsert(sharedTexturesList, "tDpoitBackColor", dpoitTextures.backColor);
-      updateInternal(group, camera, depthTexture, Mask2.Transparent, false);
+      updateInternal(group, camera2, depthTexture, Mask2.Transparent, false);
       const { renderables } = group;
       for (let i = 0, il = renderables.length; i < il; ++i) {
         const r = renderables[i];
@@ -25251,7 +25251,7 @@ var DefaultTrackballControlsAttribs = {
 };
 var TrackballControls;
 (function(TrackballControls2) {
-  function create3(input, camera, scene, props = {}, attribs = {}) {
+  function create3(input, camera2, scene, props = {}, attribs = {}) {
     const p6 = {
       ...ParamDefinition.getDefaultValues(TrackballControlsParams),
       ...props
@@ -25261,7 +25261,7 @@ var TrackballControls;
       ...attribs
     };
     const b8 = a8.bindings;
-    const viewport = Viewport.clone(camera.viewport);
+    const viewport = Viewport.clone(camera2.viewport);
     let disposed = false;
     const dragSub = input.drag.subscribe(onDrag);
     const interactionEndSub = input.interactionEnd.subscribe(onInteractionEnd);
@@ -25290,9 +25290,9 @@ var TrackballControls;
     const _focusEnd = Vec2();
     const _panStart = Vec2();
     const _panEnd = Vec2();
-    const target0 = Vec3.clone(camera.target);
-    const position0 = Vec3.clone(camera.position);
-    const up0 = Vec3.clone(camera.up);
+    const target0 = Vec3.clone(camera2.target);
+    const position0 = Vec3.clone(camera2.position);
+    const up0 = Vec3.clone(camera2.up);
     const mouseOnScreenVec2 = Vec2();
     function getMouseOnScreen(pageX, pageY) {
       return Vec2.set(mouseOnScreenVec2, (pageX - viewport.x) / viewport.width, (pageY - viewport.y) / viewport.height);
@@ -25322,9 +25322,9 @@ var TrackballControls;
       Vec3.set(rotMoveDir, dx, dy, 0);
       const angle2 = Vec3.magnitude(rotMoveDir) * getRotateFactor();
       if (angle2) {
-        Vec3.sub(_eye, camera.position, camera.target);
+        Vec3.sub(_eye, camera2.position, camera2.target);
         Vec3.normalize(rotEyeDir, _eye);
-        Vec3.normalize(rotObjUpDir, camera.up);
+        Vec3.normalize(rotObjUpDir, camera2.up);
         Vec3.normalize(rotObjSideDir, Vec3.cross(rotObjSideDir, rotObjUpDir, rotEyeDir));
         Vec3.setMagnitude(rotObjUpDir, rotObjUpDir, dy);
         Vec3.setMagnitude(rotObjSideDir, rotObjSideDir, dx);
@@ -25332,15 +25332,15 @@ var TrackballControls;
         Vec3.normalize(rotAxis, Vec3.cross(rotAxis, rotMoveDir, _eye));
         Quat.setAxisAngle(rotQuat, rotAxis, angle2);
         Vec3.transformQuat(_eye, _eye, rotQuat);
-        Vec3.transformQuat(camera.up, camera.up, rotQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, rotQuat);
         Vec3.copy(_rotLastAxis, rotAxis);
         _rotLastAngle = angle2;
       } else if (!p6.staticMoving && _rotLastAngle) {
         _rotLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
-        Vec3.sub(_eye, camera.position, camera.target);
+        Vec3.sub(_eye, camera2.position, camera2.target);
         Quat.setAxisAngle(rotQuat, _rotLastAxis, _rotLastAngle);
         Vec3.transformQuat(_eye, _eye, rotQuat);
-        Vec3.transformQuat(camera.up, camera.up, rotQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, rotQuat);
       }
       Vec2.copy(_rotPrev, _rotCurr);
     }
@@ -25354,13 +25354,13 @@ var TrackballControls;
       if (angle2) {
         Vec3.normalize(rollDir, _eye);
         Quat.setAxisAngle(rollQuat, rollDir, angle2);
-        Vec3.transformQuat(camera.up, camera.up, rollQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, rollQuat);
         _rollLastAngle = angle2;
       } else if (!p6.staticMoving && _rollLastAngle) {
         _rollLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
         Vec3.normalize(rollDir, _eye);
         Quat.setAxisAngle(rollQuat, rollDir, _rollLastAngle);
-        Vec3.transformQuat(camera.up, camera.up, rollQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, rollQuat);
       }
       Vec2.copy(_rollPrev, _rollCurr);
     }
@@ -25370,19 +25370,19 @@ var TrackballControls;
       const m = (keyState.pitchUp - keyState.pitchDown) / (p6.flyMode ? 360 : 90);
       const angle2 = -p6.rotateSpeed * m;
       if (angle2) {
-        Vec3.cross(pitchDir, _eye, camera.up);
+        Vec3.cross(pitchDir, _eye, camera2.up);
         Vec3.normalize(pitchDir, pitchDir);
         Quat.setAxisAngle(pitchQuat, pitchDir, angle2);
         Vec3.transformQuat(_eye, _eye, pitchQuat);
-        Vec3.transformQuat(camera.up, camera.up, pitchQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, pitchQuat);
         _pitchLastAngle = angle2;
       } else if (!p6.staticMoving && _pitchLastAngle) {
         _pitchLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
-        Vec3.cross(pitchDir, _eye, camera.up);
+        Vec3.cross(pitchDir, _eye, camera2.up);
         Vec3.normalize(pitchDir, pitchDir);
         Quat.setAxisAngle(pitchQuat, pitchDir, _pitchLastAngle);
         Vec3.transformQuat(_eye, _eye, pitchQuat);
-        Vec3.transformQuat(camera.up, camera.up, pitchQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, pitchQuat);
       }
     }
     const yawQuat = Quat();
@@ -25391,17 +25391,17 @@ var TrackballControls;
       const m = (keyState.yawRight - keyState.yawLeft) / (p6.flyMode ? 360 : 90);
       const angle2 = -p6.rotateSpeed * m;
       if (angle2) {
-        Vec3.normalize(yawDir, camera.up);
+        Vec3.normalize(yawDir, camera2.up);
         Quat.setAxisAngle(yawQuat, yawDir, angle2);
         Vec3.transformQuat(_eye, _eye, yawQuat);
-        Vec3.transformQuat(camera.up, camera.up, yawQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, yawQuat);
         _yawLastAngle = angle2;
       } else if (!p6.staticMoving && _yawLastAngle) {
         _yawLastAngle *= Math.sqrt(1 - p6.dynamicDampingFactor);
-        Vec3.normalize(yawDir, camera.up);
+        Vec3.normalize(yawDir, camera2.up);
         Quat.setAxisAngle(yawQuat, yawDir, _yawLastAngle);
         Vec3.transformQuat(_eye, _eye, yawQuat);
-        Vec3.transformQuat(camera.up, camera.up, yawQuat);
+        Vec3.transformQuat(camera2.up, camera2.up, yawQuat);
       }
     }
     function zoomCamera() {
@@ -25418,8 +25418,8 @@ var TrackballControls;
     function focusCamera() {
       const factor = (_focusEnd[1] - _focusStart[1]) * p6.zoomSpeed;
       if (factor !== 0) {
-        const radius = Math.max(1, camera.state.radius + camera.state.radius * factor);
-        camera.setState({ radius });
+        const radius = Math.max(1, camera2.state.radius + camera2.state.radius * factor);
+        camera2.setState({ radius });
       }
       if (p6.staticMoving) {
         Vec2.copy(_focusStart, _focusEnd);
@@ -25434,14 +25434,14 @@ var TrackballControls;
       Vec2.sub(panMouseChange, Vec2.copy(panMouseChange, _panEnd), _panStart);
       if (Vec2.squaredMagnitude(panMouseChange)) {
         const factor = input.pixelRatio * p6.panSpeed;
-        panMouseChange[0] *= 1 / camera.zoom * camera.viewport.width * factor;
-        panMouseChange[1] *= 1 / camera.zoom * camera.viewport.height * factor;
-        Vec3.cross(panOffset, Vec3.copy(panOffset, _eye), camera.up);
+        panMouseChange[0] *= 1 / camera2.zoom * camera2.viewport.width * factor;
+        panMouseChange[1] *= 1 / camera2.zoom * camera2.viewport.height * factor;
+        Vec3.cross(panOffset, Vec3.copy(panOffset, _eye), camera2.up);
         Vec3.setMagnitude(panOffset, panOffset, panMouseChange[0]);
-        Vec3.setMagnitude(panObjUp, camera.up, panMouseChange[1]);
+        Vec3.setMagnitude(panObjUp, camera2.up, panMouseChange[1]);
         Vec3.add(panOffset, panOffset, panObjUp);
-        Vec3.add(camera.position, camera.position, panOffset);
-        Vec3.add(camera.target, camera.target, panOffset);
+        Vec3.add(camera2.position, camera2.position, panOffset);
+        Vec3.add(camera2.target, camera2.target, panOffset);
         if (p6.staticMoving) {
           Vec2.copy(_panStart, _panEnd);
         } else {
@@ -25469,97 +25469,97 @@ var TrackballControls;
     const moveDir = Vec3();
     const moveEye = Vec3();
     function moveCamera(deltaT) {
-      Vec3.sub(moveEye, camera.position, camera.target);
-      const minDistance = Math.max(camera.state.minNear, p6.minDistance);
+      Vec3.sub(moveEye, camera2.position, camera2.target);
+      const minDistance = Math.max(camera2.state.minNear, p6.minDistance);
       Vec3.setMagnitude(moveEye, moveEye, minDistance);
       const moveTarget = p6.flyMode || input.pointerLock;
       const moveSpeed = deltaT * (60 / 1e3) * p6.moveSpeed * (keyState.boostMove === 1 ? p6.boostMoveFactor : 1);
       if (keyState.moveForward === 1) {
-        const cameraDistance = Vec3.distance(camera.position, scene.boundingSphereVisible.center);
+        const cameraDistance = Vec3.distance(camera2.position, scene.boundingSphereVisible.center);
         if (cameraDistance < scene.boundingSphereVisible.radius && moveTarget) {
           Vec3.normalize(moveDir, moveEye);
-          Vec3.scaleAndSub(camera.position, camera.position, moveDir, moveSpeed);
+          Vec3.scaleAndSub(camera2.position, camera2.position, moveDir, moveSpeed);
         } else {
-          Vec3.sub(moveDir, camera.position, camera.target);
+          Vec3.sub(moveDir, camera2.position, camera2.target);
           Vec3.scale(moveDir, moveDir, 1 - moveSpeed / 100);
-          Vec3.add(camera.position, camera.target, moveDir);
+          Vec3.add(camera2.position, camera2.target, moveDir);
         }
         if (moveTarget) {
-          Vec3.sub(camera.target, camera.position, moveEye);
+          Vec3.sub(camera2.target, camera2.position, moveEye);
         }
       }
       if (keyState.moveBack === 1) {
-        const cameraDistance = Vec3.distance(camera.position, scene.boundingSphereVisible.center);
+        const cameraDistance = Vec3.distance(camera2.position, scene.boundingSphereVisible.center);
         if (cameraDistance < scene.boundingSphereVisible.radius && moveTarget) {
           Vec3.normalize(moveDir, moveEye);
-          Vec3.scaleAndAdd(camera.position, camera.position, moveDir, moveSpeed);
+          Vec3.scaleAndAdd(camera2.position, camera2.position, moveDir, moveSpeed);
         } else {
-          Vec3.sub(moveDir, camera.position, camera.target);
+          Vec3.sub(moveDir, camera2.position, camera2.target);
           Vec3.scale(moveDir, moveDir, 1 + moveSpeed / 100);
-          Vec3.add(camera.position, camera.target, moveDir);
+          Vec3.add(camera2.position, camera2.target, moveDir);
         }
         if (moveTarget) {
-          Vec3.sub(camera.target, camera.position, moveEye);
+          Vec3.sub(camera2.target, camera2.position, moveEye);
         }
       }
       if (keyState.moveLeft === 1) {
-        Vec3.cross(moveDir, moveEye, camera.up);
+        Vec3.cross(moveDir, moveEye, camera2.up);
         Vec3.normalize(moveDir, moveDir);
         if (moveTarget) {
-          Vec3.scaleAndAdd(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, moveEye);
+          Vec3.scaleAndAdd(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, moveEye);
         } else {
-          Vec3.scaleAndSub(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, _eye);
+          Vec3.scaleAndSub(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, _eye);
         }
       }
       if (keyState.moveRight === 1) {
-        Vec3.cross(moveDir, moveEye, camera.up);
+        Vec3.cross(moveDir, moveEye, camera2.up);
         Vec3.normalize(moveDir, moveDir);
         if (moveTarget) {
-          Vec3.scaleAndSub(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, moveEye);
+          Vec3.scaleAndSub(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, moveEye);
         } else {
-          Vec3.scaleAndAdd(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, _eye);
+          Vec3.scaleAndAdd(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, _eye);
         }
       }
       if (keyState.moveUp === 1) {
-        Vec3.normalize(moveDir, camera.up);
+        Vec3.normalize(moveDir, camera2.up);
         if (moveTarget) {
-          Vec3.scaleAndAdd(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, moveEye);
+          Vec3.scaleAndAdd(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, moveEye);
         } else {
-          Vec3.scaleAndSub(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, _eye);
+          Vec3.scaleAndSub(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, _eye);
         }
       }
       if (keyState.moveDown === 1) {
-        Vec3.normalize(moveDir, camera.up);
+        Vec3.normalize(moveDir, camera2.up);
         if (moveTarget) {
-          Vec3.scaleAndSub(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, moveEye);
+          Vec3.scaleAndSub(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, moveEye);
         } else {
-          Vec3.scaleAndAdd(camera.position, camera.position, moveDir, moveSpeed);
-          Vec3.sub(camera.target, camera.position, _eye);
+          Vec3.scaleAndAdd(camera2.position, camera2.position, moveDir, moveSpeed);
+          Vec3.sub(camera2.target, camera2.position, _eye);
         }
       }
       if (moveTarget) {
-        const cameraDistance = Vec3.distance(camera.position, scene.boundingSphereVisible.center);
-        camera.setState({ minFar: cameraDistance + scene.boundingSphereVisible.radius });
+        const cameraDistance = Vec3.distance(camera2.position, scene.boundingSphereVisible.center);
+        camera2.setState({ minFar: cameraDistance + scene.boundingSphereVisible.radius });
       }
     }
     function checkDistances() {
-      const maxDistance = Math.min(Math.max(camera.state.radiusMax * 1e3, 0.01), p6.maxDistance);
+      const maxDistance = Math.min(Math.max(camera2.state.radiusMax * 1e3, 0.01), p6.maxDistance);
       if (Vec3.squaredMagnitude(_eye) > maxDistance * maxDistance) {
         Vec3.setMagnitude(_eye, _eye, maxDistance);
-        Vec3.add(camera.position, camera.target, _eye);
+        Vec3.add(camera2.position, camera2.target, _eye);
         Vec2.copy(_zoomStart, _zoomEnd);
         Vec2.copy(_focusStart, _focusEnd);
       }
       if (Vec3.squaredMagnitude(_eye) < p6.minDistance * p6.minDistance) {
         Vec3.setMagnitude(_eye, _eye, p6.minDistance);
-        Vec3.add(camera.position, camera.target, _eye);
+        Vec3.add(camera2.position, camera2.target, _eye);
         Vec2.copy(_zoomStart, _zoomEnd);
         Vec2.copy(_focusStart, _focusEnd);
       }
@@ -25580,7 +25580,7 @@ var TrackballControls;
         else if (p6.animate.name === "rock")
           rock(deltaT);
       }
-      Vec3.sub(_eye, camera.position, camera.target);
+      Vec3.sub(_eye, camera2.position, camera2.target);
       rotateCamera();
       rollCamera();
       pitchCamera();
@@ -25588,24 +25588,24 @@ var TrackballControls;
       zoomCamera();
       focusCamera();
       panCamera();
-      Vec3.add(camera.position, camera.target, _eye);
+      Vec3.add(camera2.position, camera2.target, _eye);
       checkDistances();
       if (lastUpdated > 0) {
         moveCamera(Math.min(deltaT, 15 * 1e3 / 60));
       }
-      Vec3.sub(_eye, camera.position, camera.target);
+      Vec3.sub(_eye, camera2.position, camera2.target);
       checkDistances();
-      if (Vec3.squaredDistance(lastPosition, camera.position) > EPSILON) {
-        Vec3.copy(lastPosition, camera.position);
+      if (Vec3.squaredDistance(lastPosition, camera2.position) > EPSILON) {
+        Vec3.copy(lastPosition, camera2.position);
       }
       lastUpdated = t5;
     }
     function reset() {
-      Vec3.copy(camera.target, target0);
-      Vec3.copy(camera.position, position0);
-      Vec3.copy(camera.up, up0);
-      Vec3.sub(_eye, camera.position, camera.target);
-      Vec3.copy(lastPosition, camera.position);
+      Vec3.copy(camera2.target, target0);
+      Vec3.copy(camera2.position, position0);
+      Vec3.copy(camera2.up, up0);
+      Vec3.sub(_eye, camera2.position, camera2.target);
+      Vec3.copy(lastPosition, camera2.position);
     }
     function onDrag({ x, y, dx, dy, pageX, pageY, buttons, modifiers: modifiers3, isStart, useDelta }) {
       const isOutside = !useDelta && outsideViewport(x, y);
@@ -25660,8 +25660,8 @@ var TrackballControls;
       if (dragFocus)
         Vec2.copy(_focusEnd, mouseOnScreenVec2);
       if (dragFocusZoom) {
-        const dist = Vec3.distance(camera.state.position, camera.state.target);
-        camera.setState({ radius: dist / 5 });
+        const dist = Vec3.distance(camera2.state.position, camera2.state.target);
+        camera2.setState({ radius: dist / 5 });
       }
       if (dragPan)
         Vec2.copy(_panEnd, mouseOnScreenVec2);
@@ -25825,21 +25825,21 @@ var TrackballControls;
       }
     }
     function initCameraMove() {
-      Vec3.sub(moveEye, camera.position, camera.target);
-      const minDistance = Math.max(camera.state.minNear, p6.minDistance);
+      Vec3.sub(moveEye, camera2.position, camera2.target);
+      const minDistance = Math.max(camera2.state.minNear, p6.minDistance);
       Vec3.setMagnitude(moveEye, moveEye, minDistance);
-      Vec3.sub(camera.target, camera.position, moveEye);
-      const cameraDistance = Vec3.distance(camera.position, scene.boundingSphereVisible.center);
-      camera.setState({ minFar: cameraDistance + scene.boundingSphereVisible.radius });
+      Vec3.sub(camera2.target, camera2.position, moveEye);
+      const cameraDistance = Vec3.distance(camera2.position, scene.boundingSphereVisible.center);
+      camera2.setState({ minFar: cameraDistance + scene.boundingSphereVisible.radius });
     }
     function resetCameraMove() {
       const { center: center2, radius } = scene.boundingSphereVisible;
-      const cameraDistance = Vec3.distance(camera.position, center2);
+      const cameraDistance = Vec3.distance(camera2.position, center2);
       if (cameraDistance > radius) {
-        const focus = camera.getFocus(center2, radius);
-        camera.setState({ ...focus, minFar: 0 });
+        const focus = camera2.getFocus(center2, radius);
+        camera2.setState({ ...focus, minFar: 0 });
       } else {
-        camera.setState({
+        camera2.setState({
           minFar: 0,
           radius: scene.boundingSphereVisible.radius
         });
@@ -33783,46 +33783,46 @@ var Coordinates;
     };
   }
   Coordinates2.create = create3;
-  function getAtomicConformation(frame, fields, ordering) {
+  function getAtomicConformation(frame2, fields, ordering) {
     var _a, _b;
-    let { x, y, z } = frame;
-    if (frame.xyzOrdering.frozen) {
+    let { x, y, z } = frame2;
+    if (frame2.xyzOrdering.frozen) {
       if (ordering) {
-        if (frame.xyzOrdering.isIdentity) {
+        if (frame2.xyzOrdering.isIdentity) {
           x = getOrderedCoords(x, ordering);
           y = getOrderedCoords(y, ordering);
           z = getOrderedCoords(z, ordering);
-        } else if (!arrayEqual(frame.xyzOrdering.index, ordering)) {
-          x = getSourceOrderedCoords(x, frame.xyzOrdering.index, ordering);
-          y = getSourceOrderedCoords(y, frame.xyzOrdering.index, ordering);
-          z = getSourceOrderedCoords(z, frame.xyzOrdering.index, ordering);
+        } else if (!arrayEqual(frame2.xyzOrdering.index, ordering)) {
+          x = getSourceOrderedCoords(x, frame2.xyzOrdering.index, ordering);
+          y = getSourceOrderedCoords(y, frame2.xyzOrdering.index, ordering);
+          z = getSourceOrderedCoords(z, frame2.xyzOrdering.index, ordering);
         }
-      } else if (!frame.xyzOrdering.isIdentity) {
-        x = getInvertedCoords(x, frame.xyzOrdering.index);
-        y = getInvertedCoords(y, frame.xyzOrdering.index);
-        z = getInvertedCoords(z, frame.xyzOrdering.index);
+      } else if (!frame2.xyzOrdering.isIdentity) {
+        x = getInvertedCoords(x, frame2.xyzOrdering.index);
+        y = getInvertedCoords(y, frame2.xyzOrdering.index);
+        z = getInvertedCoords(z, frame2.xyzOrdering.index);
       }
     } else if (ordering) {
-      if (frame.xyzOrdering.isIdentity) {
-        frame.xyzOrdering.isIdentity = false;
-        frame.xyzOrdering.index = ordering;
+      if (frame2.xyzOrdering.isIdentity) {
+        frame2.xyzOrdering.isIdentity = false;
+        frame2.xyzOrdering.index = ordering;
         reorderCoordsInPlace(x, ordering);
         reorderCoordsInPlace(y, ordering);
         reorderCoordsInPlace(z, ordering);
       } else {
-        if (!arrayEqual(frame.xyzOrdering.index, ordering)) {
-          x = getSourceOrderedCoords(x, frame.xyzOrdering.index, ordering);
-          y = getSourceOrderedCoords(y, frame.xyzOrdering.index, ordering);
-          z = getSourceOrderedCoords(z, frame.xyzOrdering.index, ordering);
+        if (!arrayEqual(frame2.xyzOrdering.index, ordering)) {
+          x = getSourceOrderedCoords(x, frame2.xyzOrdering.index, ordering);
+          y = getSourceOrderedCoords(y, frame2.xyzOrdering.index, ordering);
+          z = getSourceOrderedCoords(z, frame2.xyzOrdering.index, ordering);
         }
       }
     }
-    frame.xyzOrdering.frozen = true;
+    frame2.xyzOrdering.frozen = true;
     return {
       id: UUID.create22(),
       atomId: fields.atomId,
-      occupancy: (_a = fields.occupancy) !== null && _a !== void 0 ? _a : Column.ofConst(1, frame.elementCount, Column.Schema.int),
-      B_iso_or_equiv: (_b = fields.B_iso_or_equiv) !== null && _b !== void 0 ? _b : Column.ofConst(0, frame.elementCount, Column.Schema.float),
+      occupancy: (_a = fields.occupancy) !== null && _a !== void 0 ? _a : Column.ofConst(1, frame2.elementCount, Column.Schema.int),
+      B_iso_or_equiv: (_b = fields.B_iso_or_equiv) !== null && _b !== void 0 ? _b : Column.ofConst(0, frame2.elementCount, Column.Schema.float),
       xyzDefined: true,
       x,
       y,
@@ -41970,8 +41970,8 @@ function toDatabaseCollection(schema, file, aliases) {
   }
   return dbc;
 }
-function toDatabase(schema, frame, aliases) {
-  return createDatabase(schema, frame, aliases);
+function toDatabase(schema, frame2, aliases) {
+  return createDatabase(schema, frame2, aliases);
 }
 function toTable(schema, category) {
   return new CategoryTable(category, schema, true);
@@ -42082,19 +42082,19 @@ var CategoryTable = class {
     }
   }
 };
-function createDatabase(schema, frame, aliases) {
+function createDatabase(schema, frame2, aliases) {
   const tables = /* @__PURE__ */ Object.create(null);
   for (const k of Object.keys(schema)) {
-    tables[k] = createTable(k, schema[k], frame, aliases);
+    tables[k] = createTable(k, schema[k], frame2, aliases);
   }
-  return Database.ofTables(frame.header, schema, tables);
+  return Database.ofTables(frame2.header, schema, tables);
 }
-function flattenFrame(frame) {
+function flattenFrame(frame2) {
   const flatFrame = /* @__PURE__ */ Object.create(null);
-  for (const c8 of Object.keys(frame.categories)) {
-    for (const f of frame.categories[c8].fieldNames) {
+  for (const c8 of Object.keys(frame2.categories)) {
+    for (const f of frame2.categories[c8].fieldNames) {
       const p6 = FieldPath.create(c8, f, true);
-      flatFrame[p6] = frame.categories[c8].getField(f);
+      flatFrame[p6] = frame2.categories[c8].getField(f);
     }
   }
   return flatFrame;
@@ -42112,10 +42112,10 @@ function getField(field2, category, flatFrame, aliases) {
     }
   }
 }
-function createTable(key2, schema, frame, aliases) {
-  let cat = frame.categories[key2];
+function createTable(key2, schema, frame2, aliases) {
+  let cat = frame2.categories[key2];
   if (aliases) {
-    const flatFrame = flattenFrame(frame);
+    const flatFrame = flattenFrame(frame2);
     const fields = /* @__PURE__ */ Object.create(null);
     const fieldNames = [];
     let rowCount = 0;
@@ -42354,16 +42354,16 @@ var UniqueArray;
     return { keys: /* @__PURE__ */ new Set(), array: [] };
   }
   UniqueArray2.create = create3;
-  function add({ keys: keys2, array: array2 }, key2, value) {
-    if (keys2.has(key2))
+  function add({ keys: keys3, array: array2 }, key2, value) {
+    if (keys3.has(key2))
       return false;
-    keys2.add(key2);
+    keys3.add(key2);
     array2[array2.length] = value;
     return true;
   }
   UniqueArray2.add = add;
-  function has8({ keys: keys2 }, key2) {
-    return keys2.has(key2);
+  function has8({ keys: keys3 }, key2) {
+    return keys3.has(key2);
   }
   UniqueArray2.has = has8;
 })(UniqueArray || (UniqueArray = {}));
@@ -44901,10 +44901,10 @@ function encodedSize(value) {
         size4 += encodedSize(value[i]);
       }
     } else {
-      const keys2 = Object.keys(value);
-      length2 = keys2.length;
+      const keys3 = Object.keys(value);
+      length2 = keys3.length;
       for (let i = 0; i < length2; i++) {
-        const key2 = keys2[i];
+        const key2 = keys3[i];
         size4 += encodedSize(key2) + encodedSize(value[key2]);
       }
     }
@@ -45034,12 +45034,12 @@ function encodeInternal(value, view2, bytes, offset4) {
   if (type3 === "object") {
     let length2, size4 = 0;
     const isArray = Array.isArray(value);
-    let keys2;
+    let keys3;
     if (isArray) {
       length2 = value.length;
     } else {
-      keys2 = Object.keys(value);
-      length2 = keys2.length;
+      keys3 = Object.keys(value);
+      length2 = keys3.length;
     }
     if (length2 < 16) {
       view2.setUint8(offset4, length2 | (isArray ? 144 : 128));
@@ -45058,8 +45058,8 @@ function encodeInternal(value, view2, bytes, offset4) {
         size4 += encodeInternal(value[i], view2, bytes, offset4 + size4);
       }
     } else {
-      for (let i = 0, _i = keys2.length; i < _i; i++) {
-        const key2 = keys2[i];
+      for (let i = 0, _i = keys3.length; i < _i; i++) {
+        const key2 = keys3[i];
         size4 += encodeInternal(key2, view2, bytes, offset4 + size4);
         size4 += encodeInternal(value[key2], view2, bytes, offset4 + size4);
       }
@@ -45216,9 +45216,9 @@ function getFieldData(field2, arrayCtor, totalCount, data) {
   let offset4 = 0;
   for (let _d = 0; _d < data.length; _d++) {
     const d5 = data[_d].data;
-    const keys2 = data[_d].keys();
-    while (keys2.hasNext) {
-      const key2 = keys2.move();
+    const keys3 = data[_d].keys();
+    while (keys3.hasNext) {
+      const key2 = keys3.move();
       const p6 = valueKind ? valueKind(key2, d5) : Column.ValueKinds.Present;
       if (p6 !== Column.ValueKinds.Present) {
         mask[offset4] = p6;
@@ -45267,10 +45267,10 @@ var CifWriter;
     return { fields: fields2, source: [source] };
   }
   CifWriter2.categoryInstance = categoryInstance;
-  function createEncodingProviderFromCifFrame(frame) {
+  function createEncodingProviderFromCifFrame(frame2) {
     return {
       get(c8, f) {
-        const cat = frame.categories[c8];
+        const cat = frame2.categories[c8];
         if (!cat)
           return void 0;
         const ff = cat.getField(f);
@@ -45617,7 +45617,7 @@ function findIndexPairBonds(unit2) {
   const atomB = [];
   const flags2 = [];
   const orders = [];
-  const keys2 = [];
+  const keys3 = [];
   const opKey = unit2.conformation.operator.key;
   for (let _aI = 0; _aI < atomCount2; _aI++) {
     const aI = atoms2[_aI];
@@ -45655,11 +45655,11 @@ function findIndexPairBonds(unit2) {
         atomB[atomB.length] = _bI;
         orders[orders.length] = order[i];
         flags2[flags2.length] = flag[i];
-        keys2[keys2.length] = key2[i];
+        keys3[keys3.length] = key2[i];
       }
     }
   }
-  return getGraph2(atomA, atomB, orders, flags2, keys2, atomCount2, {
+  return getGraph2(atomA, atomB, orders, flags2, keys3, atomCount2, {
     canRemap: false,
     cacheable: indexPairs.cacheable
   });
@@ -45830,7 +45830,7 @@ function getIndexPairBonds(unit2) {
   const atomB = [];
   const flags2 = [];
   const orders = [];
-  const keys2 = [];
+  const keys3 = [];
   for (let j = 0, jl = bonds.length; j < jl; ++j) {
     const i = bonds[j];
     if (a8[i] >= b8[i])
@@ -45847,9 +45847,9 @@ function getIndexPairBonds(unit2) {
     atomB[atomB.length] = _bI;
     flags2[flags2.length] = flag[i];
     orders[orders.length] = order[i];
-    keys2[keys2.length] = key2[i];
+    keys3[keys3.length] = key2[i];
   }
-  return getGraph2(atomA, atomB, orders, flags2, keys2, elements.length, {
+  return getGraph2(atomA, atomB, orders, flags2, keys3, elements.length, {
     canRemap: false,
     cacheable: indexPairs.cacheable
   });
@@ -47697,12 +47697,12 @@ function operatorGroupsProvider(generators, matrices) {
   };
 }
 function getMatrices(pdbx_struct_oper_list) {
-  const { id, matrix, vector, _schema } = pdbx_struct_oper_list;
+  const { id, matrix, vector: vector2, _schema } = pdbx_struct_oper_list;
   const matrices = /* @__PURE__ */ new Map();
   const t5 = Vec3();
   for (let i = 0, _i = pdbx_struct_oper_list._rowCount; i < _i; i++) {
     const m = Tensor.toMat4(Mat4(), _schema.matrix.space, matrix.value(i));
-    Tensor.toVec3(t5, _schema.vector.space, vector.value(i));
+    Tensor.toVec3(t5, _schema.vector.space, vector2.value(i));
     Mat4.setTranslation(m, t5);
     Mat4.setValue(m, 3, 3, 1);
     matrices.set(id.value(i), m);
@@ -47820,12 +47820,12 @@ function getSpacegroup(symmetry, cell) {
 function getNcsOperators(struct_ncs_oper) {
   if (struct_ncs_oper._rowCount === 0)
     return void 0;
-  const { id, matrix, vector } = struct_ncs_oper;
+  const { id, matrix, vector: vector2 } = struct_ncs_oper;
   const matrixSpace = mmCIF_Schema.struct_ncs_oper.matrix.space, vectorSpace = mmCIF_Schema.struct_ncs_oper.vector.space;
   const opers = [];
   for (let i = 0; i < struct_ncs_oper._rowCount; i++) {
     const m = Tensor.toMat3(Mat3(), matrixSpace, matrix.value(i));
-    const v4 = Tensor.toVec3(Vec3(), vectorSpace, vector.value(i));
+    const v4 = Tensor.toVec3(Vec3(), vectorSpace, vector2.value(i));
     if (!SymmetryOperator.checkIfRotationAndTranslation(m, v4))
       continue;
     if (struct_ncs_oper.code.value(i) === "given" && !Mat3.isIdentity(m) && !Vec3.isZero(v4))
@@ -48997,10 +48997,10 @@ function forEachItem(schema, f) {
       }
     } else {
       const current2 = { ...schema.prefix };
-      const keys2 = Object.keys(schema.items);
-      const n = schema.items[keys2[0]].length;
+      const keys3 = Object.keys(schema.items);
+      const n = schema.items[keys3[0]].length;
       for (let i = 0; i < n; i++) {
-        for (const k of keys2) {
+        for (const k of keys3) {
           current2[k] = schema.items[k][i];
         }
         f(current2);
@@ -50460,7 +50460,7 @@ async function computeUnitDSSP(unit2, params) {
   assignSheets(ctx);
   const assignment = getDSSPAssignment(flags2, getResidueFlag);
   const type3 = new Uint32Array(residueCount);
-  const keys2 = [];
+  const keys3 = [];
   const elements = [];
   const getIndex = (rI) => SortedArray.indexOf(residueIndices, rI);
   for (let i = 0, il = residueIndices.length; i < il; ++i) {
@@ -50470,9 +50470,9 @@ async function computeUnitDSSP(unit2, params) {
     if (elements.length === 0 || flag !== elements[elements.length - 1].flags) {
       elements[elements.length] = createElement(mapToKind(assign), flags2[i], getResidueFlag);
     }
-    keys2[i] = elements.length - 1;
+    keys3[i] = elements.length - 1;
   }
-  return SecondaryStructure(type3, keys2, elements, getIndex);
+  return SecondaryStructure(type3, keys3, elements, getIndex);
 }
 function createElement(kind, flag, getResidueFlag) {
   if (kind === "helix") {
@@ -50865,7 +50865,7 @@ function zhangSkolnickAtomicSS(unit2, residueIndices, i, distances, delta2) {
 async function computeUnitZhangSkolnik(unit2) {
   const count3 = unit2.proteinElements.length;
   const type3 = new Uint32Array(count3);
-  const keys2 = [];
+  const keys3 = [];
   const elements = [];
   const { proteinElements, residueIndex: residueIndex2 } = unit2;
   const residueCount = proteinElements.length;
@@ -50887,9 +50887,9 @@ async function computeUnitZhangSkolnik(unit2) {
     if (elements.length === 0 || flag !== getFlag(elements[elements.length - 1])) {
       elements[elements.length] = createElement2(mapToKind2(flag), flag);
     }
-    keys2[i] = elements.length - 1;
+    keys3[i] = elements.length - 1;
   }
-  return SecondaryStructure(type3, keys2, elements, getIndex);
+  return SecondaryStructure(type3, keys3, elements, getIndex);
 }
 function createElement2(kind, flag) {
   if (kind === "helix") {
@@ -53666,7 +53666,7 @@ function getUniqueElementSymbols(s) {
 function getEntityIndices(structure) {
   const { units } = structure;
   const l = element_exports.Location.create(structure);
-  const keys2 = UniqueArray.create();
+  const keys3 = UniqueArray.create();
   for (const unit2 of units) {
     const prop = unit2.kind === Unit.Kind.Atomic ? StructureProperties.entity.key : StructureProperties.coarse.entityKey;
     l.unit = unit2;
@@ -53676,11 +53676,11 @@ function getEntityIndices(structure) {
       const chainSegment = chainsIt.move();
       l.element = elements[chainSegment.start];
       const key2 = prop(l);
-      UniqueArray.add(keys2, key2, key2);
+      UniqueArray.add(keys3, key2, key2);
     }
   }
-  sortArray(keys2.array);
-  return keys2.array;
+  sortArray(keys3.array);
+  return keys3.array;
 }
 function getUniqueAtomicResidueIndices(structure) {
   const map4 = /* @__PURE__ */ new Map();
@@ -53876,10 +53876,10 @@ function getAtomicResidueCount(structure) {
     let first4 = void 0;
     let count3 = 0;
     for (let i = 0, il = trajectory.frameCount; i < il; ++i) {
-      const frame = await Task.resolveInContext(trajectory.getFrameAtIndex(i), ctx);
+      const frame2 = await Task.resolveInContext(trajectory.getFrameAtIndex(i), ctx);
       if (!first4)
-        first4 = frame;
-      const structure = ofModel(frame);
+        first4 = frame2;
+      const structure = ofModel(frame2);
       for (let j = 0, jl = structure.units.length; j < jl; ++j) {
         const u2 = structure.units[j];
         const invariantId = u2.invariantId + count3;
@@ -55090,9 +55090,9 @@ function Loci(structure, elements) {
       }
     }
     const opData = [];
-    const keys2 = sourceIndexMap.keys();
+    const keys3 = sourceIndexMap.keys();
     while (true) {
-      const k = keys2.next();
+      const k = keys3.next();
       if (k.done)
         break;
       const e = sourceIndexMap.get(k.value);
@@ -58432,13 +58432,13 @@ var CIF = {
   toDatabaseCollection,
   toDatabase,
   schema: {
-    mmCIF: (frame) => toDatabase(mmCIF_Schema, frame),
-    CCD: (frame) => toDatabase(CCD_Schema, frame),
-    BIRD: (frame) => toDatabase(BIRD_Schema, frame),
-    dic: (frame) => toDatabase(dic_Schema, frame),
-    cifCore: (frame) => toDatabase(CifCore_Schema, frame, CifCore_Aliases),
-    densityServer: (frame) => toDatabase(DensityServer_Data_Schema, frame),
-    segmentation: (frame) => toDatabase(Segmentation_Data_Schema, frame)
+    mmCIF: (frame2) => toDatabase(mmCIF_Schema, frame2),
+    CCD: (frame2) => toDatabase(CCD_Schema, frame2),
+    BIRD: (frame2) => toDatabase(BIRD_Schema, frame2),
+    dic: (frame2) => toDatabase(dic_Schema, frame2),
+    cifCore: (frame2) => toDatabase(CifCore_Schema, frame2, CifCore_Aliases),
+    densityServer: (frame2) => toDatabase(DensityServer_Data_Schema, frame2),
+    segmentation: (frame2) => toDatabase(Segmentation_Data_Schema, frame2)
   }
 };
 
@@ -59062,15 +59062,15 @@ var MmcifFormat;
     return (x === null || x === void 0 ? void 0 : x.kind) === "mmCIF";
   }
   MmcifFormat2.is = is4;
-  function fromFrame(frame, db, source, file) {
+  function fromFrame(frame2, db, source, file) {
     if (!db)
-      db = CIF.schema.mmCIF(frame);
-    return { kind: "mmCIF", name: db._name, data: { db, file, frame, source } };
+      db = CIF.schema.mmCIF(frame2);
+    return { kind: "mmCIF", name: db._name, data: { db, file, frame: frame2, source } };
   }
   MmcifFormat2.fromFrame = fromFrame;
 })(MmcifFormat || (MmcifFormat = {}));
-function trajectoryFromMmCIF(frame, file) {
-  const format = MmcifFormat.fromFrame(frame, void 0, void 0, file);
+function trajectoryFromMmCIF(frame2, file) {
+  const format = MmcifFormat.fromFrame(frame2, void 0, void 0, file);
   const basic = createBasic(format.data.db, true);
   return Task.create("Create mmCIF Model", (ctx) => createModels(basic, format, ctx));
 }
@@ -59089,16 +59089,16 @@ var CCDFormat;
     return (x === null || x === void 0 ? void 0 : x.kind) === "CCD";
   }
   CCDFormat2.is = is4;
-  function fromFrame(frame, db) {
+  function fromFrame(frame2, db) {
     if (!db)
-      db = CIF.schema.CCD(frame);
-    return { kind: "CCD", name: db._name, data: { db, frame } };
+      db = CIF.schema.CCD(frame2);
+    return { kind: "CCD", name: db._name, data: { db, frame: frame2 } };
   }
   CCDFormat2.fromFrame = fromFrame;
 })(CCDFormat || (CCDFormat = {}));
-function trajectoryFromCCD(frame) {
-  const format = CCDFormat.fromFrame(frame);
-  return Task.create("Create CCD Models", (ctx) => createCcdModels(format.data.db, CCDFormat.fromFrame(frame), ctx));
+function trajectoryFromCCD(frame2) {
+  const format = CCDFormat.fromFrame(frame2);
+  return Task.create("Create CCD Models", (ctx) => createCcdModels(format.data.db, CCDFormat.fromFrame(frame2), ctx));
 }
 async function createCcdModels(data, format, ctx) {
   const ideal = await createCcdModel(data, format, { coordinateType: "ideal", cartn_x: "pdbx_model_Cartn_x_ideal", cartn_y: "pdbx_model_Cartn_y_ideal", cartn_z: "pdbx_model_Cartn_z_ideal" }, ctx);
@@ -61149,8 +61149,8 @@ var Model;
     });
   }
   Model2.trajectoryFromTopologyAndCoordinates = trajectoryFromTopologyAndCoordinates;
-  function getAtomicConformationFromFrame(model, frame) {
-    return Coordinates.getAtomicConformation(frame, {
+  function getAtomicConformationFromFrame(model, frame2) {
+    return Coordinates.getAtomicConformation(frame2, {
       atomId: model.atomicConformation.atomId,
       occupancy: model.atomicConformation.occupancy,
       B_iso_or_equiv: model.atomicConformation.B_iso_or_equiv
@@ -63843,8 +63843,8 @@ var emptyMarkerTexture = { array: new Uint8Array(1), width: 1, height: 1 };
 
 // node_modules/molstar/lib/mol-model/location.js
 var NullLocation = { kind: "null-location" };
-function DataLocation(tag, data, element) {
-  return { kind: "data-location", tag, data, element };
+function DataLocation(tag2, data, element) {
+  return { kind: "data-location", tag: tag2, data, element };
 }
 
 // node_modules/molstar/lib/mol-geo/util/location-iterator.js
@@ -71688,10 +71688,10 @@ var Transform;
     return create3(Transform2.RootRef, Transformer.ROOT, {}, { ref: Transform2.RootRef, state });
   }
   Transform2.createRoot = createRoot;
-  function hasTag(t5, tag) {
+  function hasTag(t5, tag2) {
     if (!t5.tags)
       return false;
-    return t5.tags.indexOf(tag) >= 0;
+    return t5.tags.indexOf(tag2) >= 0;
   }
   Transform2.hasTag = hasTag;
   function hasTags(t5, tags) {
@@ -71699,8 +71699,8 @@ var Transform;
       return typeof tags !== "string" && tags.length === 0;
     if (typeof tags === "string")
       return hasTag(t5, tags);
-    for (const tag of tags) {
-      if (t5.tags.indexOf(tag) < 0)
+    for (const tag2 of tags) {
+      if (t5.tags.indexOf(tag2) < 0)
         return false;
     }
     return true;
@@ -72397,8 +72397,8 @@ var StateSelection;
   }
   StateSelection2.withStatus = withStatus;
   registerModifier("withTag", withTag);
-  function withTag(b8, tag) {
-    return filter5(b8, (n) => !!n.transform.tags && n.transform.tags.indexOf(tag) >= 0);
+  function withTag(b8, tag2) {
+    return filter5(b8, (n) => !!n.transform.tags && n.transform.tags.indexOf(tag2) >= 0);
   }
   StateSelection2.withTag = withTag;
   registerModifier("subtree", subtree);
@@ -72520,8 +72520,8 @@ var StateSelection;
     }
     return true;
   }
-  function findTagInSubtree(tree, root2, tag) {
-    return StateTree.doPreOrder(tree, tree.transforms.get(root2), { ref: void 0, tag }, _findTagInSubtree).ref;
+  function findTagInSubtree(tree, root2, tag2) {
+    return StateTree.doPreOrder(tree, tree.transforms.get(root2), { ref: void 0, tag: tag2 }, _findTagInSubtree).ref;
   }
   StateSelection2.findTagInSubtree = findTagInSubtree;
   function _findTagInSubtree(n, _, s) {
@@ -73881,7 +73881,7 @@ async function updateSubtree(ctx, root) {
   try {
     const start4 = now();
     const update10 = await updateNode2(ctx, root);
-    const time = now() - start4;
+    const time2 = now() - start4;
     if (update10.action !== "none")
       ctx.changed = true;
     setCellStatus(ctx, root, "ok");
@@ -73889,15 +73889,15 @@ async function updateSubtree(ctx, root) {
     if (update10.action === "created") {
       isNull = update10.obj === StateObject.Null;
       if (!isNull && !ctx.options.doNotLogTiming)
-        ctx.parent.events.log.next(LogEntry.info(`Created ${update10.obj.label} in ${formatTimespan(time)}.`));
+        ctx.parent.events.log.next(LogEntry.info(`Created ${update10.obj.label} in ${formatTimespan(time2)}.`));
     } else if (update10.action === "updated") {
       isNull = update10.obj === StateObject.Null;
       if (!isNull && !ctx.options.doNotLogTiming)
-        ctx.parent.events.log.next(LogEntry.info(`Updated ${update10.obj.label} in ${formatTimespan(time)}.`));
+        ctx.parent.events.log.next(LogEntry.info(`Updated ${update10.obj.label} in ${formatTimespan(time2)}.`));
     } else if (update10.action === "replaced") {
       isNull = update10.obj === StateObject.Null;
       if (!isNull && !ctx.options.doNotLogTiming)
-        ctx.parent.events.log.next(LogEntry.info(`Updated ${update10.obj.label} in ${formatTimespan(time)}.`));
+        ctx.parent.events.log.next(LogEntry.info(`Updated ${update10.obj.label} in ${formatTimespan(time2)}.`));
     }
   } catch (e) {
     ctx.changed = true;
@@ -74262,12 +74262,12 @@ var symbols = [
       for (let i = 1, _i = xs.length; i < _i; i++)
         ret -= xs[i](ctx);
     } else {
-      const keys2 = Object.keys(xs);
-      if (keys2.length === 1)
-        return -xs[keys2[0]](ctx);
-      ret = xs[keys2[0]](ctx) || 0;
-      for (let i = 1, _i = keys2.length; i < _i; i++)
-        ret -= xs[keys2[i]](ctx);
+      const keys3 = Object.keys(xs);
+      if (keys3.length === 1)
+        return -xs[keys3[0]](ctx);
+      ret = xs[keys3[0]](ctx) || 0;
+      for (let i = 1, _i = keys3.length; i < _i; i++)
+        ret -= xs[keys3[i]](ctx);
     }
     return ret;
   }),
@@ -74648,9 +74648,9 @@ function getArray(ctx, xs) {
     for (let i = 0, _i = xs.length; i < _i; i++)
       ret.push(xs[i](ctx));
   } else {
-    const keys2 = Object.keys(xs);
-    for (let i = 1, _i = keys2.length; i < _i; i++)
-      ret.push(xs[keys2[i]](ctx));
+    const keys3 = Object.keys(xs);
+    for (let i = 1, _i = keys3.length; i < _i; i++)
+      ret.push(xs[keys3[i]](ctx));
   }
   return ret;
 }
@@ -76762,11 +76762,11 @@ function _parseDcd(data) {
   const natom = header2.NATOM;
   const natom4 = natom * 4;
   for (let i = 0, n = header2.NSET; i < n; ++i) {
-    const frame = /* @__PURE__ */ Object.create(null);
-    frame.elementCount = natom;
+    const frame2 = /* @__PURE__ */ Object.create(null);
+    frame2.elementCount = natom;
     if (extraBlock) {
       nextPos += 4;
-      frame.cell = [
+      frame2.cell = [
         dv.getFloat64(nextPos, ef),
         dv.getFloat64(nextPos + 1, ef),
         dv.getFloat64(nextPos + 2 * 8, ef),
@@ -76784,11 +76784,11 @@ function _parseDcd(data) {
       nextPos += 4;
       const c8 = new Float32Array(data.buffer, nextPos, natom);
       if (j === 0)
-        frame.x = c8;
+        frame2.x = c8;
       else if (j === 1)
-        frame.y = c8;
+        frame2.y = c8;
       else
-        frame.z = c8;
+        frame2.z = c8;
       nextPos += natom4;
       if (dv.getInt32(nextPos, ef) !== natom4) {
         throw new Error(`dcd bad format, coord block end: ${i}, ${j}`);
@@ -76799,7 +76799,7 @@ function _parseDcd(data) {
       const bytes = dv.getInt32(nextPos, ef);
       nextPos += 4 + bytes + 4;
     }
-    frames.push(frame);
+    frames.push(frame2);
   }
   return { header: header2, frames };
 }
@@ -77981,7 +77981,7 @@ function coordinatesFromDcd(dcdFile) {
     const frames = [];
     for (let i = 0, il = dcdFile.frames.length; i < il; ++i) {
       const dcdFrame = dcdFile.frames[i];
-      const frame = {
+      const frame2 = {
         elementCount: dcdFrame.elementCount,
         time: Time(offsetTime.value + deltaTime.value * i, deltaTime.unit),
         x: dcdFrame.x,
@@ -77992,18 +77992,18 @@ function coordinatesFromDcd(dcdFile) {
       if (dcdFrame.cell) {
         const c8 = dcdFrame.cell;
         if (c8[1] >= -1 && c8[1] <= 1 && c8[3] >= -1 && c8[3] <= 1 && c8[4] >= -1 && c8[4] <= 1) {
-          frame.cell = Cell.create(Vec3.create(c8[0], c8[2], c8[5]), Vec3.create(degToRad(90 - Math.asin(c8[1]) * 90 / halfPI), degToRad(90 - Math.asin(c8[3]) * 90 / halfPI), degToRad(90 - Math.asin(c8[4]) * 90 / halfPI)));
+          frame2.cell = Cell.create(Vec3.create(c8[0], c8[2], c8[5]), Vec3.create(degToRad(90 - Math.asin(c8[1]) * 90 / halfPI), degToRad(90 - Math.asin(c8[3]) * 90 / halfPI), degToRad(90 - Math.asin(c8[4]) * 90 / halfPI)));
         } else if (c8[0] < 0 || c8[1] < 0 || c8[2] < 0 || c8[3] < 0 || c8[4] < 0 || c8[5] < 0 || c8[3] > 180 || c8[4] > 180 || c8[5] > 180) {
-          frame.cell = Cell.fromBasis(Vec3.create(c8[0], c8[1], c8[3]), Vec3.create(c8[1], c8[2], c8[4]), Vec3.create(c8[3], c8[4], c8[5]));
+          frame2.cell = Cell.fromBasis(Vec3.create(c8[0], c8[1], c8[3]), Vec3.create(c8[1], c8[2], c8[4]), Vec3.create(c8[3], c8[4], c8[5]));
         } else {
-          frame.cell = Cell.create(
+          frame2.cell = Cell.create(
             Vec3.create(c8[0], c8[2], c8[5]),
             // interpret angles very close to 0 as 90 deg
             Vec3.create(degToRad(equalEps(c8[1], 0, EPSILON) ? 90 : c8[1]), degToRad(equalEps(c8[3], 0, EPSILON) ? 90 : c8[3]), degToRad(equalEps(c8[4], 0, EPSILON) ? 90 : c8[4]))
           );
         }
       }
-      frames.push(frame);
+      frames.push(frame2);
     }
     return Coordinates.create(frames, deltaTime, offsetTime);
   });
@@ -78182,8 +78182,8 @@ function trajectoryFromGRO(gro) {
 }
 
 // node_modules/molstar/lib/mol-model-formats/structure/pdb/assembly.js
-function parseCryst1(id, record3) {
-  const get11 = (s, l) => (record3.substr(s, l) || "").trim();
+function parseCryst1(id, record4) {
+  const get11 = (s, l) => (record4.substr(s, l) || "").trim();
   const cell = {
     entry_id: CifField.ofString(id),
     length_a: CifField.ofString(get11(6, 9)),
@@ -80284,17 +80284,17 @@ var Language;
       }
     }
     if (allNumeric) {
-      const keys2 = Object.keys(args).map((a8) => +a8).sort((a8, b8) => a8 - b8);
+      const keys3 = Object.keys(args).map((a8) => +a8).sort((a8, b8) => a8 - b8);
       let isArray = true;
-      for (let i = 0, _i = keys2.length; i < _i; i++) {
-        if (keys2[i] !== i) {
+      for (let i = 0, _i = keys3.length; i < _i; i++) {
+        if (keys3[i] !== i) {
           isArray = false;
           break;
         }
       }
       if (isArray) {
         const arrayArgs = [];
-        for (let i = 0, _i = keys2.length; i < _i; i++) {
+        for (let i = 0, _i = keys3.length; i < _i; i++) {
           arrayArgs[i] = args[i];
         }
         return arrayArgs;
@@ -84868,16 +84868,16 @@ var CifCoreFormat;
     return (x === null || x === void 0 ? void 0 : x.kind) === "cifCore";
   }
   CifCoreFormat2.is = is4;
-  function fromFrame(frame, db) {
+  function fromFrame(frame2, db) {
     if (!db)
-      db = CIF.schema.cifCore(frame);
+      db = CIF.schema.cifCore(frame2);
     const name = db.database_code.depnum_ccdc_archive.value(0) || db.database_code.depnum_ccdc_fiz.value(0) || db.database_code.icsd.value(0) || db.database_code.mdf.value(0) || db.database_code.nbs.value(0) || db.database_code.csd.value(0) || db.database_code.cod.value(0) || db._name;
-    return { kind: "cifCore", name, data: { db, frame } };
+    return { kind: "cifCore", name, data: { db, frame: frame2 } };
   }
   CifCoreFormat2.fromFrame = fromFrame;
 })(CifCoreFormat || (CifCoreFormat = {}));
-function trajectoryFromCifCore(frame) {
-  const format = CifCoreFormat.fromFrame(frame);
+function trajectoryFromCifCore(frame2) {
+  const format = CifCoreFormat.fromFrame(frame2);
   return Task.create("Parse CIF Core", (ctx) => getModels2(format.data.db, format, ctx));
 }
 
@@ -86419,8 +86419,8 @@ async function parseInternal14(data, ctx) {
       numAtoms = parseInt(readLine5(state.tokenizer).trim());
     } else if (line.includes("ITEM: ATOMS")) {
       const parts = line.split(" ").slice(2);
-      const frame = await handleAtoms7(state, numAtoms, parts);
-      frames.push(frame);
+      const frame2 = await handleAtoms7(state, numAtoms, parts);
+      frames.push(frame2);
     } else if (line.includes("ITEM: BOX BOUNDS")) {
       const tokens = line.split("ITEM: BOX BOUNDS ")[1].split(" ");
       const px = tokens[0];
@@ -87652,10 +87652,10 @@ async function parseInternal17(data) {
     f.cell_angles = cell_angles;
   }
   if (nc.hasDataVariable("time")) {
-    const time = [];
+    const time2 = [];
     for (const t5 of nc.getDataVariable("time"))
-      time.push(t5);
-    f.time = time;
+      time2.push(t5);
+    f.time = time2;
   }
   if (f.time) {
     if (f.time.length >= 1) {
@@ -87697,7 +87697,7 @@ function coordinatesFromNctraj(file) {
         y[j / 3] = c8[j + 1];
         z[j / 3] = c8[j + 2];
       }
-      const frame = {
+      const frame2 = {
         elementCount,
         x,
         y,
@@ -87710,9 +87710,9 @@ function coordinatesFromNctraj(file) {
         const x2 = Vec3.scale(Vec3(), Vec3.unitX, lengths[0]);
         const y2 = Vec3.scale(Vec3(), Vec3.unitY, lengths[1]);
         const z2 = Vec3.scale(Vec3(), Vec3.unitZ, lengths[2]);
-        frame.cell = Cell.fromBasis(x2, y2, z2);
+        frame2.cell = Cell.fromBasis(x2, y2, z2);
       }
-      frames.push(frame);
+      frames.push(frame2);
     }
     return Coordinates.create(frames, deltaTime, offsetTime);
   });
@@ -90254,8 +90254,8 @@ function areDataLociEqual(a8, b8) {
 function isDataLociEmpty(loci) {
   return loci.elements.length === 0 ? true : false;
 }
-function DataLoci(tag, data, elements, getBoundingSphere3, getLabel) {
-  return { kind: "data-loci", tag, data, elements, getBoundingSphere: getBoundingSphere3, getLabel };
+function DataLoci(tag2, data, elements, getBoundingSphere3, getLabel) {
+  return { kind: "data-loci", tag: tag2, data, elements, getBoundingSphere: getBoundingSphere3, getLabel };
 }
 var Loci2;
 (function(Loci4) {
@@ -97986,8 +97986,8 @@ var CameraTransitionManager = class _CameraTransitionManager {
     this.func(this._current, normalized2, this._source, this._target);
     Camera.copySnapshot(this.camera.state, this._current);
   }
-  constructor(camera) {
-    this.camera = camera;
+  constructor(camera2) {
+    this.camera = camera2;
     this.t = 0;
     this.func = _CameraTransitionManager.defaultTransition;
     this.start = 0;
@@ -98304,17 +98304,17 @@ var Camera = class _Camera {
 })(Camera || (Camera = {}));
 var tmpPosition = Vec3();
 var tmpTarget = Vec3();
-function updateView(camera) {
-  if (camera.scale === 1) {
-    Mat4.lookAt(camera.view, camera.state.position, camera.state.target, camera.state.up);
+function updateView(camera2) {
+  if (camera2.scale === 1) {
+    Mat4.lookAt(camera2.view, camera2.state.position, camera2.state.target, camera2.state.up);
   } else {
-    Vec3.scale(tmpPosition, camera.state.position, camera.scale);
-    Vec3.scale(tmpTarget, camera.state.target, camera.scale);
-    Mat4.lookAt(camera.view, tmpPosition, tmpTarget, camera.state.up);
+    Vec3.scale(tmpPosition, camera2.state.position, camera2.scale);
+    Vec3.scale(tmpTarget, camera2.state.target, camera2.scale);
+    Mat4.lookAt(camera2.view, tmpPosition, tmpTarget, camera2.state.up);
   }
 }
-function updateOrtho(camera) {
-  const { viewport, zoom, near, far, viewOffset } = camera;
+function updateOrtho(camera2) {
+  const { viewport, zoom, near, far, viewOffset } = camera2;
   const fullLeft = -viewport.width / 2;
   const fullRight = viewport.width / 2;
   const fullTop = viewport.height / 2;
@@ -98337,13 +98337,13 @@ function updateOrtho(camera) {
     top -= scaleH * (viewOffset.offsetY / zoomH);
     bottom = top - scaleH * (viewOffset.height / zoomH);
   }
-  Mat4.ortho(camera.projection, left, right, top, bottom, near, far);
-  updateView(camera);
+  Mat4.ortho(camera2.projection, left, right, top, bottom, near, far);
+  updateView(camera2);
 }
-function updatePers(camera) {
-  const aspect = camera.viewport.width / camera.viewport.height;
-  const { near, far, viewOffset } = camera;
-  let top = near * Math.tan(0.5 * camera.state.fov);
+function updatePers(camera2) {
+  const aspect = camera2.viewport.width / camera2.viewport.height;
+  const { near, far, viewOffset } = camera2;
+  let top = near * Math.tan(0.5 * camera2.state.fov);
   let height = 2 * top;
   let width = aspect * height;
   let left = -0.5 * width;
@@ -98353,12 +98353,12 @@ function updatePers(camera) {
     width *= viewOffset.width / viewOffset.fullWidth;
     height *= viewOffset.height / viewOffset.fullHeight;
   }
-  Mat4.perspective(camera.projection, left, left + width, top, top - height, near, far);
-  updateView(camera);
+  Mat4.perspective(camera2.projection, left, left + width, top, top - height, near, far);
+  updateView(camera2);
 }
-function updateClip(camera) {
-  const { forceFull, scale } = camera;
-  let { radius, radiusMax, mode, fog, clipFar, minNear, minFar } = camera.state;
+function updateClip(camera2) {
+  const { forceFull, scale } = camera2;
+  let { radius, radiusMax, mode, fog, clipFar, minNear, minFar } = camera2.state;
   radiusMax *= scale;
   minFar *= scale;
   minNear *= scale;
@@ -98369,8 +98369,8 @@ function updateClip(camera) {
   if (radius < minRadius)
     radius = minRadius;
   const normalizedFar = Math.max(clipFar ? radius : radiusMax, minFar);
-  Vec3.scale(tmpTarget, camera.state.target, scale);
-  Vec3.scale(tmpPosition, camera.state.position, scale);
+  Vec3.scale(tmpTarget, camera2.state.target, scale);
+  Vec3.scale(tmpPosition, camera2.state.position, scale);
   const cameraDistance = Vec3.distance(tmpPosition, tmpTarget);
   let near = forceFull ? 0.01 : cameraDistance - radius;
   let far = cameraDistance + normalizedFar;
@@ -98389,10 +98389,10 @@ function updateClip(camera) {
   const fogNearFactor = -(50 - fog) / 50;
   const fogNear = cameraDistance - normalizedFar * fogNearFactor;
   const fogFar = far;
-  camera.near = near;
-  camera.far = far;
-  camera.fogNear = fogNear;
-  camera.fogFar = fogFar;
+  camera2.near = near;
+  camera2.far = far;
+  camera2.fogNear = fogNear;
+  camera2.fogFar = fogFar;
 }
 
 // node_modules/molstar/lib/mol-canvas3d/helper/bounding-sphere-helper.js
@@ -98657,12 +98657,12 @@ var Canvas3dInteractionHelper = class {
   dispose() {
     this.ev.dispose();
   }
-  constructor(canvasIdentify, canvasAsyncIdentify, lociGetter, input, camera, controls, props = {}) {
+  constructor(canvasIdentify, canvasAsyncIdentify, lociGetter, input, camera2, controls, props = {}) {
     this.canvasIdentify = canvasIdentify;
     this.canvasAsyncIdentify = canvasAsyncIdentify;
     this.lociGetter = lociGetter;
     this.input = input;
-    this.camera = camera;
+    this.camera = camera2;
     this.controls = controls;
     this.ev = RxEventHelper.create();
     this.events = {
@@ -100205,7 +100205,7 @@ var BackgroundPass = class {
       this.skybox = void 0;
     }
   }
-  updateSkybox(camera, props, onload) {
+  updateSkybox(camera2, props, onload) {
     var _a;
     const tf = (_a = this.skybox) === null || _a === void 0 ? void 0 : _a.props.faces;
     const f = props.faces.params;
@@ -100229,20 +100229,20 @@ var BackgroundPass = class {
     }
     if (!this.skybox)
       return;
-    let cam = camera;
-    if (camera.state.mode === "orthographic") {
-      this.camera.setState({ ...camera.state, mode: "perspective" });
+    let cam = camera2;
+    if (camera2.state.mode === "orthographic") {
+      this.camera.setState({ ...camera2.state, mode: "perspective" });
       this.camera.update();
       cam = this.camera;
     }
     const m = this.renderable.values.uViewDirectionProjectionInverse.ref.value;
-    if (Mat4.isZero(camera.headRotation)) {
+    if (Mat4.isZero(camera2.headRotation)) {
       Vec3.sub(this.dir, cam.state.position, cam.state.target);
       Vec3.setMagnitude(this.dir, this.dir, 0.1);
       Vec3.copy(this.position, this.dir);
       Mat4.lookAt(m, this.position, this.target, cam.state.up);
     } else {
-      Mat4.invert(m, camera.headRotation);
+      Mat4.invert(m, camera2.headRotation);
     }
     Mat4.mul(m, cam.projection, m);
     Mat4.invert(m, m);
@@ -100322,7 +100322,7 @@ var BackgroundPass = class {
     ValueCell.updateIfChanged(this.renderable.values.dVariant, variant);
     this.renderable.update();
   }
-  update(camera, props, onload) {
+  update(camera2, props, onload) {
     if (props.variant.name === "off") {
       this.clearSkybox();
       this.clearImage();
@@ -100330,7 +100330,7 @@ var BackgroundPass = class {
       return;
     } else if (props.variant.name === "skybox") {
       this.clearImage();
-      this.updateSkybox(camera, props.variant.params, onload);
+      this.updateSkybox(camera2, props.variant.params, onload);
     } else if (props.variant.name === "image") {
       this.clearSkybox();
       this.updateImage(props.variant.params, onload);
@@ -100345,7 +100345,7 @@ var BackgroundPass = class {
       this.updateGradient(props.variant.params.centerColor, props.variant.params.edgeColor, props.variant.params.ratio, props.variant.name, props.variant.params.coverage === "viewport" ? true : false);
       onload === null || onload === void 0 ? void 0 : onload(false);
     }
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     ValueCell.update(this.renderable.values.uViewport, Vec4.set(this.renderable.values.uViewport.ref.value, x, y, width, height));
   }
   _isEnabled(props) {
@@ -100922,7 +100922,7 @@ var DofPass = class {
       ValueCell.update(this.renderable.values.uTexSize, Vec2.set(this.renderable.values.uTexSize.ref.value, width, height));
     }
   }
-  update(camera, input, depthOpaque, depthTransparent, props, sphere) {
+  update(camera2, input, depthOpaque, depthTransparent, props, sphere) {
     let needsUpdate = false;
     if (this.renderable.values.tColor.ref.value !== input) {
       ValueCell.update(this.renderable.values.tColor, input);
@@ -100936,33 +100936,33 @@ var DofPass = class {
       ValueCell.update(this.renderable.values.tDepthTransparent, depthTransparent);
       needsUpdate = true;
     }
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
     const invProjection = this.renderable.values.uInvProjection.ref.value;
-    Mat4.invert(invProjection, camera.projection);
+    Mat4.invert(invProjection, camera2.projection);
     const [w, h] = this.renderable.values.uTexSize.ref.value;
-    const v4 = camera.viewport;
-    ValueCell.update(this.renderable.values.uProjection, camera.projection);
+    const v4 = camera2.viewport;
+    ValueCell.update(this.renderable.values.uProjection, camera2.projection);
     ValueCell.update(this.renderable.values.uInvProjection, invProjection);
     ValueCell.update(this.renderable.values.uMode, props.mode === "sphere" ? 1 : 0);
     Vec4.set(this.renderable.values.uBounds.ref.value, v4.x / w, v4.y / h, (v4.x + v4.width) / w, (v4.y + v4.height) / h);
     ValueCell.update(this.renderable.values.uBounds, this.renderable.values.uBounds.ref.value);
-    ValueCell.updateIfChanged(this.renderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.renderable.values.uFar, camera.far);
+    ValueCell.updateIfChanged(this.renderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.renderable.values.uFar, camera2.far);
     ValueCell.updateIfChanged(this.renderable.values.dOrthographic, orthographic);
     const blurSize = Math.round(props.blurSize * this.webgl.pixelRatio);
     if (this.renderable.values.dBlurSize.ref.value !== blurSize) {
       ValueCell.update(this.renderable.values.dBlurSize, blurSize);
       needsUpdate = true;
     }
-    const worldCenter = props.center === "scene-center" ? sphere.center : camera.state.target;
-    const distance2 = Vec3.distance(camera.state.position, worldCenter);
+    const worldCenter = props.center === "scene-center" ? sphere.center : camera2.state.target;
+    const distance2 = Vec3.distance(camera2.state.position, worldCenter);
     const inFocus = distance2 + props.inFocus;
-    ValueCell.updateIfChanged(this.renderable.values.uInFocus, inFocus * camera.scale);
+    ValueCell.updateIfChanged(this.renderable.values.uInFocus, inFocus * camera2.scale);
     const center2 = this.renderable.values.uCenter.ref.value;
-    Vec3.transformMat4(center2, worldCenter, camera.view);
+    Vec3.transformMat4(center2, worldCenter, camera2.view);
     ValueCell.update(this.renderable.values.uCenter, center2);
     ValueCell.updateIfChanged(this.renderable.values.uBlurSpread, props.blurSpread);
-    ValueCell.updateIfChanged(this.renderable.values.uPPM, props.PPM * camera.scale);
+    ValueCell.updateIfChanged(this.renderable.values.uPPM, props.PPM * camera2.scale);
     if (needsUpdate) {
       this.renderable.update();
     }
@@ -101537,17 +101537,17 @@ var OutlinePass = class {
       ValueCell.update(this.renderable.values.uTexSize, Vec2.set(this.renderable.values.uTexSize.ref.value, width, height));
     }
   }
-  update(camera, props, depthTextureTransparent, depthTextureOpaque) {
+  update(camera2, props, depthTextureTransparent, depthTextureOpaque) {
     var _a;
     let needsUpdate = false;
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
     const invProjection = this.renderable.values.uInvProjection.ref.value;
-    Mat4.invert(invProjection, camera.projection);
+    Mat4.invert(invProjection, camera2.projection);
     const transparentOutline = (_a = props.includeTransparent) !== null && _a !== void 0 ? _a : true;
     const outlineScale = Math.max(1, Math.round(props.scale * this.webgl.pixelRatio)) - 1;
     const outlineThreshold = 50 * props.threshold * this.webgl.pixelRatio;
-    ValueCell.updateIfChanged(this.renderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.renderable.values.uFar, camera.far);
+    ValueCell.updateIfChanged(this.renderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.renderable.values.uFar, camera2.far);
     ValueCell.update(this.renderable.values.uInvProjection, invProjection);
     if (this.renderable.values.dTransparentOutline.ref.value !== transparentOutline) {
       needsUpdate = true;
@@ -101781,30 +101781,30 @@ var ShadowPass = class {
       ValueCell.update(this.renderable.values.uTexSize, Vec2.set(this.renderable.values.uTexSize.ref.value, width, height));
     }
   }
-  update(camera, light, ambientColor, props) {
+  update(camera2, light, ambientColor, props) {
     let needsUpdateShadows = false;
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
     const [w, h] = this.renderable.values.uTexSize.ref.value;
-    const v4 = camera.viewport;
-    ValueCell.update(this.renderable.values.uProjection, camera.projection);
-    ValueCell.update(this.renderable.values.uInvProjection, Mat4.invert(this.invProjection, camera.projection));
+    const v4 = camera2.viewport;
+    ValueCell.update(this.renderable.values.uProjection, camera2.projection);
+    ValueCell.update(this.renderable.values.uInvProjection, Mat4.invert(this.invProjection, camera2.projection));
     Vec4.set(this.renderable.values.uBounds.ref.value, v4.x / w, v4.y / h, (v4.x + v4.width) / w, (v4.y + v4.height) / h);
     ValueCell.update(this.renderable.values.uBounds, this.renderable.values.uBounds.ref.value);
-    ValueCell.updateIfChanged(this.renderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.renderable.values.uFar, camera.far);
+    ValueCell.updateIfChanged(this.renderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.renderable.values.uFar, camera2.far);
     if (this.renderable.values.dOrthographic.ref.value !== orthographic) {
       ValueCell.update(this.renderable.values.dOrthographic, orthographic);
       needsUpdateShadows = true;
     }
-    ValueCell.updateIfChanged(this.renderable.values.uMaxDistance, props.maxDistance * camera.scale);
-    ValueCell.updateIfChanged(this.renderable.values.uTolerance, props.tolerance * camera.scale);
+    ValueCell.updateIfChanged(this.renderable.values.uMaxDistance, props.maxDistance * camera2.scale);
+    ValueCell.updateIfChanged(this.renderable.values.uTolerance, props.tolerance * camera2.scale);
     if (this.renderable.values.dSteps.ref.value !== props.steps) {
       ValueCell.update(this.renderable.values.dSteps, props.steps);
       needsUpdateShadows = true;
     }
-    const hasHeadRotation = !Mat4.isZero(camera.headRotation);
+    const hasHeadRotation = !Mat4.isZero(camera2.headRotation);
     if (hasHeadRotation) {
-      ValueCell.update(this.renderable.values.uLightDirection, getTransformedLightDirection(light, Mat4.invert(this.invHeadRotation, camera.headRotation)));
+      ValueCell.update(this.renderable.values.uLightDirection, getTransformedLightDirection(light, Mat4.invert(this.invHeadRotation, camera2.headRotation)));
     } else {
       ValueCell.update(this.renderable.values.uLightDirection, light.direction);
     }
@@ -102414,15 +102414,15 @@ var SsaoPass = class _SsaoPass {
     this.ssaoDepthTexture.attachFramebuffer(this.framebuffer, "color0");
     this.depthBlurProxyTexture.attachFramebuffer(this.blurFirstPassFramebuffer, "color0");
   }
-  update(camera, scene, props, illuminationMode = false) {
+  update(camera2, scene, props, illuminationMode = false) {
     let needsUpdateSsao = false;
     let needsUpdateSsaoBlur = false;
     let needsUpdateDepthHalf = false;
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
-    const invProjection = Mat4.invert(this.invProjection, camera.projection);
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
+    const invProjection = Mat4.invert(this.invProjection, camera2.projection);
     const [w, h] = this.texSize;
-    const v4 = camera.viewport;
-    ValueCell.update(this.renderable.values.uProjection, camera.projection);
+    const v4 = camera2.viewport;
+    ValueCell.update(this.renderable.values.uProjection, camera2.projection);
     ValueCell.update(this.renderable.values.uInvProjection, invProjection);
     const b8 = this.renderable.values.uBounds;
     const s = this.ssaoScale;
@@ -102430,14 +102430,14 @@ var SsaoPass = class _SsaoPass {
     ValueCell.update(b8, b8.ref.value);
     ValueCell.update(this.blurFirstPassRenderable.values.uBounds, b8.ref.value);
     ValueCell.update(this.blurSecondPassRenderable.values.uBounds, b8.ref.value);
-    ValueCell.updateIfChanged(this.blurFirstPassRenderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.blurSecondPassRenderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.blurFirstPassRenderable.values.uFar, camera.far);
-    ValueCell.updateIfChanged(this.blurSecondPassRenderable.values.uFar, camera.far);
+    ValueCell.updateIfChanged(this.blurFirstPassRenderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.blurSecondPassRenderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.blurFirstPassRenderable.values.uFar, camera2.far);
+    ValueCell.updateIfChanged(this.blurSecondPassRenderable.values.uFar, camera2.far);
     ValueCell.update(this.blurFirstPassRenderable.values.uInvProjection, invProjection);
     ValueCell.update(this.blurSecondPassRenderable.values.uInvProjection, invProjection);
-    ValueCell.update(this.blurFirstPassRenderable.values.uBlurDepthBias, props.blurDepthBias * camera.scale);
-    ValueCell.update(this.blurSecondPassRenderable.values.uBlurDepthBias, props.blurDepthBias * camera.scale);
+    ValueCell.update(this.blurFirstPassRenderable.values.uBlurDepthBias, props.blurDepthBias * camera2.scale);
+    ValueCell.update(this.blurSecondPassRenderable.values.uBlurDepthBias, props.blurDepthBias * camera2.scale);
     if (this.blurFirstPassRenderable.values.dOrthographic.ref.value !== orthographic) {
       needsUpdateSsaoBlur = true;
       ValueCell.update(this.blurFirstPassRenderable.values.dOrthographic, orthographic);
@@ -102465,11 +102465,11 @@ var SsaoPass = class _SsaoPass {
     }
     if (props.multiScale.name === "on") {
       const mp = props.multiScale.params;
-      if (this.levelsCameraScale !== camera.scale || !deepEqual2(this.levels, mp.levels)) {
+      if (this.levelsCameraScale !== camera2.scale || !deepEqual2(this.levels, mp.levels)) {
         needsUpdateSsao = true;
-        this.levelsCameraScale = camera.scale;
+        this.levelsCameraScale = camera2.scale;
         this.levels = mp.levels;
-        const levels = getLevels(mp.levels, camera.scale);
+        const levels = getLevels(mp.levels, camera2.scale);
         ValueCell.updateIfChanged(this.renderable.values.dLevels, levels.count);
         ValueCell.update(this.renderable.values.uLevelRadius, levels.radius);
         ValueCell.update(this.renderable.values.uLevelBias, levels.bias);
@@ -102477,7 +102477,7 @@ var SsaoPass = class _SsaoPass {
       ValueCell.updateIfChanged(this.renderable.values.uNearThreshold, mp.nearThreshold);
       ValueCell.updateIfChanged(this.renderable.values.uFarThreshold, mp.farThreshold);
     } else {
-      ValueCell.updateIfChanged(this.renderable.values.uRadius, Math.pow(2, props.radius) * camera.scale);
+      ValueCell.updateIfChanged(this.renderable.values.uRadius, Math.pow(2, props.radius) * camera2.scale);
     }
     ValueCell.updateIfChanged(this.renderable.values.uBias, props.bias);
     if (this.blurKernelSize !== props.blurKernelSize) {
@@ -102541,11 +102541,11 @@ var SsaoPass = class _SsaoPass {
       this.depthHalfRenderableTransparent.update();
     }
   }
-  render(camera) {
+  render(camera2) {
     if (isTimingMode)
       this.webgl.timer.mark("SSAO.render");
     const { state } = this.webgl;
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     const includeTransparent = this.renderable.values.dIncludeTransparent.ref.value;
     const multiScale = this.renderable.values.dMultiScale.ref.value;
     const sx = Math.floor(x * this.ssaoScale);
@@ -102910,15 +102910,15 @@ var PostprocessingPass = class _PostprocessingPass {
   reset() {
     this.ssao.reset();
   }
-  updateState(camera, scene, transparentBackground, backgroundColor, props, light, ambientColor) {
+  updateState(camera2, scene, transparentBackground, backgroundColor, props, light, ambientColor) {
     let needsUpdateMain = false;
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
     const outlinesEnabled = OutlinePass.isEnabled(props);
     const shadowsEnabled = ShadowPass.isEnabled(props);
     const occlusionEnabled = SsaoPass.isEnabled(props);
     if (occlusionEnabled) {
       const params = props.occlusion.params;
-      this.ssao.update(camera, scene, params);
+      this.ssao.update(camera2, scene, params);
       const includeTransparency = SsaoPass.isTransparentEnabled(scene, params);
       if (this.renderable.values.dOcclusionIncludeTransparency.ref.value !== includeTransparency) {
         needsUpdateMain = true;
@@ -102927,11 +102927,11 @@ var PostprocessingPass = class _PostprocessingPass {
       ValueCell.update(this.renderable.values.uOcclusionColor, Color.toVec3Normalized(this.renderable.values.uOcclusionColor.ref.value, params.color));
     }
     if (shadowsEnabled) {
-      this.shadow.update(camera, light, ambientColor, props.shadow.params);
+      this.shadow.update(camera2, light, ambientColor, props.shadow.params);
     }
     if (outlinesEnabled) {
       const outlineProps = props.outline.params;
-      const { transparentOutline, outlineScale } = this.outline.update(camera, outlineProps, this.drawPass.depthTextureTransparent, this.drawPass.depthTextureOpaque);
+      const { transparentOutline, outlineScale } = this.outline.update(camera2, outlineProps, this.drawPass.depthTextureTransparent, this.drawPass.depthTextureOpaque);
       ValueCell.update(this.renderable.values.uOutlineColor, Color.toVec3Normalized(this.renderable.values.uOutlineColor.ref.value, outlineProps.color));
       if (this.renderable.values.dOutlineScale.ref.value !== outlineScale) {
         needsUpdateMain = true;
@@ -102942,10 +102942,10 @@ var PostprocessingPass = class _PostprocessingPass {
         ValueCell.update(this.renderable.values.dTransparentOutline, transparentOutline);
       }
     }
-    ValueCell.updateIfChanged(this.renderable.values.uFar, camera.far);
-    ValueCell.updateIfChanged(this.renderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.renderable.values.uFogFar, camera.fogFar);
-    ValueCell.updateIfChanged(this.renderable.values.uFogNear, camera.fogNear);
+    ValueCell.updateIfChanged(this.renderable.values.uFar, camera2.far);
+    ValueCell.updateIfChanged(this.renderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.renderable.values.uFogFar, camera2.fogFar);
+    ValueCell.updateIfChanged(this.renderable.values.uFogNear, camera2.fogNear);
     ValueCell.update(this.renderable.values.uFogColor, Color.toVec3Normalized(this.renderable.values.uFogColor.ref.value, backgroundColor));
     ValueCell.updateIfChanged(this.renderable.values.uTransparentBackground, transparentBackground);
     if (this.renderable.values.dOrthographic.ref.value !== orthographic) {
@@ -102986,14 +102986,14 @@ var PostprocessingPass = class _PostprocessingPass {
   setTransparentBackground(value) {
     this.transparentBackground = value;
   }
-  render(camera, scene, toDrawingBuffer, transparentBackground, backgroundColor, props, light, ambientColor) {
+  render(camera2, scene, toDrawingBuffer, transparentBackground, backgroundColor, props, light, ambientColor) {
     if (isTimingMode)
       this.webgl.timer.mark("PostprocessingPass.render");
-    this.updateState(camera, scene, transparentBackground, backgroundColor, props, light, ambientColor);
+    this.updateState(camera2, scene, transparentBackground, backgroundColor, props, light, ambientColor);
     const { state } = this.webgl;
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     if (props.occlusion.name === "on" && this.occlusionOffset[0] === 0 && this.occlusionOffset[1] === 0) {
-      this.ssao.render(camera);
+      this.ssao.render(camera2);
     }
     state.viewport(x, y, width, height);
     state.scissor(x, y, width, height);
@@ -103008,7 +103008,7 @@ var PostprocessingPass = class _PostprocessingPass {
     } else {
       this.target.bind();
     }
-    this.background.update(camera, props.background);
+    this.background.update(camera2, props.background);
     this.background.clear(props.background, this.transparentBackground, backgroundColor);
     this.background.render(props.background);
     this.renderable.render();
@@ -103042,34 +103042,34 @@ var AntialiasingPass = class {
       this.cas.setSize(width, height);
     }
   }
-  _renderFxaa(camera, input, target, props) {
+  _renderFxaa(camera2, input, target, props) {
     if (props.antialiasing.name !== "fxaa")
       return;
     this.fxaa.update(input, props.antialiasing.params);
-    this.fxaa.render(camera.viewport, target);
+    this.fxaa.render(camera2.viewport, target);
   }
-  _renderSmaa(camera, input, target, props) {
+  _renderSmaa(camera2, input, target, props) {
     if (props.antialiasing.name !== "smaa")
       return;
     this.smaa.update(input, props.antialiasing.params);
-    this.smaa.render(camera.viewport, target);
+    this.smaa.render(camera2.viewport, target);
   }
-  _renderAntialiasing(camera, input, target, props) {
+  _renderAntialiasing(camera2, input, target, props) {
     if (props.antialiasing.name === "fxaa") {
-      this._renderFxaa(camera, input, target, props);
+      this._renderFxaa(camera2, input, target, props);
     } else if (props.antialiasing.name === "smaa") {
-      this._renderSmaa(camera, input, target, props);
+      this._renderSmaa(camera2, input, target, props);
     }
   }
-  _renderCas(camera, input, target, props) {
+  _renderCas(camera2, input, target, props) {
     if (props.sharpening.name !== "on")
       return;
     if (props.antialiasing.name !== "off")
       input = this.internalTarget.texture;
     this.cas.update(input, props.sharpening.params);
-    this.cas.render(camera.viewport, target);
+    this.cas.render(camera2.viewport, target);
   }
-  render(camera, input, toDrawingBuffer, props) {
+  render(camera2, input, toDrawingBuffer, props) {
     if (props.antialiasing.name === "off" && props.sharpening.name === "off")
       return;
     if (props.antialiasing.name === "smaa" && !this.smaa.supported) {
@@ -103078,12 +103078,12 @@ var AntialiasingPass = class {
     }
     const target = toDrawingBuffer === true ? void 0 : toDrawingBuffer === false ? this.target : toDrawingBuffer;
     if (props.sharpening.name === "off") {
-      this._renderAntialiasing(camera, input, target, props);
+      this._renderAntialiasing(camera2, input, target, props);
     } else if (props.antialiasing.name === "off") {
-      this._renderCas(camera, input, target, props);
+      this._renderCas(camera2, input, target, props);
     } else {
-      this._renderAntialiasing(camera, input, this.internalTarget, props);
-      this._renderCas(camera, input, target, props);
+      this._renderAntialiasing(camera2, input, this.internalTarget, props);
+      this._renderCas(camera2, input, target, props);
     }
   }
 };
@@ -103174,22 +103174,22 @@ var MultiSamplePass = class {
     }
   }
   renderMultiSample(ctx, toDrawingBuffer, props) {
-    const { camera } = ctx;
+    const { camera: camera2 } = ctx;
     const { compose, composeTarget, drawPass, webgl } = this;
     const { gl, state } = webgl;
     if (isTimingMode)
       webgl.timer.mark("MultiSamplePass.renderMultiSample");
     const offsetList = JitterVectors[Math.max(0, Math.min(props.multiSample.sampleLevel, 5))];
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     const baseSampleWeight = 1 / offsetList.length;
     const roundingRange = 1 / 32;
-    camera.viewOffset.enabled = true;
+    camera2.viewOffset.enabled = true;
     ValueCell.update(compose.values.tColor, drawPass.getColorTarget(props.postprocessing).texture);
     compose.update();
     for (let i = 0; i < offsetList.length; ++i) {
       const offset4 = offsetList[i];
-      Camera.setViewOffset(camera.viewOffset, width, height, offset4[0], offset4[1], width, height);
-      camera.update();
+      Camera.setViewOffset(camera2.viewOffset, width, height, offset4[0], offset4[1], width, height);
+      camera2.update();
       const uniformCenteredDistribution = -0.5 + (i + 0.5) / offsetList.length;
       const sampleWeight = baseSampleWeight + roundingRange * uniformCenteredDistribution;
       ValueCell.update(compose.values.uWeight, sampleWeight);
@@ -103222,13 +103222,13 @@ var MultiSamplePass = class {
     state.scissor(x, y, width, height);
     state.disable(gl.BLEND);
     compose.render();
-    camera.viewOffset.enabled = false;
-    camera.update();
+    camera2.viewOffset.enabled = false;
+    camera2.update();
     if (isTimingMode)
       webgl.timer.markEnd("MultiSamplePass.renderMultiSample");
   }
   renderTemporalMultiSample(sampleIndex, ctx, props, toDrawingBuffer) {
-    const { camera } = ctx;
+    const { camera: camera2 } = ctx;
     const { compose, composeTarget, holdTarget, drawPass, webgl } = this;
     const { gl, state } = webgl;
     if (isTimingMode)
@@ -103236,7 +103236,7 @@ var MultiSamplePass = class {
     const offsetList = JitterVectors[Math.max(0, Math.min(props.multiSample.sampleLevel, 5))];
     if (sampleIndex === -2 || sampleIndex >= offsetList.length)
       return -2;
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     const sampleWeight = 1 / offsetList.length;
     if (sampleIndex === -1) {
       drawPass.render(ctx, props, false);
@@ -103252,15 +103252,15 @@ var MultiSamplePass = class {
       compose.render();
       sampleIndex += 1;
     } else {
-      camera.viewOffset.enabled = true;
+      camera2.viewOffset.enabled = true;
       ValueCell.update(compose.values.tColor, drawPass.getColorTarget(props.postprocessing).texture);
       ValueCell.update(compose.values.uWeight, sampleWeight);
       compose.update();
       const numSamplesPerFrame = Math.pow(2, Math.max(0, props.multiSample.sampleLevel - 2));
       for (let i = 0; i < numSamplesPerFrame; ++i) {
         const offset4 = offsetList[sampleIndex];
-        Camera.setViewOffset(camera.viewOffset, width, height, offset4[0], offset4[1], width, height);
-        camera.update();
+        Camera.setViewOffset(camera2.viewOffset, width, height, offset4[0], offset4[1], width, height);
+        camera2.update();
         if (sampleIndex === 0 || !props.multiSample.reuseOcclusion) {
           drawPass.postprocessing.setOcclusionOffset(0, 0);
         } else {
@@ -103307,8 +103307,8 @@ var MultiSamplePass = class {
         state.enable(gl.BLEND);
       compose.render();
     }
-    camera.viewOffset.enabled = false;
-    camera.update();
+    camera2.viewOffset.enabled = false;
+    camera2.update();
     if (isTimingMode)
       webgl.timer.markEnd("MultiSamplePass.renderTemporalMultiSample");
     return sampleIndex >= offsetList.length ? -2 : sampleIndex;
@@ -103575,32 +103575,32 @@ var PickPass = class {
       this.depthPickTexture.attachFramebuffer(this.depthPickFramebuffer, "color0");
     }
   }
-  renderVariant(renderer, camera, scene, helper, variant, pickType) {
+  renderVariant(renderer, camera2, scene, helper, variant, pickType) {
     renderer.clear(false);
-    renderer.update(camera, scene);
-    renderer.renderPick(scene.primitives, camera, variant, pickType);
+    renderer.update(camera2, scene);
+    renderer.renderPick(scene.primitives, camera2, variant, pickType);
     if (helper.handle.isEnabled) {
-      renderer.renderPick(helper.handle.scene, camera, variant, pickType);
+      renderer.renderPick(helper.handle.scene, camera2, variant, pickType);
     }
     if (helper.camera.isEnabled) {
-      helper.camera.update(camera);
+      helper.camera.update(camera2);
       renderer.update(helper.camera.camera, helper.camera.scene);
       renderer.renderPick(helper.camera.scene, helper.camera.camera, variant, pickType);
     }
   }
-  render(renderer, camera, scene, helper) {
+  render(renderer, camera2, scene, helper) {
     if (this.webgl.extensions.drawBuffers) {
       this.framebuffer.bind();
-      this.renderVariant(renderer, camera, scene, helper, "pick", PickType.None);
+      this.renderVariant(renderer, camera2, scene, helper, "pick", PickType.None);
     } else {
       this.objectPickTarget.bind();
-      this.renderVariant(renderer, camera, scene, helper, "pick", PickType.Object);
+      this.renderVariant(renderer, camera2, scene, helper, "pick", PickType.Object);
       this.instancePickTarget.bind();
-      this.renderVariant(renderer, camera, scene, helper, "pick", PickType.Instance);
+      this.renderVariant(renderer, camera2, scene, helper, "pick", PickType.Instance);
       this.groupPickTarget.bind();
-      this.renderVariant(renderer, camera, scene, helper, "pick", PickType.Group);
+      this.renderVariant(renderer, camera2, scene, helper, "pick", PickType.Group);
       this.depthPickTarget.bind();
-      this.renderVariant(renderer, camera, scene, helper, "depth", PickType.None);
+      this.renderVariant(renderer, camera2, scene, helper, "depth", PickType.None);
     }
   }
 };
@@ -103815,8 +103815,8 @@ var StereoCamera = class {
   }
 };
 (function(StereoCamera2) {
-  function is4(camera) {
-    return "left" in camera && "right" in camera;
+  function is4(camera2) {
+    return "left" in camera2 && "right" in camera2;
   }
   StereoCamera2.is = is4;
 })(StereoCamera || (StereoCamera = {}));
@@ -103866,30 +103866,30 @@ function copyStates(parent, eye) {
   eye.scale = parent.scale;
   eye.minTargetDistance = parent.minTargetDistance;
 }
-function update9(camera, props, left, right) {
-  copyStates(camera, left);
-  copyStates(camera, right);
-  const w = Math.floor(camera.viewport.width / 2);
-  const aspect = w / camera.viewport.height;
+function update9(camera2, props, left, right) {
+  copyStates(camera2, left);
+  copyStates(camera2, right);
+  const w = Math.floor(camera2.viewport.width / 2);
+  const aspect = w / camera2.viewport.height;
   left.viewport.width = w;
   right.viewport.x += w;
   right.viewport.width -= w;
   const eyeSepHalf = props.eyeSeparation / 2;
-  const eyeSepOnProjection = eyeSepHalf * camera.near / props.focus;
-  const ymax = camera.near * Math.tan(camera.state.fov * 0.5);
+  const eyeSepOnProjection = eyeSepHalf * camera2.near / props.focus;
+  const ymax = camera2.near * Math.tan(camera2.state.fov * 0.5);
   let xmin, xmax;
   tmpEyeLeft[12] = -eyeSepHalf;
   tmpEyeRight[12] = eyeSepHalf;
   xmin = -ymax * aspect + eyeSepOnProjection;
   xmax = ymax * aspect + eyeSepOnProjection;
-  left.projection[0] = 2 * camera.near / (xmax - xmin);
+  left.projection[0] = 2 * camera2.near / (xmax - xmin);
   left.projection[8] = (xmax + xmin) / (xmax - xmin);
   Mat4.mul(left.view, left.view, tmpEyeLeft);
   Mat4.mul(left.projectionView, left.projection, left.view);
   Mat4.invert(left.inverseProjectionView, left.projectionView);
   xmin = -ymax * aspect - eyeSepOnProjection;
   xmax = ymax * aspect - eyeSepOnProjection;
-  right.projection[0] = 2 * camera.near / (xmax - xmin);
+  right.projection[0] = 2 * camera2.near / (xmax - xmin);
   right.projection[8] = (xmax + xmin) / (xmax - xmin);
   Mat4.mul(right.view, right.view, tmpEyeRight);
   Mat4.mul(right.projectionView, right.projection, right.view);
@@ -103897,16 +103897,16 @@ function update9(camera, props, left, right) {
   left.disabled = false;
   right.disabled = false;
 }
-function xrUpdate(camera, left, right, xr) {
-  _xrUpdate(camera, left, xr.pose.views[0], xr.layer);
+function xrUpdate(camera2, left, right, xr) {
+  _xrUpdate(camera2, left, xr.pose.views[0], xr.layer);
   if (xr.pose.views.length === 1) {
     right.disabled = true;
   } else {
-    _xrUpdate(camera, right, xr.pose.views[1], xr.layer);
+    _xrUpdate(camera2, right, xr.pose.views[1], xr.layer);
   }
 }
-function _xrUpdate(camera, eye, view2, layer) {
-  copyStates(camera, eye);
+function _xrUpdate(camera2, eye, view2, layer) {
+  copyStates(camera2, eye);
   const lvp = layer.getViewport(view2);
   Viewport.set(eye.viewport, lvp.x, lvp.y, lvp.width, lvp.height);
   Mat4.fromArray(eye.projection, view2.projectionMatrix, 0);
@@ -103944,7 +103944,7 @@ var PickHelper = class {
     this.spiral = spiral2d(Math.ceil(this.pickRatio * this.pickPadding));
     this.dirty = true;
   }
-  render(camera) {
+  render(camera2) {
     if (isTimingMode)
       this.webgl.timer.mark("PickHelper.render", { captureStats: true });
     const { pickX, pickY, pickWidth, pickHeight, halfPickWidth } = this;
@@ -103952,20 +103952,20 @@ var PickHelper = class {
     renderer.setTransparentBackground(false);
     renderer.setDrawingBufferSize(pickWidth, pickHeight);
     renderer.setPixelRatio(this.pickRatio);
-    if (StereoCamera.is(camera)) {
+    if (StereoCamera.is(camera2)) {
       renderer.setViewport(pickX, pickY, halfPickWidth, pickHeight);
-      this.pickPass.render(renderer, camera.left, scene, helper);
+      this.pickPass.render(renderer, camera2.left, scene, helper);
       renderer.setViewport(pickX + halfPickWidth, pickY, pickWidth - halfPickWidth, pickHeight);
-      this.pickPass.render(renderer, camera.right, scene, helper);
+      this.pickPass.render(renderer, camera2.right, scene, helper);
     } else {
       renderer.setViewport(pickX, pickY, pickWidth, pickHeight);
-      this.pickPass.render(renderer, camera, scene, helper);
+      this.pickPass.render(renderer, camera2, scene, helper);
     }
     this.dirty = false;
     if (isTimingMode)
       this.webgl.timer.markEnd("PickHelper.render");
   }
-  identifyInternal(x, y, camera) {
+  identifyInternal(x, y, camera2) {
     if (this.webgl.isContextLost)
       return;
     const { webgl, pickRatio } = this;
@@ -103986,17 +103986,17 @@ var PickHelper = class {
       return;
     const z = this.buffers.getDepth(xp, yp);
     const position = Vec3.create(x, y, z);
-    if (StereoCamera.is(camera)) {
+    if (StereoCamera.is(camera2)) {
       const halfWidth = Math.floor(viewport.width / 2);
       if (x > viewport.x + halfWidth) {
         position[0] = viewport.x + (xv - halfWidth) * 2;
-        cameraUnproject(position, position, viewport, camera.right.inverseProjectionView);
+        cameraUnproject(position, position, viewport, camera2.right.inverseProjectionView);
       } else {
         position[0] = viewport.x + xv * 2;
-        cameraUnproject(position, position, viewport, camera.left.inverseProjectionView);
+        cameraUnproject(position, position, viewport, camera2.left.inverseProjectionView);
       }
     } else {
-      cameraUnproject(position, position, viewport, camera.inverseProjectionView);
+      cameraUnproject(position, position, viewport, camera2.inverseProjectionView);
     }
     return { id: pickingId, position };
   }
@@ -104005,31 +104005,31 @@ var PickHelper = class {
       this.update();
     }
   }
-  getPickData(x, y, camera) {
+  getPickData(x, y, camera2) {
     for (const d5 of this.spiral) {
-      const pickData = this.identifyInternal(x + d5[0], y + d5[1], camera);
+      const pickData = this.identifyInternal(x + d5[0], y + d5[1], camera2);
       if (pickData)
         return pickData;
     }
   }
-  identify(x, y, camera) {
+  identify(x, y, camera2) {
     this.prepare();
     if (this.dirty) {
       if (isTimingMode)
         this.webgl.timer.mark("PickHelper.identify");
-      this.render(camera);
+      this.render(camera2);
       this.buffers.read();
       if (isTimingMode)
         this.webgl.timer.markEnd("PickHelper.identify");
     }
-    return this.getPickData(x, y, camera);
+    return this.getPickData(x, y, camera2);
   }
-  asyncIdentify(x, y, camera) {
+  asyncIdentify(x, y, camera2) {
     this.prepare();
     if (this.dirty) {
       if (isTimingMode)
         this.webgl.timer.mark("PickHelper.asyncIdentify");
-      this.render(camera);
+      this.render(camera2);
       this.buffers.asyncRead();
       if (isTimingMode)
         this.webgl.timer.markEnd("PickHelper.asyncIdentify");
@@ -104038,7 +104038,7 @@ var PickHelper = class {
       tryGet: () => {
         const status = this.buffers.check();
         if (status === AsyncPickStatus.Resolved) {
-          return this.getPickData(x, y, camera);
+          return this.getPickData(x, y, camera2);
         } else if (status === AsyncPickStatus.Pending) {
           return "pending";
         } else if (status === AsyncPickStatus.Failed) {
@@ -104066,8 +104066,8 @@ var PickHelper = class {
     this.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
     this.pickPadding = options.pickPadding;
     if (!checkAsyncPickingSupport(webgl)) {
-      this.asyncIdentify = (x, y, camera) => ({
-        tryGet: () => this.identify(x, y, camera)
+      this.asyncIdentify = (x, y, camera2) => ({
+        tryGet: () => this.identify(x, y, camera2)
       });
     }
   }
@@ -104744,20 +104744,20 @@ var DrawPass = class {
     this.dof.setSize(width, height);
     this.bloom.setSize(width, height);
   }
-  _renderDpoit(renderer, camera, scene, iterations, transparentBackground, postprocessingProps) {
+  _renderDpoit(renderer, camera2, scene, iterations, transparentBackground, postprocessingProps) {
     if (!this.dpoit.supported)
       throw new Error("expected dpoit to be supported");
     this.depthTextureOpaque.attachFramebuffer(this.colorTarget.framebuffer, "depth");
     renderer.clear(true);
     if (scene.hasOpaque) {
-      renderer.renderOpaque(scene.primitives, camera);
+      renderer.renderOpaque(scene.primitives, camera2);
     }
     this.depthTextureOpaque.detachFramebuffer(this.colorTarget.framebuffer, "depth");
     if (PostprocessingPass.isTransparentDepthRequired(scene, postprocessingProps)) {
       this.depthTargetTransparent.bind();
       renderer.clearDepth(true);
       if (scene.opacityAverage < 1) {
-        renderer.renderDepthTransparent(scene.primitives, camera, this.depthTextureOpaque);
+        renderer.renderDepthTransparent(scene.primitives, camera2, this.depthTextureOpaque);
       }
     }
     const isPostprocessingEnabled = PostprocessingPass.isEnabled(postprocessingProps);
@@ -104768,12 +104768,12 @@ var DrawPass = class {
         renderer.clear(false, false, true);
       }
       const dpoitTextures = this.dpoit.bind();
-      renderer.renderDpoitTransparent(scene.primitives, camera, this.depthTextureOpaque, dpoitTextures);
+      renderer.renderDpoitTransparent(scene.primitives, camera2, this.depthTextureOpaque, dpoitTextures);
       for (let i = 0; i < iterations; i++) {
         if (isTimingMode)
           this.webgl.timer.mark("DpoitPass.layer");
         const dpoitTextures2 = this.dpoit.bindDualDepthPeeling();
-        renderer.renderDpoitTransparent(scene.primitives, camera, this.depthTextureOpaque, dpoitTextures2);
+        renderer.renderDpoitTransparent(scene.primitives, camera2, this.depthTextureOpaque, dpoitTextures2);
         if (iterations > 1) {
           target.bind();
           this.dpoit.renderBlendBack();
@@ -104785,25 +104785,25 @@ var DrawPass = class {
       this.dpoit.render();
     }
     if (PostprocessingPass.isEnabled(postprocessingProps)) {
-      this.postprocessing.render(camera, scene, false, transparentBackground, renderer.props.backgroundColor, postprocessingProps, renderer.light, renderer.ambientColor);
+      this.postprocessing.render(camera2, scene, false, transparentBackground, renderer.props.backgroundColor, postprocessingProps, renderer.light, renderer.ambientColor);
     }
     if (scene.volumes.renderables.length > 0) {
-      renderer.renderVolume(scene.volumes, camera, this.depthTextureOpaque);
+      renderer.renderVolume(scene.volumes, camera2, this.depthTextureOpaque);
     }
   }
-  _renderWboit(renderer, camera, scene, transparentBackground, postprocessingProps) {
+  _renderWboit(renderer, camera2, scene, transparentBackground, postprocessingProps) {
     if (!this.wboit.supported)
       throw new Error("expected wboit to be supported");
     this.depthTextureOpaque.attachFramebuffer(this.colorTarget.framebuffer, "depth");
     renderer.clear(true);
     if (scene.hasOpaque) {
-      renderer.renderOpaque(scene.primitives, camera);
+      renderer.renderOpaque(scene.primitives, camera2);
     }
     if (PostprocessingPass.isTransparentDepthRequired(scene, postprocessingProps)) {
       this.depthTargetTransparent.bind();
       renderer.clearDepth(true);
       if (scene.opacityAverage < 1) {
-        renderer.renderDepthTransparent(scene.primitives, camera, this.depthTextureOpaque);
+        renderer.renderDepthTransparent(scene.primitives, camera2, this.depthTextureOpaque);
       }
     }
     const isPostprocessingEnabled = PostprocessingPass.isEnabled(postprocessingProps);
@@ -104814,22 +104814,22 @@ var DrawPass = class {
         renderer.clear(false, false, true);
       }
       this.wboit.bind();
-      renderer.renderWboitTransparent(scene.primitives, camera, this.depthTextureOpaque);
+      renderer.renderWboitTransparent(scene.primitives, camera2, this.depthTextureOpaque);
       target.bind();
       this.wboit.render();
     }
     if (PostprocessingPass.isEnabled(postprocessingProps)) {
-      this.postprocessing.render(camera, scene, false, transparentBackground, renderer.props.backgroundColor, postprocessingProps, renderer.light, renderer.ambientColor);
+      this.postprocessing.render(camera2, scene, false, transparentBackground, renderer.props.backgroundColor, postprocessingProps, renderer.light, renderer.ambientColor);
     }
     if (scene.volumes.renderables.length > 0) {
       this.wboit.bind();
-      renderer.renderWboitTransparent(scene.volumes, camera, this.depthTextureOpaque);
+      renderer.renderWboitTransparent(scene.volumes, camera2, this.depthTextureOpaque);
       const target = isPostprocessingEnabled ? this.postprocessing.target : this.colorTarget;
       target.bind();
       this.wboit.render();
     }
   }
-  _renderBlended(renderer, camera, scene, toDrawingBuffer, transparentBackground, postprocessingProps) {
+  _renderBlended(renderer, camera2, scene, toDrawingBuffer, transparentBackground, postprocessingProps) {
     var _a, _b, _c, _d, _e, _f;
     if (toDrawingBuffer) {
       this.drawTarget.bind();
@@ -104842,20 +104842,20 @@ var DrawPass = class {
     }
     renderer.clear(true);
     if (scene.hasOpaque) {
-      renderer.renderOpaque(scene.primitives, camera);
+      renderer.renderOpaque(scene.primitives, camera2);
     }
     if (!toDrawingBuffer) {
       if (this.depthTargetOpaque) {
         this.depthTargetOpaque.bind();
         renderer.clearDepth(true);
-        renderer.renderDepthOpaque(scene.primitives, camera);
+        renderer.renderDepthOpaque(scene.primitives, camera2);
         this.colorTarget.bind();
       }
       if (PostprocessingPass.isTransparentDepthRequired(scene, postprocessingProps)) {
         this.depthTargetTransparent.bind();
         renderer.clearDepth(true);
         if (scene.opacityAverage < 1) {
-          renderer.renderDepthTransparent(scene.primitives, camera, this.depthTextureOpaque);
+          renderer.renderDepthTransparent(scene.primitives, camera2, this.depthTextureOpaque);
         }
       }
       const isPostprocessingEnabled = PostprocessingPass.isEnabled(postprocessingProps);
@@ -104869,7 +104869,7 @@ var DrawPass = class {
             (_a = this.colorTarget.depthRenderbuffer) === null || _a === void 0 ? void 0 : _a.attachFramebuffer(this.transparentColorTarget.framebuffer);
           }
         }
-        renderer.renderBlendedTransparent(scene.primitives, camera);
+        renderer.renderBlendedTransparent(scene.primitives, camera2);
         if (isPostprocessingEnabled) {
           if (!this.packedDepth) {
             this.depthTextureOpaque.detachFramebuffer(this.transparentColorTarget.framebuffer, "depth");
@@ -104884,7 +104884,7 @@ var DrawPass = class {
         } else {
           (_c = this.colorTarget.depthRenderbuffer) === null || _c === void 0 ? void 0 : _c.detachFramebuffer(this.postprocessing.target.framebuffer);
         }
-        this.postprocessing.render(camera, scene, false, transparentBackground, renderer.props.backgroundColor, postprocessingProps, renderer.light, renderer.ambientColor);
+        this.postprocessing.render(camera2, scene, false, transparentBackground, renderer.props.backgroundColor, postprocessingProps, renderer.light, renderer.ambientColor);
         if (!this.packedDepth) {
           this.depthTextureOpaque.attachFramebuffer(this.postprocessing.target.framebuffer, "depth");
         } else {
@@ -104899,7 +104899,7 @@ var DrawPass = class {
           (_e = this.colorTarget.depthRenderbuffer) === null || _e === void 0 ? void 0 : _e.detachFramebuffer(target.framebuffer);
         }
         target.bind();
-        renderer.renderVolume(scene.volumes, camera, this.depthTextureOpaque);
+        renderer.renderVolume(scene.volumes, camera2, this.depthTextureOpaque);
         if (!this.packedDepth) {
           this.depthTextureOpaque.attachFramebuffer(target.framebuffer, "depth");
         } else {
@@ -104908,12 +104908,12 @@ var DrawPass = class {
         target.bind();
       }
     } else if (scene.opacityAverage < 1) {
-      renderer.renderBlendedTransparent(scene.primitives, camera);
+      renderer.renderBlendedTransparent(scene.primitives, camera2);
     }
   }
-  _render(renderer, camera, scene, helper, toDrawingBuffer, transparentBackground, props) {
+  _render(renderer, camera2, scene, helper, toDrawingBuffer, transparentBackground, props) {
     var _a, _b;
-    if (camera.disabled)
+    if (camera2.disabled)
       return;
     const volumeRendering = scene.volumes.renderables.length > 0;
     const postprocessingEnabled = PostprocessingPass.isEnabled(props.postprocessing);
@@ -104921,22 +104921,22 @@ var DrawPass = class {
     const markingEnabled = MarkingPass.isEnabled(props.marking);
     const dofEnabled = DofPass.isEnabled(props.postprocessing);
     const bloomEnabled = BloomPass.isEnabled(props.postprocessing);
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     renderer.setViewport(x, y, width, height);
-    renderer.update(camera, scene);
+    renderer.update(camera2, scene);
     if (transparentBackground && !antialiasingEnabled && toDrawingBuffer) {
       this.drawTarget.bind();
       renderer.clear(false);
     }
     let oitEnabled = false;
     if (this.transparencyMode === "wboit" && this.wboit.supported) {
-      this._renderWboit(renderer, camera, scene, transparentBackground, props.postprocessing);
+      this._renderWboit(renderer, camera2, scene, transparentBackground, props.postprocessing);
       oitEnabled = true;
     } else if (this.transparencyMode === "dpoit" && this.dpoit.supported) {
-      this._renderDpoit(renderer, camera, scene, props.dpoitIterations, transparentBackground, props.postprocessing);
+      this._renderDpoit(renderer, camera2, scene, props.dpoitIterations, transparentBackground, props.postprocessing);
       oitEnabled = true;
     } else {
-      this._renderBlended(renderer, camera, scene, !volumeRendering && !postprocessingEnabled && !antialiasingEnabled && toDrawingBuffer, transparentBackground, props.postprocessing);
+      this._renderBlended(renderer, camera2, scene, !volumeRendering && !postprocessingEnabled && !antialiasingEnabled && toDrawingBuffer, transparentBackground, props.postprocessing);
     }
     const target = postprocessingEnabled ? this.postprocessing.target : !toDrawingBuffer || volumeRendering || oitEnabled ? this.colorTarget : this.drawTarget;
     if (markingEnabled && scene.markerAverage > 0) {
@@ -104944,44 +104944,44 @@ var DrawPass = class {
       if (markingDepthTest && scene.markerAverage !== 1) {
         this.marking.depthTarget.bind();
         renderer.clear(false, true);
-        renderer.renderMarkingDepth(scene.primitives, camera);
+        renderer.renderMarkingDepth(scene.primitives, camera2);
       }
       this.marking.maskTarget.bind();
       renderer.clear(false, true);
-      renderer.renderMarkingMask(scene.primitives, camera, markingDepthTest ? this.marking.depthTarget.texture : null);
+      renderer.renderMarkingMask(scene.primitives, camera2, markingDepthTest ? this.marking.depthTarget.texture : null);
       this.marking.update(props.marking);
-      this.marking.render(camera.viewport, target);
+      this.marking.render(camera2.viewport, target);
     } else {
       target.bind();
     }
     if (helper.debug.isEnabled) {
       helper.debug.syncVisibility();
-      renderer.renderBlended(helper.debug.scene, camera);
+      renderer.renderBlended(helper.debug.scene, camera2);
     }
     if (helper.handle.isEnabled) {
-      renderer.renderBlended(helper.handle.scene, camera);
+      renderer.renderBlended(helper.handle.scene, camera2);
     }
     if (helper.pointer.isEnabled) {
-      helper.pointer.setCamera(camera);
+      helper.pointer.setCamera(camera2);
       renderer.update(helper.pointer.camera, helper.pointer.scene);
       renderer.renderBlended(helper.pointer.scene, helper.pointer.camera);
     }
     if (helper.camera.isEnabled) {
-      helper.camera.update(camera);
+      helper.camera.update(camera2);
       renderer.update(helper.camera.camera, helper.camera.scene);
       renderer.renderBlended(helper.camera.scene, helper.camera.camera);
     }
     let needsTargetCopy = false;
     if (antialiasingEnabled) {
       const input = PostprocessingPass.isEnabled(props.postprocessing) ? this.postprocessing.target.texture : this.colorTarget.texture;
-      this.antialiasing.render(camera, input, toDrawingBuffer && !dofEnabled, props.postprocessing);
+      this.antialiasing.render(camera2, input, toDrawingBuffer && !dofEnabled, props.postprocessing);
     } else if (toDrawingBuffer && !DofPass.isEnabled(props.postprocessing)) {
       needsTargetCopy = true;
     }
     if (dofEnabled && props.postprocessing.dof.name === "on") {
       const input = AntialiasingPass.isEnabled(props.postprocessing) ? this.antialiasing.target.texture : PostprocessingPass.isEnabled(props.postprocessing) ? this.postprocessing.target.texture : this.colorTarget.texture;
-      this.dof.update(camera, input, ((_a = this.depthTargetOpaque) === null || _a === void 0 ? void 0 : _a.texture) || this.depthTextureOpaque, this.depthTextureTransparent, props.postprocessing.dof.params, scene.boundingSphereVisible);
-      this.dof.render(camera.viewport, toDrawingBuffer ? void 0 : this.getColorTarget(props.postprocessing));
+      this.dof.update(camera2, input, ((_a = this.depthTargetOpaque) === null || _a === void 0 ? void 0 : _a.texture) || this.depthTextureOpaque, this.depthTextureTransparent, props.postprocessing.dof.params, scene.boundingSphereVisible);
+      this.dof.render(camera2.viewport, toDrawingBuffer ? void 0 : this.getColorTarget(props.postprocessing));
     } else if (toDrawingBuffer && !AntialiasingPass.isEnabled(props.postprocessing)) {
       needsTargetCopy = true;
     }
@@ -104999,12 +104999,12 @@ var DrawPass = class {
       if (emissiveBloom && scene.emissiveAverage > 0) {
         this.bloom.emissiveTarget.bind();
         renderer.clear(false, true);
-        renderer.update(camera, scene);
-        renderer.renderEmissive(scene.primitives, camera);
+        renderer.update(camera2, scene);
+        renderer.renderEmissive(scene.primitives, camera2);
       }
       if (!emissiveBloom || scene.emissiveAverage > 0) {
         this.bloom.update(this.colorTarget.texture, this.bloom.emissiveTarget.texture, ((_b = this.depthTargetOpaque) === null || _b === void 0 ? void 0 : _b.texture) || this.depthTextureOpaque, props.postprocessing.bloom.params);
-        this.bloom.render(camera.viewport, toDrawingBuffer ? void 0 : this.getColorTarget(props.postprocessing));
+        this.bloom.render(camera2.viewport, toDrawingBuffer ? void 0 : this.getColorTarget(props.postprocessing));
       }
     }
     this.webgl.gl.flush();
@@ -105012,25 +105012,25 @@ var DrawPass = class {
   render(ctx, props, toDrawingBuffer) {
     if (isTimingMode)
       this.webgl.timer.mark("DrawPass.render");
-    const { renderer, camera, scene, helper } = ctx;
+    const { renderer, camera: camera2, scene, helper } = ctx;
     this.postprocessing.setTransparentBackground(props.transparentBackground);
     const transparentBackground = props.transparentBackground || this.postprocessing.background.isEnabled(props.postprocessing);
     renderer.setTransparentBackground(transparentBackground);
     renderer.setDrawingBufferSize(this.colorTarget.getWidth(), this.colorTarget.getHeight());
     renderer.setPixelRatio(this.webgl.pixelRatio);
-    if (StereoCamera.is(camera)) {
+    if (StereoCamera.is(camera2)) {
       if (isTimingMode)
         this.webgl.timer.mark("StereoCamera.left");
-      this._render(renderer, camera.left, scene, helper, toDrawingBuffer, transparentBackground, props);
+      this._render(renderer, camera2.left, scene, helper, toDrawingBuffer, transparentBackground, props);
       if (isTimingMode)
         this.webgl.timer.markEnd("StereoCamera.left");
       if (isTimingMode)
         this.webgl.timer.mark("StereoCamera.right");
-      this._render(renderer, camera.right, scene, helper, toDrawingBuffer, transparentBackground, props);
+      this._render(renderer, camera2.right, scene, helper, toDrawingBuffer, transparentBackground, props);
       if (isTimingMode)
         this.webgl.timer.markEnd("StereoCamera.right");
     } else {
-      this._render(renderer, camera, scene, helper, toDrawingBuffer, transparentBackground, props);
+      this._render(renderer, camera2, scene, helper, toDrawingBuffer, transparentBackground, props);
     }
     if (isTimingMode)
       this.webgl.timer.markEnd("DrawPass.render");
@@ -105199,26 +105199,26 @@ var CameraHelper = class {
     }
     return Visual.mark(this.meshRenderObject, loci, action, this.eachGroup) || Visual.mark(this.textRenderObject, loci, action, this.eachGroup);
   }
-  update(camera) {
+  update(camera2) {
     if (!this.meshRenderObject || this.props.axes.name === "off")
       return;
     if (this.pixelRatio !== this.webgl.pixelRatio) {
       this.setProps(this.props);
     }
-    updateCamera(this.camera, camera.viewport, camera.viewOffset);
-    Mat4.extractRotation(this.scene.view, camera.view);
+    updateCamera(this.camera, camera2.viewport, camera2.viewOffset);
+    Mat4.extractRotation(this.scene.view, camera2.view);
     const r = this.textRenderObject ? this.textRenderObject.values.boundingSphere.ref.value.radius : this.meshRenderObject.values.boundingSphere.ref.value.radius;
     const l = this.props.axes.params.location;
     const ox = this.props.axes.params.locationOffsetX * this.pixelRatio;
     const oy = this.props.axes.params.locationOffsetY * this.pixelRatio;
     if (l === "bottom-left") {
-      Mat4.setTranslation(this.scene.view, Vec3.create(-camera.viewport.width / 2 + r + ox, -camera.viewport.height / 2 + r + oy, 0));
+      Mat4.setTranslation(this.scene.view, Vec3.create(-camera2.viewport.width / 2 + r + ox, -camera2.viewport.height / 2 + r + oy, 0));
     } else if (l === "bottom-right") {
-      Mat4.setTranslation(this.scene.view, Vec3.create(camera.viewport.width / 2 - r - ox, -camera.viewport.height / 2 + r + oy, 0));
+      Mat4.setTranslation(this.scene.view, Vec3.create(camera2.viewport.width / 2 - r - ox, -camera2.viewport.height / 2 + r + oy, 0));
     } else if (l === "top-left") {
-      Mat4.setTranslation(this.scene.view, Vec3.create(-camera.viewport.width / 2 + r + ox, camera.viewport.height / 2 - r - oy, 0));
+      Mat4.setTranslation(this.scene.view, Vec3.create(-camera2.viewport.width / 2 + r + ox, camera2.viewport.height / 2 - r - oy, 0));
     } else if (l === "top-right") {
-      Mat4.setTranslation(this.scene.view, Vec3.create(camera.viewport.width / 2 - r - ox, camera.viewport.height / 2 - r - oy, 0));
+      Mat4.setTranslation(this.scene.view, Vec3.create(camera2.viewport.width / 2 - r - ox, camera2.viewport.height / 2 - r - oy, 0));
     } else {
       assertUnreachable(l);
     }
@@ -105265,8 +105265,8 @@ function CameraAxesLoci(cameraHelper, groupId, instanceId) {
 function isCameraAxesLoci(x) {
   return x.kind === "data-loci" && x.tag === "camera-axes";
 }
-function updateCamera(camera, viewport, viewOffset) {
-  const { near, far } = camera;
+function updateCamera(camera2, viewport, viewOffset) {
+  const { near, far } = camera2;
   const fullLeft = -viewport.width / 2;
   const fullRight = viewport.width / 2;
   const fullTop = viewport.height / 2;
@@ -105287,7 +105287,7 @@ function updateCamera(camera, viewport, viewOffset) {
     top -= scaleH * viewOffset.offsetY;
     bottom = top - scaleH * viewOffset.height;
   }
-  Mat4.ortho(camera.projection, left, right, top, bottom, near, far);
+  Mat4.ortho(camera2.projection, left, right, top, bottom, near, far);
 }
 function createAxesMesh(props, mesh) {
   const state = MeshBuilder.createState(512, 256, mesh);
@@ -106154,19 +106154,19 @@ var TracingPass = class {
   getByteCount() {
     return this.thicknessTarget.getByteCount() + this.holdTarget.getByteCount() + this.accumulateTarget.getByteCount() + this.composeTarget.getByteCount() + this.colorTextureOpaque.getByteCount() + this.normalTextureOpaque.getByteCount() + this.shadedTextureOpaque.getByteCount();
   }
-  renderInput(renderer, camera, scene, props) {
+  renderInput(renderer, camera2, scene, props) {
     if (isTimingMode)
       this.webgl.timer.mark("TracePass.renderInput");
     const { gl, state } = this.webgl;
     this.framebuffer.bind();
     this.drawPass.depthTextureOpaque.attachFramebuffer(this.framebuffer, "depth");
     renderer.clear(true);
-    renderer.renderTracing(scene.primitives, camera);
+    renderer.renderTracing(scene.primitives, camera2);
     if (props.thicknessMode === "auto") {
       this.thicknessTarget.bind();
       state.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      renderer.renderDepthOpaqueBack(scene.primitives, camera);
+      renderer.renderDepthOpaqueBack(scene.primitives, camera2);
     }
     if (isTimingMode)
       this.webgl.timer.markEnd("TracePass.renderInput");
@@ -106274,16 +106274,16 @@ var TracingPass = class {
         note: `${rendersPerFrame} rendersPerFrame, ${refineSteps} refineSteps, ${steps} steps`
       });
     }
-    const { renderer, camera, scene } = ctx;
+    const { renderer, camera: camera2, scene } = ctx;
     const { gl, state } = this.webgl;
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     if (iteration === 0 || forceRenderInput) {
       renderer.setTransparentBackground(transparentBackground);
       renderer.setDrawingBufferSize(this.composeTarget.getWidth(), this.composeTarget.getHeight());
       renderer.setPixelRatio(this.webgl.pixelRatio);
       renderer.setViewport(x, y, width, height);
-      renderer.update(camera, scene);
-      this.renderInput(renderer, camera, scene, props);
+      renderer.update(camera2, scene);
+      this.renderInput(renderer, camera2, scene, props);
     }
     state.disable(gl.BLEND);
     state.disable(gl.DEPTH_TEST);
@@ -106292,10 +106292,10 @@ var TracingPass = class {
     state.viewport(x, y, width, height);
     state.scissor(x, y, width, height);
     const invProjection = Mat4.identity();
-    Mat4.invert(invProjection, camera.projection);
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
+    Mat4.invert(invProjection, camera2.projection);
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
     const [w, h] = this.traceRenderable.values.uTexSize.ref.value;
-    const v4 = camera.viewport;
+    const v4 = camera2.viewport;
     const ambientColor = Vec3();
     Vec3.scale(ambientColor, Color.toArrayNormalized(renderer.props.ambientColor, ambientColor, 0), renderer.props.ambientIntensity);
     const lightStrength = Vec3.clone(ambientColor);
@@ -106310,14 +106310,14 @@ var TracingPass = class {
       ValueCell.update(this.traceRenderable.values.dRendersPerFrame, rendersPerFrame);
       needsUpdateTrace = true;
     }
-    ValueCell.update(this.traceRenderable.values.uProjection, camera.projection);
+    ValueCell.update(this.traceRenderable.values.uProjection, camera2.projection);
     ValueCell.update(this.traceRenderable.values.uInvProjection, invProjection);
     Vec4.set(this.traceRenderable.values.uBounds.ref.value, v4.x / w, v4.y / h, (v4.x + v4.width) / w, (v4.y + v4.height) / h);
     ValueCell.update(this.traceRenderable.values.uBounds, this.traceRenderable.values.uBounds.ref.value);
-    ValueCell.updateIfChanged(this.traceRenderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.traceRenderable.values.uFar, camera.far);
-    ValueCell.updateIfChanged(this.traceRenderable.values.uFogFar, camera.fogFar);
-    ValueCell.updateIfChanged(this.traceRenderable.values.uFogNear, camera.fogNear);
+    ValueCell.updateIfChanged(this.traceRenderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.traceRenderable.values.uFar, camera2.far);
+    ValueCell.updateIfChanged(this.traceRenderable.values.uFogFar, camera2.fogFar);
+    ValueCell.updateIfChanged(this.traceRenderable.values.uFogNear, camera2.fogNear);
     ValueCell.update(this.traceRenderable.values.uFogColor, Color.toVec3Normalized(this.traceRenderable.values.uFogColor.ref.value, renderer.props.backgroundColor));
     if (this.traceRenderable.values.dOrthographic.ref.value !== orthographic) {
       ValueCell.update(this.traceRenderable.values.dOrthographic, orthographic);
@@ -106558,7 +106558,7 @@ var IlluminationPass = class _IlluminationPass {
     this.multiSampleCompose = getMultiSampleComposeRenderable(webgl, this.outputTarget.texture);
     this._supported = true;
   }
-  renderInput(renderer, camera, scene, props) {
+  renderInput(renderer, camera2, scene, props) {
     if (isTimingMode)
       this.webgl.timer.mark("IlluminationPass.renderInput");
     const { gl, state } = this.webgl;
@@ -106578,20 +106578,20 @@ var IlluminationPass = class _IlluminationPass {
     if (hasTransparent) {
       if (this.drawPass.transparency === "wboit") {
         this.drawPass.wboit.bind();
-        renderer.renderWboitTransparent(scene.primitives, camera, this.drawPass.depthTextureOpaque);
+        renderer.renderWboitTransparent(scene.primitives, camera2, this.drawPass.depthTextureOpaque);
         if (scene.volumes.renderables.length > 0) {
-          renderer.renderWboitTransparent(scene.volumes, camera, this.drawPass.depthTextureOpaque);
+          renderer.renderWboitTransparent(scene.volumes, camera2, this.drawPass.depthTextureOpaque);
         }
         this.transparentTarget.bind();
         this.drawPass.wboit.render();
       } else if (this.drawPass.transparency === "dpoit") {
         const dpoitTextures = this.drawPass.dpoit.bind();
-        renderer.renderDpoitTransparent(scene.primitives, camera, this.drawPass.depthTextureOpaque, dpoitTextures);
+        renderer.renderDpoitTransparent(scene.primitives, camera2, this.drawPass.depthTextureOpaque, dpoitTextures);
         for (let i = 0, iterations = props.dpoitIterations; i < iterations; i++) {
           if (isTimingMode)
             this.webgl.timer.mark("DpoitPass.layer");
           const dpoitTextures2 = this.drawPass.dpoit.bindDualDepthPeeling();
-          renderer.renderDpoitTransparent(scene.primitives, camera, this.drawPass.depthTextureOpaque, dpoitTextures2);
+          renderer.renderDpoitTransparent(scene.primitives, camera2, this.drawPass.depthTextureOpaque, dpoitTextures2);
           if (iterations > 1) {
             this.transparentTarget.bind();
             this.drawPass.dpoit.renderBlendBack();
@@ -106602,26 +106602,26 @@ var IlluminationPass = class _IlluminationPass {
         this.transparentTarget.bind();
         this.drawPass.dpoit.render();
         if (scene.volumes.renderables.length > 0) {
-          renderer.renderVolume(scene.volumes, camera, this.drawPass.depthTextureOpaque);
+          renderer.renderVolume(scene.volumes, camera2, this.drawPass.depthTextureOpaque);
         }
       } else {
         this.transparentTarget.bind();
         this.drawPass.depthTextureOpaque.attachFramebuffer(this.transparentTarget.framebuffer, "depth");
-        renderer.renderBlendedTransparent(scene.primitives, camera);
+        renderer.renderBlendedTransparent(scene.primitives, camera2);
         this.drawPass.depthTextureOpaque.detachFramebuffer(this.transparentTarget.framebuffer, "depth");
         if (scene.volumes.renderables.length > 0) {
-          renderer.renderVolume(scene.volumes, camera, this.drawPass.depthTextureOpaque);
+          renderer.renderVolume(scene.volumes, camera2, this.drawPass.depthTextureOpaque);
         }
       }
       if (outlineEnabled || dofEnabled || ssaoEnabled) {
         this.drawPass.depthTargetTransparent.bind();
         if (scene.opacityAverage < 1) {
-          renderer.renderDepthTransparent(scene.primitives, camera, this.drawPass.depthTextureOpaque);
+          renderer.renderDepthTransparent(scene.primitives, camera2, this.drawPass.depthTextureOpaque);
         }
       }
       if (ssaoEnabled) {
-        this.drawPass.postprocessing.ssao.update(camera, scene, props.postprocessing.occlusion.params, true);
-        this.drawPass.postprocessing.ssao.render(camera);
+        this.drawPass.postprocessing.ssao.update(camera2, scene, props.postprocessing.occlusion.params, true);
+        this.drawPass.postprocessing.ssao.render(camera2);
       }
     }
     if (hasMarking) {
@@ -106629,13 +106629,13 @@ var IlluminationPass = class _IlluminationPass {
       if (markingDepthTest && scene.markerAverage !== 1) {
         this.drawPass.marking.depthTarget.bind();
         renderer.clear(false, true);
-        renderer.renderMarkingDepth(scene.primitives, camera);
+        renderer.renderMarkingDepth(scene.primitives, camera2);
       }
       this.drawPass.marking.maskTarget.bind();
       renderer.clear(false, true);
-      renderer.renderMarkingMask(scene.primitives, camera, markingDepthTest ? this.drawPass.marking.depthTarget.texture : null);
+      renderer.renderMarkingMask(scene.primitives, camera2, markingDepthTest ? this.drawPass.marking.depthTarget.texture : null);
       this.drawPass.marking.update(props.marking);
-      this.drawPass.marking.render(camera.viewport, this.transparentTarget);
+      this.drawPass.marking.render(camera2.viewport, this.transparentTarget);
     }
     this.tracing.composeTarget.bind();
     state.clearColor(0, 0, 0, 0);
@@ -106687,16 +106687,16 @@ var IlluminationPass = class _IlluminationPass {
       });
     }
     this.tracing.render(ctx, props.transparentBackground, props.illumination, this._iteration, forceRenderInput);
-    const { renderer, camera, scene, helper } = ctx;
+    const { renderer, camera: camera2, scene, helper } = ctx;
     const { gl, state } = this.webgl;
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     if (this._iteration === 0 || forceRenderInput) {
       renderer.setTransparentBackground(props.transparentBackground);
       renderer.setDrawingBufferSize(this.tracing.composeTarget.getWidth(), this.tracing.composeTarget.getHeight());
       renderer.setPixelRatio(this.webgl.pixelRatio);
       renderer.setViewport(x, y, width, height);
-      renderer.update(camera, scene);
-      this.renderInput(renderer, camera, scene, props);
+      renderer.update(camera2, scene);
+      this.renderInput(renderer, camera2, scene, props);
     }
     state.disable(gl.BLEND);
     state.disable(gl.DEPTH_TEST);
@@ -106704,7 +106704,7 @@ var IlluminationPass = class _IlluminationPass {
     state.depthMask(false);
     state.viewport(x, y, width, height);
     state.scissor(x, y, width, height);
-    const orthographic = camera.state.mode === "orthographic" ? 1 : 0;
+    const orthographic = camera2.state.mode === "orthographic" ? 1 : 0;
     const antialiasingEnabled = AntialiasingPass.isEnabled(props.postprocessing);
     const outlinesEnabled = OutlinePass.isEnabled(props.postprocessing) && !props.illumination.ignoreOutline;
     const occlusionEnabled = PostprocessingPass.isTransparentSsaoEnabled(scene, props.postprocessing);
@@ -106719,7 +106719,7 @@ var IlluminationPass = class _IlluminationPass {
       ValueCell.update(this.composeRenderable.values.dOutlineEnable, outlinesEnabled);
     }
     if (outlinesEnabled && props.postprocessing.outline.name === "on") {
-      const { transparentOutline, outlineScale } = this.drawPass.postprocessing.outline.update(camera, props.postprocessing.outline.params, this.drawPass.depthTargetTransparent.texture, this.drawPass.depthTextureOpaque);
+      const { transparentOutline, outlineScale } = this.drawPass.postprocessing.outline.update(camera2, props.postprocessing.outline.params, this.drawPass.depthTargetTransparent.texture, this.drawPass.depthTextureOpaque);
       this.drawPass.postprocessing.outline.render();
       ValueCell.update(this.composeRenderable.values.uOutlineColor, Color.toVec3Normalized(this.composeRenderable.values.uOutlineColor.ref.value, props.postprocessing.outline.params.color));
       if (this.composeRenderable.values.dOutlineScale.ref.value !== outlineScale) {
@@ -106743,10 +106743,10 @@ var IlluminationPass = class _IlluminationPass {
       needsUpdateCompose = true;
       ValueCell.update(this.composeRenderable.values.dBlendTransparency, blendTransparency);
     }
-    ValueCell.updateIfChanged(this.composeRenderable.values.uNear, camera.near);
-    ValueCell.updateIfChanged(this.composeRenderable.values.uFar, camera.far);
-    ValueCell.updateIfChanged(this.composeRenderable.values.uFogFar, camera.fogFar);
-    ValueCell.updateIfChanged(this.composeRenderable.values.uFogNear, camera.fogNear);
+    ValueCell.updateIfChanged(this.composeRenderable.values.uNear, camera2.near);
+    ValueCell.updateIfChanged(this.composeRenderable.values.uFar, camera2.far);
+    ValueCell.updateIfChanged(this.composeRenderable.values.uFogFar, camera2.fogFar);
+    ValueCell.updateIfChanged(this.composeRenderable.values.uFogNear, camera2.fogNear);
     ValueCell.update(this.composeRenderable.values.uFogColor, Color.toVec3Normalized(this.composeRenderable.values.uFogColor.ref.value, renderer.props.backgroundColor));
     if (this.composeRenderable.values.dOrthographic.ref.value !== orthographic) {
       ValueCell.update(this.composeRenderable.values.dOrthographic, orthographic);
@@ -106759,7 +106759,7 @@ var IlluminationPass = class _IlluminationPass {
       this.tracing.composeTarget.bind();
     }
     this._colorTarget = this.tracing.composeTarget;
-    this.drawPass.postprocessing.background.update(camera, props.postprocessing.background);
+    this.drawPass.postprocessing.background.update(camera2, props.postprocessing.background);
     this.drawPass.postprocessing.background.clear(props.postprocessing.background, props.transparentBackground, renderer.props.backgroundColor);
     this.drawPass.postprocessing.background.render(props.postprocessing.background);
     ValueCell.updateIfChanged(this.composeRenderable.values.uTransparentBackground, props.transparentBackground || this.drawPass.postprocessing.background.isEnabled(props.postprocessing));
@@ -106775,16 +106775,16 @@ var IlluminationPass = class _IlluminationPass {
     renderer.setDrawingBufferSize(this.tracing.composeTarget.getWidth(), this.tracing.composeTarget.getHeight());
     renderer.setPixelRatio(this.webgl.pixelRatio);
     renderer.setViewport(x, y, width, height);
-    renderer.update(camera, scene);
+    renderer.update(camera2, scene);
     if (helper.debug.isEnabled) {
       helper.debug.syncVisibility();
-      renderer.renderBlended(helper.debug.scene, camera);
+      renderer.renderBlended(helper.debug.scene, camera2);
     }
     if (helper.handle.isEnabled) {
-      renderer.renderBlended(helper.handle.scene, camera);
+      renderer.renderBlended(helper.handle.scene, camera2);
     }
     if (helper.camera.isEnabled) {
-      helper.camera.update(camera);
+      helper.camera.update(camera2);
       renderer.update(helper.camera.camera, helper.camera.scene);
       renderer.renderBlended(helper.camera.scene, helper.camera.camera);
     }
@@ -106792,7 +106792,7 @@ var IlluminationPass = class _IlluminationPass {
     let swapTarget = this.outputTarget;
     if (antialiasingEnabled) {
       const _toDrawingBuffer2 = toDrawingBuffer && !dofEnabled;
-      this.drawPass.antialiasing.render(camera, this.tracing.composeTarget.texture, _toDrawingBuffer2 ? true : this.outputTarget, props.postprocessing);
+      this.drawPass.antialiasing.render(camera2, this.tracing.composeTarget.texture, _toDrawingBuffer2 ? true : this.outputTarget, props.postprocessing);
       if (_toDrawingBuffer2) {
         targetIsDrawingbuffer = true;
       } else {
@@ -106803,12 +106803,12 @@ var IlluminationPass = class _IlluminationPass {
     if (bloomEnabled && props.postprocessing.bloom.name === "on") {
       const _toDrawingBuffer2 = toDrawingBuffer && !dofEnabled || targetIsDrawingbuffer;
       this.drawPass.bloom.update(this.tracing.colorTextureOpaque, this.tracing.normalTextureOpaque, this.drawPass.depthTextureOpaque, props.postprocessing.bloom.params);
-      this.drawPass.bloom.render(camera.viewport, _toDrawingBuffer2 ? void 0 : this._colorTarget);
+      this.drawPass.bloom.render(camera2.viewport, _toDrawingBuffer2 ? void 0 : this._colorTarget);
     }
     if (dofEnabled && props.postprocessing.dof.name === "on") {
       const _toDrawingBuffer2 = toDrawingBuffer || targetIsDrawingbuffer;
-      this.drawPass.dof.update(camera, this._colorTarget.texture, this.drawPass.depthTextureOpaque, this.drawPass.depthTargetTransparent.texture, props.postprocessing.dof.params, scene.boundingSphereVisible);
-      this.drawPass.dof.render(camera.viewport, _toDrawingBuffer2 ? void 0 : swapTarget);
+      this.drawPass.dof.update(camera2, this._colorTarget.texture, this.drawPass.depthTextureOpaque, this.drawPass.depthTargetTransparent.texture, props.postprocessing.dof.params, scene.boundingSphereVisible);
+      this.drawPass.dof.render(camera2.viewport, _toDrawingBuffer2 ? void 0 : swapTarget);
       if (!_toDrawingBuffer2) {
         this._colorTarget = swapTarget;
       }
@@ -106819,7 +106819,7 @@ var IlluminationPass = class _IlluminationPass {
     this.webgl.gl.flush();
   }
   renderMultiSample(ctx, props, toDrawingBuffer) {
-    const { camera } = ctx;
+    const { camera: camera2 } = ctx;
     const { multiSampleCompose, multiSampleComposeTarget, multiSampleHoldTarget, webgl } = this;
     const { gl, state } = webgl;
     const offsetList = JitterVectors[Math.max(0, Math.min(props.multiSample.sampleLevel, 5))];
@@ -106831,7 +106831,7 @@ var IlluminationPass = class _IlluminationPass {
         note: `sampleIndex ${sampleIndex + 1} of ${offsetList.length}`
       });
     }
-    const { x, y, width, height } = camera.viewport;
+    const { x, y, width, height } = camera2.viewport;
     const sampleWeight = 1 / maxIterations;
     if (iteration === 0) {
       this.renderInternal(ctx, props, false, true);
@@ -106846,13 +106846,13 @@ var IlluminationPass = class _IlluminationPass {
       state.scissor(x, y, width, height);
       multiSampleCompose.render();
     } else {
-      camera.viewOffset.enabled = true;
+      camera2.viewOffset.enabled = true;
       ValueCell.update(multiSampleCompose.values.tColor, this._colorTarget.texture);
       ValueCell.update(multiSampleCompose.values.uWeight, sampleWeight);
       multiSampleCompose.update();
       const offset4 = offsetList[sampleIndex];
-      Camera.setViewOffset(camera.viewOffset, width, height, offset4[0], offset4[1], width, height);
-      camera.update();
+      Camera.setViewOffset(camera2.viewOffset, width, height, offset4[0], offset4[1], width, height);
+      camera2.update();
       this.renderInternal(ctx, props, false, this.prevSampleIndex !== sampleIndex);
       multiSampleComposeTarget.bind();
       state.enable(gl.BLEND);
@@ -106903,8 +106903,8 @@ var IlluminationPass = class _IlluminationPass {
       }
       this.copyRenderable.render();
     }
-    camera.viewOffset.enabled = false;
-    camera.update();
+    camera2.viewOffset.enabled = false;
+    camera2.update();
     if (isTimingMode)
       webgl.timer.markEnd("IlluminationPass.renderMultiSample");
   }
@@ -107059,11 +107059,11 @@ var ImagePass = class {
   get height() {
     return this._height;
   }
-  constructor(webgl, assetManager, renderer, scene, camera, helper, props) {
+  constructor(webgl, assetManager, renderer, scene, camera2, helper, props) {
     this.webgl = webgl;
     this.renderer = renderer;
     this.scene = scene;
-    this.camera = camera;
+    this.camera = camera2;
     this._width = 0;
     this._height = 0;
     this._camera = new Camera();
@@ -107220,7 +107220,7 @@ var HandleHelper = class {
   }
   // TODO could be a lists of position/rotation if we want to show more than one handle tool,
   //      they would be distingishable by their instanceId
-  update(camera, position, rotation) {
+  update(camera2, position, rotation) {
     if (!this.renderObject)
       return;
     if (this.pixelRatio !== this.webgl.pixelRatio) {
@@ -107359,21 +107359,21 @@ var PointerHelper = class {
   get isEnabled() {
     return this.props.enabled === "on";
   }
-  setCamera(camera) {
-    Camera.copySnapshot(this.camera.state, camera.state);
-    Viewport.copy(this.camera.viewport, camera.viewport);
-    Mat4.copy(this.camera.view, camera.view);
-    Mat4.copy(this.camera.projection, camera.projection);
-    Mat4.copy(this.camera.projectionView, camera.projectionView);
-    Mat4.copy(this.camera.headRotation, camera.headRotation);
-    Camera.copyViewOffset(this.camera.viewOffset, camera.viewOffset);
-    this.camera.far = camera.far;
-    this.camera.near = camera.near;
-    this.camera.fogFar = camera.fogFar;
-    this.camera.fogNear = camera.fogNear;
-    this.camera.forceFull = camera.forceFull;
+  setCamera(camera2) {
+    Camera.copySnapshot(this.camera.state, camera2.state);
+    Viewport.copy(this.camera.viewport, camera2.viewport);
+    Mat4.copy(this.camera.view, camera2.view);
+    Mat4.copy(this.camera.projection, camera2.projection);
+    Mat4.copy(this.camera.projectionView, camera2.projectionView);
+    Mat4.copy(this.camera.headRotation, camera2.headRotation);
+    Camera.copyViewOffset(this.camera.viewOffset, camera2.viewOffset);
+    this.camera.far = camera2.far;
+    this.camera.near = camera2.near;
+    this.camera.fogFar = camera2.fogFar;
+    this.camera.fogNear = camera2.fogNear;
+    this.camera.forceFull = camera2.forceFull;
     this.camera.scale = 1;
-    this.modelScale = camera.scale;
+    this.modelScale = camera2.scale;
   }
   update(pointers, points3, hit) {
     this.pointers = pointers;
@@ -107426,30 +107426,30 @@ var PointerHelperGroup;
   PointerHelperGroup2[PointerHelperGroup2["Hit"] = 1] = "Hit";
 })(PointerHelperGroup || (PointerHelperGroup = {}));
 var tmpV6 = Vec3();
-function getSizeForPixels(position, pixels, camera, modelScale) {
-  const cameraPosition = Vec3.scale(tmpV6, camera.state.position, modelScale);
+function getSizeForPixels(position, pixels, camera2, modelScale) {
+  const cameraPosition = Vec3.scale(tmpV6, camera2.state.position, modelScale);
   const d5 = Vec3.distance(position, cameraPosition);
-  const height = 2 * Math.tan(camera.state.fov / 2) * d5;
-  return height / camera.viewport.height * pixels;
+  const height = 2 * Math.tan(camera2.state.fov / 2) * d5;
+  return height / camera2.viewport.height * pixels;
 }
 function createPointerMesh(data, mesh) {
   const state = MeshBuilder.createState(512, 256, mesh);
   const radius = 5e-4;
   const cylinderProps = { radiusTop: radius, radiusBottom: radius, radialSegments: 32 };
-  const { modelScale, camera, pixels } = data;
+  const { modelScale, camera: camera2, pixels } = data;
   state.currentGroup = PointerHelperGroup.None;
   for (const pointer of data.pointers) {
     addCylinderFromRay3D(state, pointer, 0.2, cylinderProps);
-    const size4 = getSizeForPixels(pointer.origin, pixels, camera, modelScale);
+    const size4 = getSizeForPixels(pointer.origin, pixels, camera2, modelScale);
     addSphere(state, pointer.origin, size4, 1);
   }
   for (const point of data.points) {
-    const size4 = getSizeForPixels(point, pixels, camera, modelScale);
+    const size4 = getSizeForPixels(point, pixels, camera2, modelScale);
     addSphere(state, point, size4, 1);
   }
   if (data.hit) {
     state.currentGroup = PointerHelperGroup.Hit;
-    const size4 = getSizeForPixels(data.hit, pixels, camera, modelScale);
+    const size4 = getSizeForPixels(data.hit, pixels, camera2, modelScale);
     addSphere(state, data.hit, size4, 1);
   }
   return MeshBuilder.getMesh(state);
@@ -107676,16 +107676,16 @@ var HiZPass = class {
       this.debug.container.style.display = "none";
     }
   }
-  render(camera) {
+  render(camera2) {
     if (!this.supported || !this.props.enabled)
       return;
     const { gl, state } = this.webgl;
     if (!isWebGL2(gl) || this.sync !== null)
       return;
-    this.nextNear = camera.near;
-    this.nextFar = camera.far;
-    Mat4.copy(this.nextView, camera.view);
-    Mat4.copy(this.nextProjection, camera.projection);
+    this.nextNear = camera2.near;
+    this.nextFar = camera2.far;
+    Mat4.copy(this.nextView, camera2.view);
+    Mat4.copy(this.nextProjection, camera2.projection);
     if (isTimingMode)
       this.webgl.timer.mark("hi-Z");
     state.disable(gl.CULL_FACE);
@@ -108087,12 +108087,12 @@ var XRManager = class {
   setAttribs(attribs) {
     Object.assign(this.attribs, attribs);
   }
-  intersect(camera, view2, plane2, targetRayPose) {
+  intersect(camera2, view2, plane2, targetRayPose) {
     const point = Vec3();
     const ray = getRayFromPose(targetRayPose, view2);
     if (Plane3D.intersectRay3D(point, plane2, ray)) {
-      const { height } = camera.viewport;
-      const v4 = cameraProject(Vec4(), point, camera.viewport, camera.projectionView);
+      const { height } = camera2.viewport;
+      const v4 = cameraProject(Vec4(), point, camera2.viewport, camera2.projectionView);
       const screen = Vec2.create(Math.floor(v4[0]), height - Math.floor(v4[1]));
       return { point, screen };
     }
@@ -108106,15 +108106,15 @@ var XRManager = class {
   }
   update(xrFrame) {
     var _a, _b, _c, _d, _e, _f, _g;
-    const { xrSession, xrRefSpace, input, camera, stereoCamera, pointerHelper } = this;
+    const { xrSession, xrRefSpace, input, camera: camera2, stereoCamera, pointerHelper } = this;
     if (!xrFrame || !xrSession || !xrRefSpace)
       return false;
-    camera.scale = camera.scale * this.scaleFactor;
-    this.prevScale = camera.scale;
-    const camDirUnscaled = Vec3.sub(Vec3(), camera.position, camera.target);
-    Vec3.scaleAndAdd(camera.position, camera.position, camDirUnscaled, 1 - this.scaleFactor);
+    camera2.scale = camera2.scale * this.scaleFactor;
+    this.prevScale = camera2.scale;
+    const camDirUnscaled = Vec3.sub(Vec3(), camera2.position, camera2.target);
+    Vec3.scaleAndAdd(camera2.position, camera2.position, camDirUnscaled, 1 - this.scaleFactor);
     this.scaleFactor = 1;
-    const xform = getRigidTransformFromMat4(camera.view);
+    const xform = getRigidTransformFromMat4(camera2.view);
     const xrOffsetRefSpace = xrRefSpace.getOffsetReferenceSpace(xform);
     const xrPose = xrFrame.getViewerPose(xrOffsetRefSpace);
     if (!xrPose)
@@ -108122,15 +108122,15 @@ var XRManager = class {
     const xrHeadPose = xrFrame.getViewerPose(xrRefSpace);
     if (xrHeadPose) {
       const hq = Quat.fromObj(xrHeadPose.transform.orientation);
-      Mat4.fromQuat(camera.headRotation, hq);
+      Mat4.fromQuat(camera2.headRotation, hq);
     }
     const { depthFar, depthNear, baseLayer } = xrSession.renderState;
     if (!baseLayer)
       return false;
-    if (depthFar !== camera.far || depthNear !== camera.near) {
+    if (depthFar !== camera2.far || depthNear !== camera2.near) {
       xrSession.updateRenderState({
-        depthNear: camera.near,
-        depthFar: camera.far
+        depthNear: camera2.near,
+        depthFar: camera2.far
       });
     }
     stereoCamera.update({ pose: xrPose, layer: baseLayer });
@@ -108164,7 +108164,7 @@ var XRManager = class {
         const targetRayPose = xrFrame.getPose(targetRaySpace, xrRefSpace);
         if (!targetRayPose)
           continue;
-        const ray = getRayFromPose(targetRayPose, camera.view);
+        const ray = getRayFromPose(targetRayPose, camera2.view);
         pointers.push(ray);
         const sceneBoundingSphere = Sphere3D.scaleNX(Sphere3D(), this.scene.boundingSphereVisible, camLeft.scale);
         const si = Vec3();
@@ -108183,8 +108183,8 @@ var XRManager = class {
         if ((_e = gamepad === null || gamepad === void 0 ? void 0 : gamepad.buttons[5]) === null || _e === void 0 ? void 0 : _e.pressed)
           buttons |= ButtonsType.Flag.Five;
         const prevInput = handedness === "left" ? this.prevInput.left : this.prevInput.right;
-        const intersection = this.intersect(camLeft, camera.view, cameraPlane, targetRayPose);
-        const prevIntersection = prevInput ? this.intersect(camLeft, camera.view, cameraPlane, prevInput.targetRayPose) : void 0;
+        const intersection = this.intersect(camLeft, camera2.view, cameraPlane, targetRayPose);
+        const prevIntersection = prevInput ? this.intersect(camLeft, camera2.view, cameraPlane, prevInput.targetRayPose) : void 0;
         const [x, y] = (_f = intersection === null || intersection === void 0 ? void 0 : intersection.screen) !== null && _f !== void 0 ? _f : [0, 0];
         const [prevX, prevY] = (_g = prevIntersection === null || prevIntersection === void 0 ? void 0 : prevIntersection.screen) !== null && _g !== void 0 ? _g : [x, y];
         const dd = Vec2.set(Vec2(), x - prevX, y - prevY);
@@ -108264,12 +108264,12 @@ var XRManager = class {
     this.isSupported.complete();
     (_a = navigator.xr) === null || _a === void 0 ? void 0 : _a.removeEventListener("devicechange", this.checkSupported);
   }
-  constructor(webgl, input, scene, camera, stereoCamera, pointerHelper, interactionHelper, props = {}, attribs = {}) {
+  constructor(webgl, input, scene, camera2, stereoCamera, pointerHelper, interactionHelper, props = {}, attribs = {}) {
     var _a;
     this.webgl = webgl;
     this.input = input;
     this.scene = scene;
-    this.camera = camera;
+    this.camera = camera2;
     this.stereoCamera = stereoCamera;
     this.pointerHelper = pointerHelper;
     this.interactionHelper = interactionHelper;
@@ -108336,7 +108336,7 @@ var RayHelper = class {
     this.size = size4;
     this.pickPass.setSize(size4, size4);
   }
-  render(camera) {
+  render(camera2) {
     if (isTimingMode)
       this.webgl.timer.mark("RayHelper.render", { captureStats: true });
     const { renderer, scene, helper } = this;
@@ -108344,7 +108344,7 @@ var RayHelper = class {
     renderer.setDrawingBufferSize(this.size, this.size);
     renderer.setPixelRatio(1);
     renderer.setViewport(0, 0, this.size, this.size);
-    this.pickPass.render(renderer, camera, scene, helper);
+    this.pickPass.render(renderer, camera2, scene, helper);
     if (isTimingMode)
       this.webgl.timer.markEnd("RayHelper.render");
   }
@@ -108447,9 +108447,9 @@ var RayHelper = class {
     }
   }
 };
-function updateOrthoRayCamera(camera, ray, up3) {
-  const { near, far, viewport } = camera;
-  const height = 2 * Math.tan(degToRad(0.1) / 2) * Vec3.distance(camera.position, camera.target) * camera.scale;
+function updateOrthoRayCamera(camera2, ray, up3) {
+  const { near, far, viewport } = camera2;
+  const height = 2 * Math.tan(degToRad(0.1) / 2) * Vec3.distance(camera2.position, camera2.target) * camera2.scale;
   const zoom = viewport.height / height;
   const fullLeft = -viewport.width / 2;
   const fullRight = viewport.width / 2;
@@ -108463,13 +108463,13 @@ function updateOrthoRayCamera(camera, ray, up3) {
   const right = cx + dx;
   const top = cy + dy;
   const bottom = cy - dy;
-  Mat4.ortho(camera.projection, left, right, top, bottom, near, far);
+  Mat4.ortho(camera2.projection, left, right, top, bottom, near, far);
   const direction = Vec3.normalize(Vec3(), ray.direction);
   const r = Quat.fromUnitVec3(Quat(), direction, Vec3.negUnitZ);
   Quat.invert(r, r);
   const eye = Vec3.clone(ray.origin);
   const target = Vec3.add(Vec3(), eye, direction);
-  Mat4.lookAt(camera.view, eye, target, up3);
+  Mat4.lookAt(camera2.view, eye, target, up3);
 }
 
 // node_modules/molstar/lib/mol-canvas3d/canvas3d.js
@@ -108726,7 +108726,7 @@ var Canvas3D;
     function getSceneRadius() {
       return scene.boundingSphere.radius * p6.sceneRadiusFactor;
     }
-    const camera = new Camera({
+    const camera2 = new Camera({
       position: Vec3.create(0, 0, 100),
       mode: p6.camera.mode,
       fog: p6.cameraFog.name === "on" ? p6.cameraFog.params.intensity : 0,
@@ -108734,8 +108734,8 @@ var Canvas3D;
       minNear: p6.cameraClipping.minNear,
       fov: degToRad(p6.camera.fov)
     }, { x, y, width, height });
-    const stereoCamera = new StereoCamera(camera, p6.camera.stereo.params);
-    const controls = TrackballControls.create(input, camera, scene, p6.trackball, a8.trackball);
+    const stereoCamera = new StereoCamera(camera2, p6.camera.stereo.params);
+    const controls = TrackballControls.create(input, camera2, scene, p6.trackball, a8.trackball);
     const helper = new Helper(webgl, scene, p6);
     const hiZ = new HiZPass(webgl, passes.draw, canvas, p6.hiZ);
     const renderer = Renderer.create(webgl, p6.renderer);
@@ -108748,9 +108748,9 @@ var Canvas3D;
     };
     const pickHelper = new PickHelper(webgl, renderer, scene, helper, passes.pick, { x, y, width, height }, pickOptions);
     const rayHelper = new RayHelper(webgl, renderer, scene, helper, pickOptions);
-    const interactionHelper = new Canvas3dInteractionHelper(identify, asyncIdentify, getLoci6, input, camera, controls, p6.interaction);
+    const interactionHelper = new Canvas3dInteractionHelper(identify, asyncIdentify, getLoci6, input, camera2, controls, p6.interaction);
     const multiSampleHelper = new MultiSampleHelper(passes.multiSample);
-    passes.draw.postprocessing.background.update(camera, p6.postprocessing.background, (changed) => {
+    passes.draw.postprocessing.background.update(camera2, p6.postprocessing.background, (changed) => {
       if (changed)
         requestDraw();
     });
@@ -108788,7 +108788,7 @@ var Canvas3D;
         p6.transparentBackground = xrPassthrough;
       }
     }
-    const xrManager = new XRManager(webgl, input, scene, camera, stereoCamera, helper.pointer, interactionHelper, p6.xr, a8.xr);
+    const xrManager = new XRManager(webgl, input, scene, camera2, stereoCamera, helper.pointer, interactionHelper, p6.xr, a8.xr);
     const xr = {
       request: async () => {
         try {
@@ -108912,7 +108912,7 @@ var Canvas3D;
       const markingUpdated = resolveMarking() && (renderer.props.colorMarker || p6.marking.enabled);
       let didRender = false;
       controls.update(currentTime);
-      const cameraChanged = camera.update();
+      const cameraChanged = camera2.update();
       const xrChanged = xrManager.update(xrFrame);
       if (!xrChanged && xrFrame)
         return false;
@@ -108926,7 +108926,7 @@ var Canvas3D;
         if (passes.illumination.shouldRender(p6.illumination) && (!isActivelyInteracting && scene.count > 0 || passes.illumination.iteration === 0 || p6.userInteractionReleaseMs === 0)) {
           if (isTimingMode)
             webgl.timer.mark("Canvas3D.render", { captureStats: true });
-          const ctx2 = { renderer, camera, scene, helper };
+          const ctx2 = { renderer, camera: camera2, scene, helper };
           passes.illumination.render(ctx2, p6, true);
           if (isTimingMode)
             webgl.timer.markEnd("Canvas3D.render");
@@ -108937,7 +108937,7 @@ var Canvas3D;
         const multiSampleChanged = multiSampleHelper.update(markingUpdated || shouldRender, p6.multiSample) && !xrFrame;
         if (shouldRender || multiSampleChanged || markingUpdated) {
           renderer.setOcclusionTest(hiZ.isOccluded);
-          let cam = camera;
+          let cam = camera2;
           if (p6.camera.stereo.name === "on" || xrChanged) {
             if (!xrChanged)
               stereoCamera.update();
@@ -108952,7 +108952,7 @@ var Canvas3D;
           } else {
             passes.draw.render(ctx2, p6, true);
           }
-          hiZ.render(camera);
+          hiZ.render(camera2);
           if (isTimingMode)
             webgl.timer.markEnd("Canvas3D.render");
           pickHelper.dirty = pickHelper.dirty || shouldRender;
@@ -108992,13 +108992,13 @@ var Canvas3D;
       if (options === null || options === void 0 ? void 0 : options.updateControls) {
         controls.update(currentTime);
       }
-      camera.transition.tick(currentTime);
+      camera2.transition.tick(currentTime);
       hiZ.tick();
       if (options === null || options === void 0 ? void 0 : options.manualDraw) {
         return;
       }
       draw({ isSynchronous: options === null || options === void 0 ? void 0 : options.isSynchronous, xrFrame: options === null || options === void 0 ? void 0 : options.xrFrame });
-      if (!camera.transition.inTransition && !webgl.isContextLost) {
+      if (!camera2.transition.inTransition && !webgl.isContextLost) {
         interactionHelper.tick(currentTime);
       }
     }
@@ -109042,9 +109042,9 @@ var Canvas3D;
         return void 0;
       shaderManager.finalize(["pick"], true);
       if ("origin" in target) {
-        return rayHelper.identify(target, camera);
+        return rayHelper.identify(target, camera2);
       } else {
-        const cam = p6.camera.stereo.name === "on" ? stereoCamera : camera;
+        const cam = p6.camera.stereo.name === "on" ? stereoCamera : camera2;
         return pickHelper.identify(target[0], target[1], cam);
       }
     }
@@ -109053,9 +109053,9 @@ var Canvas3D;
         return void 0;
       shaderManager.finalize(["pick"], true);
       if ("origin" in target) {
-        return rayHelper.asyncIdentify(target, camera);
+        return rayHelper.asyncIdentify(target, camera2);
       } else {
-        const cam = p6.camera.stereo.name === "on" ? stereoCamera : camera;
+        const cam = p6.camera.stereo.name === "on" ? stereoCamera : camera2;
         return pickHelper.asyncIdentify(target[0], target[1], cam);
       }
     }
@@ -109089,10 +109089,10 @@ var Canvas3D;
       }
       if (radius > 0) {
         const duration = nextCameraResetDuration === void 0 ? p6.cameraResetDurationMs : nextCameraResetDuration;
-        const focus = camera.getFocus(center2, radius);
-        const next = typeof nextCameraResetSnapshot === "function" ? nextCameraResetSnapshot(scene, camera) : nextCameraResetSnapshot;
+        const focus = camera2.getFocus(center2, radius);
+        const next = typeof nextCameraResetSnapshot === "function" ? nextCameraResetSnapshot(scene, camera2) : nextCameraResetSnapshot;
         const snapshot = next ? { ...focus, ...next } : focus;
-        camera.setState({ ...snapshot, radiusMax: getSceneRadius() }, duration);
+        camera2.setState({ ...snapshot, radiusMax: getSceneRadius() }, duration);
       }
       nextCameraResetDuration = void 0;
       nextCameraResetSnapshot = void 0;
@@ -109101,12 +109101,12 @@ var Canvas3D;
     const oldBoundingSphereVisible = Sphere3D();
     const cameraSphere = Sphere3D();
     function shouldResetCamera() {
-      if (camera.state.radiusMax === 0)
+      if (camera2.state.radiusMax === 0)
         return true;
-      if (camera.transition.inTransition || nextCameraResetSnapshot)
+      if (camera2.transition.inTransition || nextCameraResetSnapshot)
         return false;
       let cameraSphereOverlapsNone = true, isEmpty3 = true;
-      Sphere3D.set(cameraSphere, camera.state.target, camera.state.radius);
+      Sphere3D.set(cameraSphere, camera2.state.target, camera2.state.radius);
       for (const r of scene.renderables) {
         if (!r.state.visible)
           continue;
@@ -109115,7 +109115,7 @@ var Canvas3D;
           continue;
         isEmpty3 = false;
         const cameraDist = Vec3.distance(cameraSphere.center, b8.center);
-        if ((cameraDist > cameraSphere.radius || cameraDist > b8.radius || b8.radius > camera.state.radiusMax) && !Sphere3D.includes(oldBoundingSphereVisible, b8))
+        if ((cameraDist > cameraSphere.radius || cameraDist > b8.radius || b8.radius > camera2.state.radiusMax) && !Sphere3D.includes(oldBoundingSphereVisible, b8))
           return true;
         if (Sphere3D.overlaps(cameraSphere, b8))
           cameraSphereOverlapsNone = false;
@@ -109141,7 +109141,7 @@ var Canvas3D;
       if (oldBoundingSphereVisible.radius === 0)
         nextCameraResetDuration = 0;
       if (!p6.camera.manualReset)
-        camera.setState({ radiusMax: getSceneRadius() }, 0);
+        camera2.setState({ radiusMax: getSceneRadius() }, 0);
       reprCount.next(reprRenderObjects.size);
       if (isDebugMode)
         consoleStats();
@@ -109238,20 +109238,20 @@ var Canvas3D;
       }
     }
     function getProps() {
-      const radius = scene.boundingSphere.radius > 0 ? 100 - Math.round(camera.transition.target.radius / getSceneRadius() * 100) : 0;
+      const radius = scene.boundingSphere.radius > 0 ? 100 - Math.round(camera2.transition.target.radius / getSceneRadius() * 100) : 0;
       return {
         camera: {
-          mode: camera.state.mode,
+          mode: camera2.state.mode,
           helper: { ...helper.camera.props },
           stereo: { ...p6.camera.stereo },
-          fov: Math.round(radToDeg(camera.state.fov)),
+          fov: Math.round(radToDeg(camera2.state.fov)),
           manualReset: !!p6.camera.manualReset
         },
-        cameraFog: camera.state.fog > 0 ? { name: "on", params: { intensity: camera.state.fog } } : { name: "off", params: {} },
+        cameraFog: camera2.state.fog > 0 ? { name: "on", params: { intensity: camera2.state.fog } } : { name: "off", params: {} },
         cameraClipping: {
-          far: camera.state.clipFar,
+          far: camera2.state.clipFar,
           radius,
-          minNear: camera.state.minNear
+          minNear: camera2.state.minNear
         },
         cameraResetDurationMs: p6.cameraResetDurationMs,
         sceneRadiusFactor: p6.sceneRadiusFactor,
@@ -109384,7 +109384,7 @@ var Canvas3D;
         reprCount.next(reprRenderObjects.size);
       },
       syncVisibility: () => {
-        if (camera.state.radiusMax === 0) {
+        if (camera2.state.radiusMax === 0) {
           cameraResetRequested = true;
           nextCameraResetDuration = 0;
         }
@@ -109415,7 +109415,7 @@ var Canvas3D;
         nextCameraResetSnapshot = options === null || options === void 0 ? void 0 : options.snapshot;
         cameraResetRequested = true;
       },
-      camera,
+      camera: camera2,
       boundingSphere: scene.boundingSphere,
       boundingSphereVisible: scene.boundingSphereVisible,
       get notifyDidDraw() {
@@ -109434,26 +109434,26 @@ var Canvas3D;
         const props2 = typeof properties4 === "function" ? produce(getProps(), properties4) : properties4;
         if (props2.sceneRadiusFactor !== void 0) {
           p6.sceneRadiusFactor = props2.sceneRadiusFactor;
-          camera.setState({ radiusMax: getSceneRadius() }, 0);
+          camera2.setState({ radiusMax: getSceneRadius() }, 0);
         }
         const cameraState = /* @__PURE__ */ Object.create(null);
-        if (props2.camera && props2.camera.mode !== void 0 && props2.camera.mode !== camera.state.mode) {
+        if (props2.camera && props2.camera.mode !== void 0 && props2.camera.mode !== camera2.state.mode) {
           cameraState.mode = props2.camera.mode;
         }
-        const oldFov = Math.round(radToDeg(camera.state.fov));
+        const oldFov = Math.round(radToDeg(camera2.state.fov));
         if (props2.camera && props2.camera.fov !== void 0 && props2.camera.fov !== oldFov) {
           cameraState.fov = degToRad(props2.camera.fov);
         }
         if (props2.cameraFog !== void 0 && props2.cameraFog.params) {
           const newFog = props2.cameraFog.name === "on" ? props2.cameraFog.params.intensity : 0;
-          if (newFog !== camera.state.fog)
+          if (newFog !== camera2.state.fog)
             cameraState.fog = newFog;
         }
         if (props2.cameraClipping !== void 0) {
-          if (props2.cameraClipping.far !== void 0 && props2.cameraClipping.far !== camera.state.clipFar) {
+          if (props2.cameraClipping.far !== void 0 && props2.cameraClipping.far !== camera2.state.clipFar) {
             cameraState.clipFar = props2.cameraClipping.far;
           }
-          if (props2.cameraClipping.minNear !== void 0 && props2.cameraClipping.minNear !== camera.state.minNear) {
+          if (props2.cameraClipping.minNear !== void 0 && props2.cameraClipping.minNear !== camera2.state.minNear) {
             cameraState.minNear = props2.cameraClipping.minNear;
           }
           if (props2.cameraClipping.radius !== void 0) {
@@ -109464,7 +109464,7 @@ var Canvas3D;
           }
         }
         if (Object.keys(cameraState).length > 0)
-          camera.setState(cameraState);
+          camera2.setState(cameraState);
         if ((_a2 = props2.camera) === null || _a2 === void 0 ? void 0 : _a2.helper)
           helper.camera.setProps(props2.camera.helper);
         if (((_b2 = props2.camera) === null || _b2 === void 0 ? void 0 : _b2.manualReset) !== void 0)
@@ -109495,7 +109495,7 @@ var Canvas3D;
         }
         if ((_d = props2.postprocessing) === null || _d === void 0 ? void 0 : _d.background) {
           Object.assign(p6.postprocessing.background, props2.postprocessing.background);
-          passes.draw.postprocessing.background.update(camera, p6.postprocessing.background, (changed) => {
+          passes.draw.postprocessing.background.update(camera2, p6.postprocessing.background, (changed) => {
             if (changed && !doNotRequestDraw)
               requestDraw();
           });
@@ -109544,7 +109544,7 @@ var Canvas3D;
           xrManager.setAttribs(attribs2.xr);
       },
       getImagePass: (props2 = {}) => {
-        return new ImagePass(webgl, assetManager, renderer, scene, camera, helper, props2);
+        return new ImagePass(webgl, assetManager, renderer, scene, camera2, helper, props2);
       },
       getRenderObjects() {
         const renderObjects = [];
@@ -109634,7 +109634,7 @@ var Canvas3D;
     function syncViewport() {
       pickHelper.setViewport(x, y, width, height);
       renderer.setViewport(x, y, width, height);
-      Viewport.set(camera.viewport, x, y, width, height);
+      Viewport.set(camera2.viewport, x, y, width, height);
       Viewport.set(controls.viewport, x, y, width, height);
       hiZ.setViewport(x, y, width, height);
     }
@@ -115524,7 +115524,7 @@ var AnimateStateSnapshots = PluginStateAnimation.create({
     }
     if (i >= animState.snapshots.length)
       return { kind: "finished" };
-    const { transition, camera, canvas3d } = animState.snapshots[i].snapshot;
+    const { transition, camera: camera2, canvas3d } = animState.snapshots[i].snapshot;
     const frameIndex = PluginState.getStateTransitionFrameIndex(animState.snapshots[i].snapshot, ftime);
     if (transition && frameIndex !== void 0) {
       if (i === animState.currentIndex && frameIndex === animState.currentTransitionFrame) {
@@ -115533,7 +115533,7 @@ var AnimateStateSnapshots = PluginStateAnimation.create({
       if (frameIndex === 0 || i !== animState.currentIndex) {
         await setPartialSnapshot(ctx.plugin, {
           ...transition.frames[frameIndex],
-          camera,
+          camera: camera2,
           canvas3d
         });
       } else {
@@ -115607,7 +115607,7 @@ var AnimateStateSnapshotTransition = PluginStateAnimation.create({
     }
     if (!snapshot)
       return { kind: "finished" };
-    const { transition, camera, canvas3d } = snapshot;
+    const { transition, camera: camera2, canvas3d } = snapshot;
     const frameIndex = PluginState.getStateTransitionFrameIndex(snapshot, t5.current);
     if (!transition || frameIndex === void 0) {
       return { kind: "finished" };
@@ -115619,7 +115619,7 @@ var AnimateStateSnapshotTransition = PluginStateAnimation.create({
     if (frameIndex === 0) {
       await setPartialSnapshot(ctx.plugin, {
         ...transition.frames[frameIndex],
-        camera,
+        camera: camera2,
         canvas3d
       });
     } else {
@@ -115724,17 +115724,17 @@ var PluginState = class _PluginState extends PluginComponent {
     if (!transition)
       return;
     const finalIndex = Math.min(frameIndex, transition.frames.length - 1);
-    const frame = (_a = transition.frames[finalIndex]) !== null && _a !== void 0 ? _a : snapshot.data;
-    if (frame.data)
-      await this.plugin.runTask(this.data.setSnapshot(frame.data));
-    if ((_b = frame.canvas3d) === null || _b === void 0 ? void 0 : _b.props) {
-      const settings = ParamDefinition.normalizeParams(Canvas3DParams, frame.canvas3d.props, "children");
+    const frame2 = (_a = transition.frames[finalIndex]) !== null && _a !== void 0 ? _a : snapshot.data;
+    if (frame2.data)
+      await this.plugin.runTask(this.data.setSnapshot(frame2.data));
+    if ((_b = frame2.canvas3d) === null || _b === void 0 ? void 0 : _b.props) {
+      const settings = ParamDefinition.normalizeParams(Canvas3DParams, frame2.canvas3d.props, "children");
       (_c = this.plugin.canvas3d) === null || _c === void 0 ? void 0 : _c.setProps(settings);
     }
-    if ((_d = frame.camera) === null || _d === void 0 ? void 0 : _d.current) {
+    if ((_d = frame2.camera) === null || _d === void 0 ? void 0 : _d.current) {
       PluginCommands.Camera.Reset(this.plugin, {
-        snapshot: frame.camera.current,
-        durationMs: frame.camera.transitionStyle === "animate" ? frame.camera.transitionDurationInMs : void 0
+        snapshot: frame2.camera.current,
+        durationMs: frame2.camera.transitionStyle === "animate" ? frame2.camera.transitionDurationInMs : void 0
       });
     }
     if (!frameIndex && typeof (snapshot === null || snapshot === void 0 ? void 0 : snapshot.onLoadMarkdownCommands) === "object" && Object.keys(snapshot.onLoadMarkdownCommands).length > 0) {
@@ -115823,9 +115823,9 @@ var PluginState = class _PluginState extends PluginComponent {
     if (!transition)
       return 1e3 / 60;
     let minDuration = Infinity;
-    for (const frame of transition.frames) {
-      if (frame.durationInMs > 0 && frame.durationInMs < minDuration) {
-        minDuration = frame.durationInMs;
+    for (const frame2 of transition.frames) {
+      if (frame2.durationInMs > 0 && frame2.durationInMs < minDuration) {
+        minDuration = frame2.durationInMs;
       }
     }
     if (!Number.isFinite(minDuration))
@@ -115840,8 +115840,8 @@ var PluginState = class _PluginState extends PluginComponent {
       return void 0;
     let totalDuration = 0;
     for (let i = 0; i < transition.frames.length; i++) {
-      const frame = transition.frames[i];
-      totalDuration += frame.durationInMs;
+      const frame2 = transition.frames[i];
+      totalDuration += frame2.durationInMs;
     }
     return totalDuration;
   });
@@ -115855,8 +115855,8 @@ var PluginState = class _PluginState extends PluginComponent {
     for (let i = 0; i < frameIndex; i++) {
       if (transition.frames.length <= i)
         break;
-      const frame = transition.frames[i];
-      currentDuration += frame.durationInMs;
+      const frame2 = transition.frames[i];
+      currentDuration += frame2.durationInMs;
     }
     return currentDuration;
   });
@@ -115875,8 +115875,8 @@ var PluginState = class _PluginState extends PluginComponent {
     for (let i = 0; i < transition.frames.length; i++) {
       if (currentDuration >= t5)
         return i;
-      const frame = transition.frames[i];
-      currentDuration += frame.durationInMs;
+      const frame2 = transition.frames[i];
+      currentDuration += frame2.durationInMs;
     }
     return transition.frames.length - 1;
   }
@@ -117103,13 +117103,13 @@ var CameraAxisHelper = PluginBehavior.create({
           state = 0;
           return;
         }
-        const { camera } = this.ctx.canvas3d;
+        const { camera: camera2 } = this.ctx.canvas3d;
         let dir, up3;
         if (axis >= CameraHelperAxis.X && axis <= CameraHelperAxis.Z) {
           lastPlane = CameraHelperAxis.None;
           state = 0;
-          const d5 = Vec3.sub(Vec3(), camera.target, camera.position);
-          const c8 = Vec3.cross(Vec3(), d5, camera.up);
+          const d5 = Vec3.sub(Vec3(), camera2.target, camera2.position);
+          const c8 = Vec3.cross(Vec3(), d5, camera2.up);
           up3 = Vec3();
           up3[axis - 1] = 1;
           dir = Vec3.cross(Vec3(), up3, c8);
@@ -117134,7 +117134,7 @@ var CameraAxisHelper = PluginBehavior.create({
           }
         }
         this.ctx.canvas3d.requestCameraReset({
-          snapshot: (scene, camera2) => camera2.getInvariantFocus(scene.boundingSphereVisible.center, scene.boundingSphereVisible.radius, up3, dir)
+          snapshot: (scene, camera3) => camera3.getInvariantFocus(scene.boundingSphereVisible.center, scene.boundingSphereVisible.radius, up3, dir)
         });
       });
     }
@@ -121050,13 +121050,13 @@ function getFocusSnapshot(plugin, options) {
   });
 }
 var _tmpVec = Vec3();
-function snapshotFromSphereAndDirections(camera, options) {
+function snapshotFromSphereAndDirections(camera2, options) {
   var _a, _b;
   const target = options.center;
   const radius = Math.max(options.radius, 0.01);
-  const direction = (_a = options.direction) !== null && _a !== void 0 ? _a : Vec3.sub(Vec3(), camera.target, camera.position);
-  const up3 = Vec3.orthogonalize(Vec3(), direction, (_b = options.up) !== null && _b !== void 0 ? _b : camera.up);
-  const distance2 = camera.getTargetDistance(radius);
+  const direction = (_a = options.direction) !== null && _a !== void 0 ? _a : Vec3.sub(Vec3(), camera2.target, camera2.position);
+  const up3 = Vec3.orthogonalize(Vec3(), direction, (_b = options.up) !== null && _b !== void 0 ? _b : camera2.up);
+  const distance2 = camera2.getTargetDistance(radius);
   const deltaDirection = Vec3.setMagnitude(_tmpVec, direction, distance2);
   const position = Vec3.sub(Vec3(), target, deltaDirection);
   return { target, position, up: up3, radius };
@@ -122601,10 +122601,10 @@ var StructureSelectionManager = class extends StatefulPluginComponent {
   }
   /** Removes all selections and returns them */
   clear() {
-    const keys2 = this.entries.keys();
+    const keys3 = this.entries.keys();
     const selections = [];
     while (true) {
-      const k = keys2.next();
+      const k = keys3.next();
       if (k.done)
         break;
       const s = this.entries.get(k.value);
@@ -123008,9 +123008,9 @@ var StructureFocusManager = class extends StatefulPluginComponent {
           this.state.current = { ...current2, loci };
           this.behaviors.current.next(this.state.current);
           Loci2.getBoundingSphere(loci, sphere);
-          const camera = (_a = this.plugin.canvas3d) === null || _a === void 0 ? void 0 : _a.camera;
-          const d5 = camera.getTargetDistance(sphere.radius + 4);
-          if (Vec3.distance(camera.target, sphere.center) > sphere.radius || d5 > camera.viewport.height / camera.zoom) {
+          const camera2 = (_a = this.plugin.canvas3d) === null || _a === void 0 ? void 0 : _a.camera;
+          const d5 = camera2.getTargetDistance(sphere.radius + 4);
+          if (Vec3.distance(camera2.target, sphere.center) > sphere.radius || d5 > camera2.viewport.height / camera2.zoom) {
             this.plugin.managers.camera.focusSphere(sphere, { durationMs: 0 });
           }
         }
@@ -135456,7 +135456,7 @@ function PlaneImageVisual(materialId) {
   }, materialId);
 }
 function getFrame(structure, props) {
-  const { mode, axis, frame, extent, margin, rotation, plane: plane2, includeParent } = props;
+  const { mode, axis, frame: frame2, extent, margin, rotation, plane: plane2, includeParent } = props;
   if (includeParent && structure.child) {
     structure = structure.child;
   }
@@ -135468,7 +135468,7 @@ function getFrame(structure, props) {
   const center2 = Vec3();
   let a8 = 0, b8 = 0, c8 = 0;
   let dirA, dirB, dirC;
-  if (frame === "principalAxes") {
+  if (frame2 === "principalAxes") {
     const axes = Structure.getPrincipalAxes(structure).boxAxes;
     [a8, b8, c8] = Axes3D.size(Vec3(), axes);
     dirA = axes.dirA;
@@ -135521,7 +135521,7 @@ function getFrame(structure, props) {
   Vec3.addScalar(size4, size4, margin * 2);
   Vec3.addScalar(scale, scale, margin * 2);
   const trimRotation = Quat.identity();
-  if (frame === "principalAxes") {
+  if (frame2 === "principalAxes") {
     Quat.fromBasis(trimRotation, Vec3.normalize(Vec3(), dirA), Vec3.normalize(Vec3(), dirB), Vec3.normalize(Vec3(), dirC));
   }
   if (mode === "plane") {
@@ -137790,8 +137790,8 @@ var TaskManager = class {
   }
 };
 (function(TaskManager2) {
-  function delay(time) {
-    return new Promise((res) => setTimeout(res, time));
+  function delay(time2) {
+    return new Promise((res) => setTimeout(res, time2));
   }
   function testTask(N) {
     return Task.create("Test", async (ctx) => {
@@ -138434,19 +138434,19 @@ var ErrorContext = class {
   constructor() {
     this.errors = /* @__PURE__ */ Object.create(null);
   }
-  get(tag) {
+  get(tag2) {
     var _a;
-    return (_a = this.errors[tag]) !== null && _a !== void 0 ? _a : [];
+    return (_a = this.errors[tag2]) !== null && _a !== void 0 ? _a : [];
   }
-  add(tag, error2) {
-    if (tag in this.errors && Array.isArray(this.errors[tag])) {
-      this.errors[tag].push(error2);
+  add(tag2, error2) {
+    if (tag2 in this.errors && Array.isArray(this.errors[tag2])) {
+      this.errors[tag2].push(error2);
     } else {
-      this.errors[tag] = [error2];
+      this.errors[tag2] = [error2];
     }
   }
-  clear(tag) {
-    delete this.errors[tag];
+  clear(tag2) {
+    delete this.errors[tag2];
   }
 };
 
@@ -141592,7 +141592,7 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
   const revealArea = overlay ? hotspot : cinemaHotspot;
   if (revealArea) {
     const surface = overlay || traj;
-    const visibility = new ControlsVisibility(container, surface, revealArea, () => ({
+    const visibility2 = new ControlsVisibility(container, surface, revealArea, () => ({
       visible: hasSeenState && model.get("show_controls") !== false && (!!overlay || c8.trajectory.getTrajectoryState().frameCount > 1),
       autohide: model.get("autohide_controls") !== false,
       scope: model.get("autohide_scope") || "controls",
@@ -141603,9 +141603,9 @@ var buildControls = (c8, model, sendSync, container, onPopClick, opts, onPanelPo
     } : void 0);
     refreshVisibility = () => {
       placeOverlay();
-      visibility.refresh();
+      visibility2.refresh();
     };
-    release.push(() => visibility.dispose());
+    release.push(() => visibility2.dispose());
     const resizeObserver = new ResizeObserver(refreshVisibility);
     resizeObserver.observe(surface);
     release.push(() => resizeObserver.disconnect());
@@ -141710,18 +141710,18 @@ function installFontAtlasUploads(context2) {
 
 // src/plugin/box-vectors.ts
 function copyJsonBoxVectors(structures) {
-  if (!structures.some((frame) => frame.box !== void 0)) return void 0;
+  if (!structures.some((frame2) => frame2.box !== void 0)) return void 0;
   const values2 = new Float64Array(structures.length * 9).fill(NaN);
-  structures.forEach((frame, index) => {
-    const rows = frame.box;
+  structures.forEach((frame2, index) => {
+    const rows = frame2.box;
     if (!Array.isArray(rows) || rows.length !== 3 || rows.some((row3) => !Array.isArray(row3) || row3.length !== 3 || row3.some((value) => typeof value !== "number" || !Number.isFinite(value)))) return;
     rows.forEach((row3, axis) => values2.set(row3, index * 9 + axis * 3));
   });
   return values2;
 }
-function readBoxVectors(table, frame) {
-  if (!table || !Number.isSafeInteger(frame) || frame < 0 || (frame + 1) * 9 > table.length) return void 0;
-  const values2 = table.subarray(frame * 9, frame * 9 + 9);
+function readBoxVectors(table, frame2) {
+  if (!table || !Number.isSafeInteger(frame2) || frame2 < 0 || (frame2 + 1) * 9 > table.length) return void 0;
+  const values2 = table.subarray(frame2 * 9, frame2 * 9 + 9);
   if (!values2.every(Number.isFinite)) return void 0;
   return [Array.from(values2.subarray(0, 3)), Array.from(values2.subarray(3, 6)), Array.from(values2.subarray(6, 9))];
 }
@@ -142012,15 +142012,15 @@ function createCellFromFlatBox(box5, structureIndex) {
   );
   return candidate.size[0] > 0 && candidate.size[1] > 0 && candidate.size[2] > 0 ? candidate : void 0;
 }
-function splitPositions(frame, atomCount2) {
-  if (!Array.isArray(frame.coordinates) || frame.coordinates.length !== atomCount2) {
+function splitPositions(frame2, atomCount2) {
+  if (!Array.isArray(frame2.coordinates) || frame2.coordinates.length !== atomCount2) {
     throw new Error("MolSys payload coordinates do not match atom count");
   }
   const x = new Float32Array(atomCount2);
   const y = new Float32Array(atomCount2);
   const z = new Float32Array(atomCount2);
   for (let i = 0; i < atomCount2; i++) {
-    const coords = frame.coordinates[i];
+    const coords = frame2.coordinates[i];
     const cx = coords?.[0];
     const cy = coords?.[1];
     const cz = coords?.[2];
@@ -142380,18 +142380,18 @@ function attachRenderPresentation(renderer, context2) {
   if (attached.has(renderer)) return;
   attached.add(renderer);
   const update10 = renderer.update;
-  renderer.update = (camera, scene) => {
-    for (const entry of presentations.get(context2) ?? []) entry.present(camera, scene);
-    update10.call(renderer, camera, scene);
+  renderer.update = (camera2, scene) => {
+    for (const entry of presentations.get(context2) ?? []) entry.present(camera2, scene);
+    update10.call(renderer, camera2, scene);
   };
 }
-function registerRenderPresentation(context2, camera, present) {
+function registerRenderPresentation(context2, camera2, present) {
   let entries3 = presentations.get(context2);
   if (!entries3) {
     entries3 = /* @__PURE__ */ new Set();
     presentations.set(context2, entries3);
   }
-  const entry = { camera, present };
+  const entry = { camera: camera2, present };
   entries3.add(entry);
   return () => {
     entries3.delete(entry);
@@ -142513,13 +142513,13 @@ async function renderAnnotation(plugin, geometry, ref) {
   await PluginCommands.State.Update(plugin, { state: plugin.state.data, tree, options: { doNotLogTiming: true } });
   return appliedRef;
 }
-function cameraOffsetPosition(anchor, offset4, camera) {
-  const basis = cameraOffsetBasis(camera);
+function cameraOffsetPosition(anchor, offset4, camera2) {
+  const basis = cameraOffsetBasis(camera2);
   return anchor.map((value, i) => value + offset4[0] * basis[i] + offset4[1] * basis[4 + i] + offset4[2] * basis[8 + i]);
 }
-function cameraOffsetBasis(camera) {
-  const toward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), camera.position, camera.target));
-  const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), camera.up, toward));
+function cameraOffsetBasis(camera2) {
+  const toward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), camera2.position, camera2.target));
+  const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), camera2.up, toward));
   const up3 = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), toward, right));
   const basis = Mat4.identity();
   for (let i = 0; i < 3; i++) {
@@ -142575,14 +142575,14 @@ var AnnotationHandlers = class {
     if (canvas?.webgl && canvas.camera) this.releasePresentation = registerRenderPresentation(
       canvas.webgl,
       canvas.camera,
-      (camera, scene) => this.present(camera, scene)
+      (camera2, scene) => this.present(camera2, scene)
     );
   }
   async addLabel(msg) {
     const structure = this.callbacks.getStructure();
     const text = typeof msg.options?.text === "string" ? msg.options.text : "";
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
-    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+    const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
     const layer_tag = msg.options?.layer_tag;
     const style = msg.options?.style;
     const position = Array.isArray(msg.options?.position) ? msg.options.position.map(Number) : void 0;
@@ -142601,10 +142601,10 @@ var AnnotationHandlers = class {
       throw new Error("Annotation coordinates and offsets require finite triples.");
     }
     if (!text.trim() && !position && atomIndices.length === 0) return;
-    this.specsByTag.set(tag, {
+    this.specsByTag.set(tag2, {
       text: text.trim(),
       atom_indices: [...atomIndices],
-      tag,
+      tag: tag2,
       layer_tag,
       style,
       position,
@@ -142613,21 +142613,21 @@ var AnnotationHandlers = class {
       leader_line: leaderLine,
       leader_line_style: leaderLineStyle
     });
-    if (layer_tag && layer_tag !== tag) {
+    if (layer_tag && layer_tag !== tag2) {
       const group = this.layerTagIndex.get(layer_tag) ?? /* @__PURE__ */ new Set();
-      group.add(tag);
+      group.add(tag2);
       this.layerTagIndex.set(layer_tag, group);
     }
     this.callbacks.addLabelOverlay?.(msg);
-    if (this.hiddenTags.has(tag)) return;
+    if (this.hiddenTags.has(tag2)) return;
     if (position || offsetMode === "world" || leaderLine) {
-      const geometry = this.geometryFor(tag);
+      const geometry = this.geometryFor(tag2);
       if (!geometry) return;
       const ref = await renderAnnotation(this.plugin, geometry);
-      this.callouts.set(tag, { ref, signature: geometryKey(geometry) });
+      this.callouts.set(tag2, { ref, signature: geometryKey(geometry) });
       this.labelRefs.add(ref);
-      this.refsByTag.set(tag, /* @__PURE__ */ new Set([ref]));
-      this.callbacks.registerRef(ref, tag);
+      this.refsByTag.set(tag2, /* @__PURE__ */ new Set([ref]));
+      this.callbacks.registerRef(ref, tag2);
       return;
     }
     let loci;
@@ -142638,7 +142638,7 @@ var AnnotationHandlers = class {
     const styleParams = styleToVisualParams(style) ?? {};
     const mergedVisualParams = {
       ...styleParams,
-      tooltip: tag,
+      tooltip: tag2,
       offsetX: finalOffset[0],
       offsetY: finalOffset[1],
       offsetZ: finalOffset[2],
@@ -142646,8 +142646,8 @@ var AnnotationHandlers = class {
       tetherLength: 1
     };
     const added = await this.plugin.managers.structure.measurement.addLabel(loci, {
-      selectionTags: [tag],
-      reprTags: [tag],
+      selectionTags: [tag2],
+      reprTags: [tag2],
       labelParams: { customText: text },
       visualParams: mergedVisualParams
     });
@@ -142656,34 +142656,34 @@ var AnnotationHandlers = class {
       const selectionRef = StateObjectRef.resolveRef(added.selection.ref);
       if (selectionRef) {
         this.labelRefs.add(selectionRef);
-        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        const refs = this.refsByTag.get(tag2) ?? /* @__PURE__ */ new Set();
         refs.add(selectionRef);
-        this.refsByTag.set(tag, refs);
+        this.refsByTag.set(tag2, refs);
       }
-      this.callbacks.registerRef(added.selection.ref, tag);
+      this.callbacks.registerRef(added.selection.ref, tag2);
     }
     if (added.representation?.ref) {
       const representationRef = StateObjectRef.resolveRef(added.representation.ref);
       if (representationRef) {
         this.labelRefs.add(representationRef);
-        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        const refs = this.refsByTag.get(tag2) ?? /* @__PURE__ */ new Set();
         refs.add(representationRef);
-        this.refsByTag.set(tag, refs);
+        this.refsByTag.set(tag2, refs);
       }
-      this.callbacks.registerRef(added.representation.ref, tag);
+      this.callbacks.registerRef(added.representation.ref, tag2);
     }
   }
   async updateLabel(msg) {
-    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
-    await this.clearLabelByTag(tag);
-    const prevSpec = this.specsByTag.get(tag);
+    const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
+    await this.clearLabelByTag(tag2);
+    const prevSpec = this.specsByTag.get(tag2);
     await this.addLabel({
       op: "add_label",
-      tag,
+      tag: tag2,
       options: {
         text: msg.options?.text ?? prevSpec?.text,
         atom_indices: msg.options?.atom_indices ?? prevSpec?.atom_indices,
-        tag,
+        tag: tag2,
         layer_tag: msg.options?.layer_tag ?? prevSpec?.layer_tag,
         style: msg.options?.style ?? prevSpec?.style,
         position: msg.options && Object.prototype.hasOwnProperty.call(msg.options, "position") ? msg.options.position ?? void 0 : prevSpec?.position,
@@ -142710,24 +142710,24 @@ var AnnotationHandlers = class {
     await this.refreshQueue;
     const refs = Array.from(this.labelRefs);
     this.labelRefs.clear();
-    for (const [tag, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag);
+    for (const [tag2, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag2);
     this.refsByTag.clear();
     await this.removeLabelRefs(refs);
   }
-  async clearLabelByTag(tag) {
-    this.callouts.delete(tag);
+  async clearLabelByTag(tag2) {
+    this.callouts.delete(tag2);
     await this.refreshQueue;
-    const refs = Array.from(this.refsByTag.get(tag) ?? []);
+    const refs = Array.from(this.refsByTag.get(tag2) ?? []);
     if (refs.length === 0) return;
-    this.refsByTag.delete(tag);
+    this.refsByTag.delete(tag2);
     for (const ref of refs) {
       this.labelRefs.delete(ref);
-      this.callbacks.unregisterRef?.(ref, tag);
+      this.callbacks.unregisterRef?.(ref, tag2);
     }
     await this.removeLabelRefs(refs);
   }
-  hasTag(tag) {
-    return this.specsByTag.has(tag) || this.refsByTag.has(tag);
+  hasTag(tag2) {
+    return this.specsByTag.has(tag2) || this.refsByTag.has(tag2);
   }
   renameTag(oldTag, newTag) {
     if (!oldTag || !newTag || oldTag === newTag) return;
@@ -142760,41 +142760,41 @@ var AnnotationHandlers = class {
       this.layerTagIndex.set(newTag, ownLayer);
     }
   }
-  dropTag(tag) {
-    this.hiddenTags.delete(tag);
-    this.callouts.delete(tag);
-    const refs = Array.from(this.refsByTag.get(tag) ?? []);
-    this.refsByTag.delete(tag);
-    this.specsByTag.delete(tag);
+  dropTag(tag2) {
+    this.hiddenTags.delete(tag2);
+    this.callouts.delete(tag2);
+    const refs = Array.from(this.refsByTag.get(tag2) ?? []);
+    this.refsByTag.delete(tag2);
+    this.specsByTag.delete(tag2);
     for (const ref of refs) {
       this.labelRefs.delete(ref);
-      this.callbacks.unregisterRef?.(ref, tag);
+      this.callbacks.unregisterRef?.(ref, tag2);
     }
-    for (const tags of this.layerTagIndex.values()) tags.delete(tag);
-    this.layerTagIndex.delete(tag);
+    for (const tags of this.layerTagIndex.values()) tags.delete(tag2);
+    this.layerTagIndex.delete(tag2);
   }
-  async setVisibility(tag, visible) {
-    const layerGroup = this.layerTagIndex.get(tag);
+  async setVisibility(tag2, visible) {
+    const layerGroup = this.layerTagIndex.get(tag2);
     if (layerGroup && layerGroup.size > 0) {
       await Promise.all(Array.from(layerGroup).map((t5) => this.setVisibility(t5, visible)));
       return;
     }
     if (!visible) {
-      this.hiddenTags.add(tag);
-      await this.clearLabelByTag(tag);
+      this.hiddenTags.add(tag2);
+      await this.clearLabelByTag(tag2);
       return;
     }
-    this.hiddenTags.delete(tag);
-    if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
-    const spec = this.specsByTag.get(tag);
+    this.hiddenTags.delete(tag2);
+    if ((this.refsByTag.get(tag2)?.size ?? 0) > 0) return;
+    const spec = this.specsByTag.get(tag2);
     if (!spec) return;
     await this.addLabel({
       op: "add_label",
-      tag,
+      tag: tag2,
       options: {
         text: spec.text,
         atom_indices: [...spec.atom_indices],
-        tag,
+        tag: tag2,
         layer_tag: spec.layer_tag,
         style: spec.style,
         position: spec.position,
@@ -142805,12 +142805,12 @@ var AnnotationHandlers = class {
       }
     });
   }
-  getSpec(tag) {
-    const spec = this.specsByTag.get(tag);
+  getSpec(tag2) {
+    const spec = this.specsByTag.get(tag2);
     return spec ? { text: spec.text, atom_indices: spec.atom_indices } : void 0;
   }
-  geometryFor(tag) {
-    const spec = this.specsByTag.get(tag);
+  geometryFor(tag2) {
+    const spec = this.specsByTag.get(tag2);
     if (!spec) return;
     let anchor = spec.position ? [...spec.position] : void 0;
     if (!anchor) {
@@ -142834,16 +142834,16 @@ var AnnotationHandlers = class {
       anchor = Array.from(Vec3.scale(center2, center2, 1 / count3));
     }
     const offset4 = spec.offset ?? [0, 0, 0];
-    const camera = this.plugin.canvas3d?.camera.state;
-    const position = spec.offset_mode === "world" || !camera ? anchor.map((value, i) => value + offset4[i]) : cameraOffsetPosition(anchor, offset4, camera);
+    const camera2 = this.plugin.canvas3d?.camera.state;
+    const position = spec.offset_mode === "world" || !camera2 ? anchor.map((value, i) => value + offset4[i]) : cameraOffsetPosition(anchor, offset4, camera2);
     const style = styleToVisualParams(spec.style) ?? {};
     return {
-      tag,
+      tag: tag2,
       text: spec.text,
       anchor,
       position,
-      ...spec.offset_mode !== "world" && camera ? {
-        camera_basis: cameraOffsetBasis(camera),
+      ...spec.offset_mode !== "world" && camera2 ? {
+        camera_basis: cameraOffsetBasis(camera2),
         camera_offset: [...offset4],
         camera_base_position: [...position]
       } : {},
@@ -142858,13 +142858,13 @@ var AnnotationHandlers = class {
   refresh() {
     const update10 = this.refreshQueue.then(async () => {
       if (this.disposed) return;
-      for (const [tag, callout] of this.callouts) {
-        const geometry = this.geometryFor(tag);
+      for (const [tag2, callout] of this.callouts) {
+        const geometry = this.geometryFor(tag2);
         if (!geometry) continue;
         const signature2 = geometryKey(geometry);
         if (!this.refreshFailed && signature2 === callout.signature) continue;
         await renderAnnotation(this.plugin, geometry, callout.ref);
-        if (this.callouts.get(tag) === callout) callout.signature = signature2;
+        if (this.callouts.get(tag2) === callout) callout.signature = signature2;
       }
       this.refreshFailed = false;
     });
@@ -142878,8 +142878,8 @@ var AnnotationHandlers = class {
     if (this.disposed) return false;
     if (!this.callouts.size) return true;
     if (this.refreshFailed) return false;
-    for (const [tag, callout] of this.callouts) {
-      const geometry = this.geometryFor(tag);
+    for (const [tag2, callout] of this.callouts) {
+      const geometry = this.geometryFor(tag2);
       if (!geometry || geometryKey(geometry) !== callout.signature) return false;
       if (geometry.camera_basis) {
         if (this.presentationFailed) return false;
@@ -142901,14 +142901,14 @@ var AnnotationHandlers = class {
     this.releasePresentation = void 0;
     this.callouts.clear();
   }
-  present(camera, scene) {
+  present(camera2, scene) {
     if (this.disposed || !this.callouts.size) return;
     const changed = [];
     let ownedScene = false;
     try {
       const basis = this.presentationBasis;
       for (let row3 = 0; row3 < 3; row3++) for (let column = 0; column < 3; column++) {
-        basis[column * 4 + row3] = camera.view[row3 * 4 + column];
+        basis[column * 4 + row3] = camera2.view[row3 * 4 + column];
       }
       for (const callout of this.callouts.values()) {
         const repr = this.plugin.state.data.cells.get(callout.ref)?.obj?.data?.repr;
@@ -142947,7 +142947,7 @@ var AnnotationHandlers = class {
         }
         if (presented) {
           callout.presentedView ??= new Array(16);
-          for (let i = 0; i < 16; i++) callout.presentedView[i] = camera.view[i];
+          for (let i = 0; i < 16; i++) callout.presentedView[i] = camera2.view[i];
         }
       }
       if (changed.length) scene.update(changed, false);
@@ -143041,12 +143041,12 @@ function measurementCentroid(structure, indices3) {
   }
   return Vec3.scale(sum, sum, 1 / indices3.length);
 }
-function endpointLoci(structure, indices3, tag) {
+function endpointLoci(structure, indices3, tag2) {
   const center2 = measurementCentroid(structure, indices3);
   if (!center2) throw new Error("Measurement endpoint atoms are absent from the structure.");
   return DataLoci(
     "molsysviewer:measurement-centroid",
-    { tag, atom_indices: indices3, center: center2 },
+    { tag: tag2, atom_indices: indices3, center: center2 },
     [0],
     (sphere) => {
       Vec3.copy(sphere.center, center2);
@@ -143165,7 +143165,7 @@ var MeasurementHandlers = class {
     if (this.measurementRefs.size === 0) return;
     const refs = Array.from(this.measurementRefs);
     this.measurementRefs.clear();
-    for (const [tag, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag);
+    for (const [tag2, registered] of this.refsByTag) for (const ref of registered) this.callbacks.unregisterRef?.(ref, tag2);
     this.refsByTag.clear();
     await Promise.all(
       refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
@@ -143175,13 +143175,13 @@ var MeasurementHandlers = class {
       }))
     );
   }
-  async clearMeasurementByTag(tag) {
-    const refs = Array.from(this.refsByTag.get(tag) ?? []);
+  async clearMeasurementByTag(tag2) {
+    const refs = Array.from(this.refsByTag.get(tag2) ?? []);
     if (refs.length === 0) return;
-    this.refsByTag.delete(tag);
+    this.refsByTag.delete(tag2);
     for (const ref of refs) {
       this.measurementRefs.delete(ref);
-      this.callbacks.unregisterRef?.(ref, tag);
+      this.callbacks.unregisterRef?.(ref, tag2);
     }
     await Promise.all(
       refs.map((ref) => PluginCommands.State.RemoveObject(this.plugin, {
@@ -143191,18 +143191,18 @@ var MeasurementHandlers = class {
       }))
     );
   }
-  async setVisibility(tag, visible) {
-    const layerGroup = this.layerTagIndex.get(tag);
+  async setVisibility(tag2, visible) {
+    const layerGroup = this.layerTagIndex.get(tag2);
     if (layerGroup && layerGroup.size > 0) {
       await Promise.all(Array.from(layerGroup).map((t5) => this.setVisibility(t5, visible)));
       return;
     }
     if (!visible) {
-      await this.clearMeasurementByTag(tag);
+      await this.clearMeasurementByTag(tag2);
       return;
     }
-    if ((this.refsByTag.get(tag)?.size ?? 0) > 0) return;
-    const spec = this.specsByTag.get(tag);
+    if ((this.refsByTag.get(tag2)?.size ?? 0) > 0) return;
+    const spec = this.specsByTag.get(tag2);
     if (!spec) return;
     if (spec.op === "add_distance_measurement") {
       await this.addDistance(spec);
@@ -143212,8 +143212,8 @@ var MeasurementHandlers = class {
       await this.addDihedral(spec);
     }
   }
-  getSpec(tag) {
-    const spec = this.specsByTag.get(tag);
+  getSpec(tag2) {
+    const spec = this.specsByTag.get(tag2);
     if (!spec) return void 0;
     const kind = spec.op === "add_distance_measurement" ? "distance" : spec.op === "add_angle_measurement" ? "angle" : "dihedral";
     const picks = spec.options?.picks_atom_indices ?? [];
@@ -143223,8 +143223,8 @@ var MeasurementHandlers = class {
     });
     return { kind, atom_indices: atomIndices };
   }
-  hasTag(tag) {
-    return this.specsByTag.has(tag) || this.refsByTag.has(tag);
+  hasTag(tag2) {
+    return this.specsByTag.has(tag2) || this.refsByTag.has(tag2);
   }
   renameTag(oldTag, newTag) {
     if (!oldTag || !newTag || oldTag === newTag) return;
@@ -143246,13 +143246,13 @@ var MeasurementHandlers = class {
       });
     }
   }
-  dropTag(tag) {
-    const refs = Array.from(this.refsByTag.get(tag) ?? []);
-    this.refsByTag.delete(tag);
-    this.specsByTag.delete(tag);
+  dropTag(tag2) {
+    const refs = Array.from(this.refsByTag.get(tag2) ?? []);
+    this.refsByTag.delete(tag2);
+    this.specsByTag.delete(tag2);
     for (const ref of refs) {
       this.measurementRefs.delete(ref);
-      this.callbacks.unregisterRef?.(ref, tag);
+      this.callbacks.unregisterRef?.(ref, tag2);
     }
   }
   setSettings(options) {
@@ -143300,7 +143300,7 @@ var MeasurementHandlers = class {
     const structure = this.callbacks.getStructure();
     if (!structure) return;
     const picks = Array.isArray(msg.options?.picks_atom_indices) ? msg.options.picks_atom_indices : [];
-    const tag = msg.tag ?? msg.options?.tag ?? "measurement";
+    const tag2 = msg.tag ?? msg.options?.tag ?? "measurement";
     const layer_tag = msg.options?.layer_tag;
     const style = msg.options?.style;
     const measurementOptions = this.buildMeasurementOptions(
@@ -143308,12 +143308,12 @@ var MeasurementHandlers = class {
       typeof msg.options?.endpoint_policy === "string" ? msg.options.endpoint_policy : void 0,
       structure
     );
-    this.specsByTag.set(tag, {
+    this.specsByTag.set(tag2, {
       op: msg.op,
-      tag,
+      tag: tag2,
       options: {
         ...msg.options ?? {},
-        tag,
+        tag: tag2,
         layer_tag,
         picks_atom_indices: picks.map((item2) => Array.isArray(item2) ? [...item2] : []),
         endpoint_policy: measurementOptions.endpoint_policy,
@@ -143322,9 +143322,9 @@ var MeasurementHandlers = class {
         endpoint_atom_indices: measurementOptions.endpoint_atom_indices.map((item2) => [...item2])
       }
     });
-    if (layer_tag && layer_tag !== tag) {
+    if (layer_tag && layer_tag !== tag2) {
       const group = this.layerTagIndex.get(layer_tag) ?? /* @__PURE__ */ new Set();
-      group.add(tag);
+      group.add(tag2);
       this.layerTagIndex.set(layer_tag, group);
     }
     const actualAtomIndices = measurementOptions.endpoint_atom_indices.map((item2, index) => {
@@ -143337,14 +143337,14 @@ var MeasurementHandlers = class {
     if (measurementOptions.endpoint_kinds.includes("centroid")) {
       const ref = await renderCentroidMeasurement(this.plugin, structure, {
         kind,
-        tag,
+        tag: tag2,
         endpoints: actualAtomIndices.map((indices3) => [...indices3]),
         visualParams
       });
       if (ref) {
         this.measurementRefs.add(ref);
-        this.refsByTag.set(tag, /* @__PURE__ */ new Set([ref]));
-        this.callbacks.registerRef(ref, tag);
+        this.refsByTag.set(tag2, /* @__PURE__ */ new Set([ref]));
+        this.callbacks.registerRef(ref, tag2);
       }
       return;
     }
@@ -143354,20 +143354,20 @@ var MeasurementHandlers = class {
     let added;
     if (kind === "distance") {
       added = await measurement.addDistance(locis[0], locis[1], {
-        selectionTags: [tag],
-        reprTags: [tag],
+        selectionTags: [tag2],
+        reprTags: [tag2],
         visualParams
       });
     } else if (kind === "angle") {
       added = await measurement.addAngle(locis[0], locis[1], locis[2], {
-        selectionTags: [tag],
-        reprTags: [tag],
+        selectionTags: [tag2],
+        reprTags: [tag2],
         visualParams
       });
     } else {
       added = await measurement.addDihedral(locis[0], locis[1], locis[2], locis[3], {
-        selectionTags: [tag],
-        reprTags: [tag],
+        selectionTags: [tag2],
+        reprTags: [tag2],
         visualParams
       });
     }
@@ -143376,21 +143376,21 @@ var MeasurementHandlers = class {
       const selectionRef = StateObjectRef.resolveRef(added.selection.ref);
       if (selectionRef) {
         this.measurementRefs.add(selectionRef);
-        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        const refs = this.refsByTag.get(tag2) ?? /* @__PURE__ */ new Set();
         refs.add(selectionRef);
-        this.refsByTag.set(tag, refs);
+        this.refsByTag.set(tag2, refs);
       }
-      this.callbacks.registerRef(added.selection.ref, tag);
+      this.callbacks.registerRef(added.selection.ref, tag2);
     }
     if (added.representation?.ref) {
       const representationRef = StateObjectRef.resolveRef(added.representation.ref);
       if (representationRef) {
         this.measurementRefs.add(representationRef);
-        const refs = this.refsByTag.get(tag) ?? /* @__PURE__ */ new Set();
+        const refs = this.refsByTag.get(tag2) ?? /* @__PURE__ */ new Set();
         refs.add(representationRef);
-        this.refsByTag.set(tag, refs);
+        this.refsByTag.set(tag2, refs);
       }
-      this.callbacks.registerRef(added.representation.ref, tag);
+      this.callbacks.registerRef(added.representation.ref, tag2);
     }
   }
   centroidPosition(structure, atomIndices) {
@@ -143703,7 +143703,7 @@ var TransparentSpheres3D = MSVTransform({
     });
   }
 });
-async function addTransparentSpheresFromPython(plugin, spheres2, alpha, tag) {
+async function addTransparentSpheresFromPython(plugin, spheres2, alpha, tag2) {
   const builder = plugin.state.data.build();
   const node = builder.toRoot().apply(
     TransparentSpheres3D,
@@ -143711,7 +143711,7 @@ async function addTransparentSpheresFromPython(plugin, spheres2, alpha, tag) {
       spheres: spheres2,
       alpha
     },
-    { tags: tag ?? "molsysviewer:spheres" }
+    { tags: tag2 ?? "molsysviewer:spheres" }
   );
   await PluginCommands.State.Update(plugin, {
     state: plugin.state.data,
@@ -144849,7 +144849,7 @@ function normalizeCategoryKey(key2) {
   if (key2 === void 0) return void 0;
   return String(key2);
 }
-function prepareColorLookup(keys2, fallback, colorTable) {
+function prepareColorLookup(keys3, fallback, colorTable) {
   if (colorTable) {
     return (key2) => {
       const normalized2 = normalizeCategoryKey(key2);
@@ -144858,7 +144858,7 @@ function prepareColorLookup(keys2, fallback, colorTable) {
   }
   const paletteCount = DefaultLinkPalette.length;
   const colorByKey = /* @__PURE__ */ new Map();
-  keys2.forEach((key2, idx) => {
+  keys3.forEach((key2, idx) => {
     if (!colorByKey.has(key2)) {
       colorByKey.set(key2, DefaultLinkPalette[idx % paletteCount]);
     }
@@ -145989,12 +145989,12 @@ function prepareDisplacementVectorData(plugin, options) {
     const origin = origins[i];
     const vec = vectors[i];
     if (!origin || !vec || origin.length !== 3 || vec.length !== 3) continue;
-    const vector = Vec3.create(vec[0], vec[1], vec[2]);
-    const magnitude = Vec3.magnitude(vector);
+    const vector2 = Vec3.create(vec[0], vec[1], vec[2]);
+    const magnitude = Vec3.magnitude(vector2);
     if (magnitude < 1e-6) continue;
     processed.push({
       start: [Number(origin[0]), Number(origin[1]), Number(origin[2])],
-      vector,
+      vector: vector2,
       magnitude
     });
   }
@@ -146095,7 +146095,7 @@ var InteractionHandlers = class {
     if (revision2 < this.latestRevision && revision2 !== -1) return false;
     const previousRevision = this.latestRevision;
     this.latestRevision = Math.max(this.latestRevision, revision2);
-    for (const tag of this.tokens.keys()) if (!items.some((item2) => item2.tag === tag)) this.drop(tag);
+    for (const tag2 of this.tokens.keys()) if (!items.some((item2) => item2.tag === tag2)) this.drop(tag2);
     this.summaries = items;
     this.latestRevision = Math.max(this.latestRevision, ...items.map((item2) => item2.projection_revision ?? -1));
     if (!items.length || this.latestRevision > previousRevision) this.resetRequests();
@@ -146172,8 +146172,8 @@ var InteractionHandlers = class {
     });
     await this.work;
   }
-  isFrameReady(frame) {
-    return this.frame === frame && this.pendingWork === 0 && this.pending === null && this.summaries.every((item2) => item2.frame === frame && !["pending", "render-error", "unavailable"].includes(item2.status));
+  isFrameReady(frame2) {
+    return this.frame === frame2 && this.pendingWork === 0 && this.pending === null && this.summaries.every((item2) => item2.frame === frame2 && !["pending", "render-error", "unavailable"].includes(item2.status));
   }
   finishResponse(requestId) {
     const request = this.requests.get(requestId);
@@ -146183,18 +146183,18 @@ var InteractionHandlers = class {
     if (requestId === this.pending) this.pending = null;
     this.requestFrame();
   }
-  onFrame(frame) {
-    if (frame === this.frame) return;
-    this.frame = frame;
+  onFrame(frame2) {
+    if (frame2 === this.frame) return;
+    this.frame = frame2;
     this.generation++;
     this.pending = null;
     this.requestedFrame = -1;
-    this.summaries = this.summaries.map((item2) => ({ ...item2, frame, status: "pending", n_observations: 0, n_supported: 0, n_segments: 0, n_skipped: 0 }));
-    this.ctx.summaries(this.summaries, frame);
+    this.summaries = this.summaries.map((item2) => ({ ...item2, frame: frame2, status: "pending", n_observations: 0, n_supported: 0, n_segments: 0, n_skipped: 0 }));
+    this.ctx.summaries(this.summaries, frame2);
     for (const ref of this.refs.values()) setSubtreeVisibility(this.plugin.state.data, ref, true);
     if (this.series.size) {
       for (const message of this.series.values()) {
-        void this.apply({ ...message, ...message.frames[frame], op: "set_interaction_frame" });
+        void this.apply({ ...message, ...message.frames[frame2], op: "set_interaction_frame" });
       }
     } else this.requestFrame();
   }
@@ -146222,11 +146222,11 @@ var InteractionHandlers = class {
     this.requests.set(id, { frame: this.frame, timeout });
     this.ctx.notify({ event: "request_interaction_frame", frame: this.frame, request_id: id });
   }
-  async remove(tag) {
-    const ref = this.refs.get(tag);
+  async remove(tag2) {
+    const ref = this.refs.get(tag2);
     if (!ref) return;
-    this.refs.delete(tag);
-    this.ctx.unregister(ref, tag);
+    this.refs.delete(tag2);
+    this.ctx.unregister(ref, tag2);
     if (this.plugin.state.data.cells.has(ref)) await PluginCommands.State.RemoveObject(this.plugin, {
       state: this.plugin.state.data,
       ref,
@@ -146239,12 +146239,12 @@ var InteractionHandlers = class {
     this.pending = null;
     this.requestedFrame = -1;
   }
-  drop(tag) {
-    this.tokens.delete(tag);
-    this.series.delete(tag);
-    this.summaries = this.summaries.filter((item2) => item2.tag !== tag);
+  drop(tag2) {
+    this.tokens.delete(tag2);
+    this.series.delete(tag2);
+    this.summaries = this.summaries.filter((item2) => item2.tag !== tag2);
     if (!this.summaries.length) this.resetRequests();
-    void this.remove(tag);
+    void this.remove(tag2);
   }
   clear() {
     this.resetRequests();
@@ -146252,7 +146252,7 @@ var InteractionHandlers = class {
     this.tokens.clear();
     this.series.clear();
     this.summaries = [];
-    for (const tag of this.refs.keys()) void this.remove(tag);
+    for (const tag2 of this.refs.keys()) void this.remove(tag2);
   }
 };
 
@@ -146532,20 +146532,20 @@ var ShapeHandlers = class {
   }
   ensureTrajectorySubscription() {
     if (this.trajectoryUnsub || !this.context?.subscribeToTrajectoryState) return;
-    this.trajectoryUnsub = this.context.subscribeToTrajectoryState((frame) => {
-      if (frame !== this.currentFrame) {
-        this.currentFrame = frame;
-        void this.applyFrame(frame);
+    this.trajectoryUnsub = this.context.subscribeToTrajectoryState((frame2) => {
+      if (frame2 !== this.currentFrame) {
+        this.currentFrame = frame2;
+        void this.applyFrame(frame2);
       }
     });
   }
-  storeTrajectoryShape(tag, op4, baseOptions, framesCoords) {
+  storeTrajectoryShape(tag2, op4, baseOptions, framesCoords) {
     this.currentFrame = this.context?.getCurrentFrame?.() ?? this.currentFrame;
-    this.trajectoryShapes.set(tag, { op: op4, baseOptions, framesCoords });
+    this.trajectoryShapes.set(tag2, { op: op4, baseOptions, framesCoords });
     this.ensureTrajectorySubscription();
   }
-  makeStatus(tag, op4, frame, status, details = {}) {
-    return { tag, op: op4, frame, status, ...details };
+  makeStatus(tag2, op4, frame2, status, details = {}) {
+    return { tag: tag2, op: op4, frame: frame2, status, ...details };
   }
   emitRenderStatus(status) {
     const previous = this.lastRenderStatus.get(status.tag);
@@ -146555,20 +146555,20 @@ var ShapeHandlers = class {
     }
     this.context?.notifyShapeRenderStatus?.(status);
   }
-  isFrameReady(frame) {
+  isFrameReady(frame2) {
     if (this.frameUpdateInProgress) return false;
     if (this.trajectoryShapes.size === 0) return true;
-    if (this.frameUpdateInProgress || this.frameRefreshFailed || this.currentFrame !== frame || this.renderedFrame !== void 0 && this.renderedFrame !== frame) return false;
-    for (const tag of this.trajectoryShapes.keys()) {
-      const status = this.lastRenderStatus.get(tag)?.status;
+    if (this.frameUpdateInProgress || this.frameRefreshFailed || this.currentFrame !== frame2 || this.renderedFrame !== void 0 && this.renderedFrame !== frame2) return false;
+    for (const tag2 of this.trajectoryShapes.keys()) {
+      const status = this.lastRenderStatus.get(tag2)?.status;
       if (status === "render-error" || status === "missing-structure" || status === "invalid-indices") {
         return false;
       }
     }
     return true;
   }
-  applyFrame(frame) {
-    this.currentFrame = frame;
+  applyFrame(frame2) {
+    this.currentFrame = frame2;
     if (this.frameRefresh) return this.frameRefresh;
     let resolve, reject;
     const pending = new Promise((accept, refuse) => {
@@ -146582,12 +146582,12 @@ var ShapeHandlers = class {
   }
   async refreshLatestFrame() {
     try {
-      let frame;
+      let frame2;
       do {
-        frame = this.currentFrame;
-        await this.renderFrame(frame);
-        this.renderedFrame = frame;
-      } while (frame !== this.currentFrame);
+        frame2 = this.currentFrame;
+        await this.renderFrame(frame2);
+        this.renderedFrame = frame2;
+      } while (frame2 !== this.currentFrame);
       this.frameRefreshFailed = false;
     } catch (error2) {
       this.frameRefreshFailed = true;
@@ -146597,34 +146597,34 @@ var ShapeHandlers = class {
       this.frameUpdateInProgress = false;
     }
   }
-  async renderFrame(frame) {
-    for (const [tag, entry] of this.trajectoryShapes) {
-      const fc = entry.framesCoords[frame] ?? null;
-      await this.context.clearByTag(tag);
+  async renderFrame(frame2) {
+    for (const [tag2, entry] of this.trajectoryShapes) {
+      const fc = entry.framesCoords[frame2] ?? null;
+      await this.context.clearByTag(tag2);
       if (fc === null) {
-        this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "missing-frame-data"));
+        this.emitRenderStatus(this.makeStatus(tag2, entry.op, frame2, "missing-frame-data"));
         continue;
       }
       try {
-        const status = await this.renderTrajectoryFrame(tag, entry.op, entry.baseOptions, fc, frame);
+        const status = await this.renderTrajectoryFrame(tag2, entry.op, entry.baseOptions, fc, frame2);
         if (status) this.emitRenderStatus(status);
       } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
-        this.emitRenderStatus(this.makeStatus(tag, entry.op, frame, "render-error", { reason }));
+        this.emitRenderStatus(this.makeStatus(tag2, entry.op, frame2, "render-error", { reason }));
       }
     }
   }
-  async renderTrajectoryFrame(tag, op4, baseOptions, frameCoords, frame = this.currentFrame) {
+  async renderTrajectoryFrame(tag2, op4, baseOptions, frameCoords, frame2 = this.currentFrame) {
     if (op4 === "add_sphere_from_atoms") {
       const requested = Array.isArray(frameCoords) ? frameCoords.length : 0;
       const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
       const structure = structureRef?.cell.obj?.data;
       if (!structure) {
-        return this.makeStatus(tag, op4, frame, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
+        return this.makeStatus(tag2, op4, frame2, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
       }
       const centroid2 = computeCentroidFromAtoms(structure, frameCoords);
       if (!centroid2.ok) {
-        return this.makeStatus(tag, op4, frame, centroid2.reason, {
+        return this.makeStatus(tag2, op4, frame2, centroid2.reason, {
           requested_atoms: centroid2.requested,
           used_atoms: centroid2.used
         });
@@ -146635,8 +146635,8 @@ var ShapeHandlers = class {
         color: baseOptions.color ?? 65280,
         alpha: baseOptions.alpha ?? 0.4
       });
-      this.registerRef(ref, tag);
-      return this.makeStatus(tag, op4, frame, "rendered", {
+      this.registerRef(ref, tag2);
+      return this.makeStatus(tag2, op4, frame2, "rendered", {
         requested_atoms: centroid2.requested,
         used_atoms: centroid2.used
       });
@@ -146647,37 +146647,37 @@ var ShapeHandlers = class {
         color: baseOptions.color ?? 65280,
         alpha: baseOptions.alpha ?? 0.4
       });
-      this.registerRef(ref, tag);
+      this.registerRef(ref, tag2);
     } else if (op4 === "add_triangle_faces") {
       const ref = await addTriangleFacesFromPython(this.plugin, { ...baseOptions, vertices: frameCoords });
-      this.registerRef(ref, tag);
+      this.registerRef(ref, tag2);
     } else if (op4 === "add_channel_tube") {
       const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: frameCoords });
-      if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, tag));
-      else if (ref) this.registerRef(ref, tag);
+      if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, tag2));
+      else if (ref) this.registerRef(ref, tag2);
     } else if (op4 === "add_network_links") {
       const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: frameCoords });
-      this.registerRef(ref, tag);
+      this.registerRef(ref, tag2);
     } else if (op4 === "add_hbonds") {
       const requested = Array.isArray(frameCoords) ? frameCoords.length * 2 : 0;
       const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
       const structure = structureRef?.cell.obj?.data;
       if (!structure) {
-        return this.makeStatus(tag, op4, frame, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
+        return this.makeStatus(tag2, op4, frame2, "missing-structure", { requested_atoms: requested, used_atoms: 0 });
       }
       const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, mode: "atom-indices", atom_pairs: frameCoords });
-      this.registerRef(ref, tag);
-      return this.makeStatus(tag, op4, frame, "rendered", { requested_atoms: requested, used_atoms: requested });
+      this.registerRef(ref, tag2);
+      return this.makeStatus(tag2, op4, frame2, "rendered", { requested_atoms: requested, used_atoms: requested });
     }
-    return this.makeStatus(tag, op4, frame, "rendered");
+    return this.makeStatus(tag2, op4, frame2, "rendered");
   }
   async addSphere(msg) {
     const options = msg.options ?? {};
-    const tag = options.tag ?? msg.tag;
+    const tag2 = options.tag ?? msg.tag;
     if (options.structures_atom_indices) {
       const baseOptions = { ...options };
       delete baseOptions.structures_atom_indices;
-      this.storeTrajectoryShape(tag, "add_sphere_from_atoms", baseOptions, options.structures_atom_indices);
+      this.storeTrajectoryShape(tag2, "add_sphere_from_atoms", baseOptions, options.structures_atom_indices);
       const fc = options.structures_atom_indices[this.currentFrame] ?? null;
       if (fc !== null) {
         const structureRef = this.plugin.managers.structure.hierarchy.current.structures.slice(-1)[0];
@@ -146691,19 +146691,19 @@ var ShapeHandlers = class {
               color: options.color ?? 65280,
               alpha: options.alpha ?? 0.4
             });
-            this.registerRef(ref2, tag);
-            this.emitRenderStatus(this.makeStatus(tag, "add_sphere_from_atoms", this.currentFrame, "rendered", {
+            this.registerRef(ref2, tag2);
+            this.emitRenderStatus(this.makeStatus(tag2, "add_sphere_from_atoms", this.currentFrame, "rendered", {
               requested_atoms: centroid2.requested,
               used_atoms: centroid2.used
             }));
           } else {
-            this.emitRenderStatus(this.makeStatus(tag, "add_sphere_from_atoms", this.currentFrame, centroid2.reason, {
+            this.emitRenderStatus(this.makeStatus(tag2, "add_sphere_from_atoms", this.currentFrame, centroid2.reason, {
               requested_atoms: centroid2.requested,
               used_atoms: centroid2.used
             }));
           }
         } else {
-          this.emitRenderStatus(this.makeStatus(tag, "add_sphere_from_atoms", this.currentFrame, "missing-structure", {
+          this.emitRenderStatus(this.makeStatus(tag2, "add_sphere_from_atoms", this.currentFrame, "missing-structure", {
             requested_atoms: Array.isArray(fc) ? fc.length : 0,
             used_atoms: 0
           }));
@@ -146714,7 +146714,7 @@ var ShapeHandlers = class {
     if (options.structures_coords) {
       const baseOptions = { ...options };
       delete baseOptions.structures_coords;
-      this.storeTrajectoryShape(tag, "add_sphere", baseOptions, options.structures_coords);
+      this.storeTrajectoryShape(tag2, "add_sphere", baseOptions, options.structures_coords);
       const fc = options.structures_coords[this.currentFrame] ?? null;
       if (fc !== null) {
         const ref2 = await addTransparentSphereFromPython(this.plugin, {
@@ -146723,8 +146723,8 @@ var ShapeHandlers = class {
           color: options.color ?? 65280,
           alpha: options.alpha ?? 0.4
         });
-        this.registerRef(ref2, tag);
-        this.emitRenderStatus(this.makeStatus(tag, "add_sphere", this.currentFrame, "rendered"));
+        this.registerRef(ref2, tag2);
+        this.emitRenderStatus(this.makeStatus(tag2, "add_sphere", this.currentFrame, "rendered"));
       }
       return;
     }
@@ -146745,7 +146745,7 @@ var ShapeHandlers = class {
       color: options.color ?? 65280,
       alpha: options.alpha ?? 0.4
     });
-    this.registerRef(ref, tag);
+    this.registerRef(ref, tag2);
   }
   async addAlphaSphereSet(msg) {
     const options = msg.options;
@@ -146767,9 +146767,9 @@ var ShapeHandlers = class {
       color: alphaColor,
       alpha: alphaAlpha
     }));
-    const tag = options.tag ?? "molsysviewer:alpha-spheres";
-    const alphaRef = await addTransparentSpheresFromPython(this.plugin, alphaSpecs, alphaAlpha, tag);
-    this.registerRef(alphaRef, tag);
+    const tag2 = options.tag ?? "molsysviewer:alpha-spheres";
+    const alphaRef = await addTransparentSpheresFromPython(this.plugin, alphaSpecs, alphaAlpha, tag2);
+    this.registerRef(alphaRef, tag2);
     if (options.atom_spheres?.centers && options.atom_spheres.centers.length > 0) {
       const atomRadius = options.atom_spheres.radius ?? 1;
       const atomColor = options.atom_spheres.color ?? 255;
@@ -146780,8 +146780,8 @@ var ShapeHandlers = class {
         color: atomColor,
         alpha: atomAlpha
       }));
-      const atomRef = await addTransparentSpheresFromPython(this.plugin, atomSpecs, atomAlpha, tag);
-      this.registerRef(atomRef, tag);
+      const atomRef = await addTransparentSpheresFromPython(this.plugin, atomSpecs, atomAlpha, tag2);
+      this.registerRef(atomRef, tag2);
     }
   }
   async addPocketSurface(msg) {
@@ -146838,16 +146838,16 @@ var ShapeHandlers = class {
   async addChannelTube(msg) {
     const options = msg.options ?? {};
     if (options.structures_coords) {
-      const tag = options.tag;
+      const tag2 = options.tag;
       const baseOptions = { ...options };
       delete baseOptions.structures_coords;
-      this.storeTrajectoryShape(tag, "add_channel_tube", baseOptions, options.structures_coords);
+      this.storeTrajectoryShape(tag2, "add_channel_tube", baseOptions, options.structures_coords);
       const fc = options.structures_coords[this.currentFrame] ?? null;
       if (fc !== null) {
         try {
           const ref = await addChannelTubeFromPython(this.plugin, { ...baseOptions, centers: fc });
-          if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, tag));
-          else if (ref) this.registerRef(ref, tag);
+          if (Array.isArray(ref)) ref.forEach((r) => this.registerRef(r, tag2));
+          else if (ref) this.registerRef(ref, tag2);
         } catch (err) {
           console.error("[MolSysViewer] Error creando channel tube (trajectory frame)", err);
         }
@@ -146908,15 +146908,15 @@ var ShapeHandlers = class {
   async addNetworkLinks(msg) {
     const options = msg.options ?? {};
     if (options.structures_coords) {
-      const tag = options.tag;
+      const tag2 = options.tag;
       const baseOptions = { ...options };
       delete baseOptions.structures_coords;
-      this.storeTrajectoryShape(tag, "add_network_links", baseOptions, options.structures_coords);
+      this.storeTrajectoryShape(tag2, "add_network_links", baseOptions, options.structures_coords);
       const fc = options.structures_coords[this.currentFrame] ?? null;
       if (fc !== null) {
         try {
           const ref = await addNetworkLinksFromPython(this.plugin, { ...baseOptions, coordinate_pairs: fc });
-          this.registerRef(ref, tag);
+          this.registerRef(ref, tag2);
         } catch (err) {
           console.error("[MolSysViewer] Error creando network links (trajectory frame)", err);
         }
@@ -146936,9 +146936,9 @@ var ShapeHandlers = class {
       console.warn("[MolSysViewer] add_hbonds: missing structures_atom_pairs");
       return;
     }
-    const tag = options.tag;
+    const tag2 = options.tag;
     const { structures_atom_pairs, ...baseOptions } = options;
-    this.storeTrajectoryShape(tag, "add_hbonds", baseOptions, structures_atom_pairs);
+    this.storeTrajectoryShape(tag2, "add_hbonds", baseOptions, structures_atom_pairs);
     const fc = structures_atom_pairs[this.currentFrame] ?? null;
     if (fc !== null && fc.length > 0) {
       try {
@@ -146947,7 +146947,7 @@ var ShapeHandlers = class {
           mode: "atom-indices",
           atom_pairs: fc
         });
-        this.registerRef(ref, tag);
+        this.registerRef(ref, tag2);
       } catch (err) {
         console.error("[MolSysViewer] Error creando hbonds", err);
       }
@@ -146982,15 +146982,15 @@ var ShapeHandlers = class {
   async addTriangleFaces(msg) {
     const options = msg.options ?? {};
     if (options.structures_coords) {
-      const tag = options.tag;
+      const tag2 = options.tag;
       const baseOptions = { ...options };
       delete baseOptions.structures_coords;
-      this.storeTrajectoryShape(tag, "add_triangle_faces", baseOptions, options.structures_coords);
+      this.storeTrajectoryShape(tag2, "add_triangle_faces", baseOptions, options.structures_coords);
       const fc = options.structures_coords[this.currentFrame] ?? null;
       if (fc !== null) {
         try {
           const ref = await addTriangleFacesFromPython(this.plugin, { ...baseOptions, vertices: fc });
-          this.registerRef(ref, tag);
+          this.registerRef(ref, tag2);
         } catch (err) {
           console.error("[MolSysViewer] Error creando triangle faces (trajectory frame)", err);
         }
@@ -147047,11 +147047,11 @@ var BoxDisplayHandler = class {
     this.revision++;
     await this.queue();
   }
-  onFrame(frame, force = false) {
+  onFrame(frame2, force = false) {
     const loaded = this.context.getLoaded();
     const replaced = loaded !== this.observedLoaded;
-    if (!force && frame === this.observedFrame && loaded === this.observedLoaded) return;
-    this.observedFrame = frame;
+    if (!force && frame2 === this.observedFrame && loaded === this.observedLoaded) return;
+    this.observedFrame = frame2;
     this.observedLoaded = loaded;
     if (!this.definition || this.disposed) return;
     if (this.context.isFollower?.() && !force) {
@@ -147061,7 +147061,7 @@ var BoxDisplayHandler = class {
       }
       return;
     }
-    this.desiredFrame = frame;
+    this.desiredFrame = frame2;
     this.revision++;
     void this.queue();
   }
@@ -147096,11 +147096,11 @@ var BoxDisplayHandler = class {
   get structureIndex() {
     return this.renderedFrame;
   }
-  isFrameReady(frame) {
+  isFrameReady(frame2) {
     if (this.disposed) return false;
     if (this.refresh) return false;
     if (!this.definition) return !this.failed;
-    return !this.failed && this.appliedRevision === this.revision && this.renderedFrame === this.desiredFrame && this.observedFrame === frame && this.observedLoaded === this.context.getLoaded();
+    return !this.failed && this.appliedRevision === this.revision && this.renderedFrame === this.desiredFrame && this.observedFrame === frame2 && this.observedLoaded === this.context.getLoaded();
   }
   queue() {
     if (this.refresh) return this.refresh;
@@ -147122,8 +147122,8 @@ var BoxDisplayHandler = class {
   async applyLatest() {
     try {
       while (this.definition && !this.disposed && this.appliedRevision !== this.revision) {
-        const definition = this.definition, revision2 = this.revision, frame = this.desiredFrame;
-        const rows = readBoxVectors(this.context.getLoaded()?.boxVectors, frame);
+        const definition = this.definition, revision2 = this.revision, frame2 = this.desiredFrame;
+        const rows = readBoxVectors(this.context.getLoaded()?.boxVectors, frame2);
         let removingObsolete = false;
         try {
           const pairs = [];
@@ -147146,7 +147146,7 @@ var BoxDisplayHandler = class {
           }
           this.ref = ref;
           this.context.register(ref);
-          this.renderedFrame = frame;
+          this.renderedFrame = frame2;
           this.appliedRevision = revision2;
           this.failed = false;
         } catch (error2) {
@@ -147436,9 +147436,9 @@ var SceneHandlers = class {
     const canvas3d = this.plugin.canvas3d;
     if (!canvas3d) return;
     const renderer = canvas3d.props?.renderer ?? {};
-    const camera = canvas3d.props?.camera ?? {};
+    const camera2 = canvas3d.props?.camera ?? {};
     if (!this.savedLightRenderer) this.savedLightRenderer = { ...renderer };
-    if (!this.savedLightCamera) this.savedLightCamera = { ...camera };
+    if (!this.savedLightCamera) this.savedLightCamera = { ...camera2 };
     const makeDark = mode ? mode === "dark" : !this.darkMode;
     if (makeDark) {
       if (!this.savedDarkRenderer) {
@@ -147454,7 +147454,7 @@ var SceneHandlers = class {
         };
       }
       if (!this.savedDarkCamera) {
-        this.savedDarkCamera = { ...camera };
+        this.savedDarkCamera = { ...camera2 };
       }
       canvas3d.setProps({
         renderer: { ...this.savedDarkRenderer },
@@ -147463,7 +147463,7 @@ var SceneHandlers = class {
       this.darkMode = true;
     } else {
       const lightRenderer = this.savedLightRenderer ?? renderer;
-      const lightCamera = this.savedLightCamera ?? camera;
+      const lightCamera = this.savedLightCamera ?? camera2;
       canvas3d.setProps({
         renderer: { ...lightRenderer },
         camera: { ...lightCamera }
@@ -147592,14 +147592,14 @@ var SceneHandlers = class {
   }
   async _updateSectionGizmos(sections) {
     const NM_TO_A = 10;
-    for (const tag of this._sectionGizmoTags) {
-      await this.callbacks.clearShapesByTag(tag);
+    for (const tag2 of this._sectionGizmoTags) {
+      await this.callbacks.clearShapesByTag(tag2);
     }
     this._sectionGizmoTags.clear();
     const visibleSections = sections.filter((section) => !section.hidden);
     if (visibleSections.length === 0) return;
-    const camera = this.plugin.canvas3d?.camera;
-    const discRadius = camera ? Math.max(15, camera.state.radius * 0.3) : 20;
+    const camera2 = this.plugin.canvas3d?.camera;
+    const discRadius = camera2 ? Math.max(15, camera2.state.radius * 0.3) : 20;
     for (const section of visibleSections) {
       const gizmoTag = `__msv_sgizmo_${section.tag}`;
       const centerA = [
@@ -147620,16 +147620,16 @@ var SceneHandlers = class {
   // ── 2D drag handles ────────────────────────────────────────────────────
   _syncHandles(sections) {
     const activeTags = new Set(sections.filter((section) => !section.hidden).map((section) => section.tag));
-    for (const [tag, el] of this._sectionHandles) {
-      if (!activeTags.has(tag)) {
+    for (const [tag2, el] of this._sectionHandles) {
+      if (!activeTags.has(tag2)) {
         el.remove();
-        this._sectionHandles.delete(tag);
+        this._sectionHandles.delete(tag2);
       }
     }
-    for (const [tag, el] of this._sectionRimHandles) {
-      if (!activeTags.has(tag)) {
+    for (const [tag2, el] of this._sectionRimHandles) {
+      if (!activeTags.has(tag2)) {
         el.remove();
-        this._sectionRimHandles.delete(tag);
+        this._sectionRimHandles.delete(tag2);
       }
     }
     for (const section of sections.filter((item2) => !item2.hidden)) {
@@ -147641,7 +147641,7 @@ var SceneHandlers = class {
       }
     }
   }
-  _createSectionHandle(tag) {
+  _createSectionHandle(tag2) {
     const handle = document.createElement("div");
     Object.assign(handle.style, {
       position: "absolute",
@@ -147661,7 +147661,7 @@ var SceneHandlers = class {
       transform: "translate(-50%, -50%)",
       transition: "background 0.1s"
     });
-    handle.title = `Section: ${tag} \u2014 drag to move`;
+    handle.title = `Section: ${tag2} \u2014 drag to move`;
     const dot = document.createElement("div");
     Object.assign(dot.style, {
       width: "6px",
@@ -147675,7 +147675,7 @@ var SceneHandlers = class {
     let lastClientX = 0;
     let lastClientY = 0;
     handle.addEventListener("pointerdown", (e) => {
-      if (this._dragDisabledTags.has(tag)) return;
+      if (this._dragDisabledTags.has(tag2)) return;
       e.stopPropagation();
       e.preventDefault();
       handle.setPointerCapture(e.pointerId);
@@ -147693,7 +147693,7 @@ var SceneHandlers = class {
       const dy = e.clientY - lastClientY;
       lastClientX = e.clientX;
       lastClientY = e.clientY;
-      if (dx !== 0 || dy !== 0) this._onHandleDrag(tag, dx, dy);
+      if (dx !== 0 || dy !== 0) this._onHandleDrag(tag2, dx, dy);
     });
     const endDrag = async (e) => {
       if (!isDragging) return;
@@ -147708,13 +147708,13 @@ var SceneHandlers = class {
     handle.addEventListener("pointerup", endDrag);
     handle.addEventListener("pointercancel", endDrag);
     this.host.appendChild(handle);
-    this._sectionHandles.set(tag, handle);
+    this._sectionHandles.set(tag2, handle);
   }
-  _onHandleDrag(tag, screenDx, screenDy) {
-    const section = this._activeSections.find((s) => s.tag === tag);
+  _onHandleDrag(tag2, screenDx, screenDy) {
+    const section = this._activeSections.find((s) => s.tag === tag2);
     if (!section) return;
-    const camera = this.plugin.canvas3d?.camera;
-    if (!camera) return;
+    const camera2 = this.plugin.canvas3d?.camera;
+    if (!camera2) return;
     const NM_TO_A = 10;
     const A_TO_NM = 0.1;
     const p6 = Vec3.create(
@@ -147722,8 +147722,8 @@ var SceneHandlers = class {
       section.point[1] * NM_TO_A,
       section.point[2] * NM_TO_A
     );
-    const pixelSize = camera.getPixelSize(p6);
-    const state = camera.state;
+    const pixelSize = camera2.getPixelSize(p6);
+    const state = camera2.state;
     const forward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), state.target, state.position));
     const up3 = Vec3.normalize(Vec3(), state.up);
     const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), forward, up3));
@@ -147743,41 +147743,41 @@ var SceneHandlers = class {
     this._repositionHandles();
     this.callbacks.notify({
       event: "section_moved",
-      tag,
+      tag: tag2,
       point: [...section.point],
       normal: [...section.normal]
     });
   }
   _repositionHandles() {
-    const camera = this.plugin.canvas3d?.camera;
-    if (!camera) return;
+    const camera2 = this.plugin.canvas3d?.camera;
+    if (!camera2) return;
     const NM_TO_A = 10;
     const tmpV42 = Vec4.zero();
-    for (const [tag, handle] of this._sectionHandles) {
-      const section = this._activeSections.find((s) => s.tag === tag);
+    for (const [tag2, handle] of this._sectionHandles) {
+      const section = this._activeSections.find((s) => s.tag === tag2);
       if (!section) continue;
       const p6 = Vec3.create(
         section.point[0] * NM_TO_A,
         section.point[1] * NM_TO_A,
         section.point[2] * NM_TO_A
       );
-      camera.project(tmpV42, p6);
+      camera2.project(tmpV42, p6);
       handle.style.left = `${tmpV42[0]}px`;
       handle.style.top = `${tmpV42[1]}px`;
     }
-    for (const [tag, handle] of this._sectionRimHandles) {
-      const section = this._activeSections.find((s) => s.tag === tag);
+    for (const [tag2, handle] of this._sectionRimHandles) {
+      const section = this._activeSections.find((s) => s.tag === tag2);
       if (!section) continue;
       const rimPos = this._getRimWorldPosA(section);
-      camera.project(tmpV42, rimPos);
+      camera2.project(tmpV42, rimPos);
       handle.style.left = `${tmpV42[0]}px`;
       handle.style.top = `${tmpV42[1]}px`;
     }
   }
   // ── Rotation gizmo helpers ─────────────────────────────────────────────
   _computeDiscRadius() {
-    const camera = this.plugin.canvas3d?.camera;
-    return camera ? Math.max(15, camera.state.radius * 0.3) : 20;
+    const camera2 = this.plugin.canvas3d?.camera;
+    return camera2 ? Math.max(15, camera2.state.radius * 0.3) : 20;
   }
   _computeDiscU(normal3) {
     const n = Vec3.normalize(Vec3(), Vec3.create(...normal3));
@@ -147807,12 +147807,12 @@ var SceneHandlers = class {
       Vec3.scale(Vec3(), axis, dot * (1 - c8))
     ));
   }
-  _onRimHandleDrag(tag, screenDx, screenDy) {
-    const section = this._activeSections.find((s) => s.tag === tag);
+  _onRimHandleDrag(tag2, screenDx, screenDy) {
+    const section = this._activeSections.find((s) => s.tag === tag2);
     if (!section) return;
-    const camera = this.plugin.canvas3d?.camera;
-    if (!camera) return;
-    const state = camera.state;
+    const camera2 = this.plugin.canvas3d?.camera;
+    if (!camera2) return;
+    const state = camera2.state;
     const forward = Vec3.normalize(Vec3(), Vec3.sub(Vec3(), state.target, state.position));
     const up3 = Vec3.normalize(Vec3(), state.up);
     const right = Vec3.normalize(Vec3(), Vec3.cross(Vec3(), forward, up3));
@@ -147825,12 +147825,12 @@ var SceneHandlers = class {
     this._repositionHandles();
     this.callbacks.notify({
       event: "section_moved",
-      tag,
+      tag: tag2,
       point: [...section.point],
       normal: [...section.normal]
     });
   }
-  _createSectionRimHandle(tag) {
+  _createSectionRimHandle(tag2) {
     const handle = document.createElement("div");
     Object.assign(handle.style, {
       position: "absolute",
@@ -147854,12 +147854,12 @@ var SceneHandlers = class {
       lineHeight: "1"
     });
     handle.textContent = "\u21BB";
-    handle.title = `Section: ${tag} \u2014 drag to rotate`;
+    handle.title = `Section: ${tag2} \u2014 drag to rotate`;
     let isDragging = false;
     let lastClientX = 0;
     let lastClientY = 0;
     handle.addEventListener("pointerdown", (e) => {
-      if (this._dragDisabledTags.has(tag)) return;
+      if (this._dragDisabledTags.has(tag2)) return;
       e.stopPropagation();
       e.preventDefault();
       handle.setPointerCapture(e.pointerId);
@@ -147877,7 +147877,7 @@ var SceneHandlers = class {
       const dy = e.clientY - lastClientY;
       lastClientX = e.clientX;
       lastClientY = e.clientY;
-      if (dx !== 0 || dy !== 0) this._onRimHandleDrag(tag, dx, dy);
+      if (dx !== 0 || dy !== 0) this._onRimHandleDrag(tag2, dx, dy);
     });
     const endDrag = async (e) => {
       if (!isDragging) return;
@@ -147892,30 +147892,30 @@ var SceneHandlers = class {
     handle.addEventListener("pointerup", endDrag);
     handle.addEventListener("pointercancel", endDrag);
     this.host.appendChild(handle);
-    this._sectionRimHandles.set(tag, handle);
+    this._sectionRimHandles.set(tag2, handle);
   }
   _ensureCameraSubscription() {
     if (this._cameraStateSub) return;
-    const camera = this.plugin.canvas3d?.camera;
-    if (!camera) return;
-    this._cameraStateSub = camera.stateChanged.subscribe(() => {
+    const camera2 = this.plugin.canvas3d?.camera;
+    if (!camera2) return;
+    this._cameraStateSub = camera2.stateChanged.subscribe(() => {
       this._repositionHandles();
     });
   }
   async setActiveSectionDrag(msg) {
-    const tag = msg.tag;
+    const tag2 = msg.tag;
     const enabled = msg.enabled ?? true;
     if (enabled) {
-      this._dragDisabledTags.delete(tag);
-      const handle = this._sectionHandles.get(tag);
+      this._dragDisabledTags.delete(tag2);
+      const handle = this._sectionHandles.get(tag2);
       if (handle) handle.style.display = "";
-      const rim = this._sectionRimHandles.get(tag);
+      const rim = this._sectionRimHandles.get(tag2);
       if (rim) rim.style.display = "";
     } else {
-      this._dragDisabledTags.add(tag);
-      const handle = this._sectionHandles.get(tag);
+      this._dragDisabledTags.add(tag2);
+      const handle = this._sectionHandles.get(tag2);
       if (handle) handle.style.display = "none";
-      const rim = this._sectionRimHandles.get(tag);
+      const rim = this._sectionRimHandles.get(tag2);
       if (rim) rim.style.display = "none";
     }
   }
@@ -148035,8 +148035,8 @@ var StateHandlers = class {
     // when its base_version matches; otherwise we ask the kernel for a full resync.
     this.requestedGlobalHidden = null;
   }
-  taggedKey(kind, tag) {
-    return `${kind || "layer"}\0${tag}`;
+  taggedKey(kind, tag2) {
+    return `${kind || "layer"}\0${tag2}`;
   }
   parseMolstarThemeSpec(value) {
     if (typeof value === "string" && value.trim() !== "") {
@@ -148118,16 +148118,16 @@ var StateHandlers = class {
     delete next.molstar_size_theme;
     return next;
   }
-  registerTaggedRef(ref, tag, kind = "shape") {
+  registerTaggedRef(ref, tag2, kind = "shape") {
     const resolvedRef = StateObjectRef.resolveRef(ref);
     if (!resolvedRef) return;
-    if (!tag) return;
-    const key2 = this.taggedKey(kind, tag);
+    if (!tag2) return;
+    const key2 = this.taggedKey(kind, tag2);
     if (!this.tagIndex.has(key2)) this.tagIndex.set(key2, /* @__PURE__ */ new Set());
     this.tagIndex.get(key2).add(resolvedRef);
     if (!this.layerMeta.has(key2)) {
       this.layerMeta.set(key2, { kind, meta: {} });
-      this.callbacks.notify({ event: "layer_ack", tag, kind, meta: {} });
+      this.callbacks.notify({ event: "layer_ack", tag: tag2, kind, meta: {} });
     }
     if (this.pendingLayerVisibility.has(key2)) {
       const hide = this.pendingLayerVisibility.get(key2);
@@ -148135,12 +148135,12 @@ var StateHandlers = class {
       setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
     }
   }
-  unregisterTaggedRef(ref, tag, kind) {
-    const key2 = this.taggedKey(kind, tag);
+  unregisterTaggedRef(ref, tag2, kind) {
+    const key2 = this.taggedKey(kind, tag2);
     this.tagIndex.get(key2)?.delete(ref);
   }
-  registerShapeRef(ref, tag) {
-    this.registerTaggedRef(ref, tag, "shape");
+  registerShapeRef(ref, tag2) {
+    this.registerTaggedRef(ref, tag2, "shape");
   }
   /** Live scene content, including hidden and untagged absolute geometry.
    * Inspect representation cells, never atom coordinates or trajectory frames.
@@ -148169,8 +148169,8 @@ var StateHandlers = class {
     return null;
   }
   /** Resolve portable pick groups against this endpoint's own representations. */
-  resolveObjectLoci(kind, tag, groups, entityRef) {
-    const refs = this.tagIndex.get(this.taggedKey(kind, tag));
+  resolveObjectLoci(kind, tag2, groups, entityRef) {
+    const refs = this.tagIndex.get(this.taggedKey(kind, tag2));
     if (!refs) return null;
     for (const ref of refs) {
       for (const cell of this.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree())) {
@@ -148202,8 +148202,8 @@ var StateHandlers = class {
         representation_params: { ...item2.representation_params }
       }));
     }
-    return Array.from(this.regionIndex.entries()).map(([tag, entry]) => ({
-      tag,
+    return Array.from(this.regionIndex.entries()).map(([tag2, entry]) => ({
+      tag: tag2,
       atom_indices: [...entry.atomIndices],
       atom_count: entry.atomIndices.length,
       selection: entry.selection,
@@ -148307,7 +148307,7 @@ var StateHandlers = class {
     return Array.from(masked).filter((index) => atomSet2.has(index)).sort((a8, b8) => a8 - b8);
   }
   regionOwnershipKey() {
-    return Array.from(this.regionIndex.entries()).map(([tag, entry]) => `${tag}:${entry.order}:${this.regionOwnedByHigherOrderAtomIndices(entry).join(",")}`).join("|");
+    return Array.from(this.regionIndex.entries()).map(([tag2, entry]) => `${tag2}:${entry.order}:${this.regionOwnedByHigherOrderAtomIndices(entry).join(",")}`).join("|");
   }
   async applyTransparencyLayer(components, atomIndices, value) {
     const structure = this.callbacks.getStructure();
@@ -148469,7 +148469,7 @@ var StateHandlers = class {
     if (typeof msg.representation === "string" && msg.representation.trim() !== "") return "own";
     return "none";
   }
-  async addTypedRegionRepresentation(componentRef, tag, reprType, params) {
+  async addTypedRegionRepresentation(componentRef, tag2, reprType, params) {
     const structuralColor = this.getStructuralColorThemeFromParams(reprType, params);
     const cleanParams = this.omitStructuralColorKeys(params);
     if ((reprType === "ball-and-stick" || reprType === "line") && cleanParams.includeParent === void 0) {
@@ -148483,11 +148483,11 @@ var StateHandlers = class {
         ...structuralColor.color ? { color: structuralColor.color } : {},
         ...structuralColor.colorParams ? { colorParams: structuralColor.colorParams } : {}
       },
-      { tag }
+      { tag: tag2 }
     );
     return repr?.ref ? [repr.ref] : [];
   }
-  async addOwnRegionRepresentations(componentRef, tag, msg) {
+  async addOwnRegionRepresentations(componentRef, tag2, msg) {
     const params = msg.params ?? {};
     const structuralColor = this.getStructuralColorThemeFromParams(
       msg.representation ?? void 0,
@@ -148516,7 +148516,7 @@ var StateHandlers = class {
           const type3 = rule?.representation ?? DEFAULT_GLOBAL_REPRESENTATION;
           refs.push(...await this.addTypedRegionRepresentation(
             componentRef,
-            tag,
+            tag2,
             type3,
             rule?.params ?? cleanParams
           ));
@@ -148539,7 +148539,7 @@ var StateHandlers = class {
       return refs;
     }
     if (typeof msg.representation === "string" && msg.representation !== "inherit") {
-      refs.push(...await this.addTypedRegionRepresentation(componentRef, tag, msg.representation, params));
+      refs.push(...await this.addTypedRegionRepresentation(componentRef, tag2, msg.representation, params));
     }
     return refs;
   }
@@ -148586,14 +148586,14 @@ var StateHandlers = class {
     }
     return types2;
   }
-  async addInheritedRegionRepresentations(componentRef, tag, params, atomIndices) {
+  async addInheritedRegionRepresentations(componentRef, tag2, params, atomIndices) {
     const inheritedTypes = this.wholeRepresentationTypes(atomIndices);
     const resolved = inheritedTypes.length > 0 ? inheritedTypes : [{ name: DEFAULT_GLOBAL_REPRESENTATION, typeParams: {} }];
     const refs = [];
     for (const { name, typeParams } of resolved) {
       refs.push(...await this.addTypedRegionRepresentation(
         componentRef,
-        tag,
+        tag2,
         name,
         {
           ...typeParams,
@@ -148610,7 +148610,7 @@ var StateHandlers = class {
       this.pendingRegions.push(msg);
       return;
     }
-    const tag = msg.tag ?? "region";
+    const tag2 = msg.tag ?? "region";
     const atomIndices = Array.isArray(msg.atom_indices) ? msg.atom_indices.map((i) => typeof i === "number" ? Math.trunc(i) : Number(i)).filter((i) => Number.isFinite(i)) : [];
     const selection = this.buildSelectionFromAtomIndices(structure, atomIndices);
     const definition = {
@@ -148628,10 +148628,10 @@ var StateHandlers = class {
     };
     if (!selection) {
       if (Array.isArray(msg.atom_indices) && msg.atom_indices.length === 0) {
-        if (this.regionIndex.has(tag)) return;
-        this.regionIndex.set(tag, definition);
+        if (this.regionIndex.has(tag2)) return;
+        this.regionIndex.set(tag2, definition);
         await this.applyComposedTransparency();
-        this.callbacks.notify({ event: "region_ack", tag, atom_indices: [], selection: msg.selection });
+        this.callbacks.notify({ event: "region_ack", tag: tag2, atom_indices: [], selection: msg.selection });
         return;
       }
       console.warn("[MolSysViewer] create_region missing valid atom indices");
@@ -148645,22 +148645,22 @@ var StateHandlers = class {
       const component = root.apply(StateTransforms.Model.StructureComponent, {
         type: { name: "bundle", params: bundle },
         nullIfEmpty: true,
-        label: tag
+        label: tag2
       });
       await component.commit({ revertOnError: false });
       const componentRef = component.selector.ref;
       if (!component.selector.isOk || !componentRef) {
-        console.warn("[MolSysViewer] create_region: empty component for", tag);
+        console.warn("[MolSysViewer] create_region: empty component for", tag2);
         return;
       }
       const representationState = definition.representationState;
       const representations = [];
       if (representationState === "inherit") {
-        representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, atomIndices));
+        representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag2, msg.params, atomIndices));
       } else if (representationState === "own") {
-        representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
+        representations.push(...await this.addOwnRegionRepresentations(componentRef, tag2, msg));
       }
-      this.regionIndex.set(tag, {
+      this.regionIndex.set(tag2, {
         ...definition,
         component: componentRef,
         representations
@@ -148669,14 +148669,14 @@ var StateHandlers = class {
         representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
       }
       await this.applyComposedTransparency();
-      this.callbacks.notify({ event: "region_ack", tag, atom_indices: atomIndices, selection: msg.selection });
+      this.callbacks.notify({ event: "region_ack", tag: tag2, atom_indices: atomIndices, selection: msg.selection });
     } catch (err) {
       console.error("[MolSysViewer] Error creating region", err);
     }
   }
   async setRegionRepresentation(msg) {
-    const tag = msg.tag ?? "region";
-    const entry = this.regionIndex.get(tag);
+    const tag2 = msg.tag ?? "region";
+    const entry = this.regionIndex.get(tag2);
     if (!entry) return;
     if (!entry.component) {
       this.setRegionRepresentationDefinition(entry, msg);
@@ -148698,12 +148698,12 @@ var StateHandlers = class {
       const component = root.apply(StateTransforms.Model.StructureComponent, {
         type: { name: "bundle", params: bundle },
         nullIfEmpty: true,
-        label: tag
+        label: tag2
       });
       await component.commit({ revertOnError: false });
       componentRef = component.selector?.ref;
       if (!component.selector?.isOk || !componentRef) {
-        console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag);
+        console.warn("[MolSysViewer] setRegionRepresentation: empty component for", tag2);
         return;
       }
       entry.component = componentRef;
@@ -148712,9 +148712,9 @@ var StateHandlers = class {
     }
     this.setRegionRepresentationDefinition(entry, msg);
     if (entry.representationState === "inherit") {
-      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, msg.params, entry.atomIndices));
+      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag2, msg.params, entry.atomIndices));
     } else if (entry.representationState === "own") {
-      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, msg));
+      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag2, msg));
     }
     const alpha = msg.params?.alpha;
     if ((msg.preset || msg.user_preset) && typeof alpha === "number") {
@@ -148735,14 +148735,14 @@ var StateHandlers = class {
     entry.params = { ...msg.params ?? {} };
     if (typeof msg.order === "number") entry.order = msg.order;
   }
-  async addRepresentationsForRegionEntry(entry, tag, componentRef) {
+  async addRepresentationsForRegionEntry(entry, tag2, componentRef) {
     entry.representations = [];
     if (entry.representationState === "inherit") {
-      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag, entry.params, entry.atomIndices));
+      entry.representations.push(...await this.addInheritedRegionRepresentations(componentRef, tag2, entry.params, entry.atomIndices));
     } else if (entry.representationState === "own") {
-      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag, {
+      entry.representations.push(...await this.addOwnRegionRepresentations(componentRef, tag2, {
         op: "set_region_representation",
-        tag,
+        tag: tag2,
         representation: entry.representation,
         preset: entry.preset,
         user_preset: entry.userPreset,
@@ -148750,7 +148750,7 @@ var StateHandlers = class {
       }));
     }
   }
-  async updateRegionComponentAtomIndices(tag, entry, atomIndices) {
+  async updateRegionComponentAtomIndices(tag2, entry, atomIndices) {
     const structure = this.callbacks.getStructure();
     const structureRef = this.callbacks.getLoadedStructure()?.structure;
     if (!structure || !structureRef) return;
@@ -148769,7 +148769,7 @@ var StateHandlers = class {
       update10.to(entry.component).update({
         type: { name: "bundle", params: bundle },
         nullIfEmpty: true,
-        label: tag
+        label: tag2
       });
       await update10.commit({ doNotUpdateCurrent: true });
     } else {
@@ -148778,14 +148778,14 @@ var StateHandlers = class {
         {
           type: { name: "bundle", params: bundle },
           nullIfEmpty: true,
-          label: tag
+          label: tag2
         }
       );
       await component.commit({ revertOnError: false });
       const componentRef = component.selector.ref;
       if (!component.selector.isOk || !componentRef) return;
       entry.component = componentRef;
-      await this.addRepresentationsForRegionEntry(entry, tag, componentRef);
+      await this.addRepresentationsForRegionEntry(entry, tag2, componentRef);
       if (entry.hidden || !entry.enabled) {
         entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, true));
       }
@@ -148803,8 +148803,8 @@ var StateHandlers = class {
     }
   }
   async setRegionOrder(msg) {
-    const tag = msg.tag ?? "region";
-    const entry = this.regionIndex.get(tag);
+    const tag2 = msg.tag ?? "region";
+    const entry = this.regionIndex.get(tag2);
     if (!entry || typeof msg.order !== "number") return;
     entry.order = msg.order;
     await this.applyComposedTransparency();
@@ -148819,10 +148819,10 @@ var StateHandlers = class {
     if (!entry.enabled) throw new Error("Enable this region before calling show_only().");
     this.showOnlyRegionTag = regionTag;
     if (!msg.restore_only) {
-      this.regionIndex.forEach((candidate, tag) => {
-        candidate.hidden = tag !== regionTag;
+      this.regionIndex.forEach((candidate, tag2) => {
+        candidate.hidden = tag2 !== regionTag;
         candidate.representations.forEach(
-          (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag !== regionTag || !candidate.enabled)
+          (ref) => setSubtreeVisibility(this.plugin.state.data, ref, tag2 !== regionTag || !candidate.enabled)
         );
       });
       if (entry.representationState === "none") await this.handleShowHideGlobal(false);
@@ -148833,11 +148833,11 @@ var StateHandlers = class {
     await this.toggleRegionVisibility(msg.tag, true);
   }
   async setRegionEnabled(msg) {
-    const tag = msg.tag ?? "region";
-    const entry = this.regionIndex.get(tag);
+    const tag2 = msg.tag ?? "region";
+    const entry = this.regionIndex.get(tag2);
     if (!entry) return;
     entry.enabled = msg.enabled;
-    if (!entry.enabled && this.showOnlyRegionTag === tag) this.showOnlyRegionTag = void 0;
+    if (!entry.enabled && this.showOnlyRegionTag === tag2) this.showOnlyRegionTag = void 0;
     entry.representations.forEach(
       (ref) => setSubtreeVisibility(this.plugin.state.data, ref, !entry.enabled || !!entry.hidden)
     );
@@ -148845,7 +148845,7 @@ var StateHandlers = class {
   }
   async setRegionsVisibility(msg) {
     const tags = Array.isArray(msg.tags) ? msg.tags : Array.from(this.regionIndex.keys());
-    for (const tag of tags) await this.toggleRegionVisibility(tag, !!msg.hidden);
+    for (const tag2 of tags) await this.toggleRegionVisibility(tag2, !!msg.hidden);
   }
   setRegionSummaries(msg) {
     const regions = Array.isArray(msg.regions) ? msg.regions : [];
@@ -148924,11 +148924,11 @@ var StateHandlers = class {
   isWholeHidden() {
     return this.requestedGlobalHidden === true;
   }
-  hasRegion(tag) {
-    return this.regionIndex.has(tag);
+  hasRegion(tag2) {
+    return this.regionIndex.has(tag2);
   }
-  isRegionHidden(tag) {
-    return this.regionIndex.get(tag)?.hidden;
+  isRegionHidden(tag2) {
+    return this.regionIndex.get(tag2)?.hidden;
   }
   async applyRegionOperations(msg) {
     const operations = Array.isArray(msg.operations) ? msg.operations : [];
@@ -148962,18 +148962,18 @@ var StateHandlers = class {
     }
   }
   async deleteRegion(msg) {
-    const tag = msg.tag ?? "region";
-    const entry = this.regionIndex.get(tag);
+    const tag2 = msg.tag ?? "region";
+    const entry = this.regionIndex.get(tag2);
     if (!entry) return;
     const refs = [
       ...entry.representations,
       entry.component
     ];
     await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
-    this.regionIndex.delete(tag);
-    if (this.showOnlyRegionTag === tag) this.showOnlyRegionTag = void 0;
+    this.regionIndex.delete(tag2);
+    if (this.showOnlyRegionTag === tag2) this.showOnlyRegionTag = void 0;
     await this.applyComposedTransparency();
-    this.callbacks.notify({ event: "region_deleted", tag });
+    this.callbacks.notify({ event: "region_deleted", tag: tag2 });
   }
   async renameRegion(msg) {
     const oldTag = msg.tag ?? "region";
@@ -148988,9 +148988,9 @@ var StateHandlers = class {
     this.callbacks.notify({ event: "region_renamed", tag: oldTag, new_tag: newTag });
   }
   async createLayer(msg) {
-    const tag = msg.tag ?? "layer";
-    this.layerMeta.set(this.taggedKey("layer", tag), { kind: msg.kind, meta: msg.meta });
-    this.callbacks.notify({ event: "layer_ack", tag, kind: msg.kind, meta: msg.meta });
+    const tag2 = msg.tag ?? "layer";
+    this.layerMeta.set(this.taggedKey("layer", tag2), { kind: msg.kind, meta: msg.meta });
+    this.callbacks.notify({ event: "layer_ack", tag: tag2, kind: msg.kind, meta: msg.meta });
   }
   async showLayer(msg) {
     await this.toggleLayerVisibility(msg.tag, false, msg.kind);
@@ -148999,14 +148999,14 @@ var StateHandlers = class {
     await this.toggleLayerVisibility(msg.tag, true, msg.kind);
   }
   async deleteLayer(msg, retire) {
-    const tag = msg.tag ?? "layer";
-    const key2 = this.taggedKey(msg.kind, tag);
+    const tag2 = msg.tag ?? "layer";
+    const key2 = this.taggedKey(msg.kind, tag2);
     const refs = Array.from(this.tagIndex.get(key2) ?? []);
     retire?.();
     await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
     this.tagIndex.delete(key2);
     this.layerMeta.delete(key2);
-    this.callbacks.notify({ event: "layer_deleted", tag, kind: msg.kind });
+    this.callbacks.notify({ event: "layer_deleted", tag: tag2, kind: msg.kind });
   }
   async setLayerTag(msg) {
     const oldTag = msg.tag ?? "layer";
@@ -149416,8 +149416,8 @@ var StateHandlers = class {
       this.globalReprs.clear();
     }
   }
-  async clearShapesByTag(tag) {
-    if (!tag) {
+  async clearShapesByTag(tag2) {
+    if (!tag2) {
       if (this.tagIndex.size > 0) {
         const allRefs = Array.from(this.tagIndex.values()).flatMap((set4) => Array.from(set4));
         await Promise.all(allRefs.map((ref) => this.removeStateObject(ref)));
@@ -149425,10 +149425,10 @@ var StateHandlers = class {
       }
       return;
     }
-    const refs = this.tagIndex.get(this.taggedKey("shape", tag));
+    const refs = this.tagIndex.get(this.taggedKey("shape", tag2));
     if (!refs || refs.size === 0) return;
     await Promise.all(Array.from(refs).map((ref) => this.removeStateObject(ref)));
-    this.tagIndex.delete(this.taggedKey("shape", tag));
+    this.tagIndex.delete(this.taggedKey("shape", tag2));
   }
   async handleShowHideGlobal(hide, target = "whole") {
     if (target === "whole") {
@@ -149502,8 +149502,8 @@ var StateHandlers = class {
       }
     }
   }
-  async toggleRegionVisibility(tag, hide) {
-    const regionTag = tag ?? "region";
+  async toggleRegionVisibility(tag2, hide) {
+    const regionTag = tag2 ?? "region";
     const entry = this.regionIndex.get(regionTag);
     if (!entry) return;
     if (this.showOnlyRegionTag && (!hide || regionTag === this.showOnlyRegionTag)) {
@@ -149513,8 +149513,8 @@ var StateHandlers = class {
     entry.representations.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide || !entry.enabled));
     await this.applyComposedTransparency();
   }
-  async toggleLayerVisibility(tag, hide, kind) {
-    const layerTag = tag ?? "layer";
+  async toggleLayerVisibility(tag2, hide, kind) {
+    const layerTag = tag2 ?? "layer";
     const key2 = this.taggedKey(kind, layerTag);
     const managedKind = this.layerMeta.get(key2)?.kind ?? kind;
     if ((managedKind === "annotation" || managedKind === "measurement") && this.callbacks.setManagedLayerVisibility) {
@@ -149560,10 +149560,10 @@ var StateHandlers = class {
   }
   async repaintInheritedRegions() {
     const inherited = Array.from(this.regionIndex.entries()).filter(([, entry]) => entry.representationState === "inherit");
-    for (const [tag, entry] of inherited) {
+    for (const [tag2, entry] of inherited) {
       await this.setRegionRepresentation({
         op: "set_region_representation",
-        tag,
+        tag: tag2,
         representation: "inherit",
         params: entry.params
       });
@@ -149830,10 +149830,10 @@ var TrajectoryHandlers = class {
     if (!loaded || !trajectory) throw new Error("No trajectory loaded for coordinate edit.");
     if (msg.coordinate_unit !== "angstrom") throw new Error("Coordinate edits require explicit angstrom units.");
     const count3 = trajectory.frameCount;
-    if (!Array.isArray(msg.structure_indices) || new Set(msg.structure_indices).size !== msg.structure_indices.length || msg.structure_indices.some((i) => !Number.isInteger(i) || i < 0 || i >= count3) || msg.coordinates.length !== msg.structure_indices.length || msg.coordinates.some((frame) => frame.length !== msg.atom_indices.length || frame.some((xyz) => xyz.length !== 3 || xyz.some((value) => !Number.isFinite(value))))) {
+    if (!Array.isArray(msg.structure_indices) || new Set(msg.structure_indices).size !== msg.structure_indices.length || msg.structure_indices.some((i) => !Number.isInteger(i) || i < 0 || i >= count3) || msg.coordinates.length !== msg.structure_indices.length || msg.coordinates.some((frame2) => frame2.length !== msg.atom_indices.length || frame2.some((xyz) => xyz.length !== 3 || xyz.some((value) => !Number.isFinite(value))))) {
       throw new Error("Invalid coordinate edit structures or dimensions.");
     }
-    const replacements = new Map(msg.structure_indices.map((frame, index) => [frame, msg.coordinates[index]]));
+    const replacements = new Map(msg.structure_indices.map((frame2, index) => [frame2, msg.coordinates[index]]));
     const models = await this.plugin.runTask(Task.create("Revise trajectory coordinates", async (ctx) => {
       const frames = [];
       for (let index = 0; index < count3; index++) {
@@ -150052,17 +150052,17 @@ var TrajectoryHandlers = class {
     };
   }
   /** Apply metadata only; a follower must never start a playback timer. */
-  applyPlaybackProjection(value, frame) {
+  applyPlaybackProjection(value, frame2) {
     if (!this.follower || !value || !Number.isSafeInteger(value.fps) || value.fps < 1 || !Number.isSafeInteger(value.step_size) || value.step_size < 1 || !["loop", "once", "ping-pong"].includes(value.mode) || !["forward", "backward"].includes(value.direction) || typeof value.playing !== "boolean") return;
     const previous = this.resolvedPlayback;
-    if (this.resolvedPlaybackFrame === frame && this.followerPlaying === value.playing && previous && previous.fps === value.fps && previous.step_size === value.step_size && previous.mode === value.mode && previous.direction === value.direction && previous.playing === value.playing) return;
+    if (this.resolvedPlaybackFrame === frame2 && this.followerPlaying === value.playing && previous && previous.fps === value.fps && previous.step_size === value.step_size && previous.mode === value.mode && previous.direction === value.direction && previous.playing === value.playing) return;
     this.resolvedPlayback = { ...value };
-    this.resolvedPlaybackFrame = frame;
+    this.resolvedPlaybackFrame = frame2;
     this.followerPlaying = value.playing;
     this.updateTrajectoryState();
   }
-  isCaptureFrameReady(frame) {
-    return !this.follower || this.resolvedPlaybackFrame === frame && !!this.resolvedPlayback;
+  isCaptureFrameReady(frame2) {
+    return !this.follower || this.resolvedPlaybackFrame === frame2 && !!this.resolvedPlayback;
   }
   onTrajectoryState(cb2, opts) {
     this.trajectoryListeners.add(cb2);
@@ -150091,9 +150091,9 @@ var TrajectoryHandlers = class {
   }
   updateTrajectoryState() {
     if (this.disposed) return;
-    const frame = this.getCurrentFrameIndex();
-    if (this.playbackTimer && frame !== this.framePacingFrame) {
-      this.framePacingFrame = frame;
+    const frame2 = this.getCurrentFrameIndex();
+    if (this.playbackTimer && frame2 !== this.framePacingFrame) {
+      this.framePacingFrame = frame2;
       this.framePacingSince = performance.now();
       this.firstDrawPending = true;
     }
@@ -150312,11 +150312,11 @@ var MovieHandlers = class {
       }
     }
     const targetVis = computeVisibilityAt(keyframes, time_ms);
-    for (const [tag, visible] of Object.entries(targetVis)) {
-      if (this.lastVisibility[tag] !== visible) {
-        this.lastVisibility[tag] = visible;
-        if (visible) void this.context.showLayer(tag);
-        else void this.context.hideLayer(tag);
+    for (const [tag2, visible] of Object.entries(targetVis)) {
+      if (this.lastVisibility[tag2] !== visible) {
+        this.lastVisibility[tag2] = visible;
+        if (visible) void this.context.showLayer(tag2);
+        else void this.context.hideLayer(tag2);
       }
     }
   }
@@ -150352,11 +150352,11 @@ var MovieHandlers = class {
       await this.context.setTrajectoryFrame(idx);
     }
     const targetVis = computeVisibilityAt(keyframes, time_ms);
-    for (const [tag, visible] of Object.entries(targetVis)) {
-      if (exportVis[tag] !== visible) {
-        exportVis[tag] = visible;
-        if (visible) await this.context.showLayer(tag);
-        else await this.context.hideLayer(tag);
+    for (const [tag2, visible] of Object.entries(targetVis)) {
+      if (exportVis[tag2] !== visible) {
+        exportVis[tag2] = visible;
+        if (visible) await this.context.showLayer(tag2);
+        else await this.context.hideLayer(tag2);
       }
     }
   }
@@ -151465,9 +151465,9 @@ var ViewerContextMenu = class {
     });
     const submit = () => {
       if (!this.currentTarget) return;
-      const tag = String(input.value ?? "").trim();
+      const tag2 = String(input.value ?? "").trim();
       const action = fromTarget ? "create_region_from_target" : "create_region_from_selection";
-      const details = { ...tag.length > 0 ? { tag } : {}, ...scope ? { scope: scope.value } : {} };
+      const details = { ...tag2.length > 0 ? { tag: tag2 } : {}, ...scope ? { scope: scope.value } : {} };
       this.onAction?.(action, this.currentTarget, details);
       this.notify?.({
         event: "interaction_context_action",
@@ -151504,9 +151504,9 @@ var ViewerContextMenu = class {
       return { tag: this.currentTarget.tag, ...action === "toggle_interaction_visibility" ? { hidden: true } : {} };
     }
     if (["delete_annotation", "delete_shape", "delete_measurement", "hide_measurement", "edit_object_in_studio", "edit_annotation_text", "toggle_annotation_visibility", "toggle_shape_visibility"].includes(action)) {
-      const tag = this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement" ? this.currentTarget.tag : void 0;
-      if (!tag || tag.trim() === "") return null;
-      return { tag, ...["toggle_annotation_visibility", "toggle_shape_visibility"].includes(action) ? { hidden: true } : {} };
+      const tag2 = this.currentTarget?.kind === "annotation" || this.currentTarget?.kind === "shape" || this.currentTarget?.kind === "measurement" ? this.currentTarget.tag : void 0;
+      if (!tag2 || tag2.trim() === "") return null;
+      return { tag: tag2, ...["toggle_annotation_visibility", "toggle_shape_visibility"].includes(action) ? { hidden: true } : {} };
     }
     if (action === "create_section_from_selection") {
       const camera_forward = this.getCameraDirection?.() ?? [0, 0, -1];
@@ -151824,9 +151824,9 @@ var ViewerContextMenu = class {
       cursor: "pointer"
     });
     const submit = () => {
-      const tag = String(input.value ?? "").trim();
-      if (tag.length === 0 || !this.currentTarget) return;
-      const details = { tag };
+      const tag2 = String(input.value ?? "").trim();
+      if (tag2.length === 0 || !this.currentTarget) return;
+      const details = { tag: tag2 };
       this.onAction?.("save_selection", this.currentTarget, details);
       this.notify?.({
         event: "interaction_context_action",
@@ -152752,7 +152752,7 @@ var TrajectoryPlotOverlay = class {
   set(options) {
     if (options?.cards) {
       const retained = new Set(options.cards.map((card8) => card8.tag || "default"));
-      for (const tag2 of this.entries.keys()) if (!retained.has(tag2)) this.clear(tag2);
+      for (const tag3 of this.entries.keys()) if (!retained.has(tag3)) this.clear(tag3);
       for (const card8 of options.cards) this.set(card8);
       return;
     }
@@ -152761,8 +152761,8 @@ var TrajectoryPlotOverlay = class {
       else this.clear(options?.tag);
       return;
     }
-    const tag = options?.tag || "default";
-    let entry = this.entries.get(tag);
+    const tag2 = options?.tag || "default";
+    let entry = this.entries.get(tag2);
     const firstSeries = options.series[0];
     const nFrames = options.n_frames ?? firstSeries.values.length;
     const resolvedTitle = options.title || options.y_label || "Trajectory Plot";
@@ -152773,17 +152773,17 @@ var TrajectoryPlotOverlay = class {
       const left = Math.max(10, (this.host.clientWidth || 800) / 2 - width / 2 + offset4);
       const top = Math.max(10, (this.host.clientHeight || 600) - height - 30 - offset4);
       const card8 = new FloatingDataCard(this.host, {
-        tag,
+        tag: tag2,
         title: resolvedTitle,
         width,
         height,
         left,
         top,
         onClose: () => {
-          this.hide(tag);
-          this.onHide?.(tag);
+          this.hide(tag2);
+          this.onHide?.(tag2);
         },
-        onPopout: this.onPopout ? () => this.onPopout(tag) : void 0,
+        onPopout: this.onPopout ? () => this.onPopout(tag2) : void 0,
         onResize: (w, h) => {
           if (entry) {
             entry.width = w;
@@ -152793,14 +152793,14 @@ var TrajectoryPlotOverlay = class {
         }
       });
       entry = {
-        tag,
+        tag: tag2,
         card: card8,
         options,
         nFrames,
         width,
         height
       };
-      this.entries.set(tag, entry);
+      this.entries.set(tag2, entry);
     } else {
       entry.options = options;
       entry.nFrames = nFrames;
@@ -152811,36 +152811,36 @@ var TrajectoryPlotOverlay = class {
     this.renderEntry(entry);
     this.setFrame(this.currentFrame);
   }
-  hide(tag) {
-    if (!tag) {
+  hide(tag2) {
+    if (!tag2) {
       for (const t5 of Array.from(this.entries.keys())) {
         this.hide(t5);
       }
       return;
     }
-    const entry = this.entries.get(tag);
+    const entry = this.entries.get(tag2);
     if (entry) {
       entry.options = { ...entry.options, visible: false };
       entry.card.hide();
     }
   }
-  clear(tag) {
-    if (!tag) {
+  clear(tag2) {
+    if (!tag2) {
       for (const key2 of Array.from(this.entries.keys())) this.clear(key2);
       return;
     }
-    const entry = this.entries.get(tag);
+    const entry = this.entries.get(tag2);
     if (entry) {
       entry.card.dispose();
-      this.entries.delete(tag);
+      this.entries.delete(tag2);
     }
   }
   /** Move playhead marker and update live X/Y value readouts on all active cards. */
-  setFrame(frame) {
-    this.currentFrame = frame;
+  setFrame(frame2) {
+    this.currentFrame = frame2;
     for (const entry of this.entries.values()) {
       if (!entry.playhead || entry.nFrames <= 0) continue;
-      const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
+      const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame2));
       if (entry.frameInput) entry.frameInput.value = String(clamped);
       if (entry.frameOutput) entry.frameOutput.textContent = `${clamped + 1} / ${entry.nFrames}`;
       const x = this.frameToX(clamped, entry);
@@ -152868,11 +152868,11 @@ var TrajectoryPlotOverlay = class {
       }
     }
   }
-  frameToX(frame, entry) {
+  frameToX(frame2, entry) {
     const leftMargin = 40;
     const rightMargin = 14;
     const plotW = Math.max(200, entry.width) - leftMargin - rightMargin;
-    const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame));
+    const clamped = Math.max(0, Math.min(entry.nFrames - 1, frame2));
     const [min5, max5] = this.xRange(entry);
     const value = entry.options.x?.[clamped] ?? clamped;
     return leftMargin + axisFraction(value, min5, max5) * plotW;
@@ -152880,10 +152880,10 @@ var TrajectoryPlotOverlay = class {
   xToFrame(px, entry) {
     let chosen = 0;
     let distance2 = Infinity;
-    for (let frame = 0; frame < entry.nFrames; frame++) {
-      const candidate = Math.abs(this.frameToX(frame, entry) - px);
-      if (candidate < distance2 - 1e-9 || Math.abs(candidate - distance2) <= 1e-9 && frame === this.currentFrame) {
-        chosen = frame;
+    for (let frame2 = 0; frame2 < entry.nFrames; frame2++) {
+      const candidate = Math.abs(this.frameToX(frame2, entry) - px);
+      if (candidate < distance2 - 1e-9 || Math.abs(candidate - distance2) <= 1e-9 && frame2 === this.currentFrame) {
+        chosen = frame2;
         distance2 = candidate;
       }
     }
@@ -152930,8 +152930,8 @@ var TrajectoryPlotOverlay = class {
     input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
     Object.assign(input.style, { minWidth: "0", flex: "1 1 auto" });
     input.addEventListener("input", () => {
-      const frame = Number(input.value);
-      if (this.entries.get(entry.tag) === entry && Number.isInteger(frame) && frame >= 0 && frame < entry.nFrames) this.onSeek(frame);
+      const frame2 = Number(input.value);
+      if (this.entries.get(entry.tag) === entry && Number.isInteger(frame2) && frame2 >= 0 && frame2 < entry.nFrames) this.onSeek(frame2);
     });
     const output = document.createElement("output");
     output.setAttribute("aria-label", "Selected structure");
@@ -153915,7 +153915,7 @@ function makeButton2(text, onClick) {
   });
   return btn;
 }
-function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
+function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility2, onStyle) {
   const row3 = document.createElement("div");
   row3.setAttribute("data-molsysviewer-group-panel-row", "true");
   row3.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
@@ -154016,16 +154016,16 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     });
     actions.appendChild(styleBtn);
   }
-  if (visibility?.onToggleVisibility) {
+  if (visibility2?.onToggleVisibility) {
     const eyeBtn = document.createElement("button");
     eyeBtn.type = "button";
-    eyeBtn.textContent = visibility.hidden ? "\u29BB" : "\u{1F441}";
-    eyeBtn.title = visibility.hidden ? "Show" : "Hide";
+    eyeBtn.textContent = visibility2.hidden ? "\u29BB" : "\u{1F441}";
+    eyeBtn.title = visibility2.hidden ? "Show" : "Hide";
     eyeBtn.setAttribute("aria-label", `${eyeBtn.title} ${titleText}`);
     Object.assign(eyeBtn.style, {
       background: "transparent",
       border: "0",
-      color: visibility.hidden ? "rgba(244,244,245,0.36)" : "#6366f1",
+      color: visibility2.hidden ? "rgba(244,244,245,0.36)" : "#6366f1",
       fontSize: "12px",
       cursor: "pointer",
       padding: "2px 6px",
@@ -154034,7 +154034,7 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
     eyeBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      visibility.onToggleVisibility?.(!visibility.hidden);
+      visibility2.onToggleVisibility?.(!visibility2.hidden);
     });
     actions.appendChild(eyeBtn);
   }
@@ -154350,8 +154350,8 @@ var BasePanel = class {
       const doc = this.host?.ownerDocument;
       const active = doc?.activeElement;
       if (!active || !this.host || typeof this.host.contains !== "function" || !this.host.contains(active)) return null;
-      const tag = active.tagName;
-      if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT" && tag !== "BUTTON") return null;
+      const tag2 = active.tagName;
+      if (tag2 !== "INPUT" && tag2 !== "TEXTAREA" && tag2 !== "SELECT" && tag2 !== "BUTTON") return null;
       const attributes2 = Array.from(active.attributes ?? []);
       const attr = attributes2.find((a8) => a8.name.startsWith("data-molsysviewer-")) ?? attributes2.find((a8) => a8.name === "aria-label");
       if (!attr) return null;
@@ -154361,7 +154361,7 @@ var BasePanel = class {
         start: active.selectionStart ?? null,
         end: active.selectionEnd ?? null,
         // Canonical replies own discrete values; preserve focus only.
-        keepValue: tag !== "SELECT" && tag !== "BUTTON" && active.type !== "checkbox" && active.type !== "radio"
+        keepValue: tag2 !== "SELECT" && tag2 !== "BUTTON" && active.type !== "checkbox" && active.type !== "radio"
       };
     } catch {
       return null;
@@ -154594,10 +154594,10 @@ var ViewportPanel = class extends BasePanel {
     Object.assign(top.style, { display: "flex", alignItems: "center", gap: "6px", minWidth: "0" });
     const identity3 = document.createElement("div");
     Object.assign(identity3.style, { display: "flex", flexDirection: "column", flex: "1 1 auto", minWidth: "0" });
-    const tag = document.createElement("strong");
-    tag.textContent = item2.tag;
-    Object.assign(tag.style, { fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis", color: "#f4f4f5" });
-    identity3.appendChild(tag);
+    const tag2 = document.createElement("strong");
+    tag2.textContent = item2.tag;
+    Object.assign(tag2.style, { fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis", color: "#f4f4f5" });
+    identity3.appendChild(tag2);
     if (item2.owner) {
       const owner = document.createElement("span");
       owner.textContent = item2.owner;
@@ -154605,19 +154605,19 @@ var ViewportPanel = class extends BasePanel {
       identity3.appendChild(owner);
     }
     top.appendChild(identity3);
-    const visibility = makeButton2(item2.hidden ? "Show" : "Hide", () => this.ctx.onAction("set_section_visibility", {
+    const visibility2 = makeButton2(item2.hidden ? "Show" : "Hide", () => this.ctx.onAction("set_section_visibility", {
       tag: item2.tag,
       visible: item2.hidden
     }));
-    visibility.setAttribute("data-molsysviewer-section-visibility", item2.tag);
+    visibility2.setAttribute("data-molsysviewer-section-visibility", item2.tag);
     const remove3 = makeButton2("Delete", () => this.ctx.onAction("remove_section", { tag: item2.tag }));
     remove3.setAttribute("data-molsysviewer-section-delete", item2.tag);
-    for (const btn of [visibility, remove3]) {
+    for (const btn of [visibility2, remove3]) {
       btn.style.flex = "0 0 auto";
       btn.style.padding = "3px 6px";
       btn.style.fontSize = "10px";
     }
-    top.appendChild(visibility);
+    top.appendChild(visibility2);
     top.appendChild(remove3);
     cardItem.appendChild(top);
     cardItem.appendChild(this.vectorEditor(item2, `Point (${formatUnitLabel(item2.unit)})`, "point", item2.point));
@@ -154670,11 +154670,11 @@ var ViewportPanel = class extends BasePanel {
       input.addEventListener("focus", () => this.beginCoalescing());
       input.addEventListener("pointerdown", () => this.beginCoalescing());
       input.addEventListener("change", () => {
-        const vector = inputs.map((control) => Number(control.value));
-        if (!vector.every(Number.isFinite)) return;
-        if (kind === "normal" && Math.hypot(...vector) < 1e-10) return;
+        const vector2 = inputs.map((control) => Number(control.value));
+        if (!vector2.every(Number.isFinite)) return;
+        if (kind === "normal" && Math.hypot(...vector2) < 1e-10) return;
         if (kind === "point" && !item2.unit) return;
-        this.ctx.onAction(kind === "point" ? "set_section_point" : "set_section_normal", kind === "point" ? { tag: item2.tag, point: { magnitude: vector, unit: item2.unit } } : { tag: item2.tag, normal: vector });
+        this.ctx.onAction(kind === "point" ? "set_section_point" : "set_section_normal", kind === "point" ? { tag: item2.tag, point: { magnitude: vector2, unit: item2.unit } } : { tag: item2.tag, normal: vector2 });
         this.endCoalescing();
       });
       input.addEventListener("blur", () => this.endCoalescing());
@@ -155122,8 +155122,8 @@ var SavedListTools = class {
     this.rows = [];
   }
   pruneTargets(current2) {
-    for (const tag of this.marked) if (!current2.has(tag)) this.marked.delete(tag);
-    if (this.confirmation) this.confirmation = this.confirmation.filter((tag) => current2.has(tag));
+    for (const tag2 of this.marked) if (!current2.has(tag2)) this.marked.delete(tag2);
+    if (this.confirmation) this.confirmation = this.confirmation.filter((tag2) => current2.has(tag2));
   }
   updateResult(result2) {
     if (result2.request_id !== this.pending) return;
@@ -155137,7 +155137,7 @@ var SavedListTools = class {
     const attr = `data-molsysviewer-${attributes[this.domain]}`;
     this.rows = Array.from(host.querySelectorAll(`[${attr}]`)).map((row3) => ({ tag: row3.getAttribute(attr), row: row3, text: row3.getAttribute("data-molsysviewer-list-search-text") || row3.textContent?.toLocaleLowerCase() || "", display: row3.style.display }));
     const current2 = new Set(this.rows.map((row3) => row3.tag));
-    for (const tag of this.marked) if (!current2.has(tag)) this.marked.delete(tag);
+    for (const tag2 of this.marked) if (!current2.has(tag2)) this.marked.delete(tag2);
     const toolbar = document.createElement("div");
     toolbar.setAttribute("data-molsysviewer-list-tools", this.domain);
     Object.assign(toolbar.style, { display: "flex", flexDirection: "column", gap: "6px", padding: "8px 0" });
@@ -155209,7 +155209,7 @@ var SavedListTools = class {
       actions.appendChild(button2);
     }
     if (this.confirmation) {
-      const tags = this.confirmation.filter((tag) => current2.has(tag));
+      const tags = this.confirmation.filter((tag2) => current2.has(tag2));
       const confirm2 = document.createElement("div");
       confirm2.setAttribute("data-molsysviewer-list-confirmation", this.domain);
       confirm2.textContent = `Delete ${tags.length} marked ${this.domain}: ${tags.join(", ")}? This includes marked rows hidden by the search. ${this.domain === "interactions" ? "Stored analyses are kept. " : ""}This can be undone.`;
@@ -155351,7 +155351,7 @@ var LayersPanel = class extends BasePanel {
   setLayers(items) {
     this.layers = [...items];
     this.reconcileEditorTargets(items.map((item2) => item2.tag));
-    for (const tag of this.expanded) if (!items.some((item2) => item2.tag === tag)) this.expanded.delete(tag);
+    for (const tag2 of this.expanded) if (!items.some((item2) => item2.tag === tag2)) this.expanded.delete(tag2);
     this.updateBadge();
     this.scheduleRender();
   }
@@ -155509,9 +155509,9 @@ var LayersPanel = class extends BasePanel {
       this.creationName = input.value;
     });
     const create3 = makeButton2(this.creation.pending ? "Creating\u2026" : "Create", () => {
-      const tag = input.value.trim();
-      if (tag) {
-        this.creation.submit({ tag, members: this.selectedInitialMembers.map(([kind, memberTag]) => ({ member_kind: kind, member_tag: memberTag })) }, (action, payload) => this.ctx.onAction(action, payload));
+      const tag2 = input.value.trim();
+      if (tag2) {
+        this.creation.submit({ tag: tag2, members: this.selectedInitialMembers.map(([kind, memberTag]) => ({ member_kind: kind, member_tag: memberTag })) }, (action, payload) => this.ctx.onAction(action, payload));
         this.scheduleRender();
       }
     });
@@ -156269,11 +156269,11 @@ var RegionsPanel = class extends BasePanel {
     this.regions = [...items];
     this.reconcileEditorTargets(items.map((item2) => item2.tag));
     const tags = this.regions.map((item2) => item2.tag);
-    for (const tag of [...this.regionInspectOpen]) {
-      if (!tags.includes(tag)) {
-        this.regionInspectOpen.delete(tag);
-        this.regionDetails.delete(tag);
-        this.regionDetailsRequests.delete(tag);
+    for (const tag2 of [...this.regionInspectOpen]) {
+      if (!tags.includes(tag2)) {
+        this.regionInspectOpen.delete(tag2);
+        this.regionDetails.delete(tag2);
+        this.regionDetailsRequests.delete(tag2);
       }
     }
     if (this.activeStyleRegionTag && !tags.includes(this.activeStyleRegionTag)) {
@@ -156282,10 +156282,10 @@ var RegionsPanel = class extends BasePanel {
     this.ctx.setBadge(String(items.length));
     this.scheduleExternalRender();
   }
-  openObject(tag) {
-    if (!this.regions.some((item2) => item2.tag === tag)) return;
-    this.regionInspectOpen.add(tag);
-    this.requestRegionDetails(tag);
+  openObject(tag2) {
+    if (!this.regions.some((item2) => item2.tag === tag2)) return;
+    this.regionInspectOpen.add(tag2);
+    this.requestRegionDetails(tag2);
     this.scheduleRender();
   }
   setStyleOptions(options) {
@@ -156331,8 +156331,8 @@ var RegionsPanel = class extends BasePanel {
     this.scheduleExternalRender();
   }
   /** Whether a region with this tag currently exists (used by the Selection -> Region bridge). */
-  hasRegion(tag) {
-    return this.regions.some((region) => region.tag === tag);
+  hasRegion(tag2) {
+    return this.regions.some((region) => region.tag === tag2);
   }
   paint() {
     if (!this.host) return;
@@ -156745,19 +156745,19 @@ var RegionsPanel = class extends BasePanel {
     }
     return card8;
   }
-  requestRegionDetails(tag) {
-    this.regionDetails.delete(tag);
+  requestRegionDetails(tag2) {
+    this.regionDetails.delete(tag2);
     const requestId = this.nextRegionDetailsRequest++;
-    this.regionDetailsRequests.set(tag, requestId);
+    this.regionDetailsRequests.set(tag2, requestId);
     this.ctx.onAction("get_region_details", {
-      tag,
+      tag: tag2,
       request_id: requestId
     });
   }
-  renderRegionInspect(tag) {
+  renderRegionInspect(tag2) {
     const panel = document.createElement("div");
-    panel.setAttribute("data-molsysviewer-region-inspect-panel", tag);
-    const details = this.regionDetails.get(tag);
+    panel.setAttribute("data-molsysviewer-region-inspect-panel", tag2);
+    const details = this.regionDetails.get(tag2);
     if (!details) {
       panel.textContent = "Loading...";
       return panel;
@@ -156790,18 +156790,18 @@ var RegionsPanel = class extends BasePanel {
       panel.appendChild(provenance);
     }
     const refresh = makeButton2("Refresh", () => {
-      this.requestRegionDetails(tag);
+      this.requestRegionDetails(tag2);
       this.scheduleRender();
     });
-    refresh.setAttribute("data-molsysviewer-region-inspect-refresh", tag);
+    refresh.setAttribute("data-molsysviewer-region-inspect-refresh", tag2);
     refresh.title = "Refresh details for the current trajectory frame.";
     panel.appendChild(refresh);
     return panel;
   }
   renderStyleComposer(item2) {
-    const tag = item2.tag;
+    const tag2 = item2.tag;
     const container = document.createElement("div");
-    container.setAttribute("data-molsysviewer-region-style-composer", tag);
+    container.setAttribute("data-molsysviewer-region-style-composer", tag2);
     Object.assign(container.style, {
       display: "flex",
       flexDirection: "column",
@@ -156827,7 +156827,7 @@ var RegionsPanel = class extends BasePanel {
     });
     const title = document.createElement("div");
     title.textContent = "Style Options";
-    title.setAttribute("data-molsysviewer-region-style-options-title", tag);
+    title.setAttribute("data-molsysviewer-region-style-options-title", tag2);
     Object.assign(title.style, {
       fontSize: "10px",
       fontWeight: "700",
@@ -156845,7 +156845,7 @@ var RegionsPanel = class extends BasePanel {
     const undoBtn = makeButton2("Undo", () => {
       this.ctx.onAction("undo_active_selection");
     });
-    undoBtn.setAttribute("data-molsysviewer-region-style-undo", tag);
+    undoBtn.setAttribute("data-molsysviewer-region-style-undo", tag2);
     undoBtn.title = "Undo last action";
     undoBtn.disabled = !this.historyState.canUndo;
     if (undoBtn.disabled) {
@@ -156856,7 +156856,7 @@ var RegionsPanel = class extends BasePanel {
     const redoBtn = makeButton2("Redo", () => {
       this.ctx.onAction("redo_active_selection");
     });
-    redoBtn.setAttribute("data-molsysviewer-region-style-redo", tag);
+    redoBtn.setAttribute("data-molsysviewer-region-style-redo", tag2);
     redoBtn.title = "Redo last action";
     redoBtn.disabled = !this.historyState.canRedo;
     if (redoBtn.disabled) {
@@ -156865,16 +156865,16 @@ var RegionsPanel = class extends BasePanel {
     }
     actions.appendChild(redoBtn);
     const revertBtn = makeButton2("Revert", () => {
-      const backup = this.regionStyleBackups.get(tag);
+      const backup = this.regionStyleBackups.get(tag2);
       if (backup) {
         this.ctx.onAction("set_region_representation", {
-          tag,
+          tag: tag2,
           ...backup.preset ? { preset: backup.preset } : { representation: backup.representation ?? "inherit" },
           params: backup.params
         });
       }
     });
-    revertBtn.setAttribute("data-molsysviewer-region-style-revert", tag);
+    revertBtn.setAttribute("data-molsysviewer-region-style-revert", tag2);
     revertBtn.title = "Revert region representation and colors to session start";
     actions.appendChild(revertBtn);
     for (const btn of [undoBtn, redoBtn, revertBtn]) {
@@ -156885,7 +156885,7 @@ var RegionsPanel = class extends BasePanel {
     header2.appendChild(actions);
     container.appendChild(header2);
     const controls = createStyleDraftControls({
-      id: tag,
+      id: tag2,
       dataPrefix: "region-style",
       representations,
       presets,
@@ -156919,20 +156919,20 @@ var RegionsPanel = class extends BasePanel {
       () => {
       }
     );
-    attributeElement.setAttribute("data-molsysviewer-region-style-color-attribute-element", tag);
+    attributeElement.setAttribute("data-molsysviewer-region-style-color-attribute-element", tag2);
     const palette = makeStyledSelect(
       ["viridis", "plasma", "magma", "inferno", "cividis", "turbo"],
       typeof params.color_attribute_palette === "string" ? params.color_attribute_palette : "viridis",
       () => {
       }
     );
-    palette.setAttribute("data-molsysviewer-region-style-color-attribute-palette", tag);
+    palette.setAttribute("data-molsysviewer-region-style-color-attribute-palette", tag2);
     const valueRange = document.createElement("input");
     valueRange.type = "text";
     valueRange.placeholder = "auto / min,max";
     valueRange.title = "Leave empty for automatic range. Physical values need units, e.g. [0,100] angstrom**2.";
     valueRange.value = Array.isArray(params.color_attribute_range) ? params.color_attribute_range.join(",") : "";
-    valueRange.setAttribute("data-molsysviewer-region-style-color-attribute-range", tag);
+    valueRange.setAttribute("data-molsysviewer-region-style-color-attribute-range", tag2);
     Object.assign(valueRange.style, {
       width: "86px",
       background: "rgba(0,0,0,0.28)",
@@ -156952,7 +156952,7 @@ var RegionsPanel = class extends BasePanel {
         if (!value) return;
         const range2 = scalarColorRangeFromInput(valueRange.value);
         this.ctx.onAction("color_region_by_attribute", {
-          tag,
+          tag: tag2,
           attribute: value,
           element: attributeElement.value,
           palette: palette.value,
@@ -156961,12 +156961,12 @@ var RegionsPanel = class extends BasePanel {
         });
       }
     );
-    attribute.setAttribute("data-molsysviewer-region-style-color-attribute", tag);
+    attribute.setAttribute("data-molsysviewer-region-style-color-attribute", tag2);
     const resetColors = makeButton2(
       "Reset colors",
-      () => this.ctx.onAction("reset_region_colors", { tag })
+      () => this.ctx.onAction("reset_region_colors", { tag: tag2 })
     );
-    resetColors.setAttribute("data-molsysviewer-region-style-reset-colors", tag);
+    resetColors.setAttribute("data-molsysviewer-region-style-reset-colors", tag2);
     attributeRow.appendChild(attribute);
     attributeRow.appendChild(attributeElement);
     attributeRow.appendChild(palette);
@@ -156993,7 +156993,7 @@ var RegionsPanel = class extends BasePanel {
       return {
         action: "set_region_representation",
         details: {
-          tag,
+          tag: tag2,
           ...selectedPreset ? { preset: selectedPreset } : selectedRepresentation ? { representation: selectedRepresentation } : item2.preset ? { preset: item2.preset } : { representation: item2.representation ?? "inherit" },
           params: nextParams
         }
@@ -158084,18 +158084,18 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         outline: "none"
       });
       const submitForm = () => {
-        const tag = input.value.trim();
-        if (!tag) return;
-        const exists = this.savedSelections.some((s) => s.tag === tag);
+        const tag2 = input.value.trim();
+        if (!tag2) return;
+        const exists = this.savedSelections.some((s) => s.tag === tag2);
         if (exists) {
-          const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag}" already exists. Overwrite?`) : true;
+          const doOverwrite = typeof confirm === "function" ? confirm(`A saved selection named "${tag2}" already exists. Overwrite?`) : true;
           if (doOverwrite) {
-            this.creation.submit({ tag, overwrite: true }, this.ctx.onAction);
+            this.creation.submit({ tag: tag2, overwrite: true }, this.ctx.onAction);
           } else {
             return;
           }
         } else {
-          this.creation.submit({ tag }, this.ctx.onAction);
+          this.creation.submit({ tag: tag2 }, this.ctx.onAction);
         }
         this.scheduleRender();
       };
@@ -158455,12 +158455,12 @@ var GroupStrip = class {
   addLabelOverlay(msg) {
     const text = typeof msg.options?.text === "string" ? msg.options.text.trim() : "";
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
-    const tag = msg.tag ?? msg.options?.tag ?? "annotation";
+    const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
     if (!text || atomIndices.length === 0 || this.groupItems.length === 0) return;
     const key2 = this.findSelectionKeyFromAtomIndices(atomIndices);
     if (!key2) return;
     const records = this.annotationRecords.get(key2) ?? [];
-    records.push({ tag, text });
+    records.push({ tag: tag2, text });
     this.annotationRecords.set(key2, records);
     this.render();
   }
@@ -158469,14 +158469,14 @@ var GroupStrip = class {
     this.annotationRecords.clear();
     this.render();
   }
-  clearAnnotationOverlaysByTag(tag) {
-    if (!tag) {
+  clearAnnotationOverlaysByTag(tag2) {
+    if (!tag2) {
       this.clearAnnotationOverlays();
       return;
     }
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.filter((record3) => record3.tag !== tag);
+      const next = records.filter((record4) => record4.tag !== tag2);
       if (next.length === records.length) continue;
       changed = true;
       if (next.length === 0) {
@@ -158490,10 +158490,10 @@ var GroupStrip = class {
   retagAnnotationOverlays(oldTag, newTag) {
     let changed = false;
     for (const [key2, records] of this.annotationRecords.entries()) {
-      const next = records.map((record3) => {
-        if (record3.tag !== oldTag) return record3;
+      const next = records.map((record4) => {
+        if (record4.tag !== oldTag) return record4;
         changed = true;
-        return { ...record3, tag: newTag };
+        return { ...record4, tag: newTag };
       });
       this.annotationRecords.set(key2, next);
     }
@@ -158738,7 +158738,7 @@ var GroupStrip = class {
               boxShadow: annotationContextSelected ? "inset 0 0 0 1px rgba(251, 191, 36, 0.28)" : "none"
             });
             button2.appendChild(badge);
-            button2.title = annotationRecords.map((record3) => record3.text).join("\n");
+            button2.title = annotationRecords.map((record4) => record4.text).join("\n");
             badge.addEventListener("click", (event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -158937,7 +158937,7 @@ var SystemPanel = class {
     }
   }
   /** A read-only target snapshot, independent from the active selection. */
-  inspectTarget(target, frame) {
+  inspectTarget(target, frame2) {
     if (!this.inspector || target.kind !== "structure") return;
     this.inspector.replaceChildren();
     Object.assign(this.inspector.style, { display: "block", padding: "8px", borderRadius: "8px", background: "rgba(0,0,0,0.18)", fontSize: "12px" });
@@ -158952,7 +158952,7 @@ var SystemPanel = class {
       ["Atom index", target.atom_index],
       ["Source", target.source_label],
       ["Target atoms", target.atom_indices.length],
-      ["Structure index", frame]
+      ["Structure index", frame2]
     ];
     for (const [label2, value] of entries3) {
       if (value === void 0) continue;
@@ -158984,18 +158984,18 @@ var SystemPanel = class {
       strip.clearAnnotationOverlays();
     }
   }
-  clearAnnotationOverlaysByTag(tag) {
-    if (!tag) {
+  clearAnnotationOverlaysByTag(tag2) {
+    if (!tag2) {
       this.clearAnnotationOverlays();
       return;
     }
     for (let index = this.annotationMessages.length - 1; index >= 0; index--) {
-      if (this.annotationMessages[index].tag === tag || this.annotationMessages[index].options?.tag === tag) {
+      if (this.annotationMessages[index].tag === tag2 || this.annotationMessages[index].options?.tag === tag2) {
         this.annotationMessages.splice(index, 1);
       }
     }
     for (const strip of this.strips.values()) {
-      strip.clearAnnotationOverlaysByTag(tag);
+      strip.clearAnnotationOverlaysByTag(tag2);
     }
   }
   retagAnnotationOverlays(oldTag, newTag) {
@@ -160132,9 +160132,9 @@ var MeasuresPanel = class extends BasePanel {
     this.ctx.setBadge(String(measurements.length));
     this.scheduleRender();
   }
-  openObject(tag) {
-    if (!this.measurements.some((item2) => item2.tag === tag)) return;
-    this.editTag = tag;
+  openObject(tag2) {
+    if (!this.measurements.some((item2) => item2.tag === tag2)) return;
+    this.editTag = tag2;
     this.scheduleRender();
   }
   setCurrentSelection(selection) {
@@ -160459,9 +160459,9 @@ var MeasuresPanel = class extends BasePanel {
         picks,
         endpoint_policy
       };
-      const tag = (nameInput.value || "").trim();
-      if (tag) {
-        details.tag = tag;
+      const tag2 = (nameInput.value || "").trim();
+      if (tag2) {
+        details.tag = tag2;
       }
       this.creation.submit(details, (action, payload) => this.ctx.onAction(action, payload));
       this.scheduleRender();
@@ -161038,9 +161038,9 @@ function renderSelectionDock(options) {
           label: `${s.tag} (${s.atom_count} atoms)`
         }))
       ];
-      const savedSelect = makeStyledSelect(savedOptions, "", (tag) => {
-        if (!tag) return;
-        const found = options.savedSelections.find((s) => s.tag === tag);
+      const savedSelect = makeStyledSelect(savedOptions, "", (tag2) => {
+        if (!tag2) return;
+        const found = options.savedSelections.find((s) => s.tag === tag2);
         if (found) {
           if (options.onActivateSavedSelection) {
             options.onActivateSavedSelection(found);
@@ -161174,11 +161174,11 @@ var AnnotationsPanel = class extends BasePanel {
     this.ctx.setBadge(String(items.length));
     this.scheduleRender();
   }
-  openObject(tag, text = false) {
-    if (!this.annotations.some((item2) => item2.tag === tag)) return;
-    this.selectedTag = tag;
-    if (text) this.editTextTag = tag;
-    else this.editDetailsTag = tag;
+  openObject(tag2, text = false) {
+    if (!this.annotations.some((item2) => item2.tag === tag2)) return;
+    this.selectedTag = tag2;
+    if (text) this.editTextTag = tag2;
+    else this.editDetailsTag = tag2;
     this.scheduleRender();
     if (text) this.focusTextEditor();
   }
@@ -162568,8 +162568,8 @@ var InteractionsPanel = class extends BasePanel {
     if (result2.ok) this.deletionTarget = null;
     this.scheduleRender();
   }
-  setFrame(items, frame) {
-    this.setSummary({ op: "set_interaction_summaries", interactions: items, analyses: this.analyses, system_loaded: this.loaded, frame });
+  setFrame(items, frame2) {
+    this.setSummary({ op: "set_interaction_summaries", interactions: items, analyses: this.analyses, system_loaded: this.loaded, frame: frame2 });
   }
   setSelection(selection) {
     this.selection = selection;
@@ -162595,14 +162595,14 @@ var InteractionsPanel = class extends BasePanel {
     }
     this.scheduleRender();
   }
-  inspectOccurrence(tag, identity3) {
-    if (!this.backendAvailable || !this.items.some((item2) => item2.tag === tag)) return;
-    this.inspecting = tag;
+  inspectOccurrence(tag2, identity3) {
+    if (!this.backendAvailable || !this.items.some((item2) => item2.tag === tag2)) return;
+    this.inspecting = tag2;
     this.inspection = null;
-    this.emit("inspect_interaction_occurrence", { tag, identity: identity3, request_id: ++this.requestId });
+    this.emit("inspect_interaction_occurrence", { tag: tag2, identity: identity3, request_id: ++this.requestId });
   }
-  openObject(tag) {
-    const item2 = this.items.find((item3) => item3.tag === tag);
+  openObject(tag2) {
+    const item2 = this.items.find((item3) => item3.tag === tag2);
     if (!item2) return;
     this.openForm();
     this.openFilters();
@@ -162676,10 +162676,10 @@ var InteractionsPanel = class extends BasePanel {
       interaction_types: this.types.trim() ? this.types.split(",").map((v4) => v4.trim()).filter(Boolean) : null
     };
   }
-  inspect(tag, offset4 = 0) {
-    this.inspecting = tag;
+  inspect(tag2, offset4 = 0) {
+    this.inspecting = tag2;
     this.inspection = null;
-    this.emit("inspect_interaction", { tag, frame: this.frame, offset: offset4, request_id: ++this.requestId });
+    this.emit("inspect_interaction", { tag: tag2, frame: this.frame, offset: offset4, request_id: ++this.requestId });
   }
   criterion() {
     const key2 = this.criteria.get(this.kind) ?? initialCalculationCriterion(
@@ -162740,9 +162740,9 @@ var InteractionsPanel = class extends BasePanel {
         const inputRow = row2();
         group.appendChild(inputRow);
         const unit2 = draft[`${control.key}-unit`] || (control.type === "length" ? "nm" : "degrees");
-        const keys2 = control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key];
+        const keys3 = control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key];
         if (control.type === "angle-range") group.prepend(note2(control.label));
-        keys2.forEach((key2, index) => {
+        keys3.forEach((key2, index) => {
           const cell = document.createElement("div");
           cell.style.flex = "1";
           cell.style.minWidth = "0";
@@ -163350,9 +163350,9 @@ var ShapesPanel = class extends BasePanel {
     this.renderStatuses.set(status.tag, status);
     this.scheduleRender();
   }
-  openObject(tag) {
-    if (!this.shapes.some((item2) => item2.tag === tag)) return;
-    this.detailsTag = tag;
+  openObject(tag2) {
+    if (!this.shapes.some((item2) => item2.tag === tag2)) return;
+    this.detailsTag = tag2;
     this.scheduleRender();
   }
   setSavedSelections(items) {
@@ -165675,7 +165675,7 @@ var GroupPanel = class {
     this.selectionSection = this.createSection("selection");
     this.regionsSection = this.createSection("regions");
     this.regionsPanel = new RegionsPanel(this.makePanelContext("regions"), this.onFocusRegion);
-    this.selectionPanel = new SelectionPanel(this.makePanelContext("selection"), this.onSelect, this.onActivateSavedSelection, (tag) => this.regionsPanel.hasRegion(tag));
+    this.selectionPanel = new SelectionPanel(this.makePanelContext("selection"), this.onSelect, this.onActivateSavedSelection, (tag2) => this.regionsPanel.hasRegion(tag2));
     this.measuresSection = this.createSection("measures");
     this.measuresPanel = new MeasuresPanel(this.makePanelContext("measures"));
     this.annotationsSection = this.createSection("annotations");
@@ -166134,8 +166134,8 @@ var GroupPanel = class {
   setInteractions(message) {
     this.interactionsPanel.setSummary(message);
   }
-  setInteractionFrame(items, frame) {
-    this.interactionsPanel.setFrame(items, frame);
+  setInteractionFrame(items, frame2) {
+    this.interactionsPanel.setFrame(items, frame2);
   }
   updateInteractionInspection(requestId, result2) {
     this.interactionsPanel.updateInspection(requestId, result2);
@@ -166208,8 +166208,8 @@ var GroupPanel = class {
   updateContextTarget(target) {
     this.systemPanel.updateContextTarget(target);
   }
-  inspectContextTarget(target, frame) {
-    this.systemPanel.inspectTarget(target, frame);
+  inspectContextTarget(target, frame2) {
+    this.systemPanel.inspectTarget(target, frame2);
   }
   clearContextInspection() {
     this.systemPanel.clearInspection();
@@ -166220,20 +166220,20 @@ var GroupPanel = class {
   stageInteractionContext(atoms2, calculate) {
     this.interactionsPanel.stageContextAtoms(atoms2, calculate);
   }
-  inspectInteractionOccurrence(tag, identity3) {
-    this.interactionsPanel.inspectOccurrence(tag, identity3);
+  inspectInteractionOccurrence(tag2, identity3) {
+    this.interactionsPanel.inspectOccurrence(tag2, identity3);
   }
-  openInteractionObject(tag) {
-    this.interactionsPanel.openObject(tag);
+  openInteractionObject(tag2) {
+    this.interactionsPanel.openObject(tag2);
   }
-  openRegionObject(tag) {
-    this.regionsPanel.openObject(tag);
+  openRegionObject(tag2) {
+    this.regionsPanel.openObject(tag2);
     this.openSection("regions");
   }
-  openContextObject(kind, tag, editText = false) {
-    if (kind === "annotation") this.annotationsPanel.openObject(tag, editText);
-    else if (kind === "shape") this.shapesPanel.openObject(tag);
-    else this.measuresPanel.openObject(tag);
+  openContextObject(kind, tag2, editText = false) {
+    if (kind === "annotation") this.annotationsPanel.openObject(tag2, editText);
+    else if (kind === "shape") this.shapesPanel.openObject(tag2);
+    else this.measuresPanel.openObject(tag2);
     this.openSection(kind === "annotation" ? "annotations" : kind === "shape" ? "shapes" : "measures");
   }
   addLabelOverlay(msg) {
@@ -166242,8 +166242,8 @@ var GroupPanel = class {
   clearAnnotationOverlays() {
     this.systemPanel.clearAnnotationOverlays();
   }
-  clearAnnotationOverlaysByTag(tag) {
-    this.systemPanel.clearAnnotationOverlaysByTag(tag);
+  clearAnnotationOverlaysByTag(tag2) {
+    this.systemPanel.clearAnnotationOverlaysByTag(tag2);
   }
   retagAnnotationOverlays(oldTag, newTag) {
     this.systemPanel.retagAnnotationOverlays(oldTag, newTag);
@@ -166301,8 +166301,8 @@ var GroupPanel = class {
   makeButton(text, onClick) {
     return makeButton2(text, onClick);
   }
-  makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle) {
-    return makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility, onStyle);
+  makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility2, onStyle) {
+    return makeRowElement(titleText, subtitleText, onActivate, onDelete, visibility2, onStyle);
   }
   makeSettingsCard(titleText) {
     return makeSettingsCard(titleText);
@@ -168050,11 +168050,11 @@ var MolSysViewerController = class _MolSysViewerController {
     };
     this.toolStatusOverlay = new ToolStatusOverlay(host);
     this.legendOverlay = new LegendOverlay(host);
-    this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame) => {
-      void this.trajectory.setTrajectoryFrame(frame);
-      const intent = trajectorySyncToAuthority({ op: "set_trajectory_frame", index: frame });
+    this.trajectoryPlotOverlay = new TrajectoryPlotOverlay(host, (frame2) => {
+      void this.trajectory.setTrajectoryFrame(frame2);
+      const intent = trajectorySyncToAuthority({ op: "set_trajectory_frame", index: frame2 });
       if (intent) this.notify?.(intent);
-    }, void 0, (tag) => this.notify?.({ event: "trajectory_plot_hidden", tag }));
+    }, void 0, (tag2) => this.notify?.({ event: "trajectory_plot_hidden", tag: tag2 }));
     this.webglStatusOverlay = new WebGLStatusOverlay(host);
     this.systemSyncOverlay = new SystemSyncOverlay(host, () => this.notify?.({
       event: "interaction_context_action",
@@ -168062,7 +168062,7 @@ var MolSysViewerController = class _MolSysViewerController {
     }));
     new HoverTooltip(host, plugin);
     this.measurementTools = new MeasurementToolController(plugin, emitInteractionEvent, async ({ action, picks_atom_indices, endpoint_policy }) => {
-      const tag = this.nextMeasurementTag();
+      const tag2 = this.nextMeasurementTag();
       const structure = this.getStructureData();
       const measurementOptions = this.measurements.buildMeasurementOptions(
         picks_atom_indices,
@@ -168071,7 +168071,7 @@ var MolSysViewerController = class _MolSysViewerController {
       );
       const value = this.measurements.computeMeasurementValue(picks_atom_indices, measurementOptions, structure);
       const options = {
-        tag,
+        tag: tag2,
         picks_atom_indices,
         endpoint_policy: measurementOptions.endpoint_policy,
         endpoint_kinds: measurementOptions.endpoint_kinds,
@@ -168079,14 +168079,14 @@ var MolSysViewerController = class _MolSysViewerController {
         endpoint_atom_indices: measurementOptions.endpoint_atom_indices
       };
       if (action === "distance") {
-        await this.measurements.addDistance({ op: "add_distance_measurement", tag, options });
+        await this.measurements.addDistance({ op: "add_distance_measurement", tag: tag2, options });
       } else if (action === "angle") {
-        await this.measurements.addAngle({ op: "add_angle_measurement", tag, options });
+        await this.measurements.addAngle({ op: "add_angle_measurement", tag: tag2, options });
       } else {
-        await this.measurements.addDihedral({ op: "add_dihedral_measurement", tag, options });
+        await this.measurements.addDihedral({ op: "add_dihedral_measurement", tag: tag2, options });
       }
       return {
-        tag,
+        tag: tag2,
         endpoint_policy: measurementOptions.endpoint_policy,
         endpoint_kinds: measurementOptions.endpoint_kinds,
         endpoint_labels: measurementOptions.endpoint_labels,
@@ -168174,12 +168174,12 @@ var MolSysViewerController = class _MolSysViewerController {
       if (target.kind === "annotation") {
         this.openContextMenuForAnnotation(target, pageX, pageY, emitInteractionEvent);
       }
-    }, (tag) => {
-      const saved = this.savedSelections.find((item2) => item2.tag === tag);
+    }, (tag2) => {
+      const saved = this.savedSelections.find((item2) => item2.tag === tag2);
       if (!saved) return;
       this.activeSelection.setFromAtomIndices(saved.atom_indices, this.getStructureData());
-    }, (tag) => {
-      const region = this.state.getRegionSummaries().find((item2) => item2.tag === tag);
+    }, (tag2) => {
+      const region = this.state.getRegionSummaries().find((item2) => item2.tag === tag2);
       if (!region) return;
       this.focusTarget({ atom_indices: region.atom_indices });
     }, (action, details) => {
@@ -168332,9 +168332,9 @@ var MolSysViewerController = class _MolSysViewerController {
         return;
       }
       if (action === "focus_region") {
-        const tag = typeof details?.tag === "string" ? details.tag : null;
-        if (!tag) return;
-        const region = this.state.getRegionSummaries().find((item2) => item2.tag === tag);
+        const tag2 = typeof details?.tag === "string" ? details.tag : null;
+        if (!tag2) return;
+        const region = this.state.getRegionSummaries().find((item2) => item2.tag === tag2);
         if (!region) return;
         this.focusTarget({ atom_indices: region.atom_indices });
         return;
@@ -168506,7 +168506,7 @@ var MolSysViewerController = class _MolSysViewerController {
           event.clientY,
           this.currentActiveSelection,
           this.lastMeasurementSummary,
-          this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+          this.savedSelections.map(({ tag: tag2, atom_count }) => ({ tag: tag2, atom_count })),
           this.getRelevantRegionSummaries(payload),
           this.addonContextActions,
           this.addonContextItems,
@@ -168605,13 +168605,13 @@ var MolSysViewerController = class _MolSysViewerController {
       getCurrentStructureRef: () => this.currentStructure,
       getComponents: () => this.getComponents(),
       notify: (msg) => this.notify?.(msg),
-      setManagedLayerVisibility: async (tag, kind, visible) => {
+      setManagedLayerVisibility: async (tag2, kind, visible) => {
         if (kind === "annotation") {
-          await this.annotations.setVisibility(tag, visible);
+          await this.annotations.setVisibility(tag2, visible);
           return true;
         }
         if (kind === "measurement") {
-          await this.measurements.setVisibility(tag, visible);
+          await this.measurements.setVisibility(tag2, visible);
           return true;
         }
         return false;
@@ -168619,9 +168619,9 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.shapes = new ShapeHandlers(
       plugin,
-      (ref, tag) => this.state.registerShapeRef(ref, tag),
+      (ref, tag2) => this.state.registerShapeRef(ref, tag2),
       {
-        clearByTag: (tag) => this.state.clearShapesByTag(tag),
+        clearByTag: (tag2) => this.state.clearShapesByTag(tag2),
         getCurrentFrame: () => this.trajectory.getTrajectoryState().currentFrame,
         subscribeToTrajectoryState: (cb2) => this.trajectory.onTrajectoryState(
           (state) => cb2(state.currentFrame),
@@ -168632,14 +168632,14 @@ var MolSysViewerController = class _MolSysViewerController {
     );
     this.annotations = new AnnotationHandlers(plugin, {
       getStructure: () => this.getStructureData(),
-      registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "annotation"),
-      unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "annotation"),
+      registerRef: (ref, tag2) => this.state.registerTaggedRef(ref, tag2, "annotation"),
+      unregisterRef: (ref, tag2) => this.state.unregisterTaggedRef(ref, tag2, "annotation"),
       addLabelOverlay: (msg) => this.groupPanel.addLabelOverlay(msg)
     });
     this.measurements = new MeasurementHandlers(plugin, {
       getStructure: () => this.getStructureData(),
-      registerRef: (ref, tag) => this.state.registerTaggedRef(ref, tag, "measurement"),
-      unregisterRef: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "measurement")
+      registerRef: (ref, tag2) => this.state.registerTaggedRef(ref, tag2, "measurement"),
+      unregisterRef: (ref, tag2) => this.state.unregisterTaggedRef(ref, tag2, "measurement")
     });
     this.scene = new SceneHandlers(plugin, host, {
       applyCameraNavigation: (operation2, hooks) => this.withCameraNavigation(operation2, hooks),
@@ -168650,12 +168650,12 @@ var MolSysViewerController = class _MolSysViewerController {
         this.groupPanel.clearAnnotationOverlays();
       },
       getComponents: () => this.getComponents(),
-      clearShapesByTag: async (tag) => {
-        await this.state.clearShapesByTag(tag);
-        this.groupPanel.clearAnnotationOverlaysByTag(tag);
-        if (tag) await this.annotations.clearLabelByTag(tag);
+      clearShapesByTag: async (tag2) => {
+        await this.state.clearShapesByTag(tag2);
+        this.groupPanel.clearAnnotationOverlaysByTag(tag2);
+        if (tag2) await this.annotations.clearLabelByTag(tag2);
       },
-      registerShapeRef: (ref, tag) => this.state.registerShapeRef(ref, tag),
+      registerShapeRef: (ref, tag2) => this.state.registerShapeRef(ref, tag2),
       removeLoadedStructure: () => this.removeLoadedStructure(),
       notify: (msg) => this.notify?.(msg)
     });
@@ -168671,15 +168671,15 @@ var MolSysViewerController = class _MolSysViewerController {
     });
     this.trajectory = new TrajectoryHandlers(plugin, {
       afterFrameApplied: () => this.annotations.refresh(),
-      onFrameModelApplied: (frame) => this.prepareFrameDependentQueries(frame),
-      isFrameReady: (frame) => this.areFrameProjectionsCurrent(frame),
+      onFrameModelApplied: (frame2) => this.prepareFrameDependentQueries(frame2),
+      isFrameReady: (frame2) => this.areFrameProjectionsCurrent(frame2),
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
-      onPlaybackStopped: (frame, navigationRevision) => {
+      onPlaybackStopped: (frame2, navigationRevision) => {
         const box5 = this.boxDisplay.projection;
         this.notify?.({
           event: "trajectory_frame_changed",
-          frame,
+          frame: frame2,
           ...navigationRevision === void 0 ? {} : { navigation_revision: navigationRevision },
           ...box5 ? { box_display: box5 } : {}
         });
@@ -168704,14 +168704,14 @@ var MolSysViewerController = class _MolSysViewerController {
       failure: (error2) => console.warn("[MolSysViewer] Box display refresh failed", error2)
     });
     this.interactions = new InteractionHandlers(plugin, {
-      register: (ref, tag) => this.state.registerTaggedRef(ref, tag, "interaction"),
-      unregister: (ref, tag) => this.state.unregisterTaggedRef(ref, tag, "interaction"),
+      register: (ref, tag2) => this.state.registerTaggedRef(ref, tag2, "interaction"),
+      unregister: (ref, tag2) => this.state.unregisterTaggedRef(ref, tag2, "interaction"),
       notify: (message) => this.notify?.(message),
-      summaries: (items, frame) => {
+      summaries: (items, frame2) => {
         this.interactionSummaries = items;
-        this.groupPanel.setInteractionFrame(items, frame);
+        this.groupPanel.setInteractionFrame(items, frame2);
       },
-      layerHidden: (tag) => this.layerSummaries.some((item2) => item2.tag === tag && item2.hidden)
+      layerHidden: (tag2) => this.layerSummaries.some((item2) => item2.tag === tag2 && item2.hidden)
     });
     this.movie = new MovieHandlers({
       setTrajectoryFrame: async (index) => {
@@ -168728,8 +168728,8 @@ var MolSysViewerController = class _MolSysViewerController {
         const result2 = await this.getImageDataUri(options);
         return typeof result2 === "string" ? result2 : void 0;
       },
-      showLayer: (tag) => this.state.showLayer({ op: "show_layer", tag, kind: "shape" }),
-      hideLayer: (tag) => this.state.hideLayer({ op: "hide_layer", tag, kind: "shape" }),
+      showLayer: (tag2) => this.state.showLayer({ op: "show_layer", tag: tag2, kind: "shape" }),
+      hideLayer: (tag2) => this.state.hideLayer({ op: "hide_layer", tag: tag2, kind: "shape" }),
       notify: (msg) => this.notify?.(msg)
     });
     this.trajectory.onTrajectoryState(
@@ -169258,10 +169258,10 @@ var MolSysViewerController = class _MolSysViewerController {
     this.canvasInsetFrom = { left: fromLeft, right: fromRight };
     this.canvasInsetTo = { left: toLeft, right: toRight };
     this.canvasInsetStart = performance.now();
-    const ease = (t5) => t5 * (2 - t5);
+    const ease2 = (t5) => t5 * (2 - t5);
     const tick = (now2) => {
       const t5 = Math.min((now2 - this.canvasInsetStart) / this.canvasInsetDuration, 1);
-      const e = ease(t5);
+      const e = ease2(t5);
       const l = this.canvasInsetFrom.left + (this.canvasInsetTo.left - this.canvasInsetFrom.left) * e;
       const r = this.canvasInsetFrom.right + (this.canvasInsetTo.right - this.canvasInsetFrom.right) * e;
       this.canvasHost.style.left = `${l}px`;
@@ -169453,7 +169453,7 @@ var MolSysViewerController = class _MolSysViewerController {
       pageY,
       this.currentActiveSelection,
       this.lastMeasurementSummary,
-      this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+      this.savedSelections.map(({ tag: tag2, atom_count }) => ({ tag: tag2, atom_count })),
       this.getRelevantRegionSummaries(payload),
       this.addonContextActions,
       this.addonContextItems,
@@ -169488,7 +169488,7 @@ var MolSysViewerController = class _MolSysViewerController {
       pageY,
       this.currentActiveSelection,
       this.lastMeasurementSummary,
-      this.savedSelections.map(({ tag, atom_count }) => ({ tag, atom_count })),
+      this.savedSelections.map(({ tag: tag2, atom_count }) => ({ tag: tag2, atom_count })),
       this.getRelevantRegionSummaries(payload),
       this.addonContextActions,
       this.addonContextItems,
@@ -169602,25 +169602,25 @@ var MolSysViewerController = class _MolSysViewerController {
     return this.state.getRegionSummaries().filter((region) => region.atom_indices.some((idx) => targetSet.has(idx)));
   }
   upsertSavedSelection(msg) {
-    const tag = typeof msg?.tag === "string" ? msg.tag : null;
-    if (!tag) return;
+    const tag2 = typeof msg?.tag === "string" ? msg.tag : null;
+    if (!tag2) return;
     const atomIndices = Array.isArray(msg?.atom_indices) ? msg.atom_indices.filter((value) => typeof value === "number") : [];
     const atomCount2 = atomIndices.length;
     const elementLevel = typeof msg?.element_level === "string" ? msg.element_level : void 0;
-    const next = this.savedSelections.filter((item2) => item2.tag !== tag);
-    next.push({ tag, atom_count: atomCount2, atom_indices: atomIndices, element_level: elementLevel });
+    const next = this.savedSelections.filter((item2) => item2.tag !== tag2);
+    next.push({ tag: tag2, atom_count: atomCount2, atom_indices: atomIndices, element_level: elementLevel });
     this.savedSelections = next.sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   renameSavedSelection(msg) {
-    const tag = typeof msg?.tag === "string" ? msg.tag : null;
+    const tag2 = typeof msg?.tag === "string" ? msg.tag : null;
     const newTag = typeof msg?.new_tag === "string" ? msg.new_tag : null;
-    if (!tag || !newTag) return;
-    this.savedSelections = this.savedSelections.map((item2) => item2.tag === tag ? { ...item2, tag: newTag } : item2).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
+    if (!tag2 || !newTag) return;
+    this.savedSelections = this.savedSelections.map((item2) => item2.tag === tag2 ? { ...item2, tag: newTag } : item2).sort((a8, b8) => a8.tag.localeCompare(b8.tag));
   }
   deleteSavedSelection(msg) {
-    const tag = typeof msg?.tag === "string" ? msg.tag : null;
-    if (!tag) return;
-    this.savedSelections = this.savedSelections.filter((item2) => item2.tag !== tag);
+    const tag2 = typeof msg?.tag === "string" ? msg.tag : null;
+    if (!tag2) return;
+    this.savedSelections = this.savedSelections.filter((item2) => item2.tag !== tag2);
   }
   handlePotentialDoubleClickFocus(ev) {
     if (!!ev?.modifiers?.shift) return;
@@ -169631,13 +169631,13 @@ var MolSysViewerController = class _MolSysViewerController {
     }
     const item2 = items[0];
     const key2 = `${item2.chain_indices.join(",")}:${item2.group_indices.join(",")}`;
-    const time = Date.now();
-    if (this.lastPrimaryGroupClick && this.lastPrimaryGroupClick.key === key2 && time - this.lastPrimaryGroupClick.time <= 400) {
+    const time2 = Date.now();
+    if (this.lastPrimaryGroupClick && this.lastPrimaryGroupClick.key === key2 && time2 - this.lastPrimaryGroupClick.time <= 400) {
       this.lastPrimaryGroupClick = null;
       this.focusTarget({ atom_indices: item2.atom_indices });
       return;
     }
-    this.lastPrimaryGroupClick = { key: key2, time };
+    this.lastPrimaryGroupClick = { key: key2, time: time2 };
   }
   atomIndicesToLoci(atomIndices) {
     const structure = this.getStructureData();
@@ -169762,10 +169762,10 @@ var MolSysViewerController = class _MolSysViewerController {
           await this.shapes.addSphere(msg);
           break;
         case "update_sphere": {
-          const tag = typeof msg.tag === "string" ? msg.tag : typeof msg.options?.tag === "string" ? msg.options.tag : void 0;
-          if (typeof tag === "string") {
-            await this.state.deleteLayer({ op: "delete_layer", tag, kind: "shape" });
-            await this.shapes.addSphere({ op: "add_sphere", options: { ...msg.options ?? {}, tag } });
+          const tag2 = typeof msg.tag === "string" ? msg.tag : typeof msg.options?.tag === "string" ? msg.options.tag : void 0;
+          if (typeof tag2 === "string") {
+            await this.state.deleteLayer({ op: "delete_layer", tag: tag2, kind: "shape" });
+            await this.shapes.addSphere({ op: "add_sphere", options: { ...msg.options ?? {}, tag: tag2 } });
           }
           break;
         }
@@ -169810,8 +169810,8 @@ var MolSysViewerController = class _MolSysViewerController {
           if (!this.interactions.setSummaries(msg.interactions, msg.projection_revision, !this.isPanelOnly)) break;
           this.contextMenu.invalidateInteractionContext();
           this.interactionSummaries = msg.interactions;
-          const frame = this.isPanelOnly ? msg.frame : this.interactions.currentFrame;
-          this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame, interactions: msg.interactions.map((item2) => item2.frame === frame ? item2 : { ...item2, frame, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
+          const frame2 = this.isPanelOnly ? msg.frame : this.interactions.currentFrame;
+          this.groupPanel.setInteractions({ ...msg, backend_available: this.initOptions?.hasAuthority === false ? false : msg.backend_available, frame: frame2, interactions: msg.interactions.map((item2) => item2.frame === frame2 ? item2 : { ...item2, frame: frame2, status: "pending", n_observations: 0, n_supported: 0, n_skipped: 0 }) });
           this.refreshAddonsPanel(false);
           break;
         }
@@ -169851,8 +169851,8 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "add_label": {
           await this.annotations.addLabel(msg);
-          const tag = msg.tag ?? msg.options?.tag ?? "annotation";
-          this.showToast(`Label added${tag !== "annotation" ? ` ('${tag}')` : ""}`);
+          const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
+          this.showToast(`Label added${tag2 !== "annotation" ? ` ('${tag2}')` : ""}`);
           break;
         }
         case "update_label":
@@ -169860,20 +169860,20 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         case "add_distance_measurement": {
           await this.measurements.addDistance(msg);
-          const tag = msg.tag ?? msg.options?.tag ?? "measurement";
-          this.showToast(`Distance measurement added${tag !== "measurement" ? ` ('${tag}')` : ""}`);
+          const tag2 = msg.tag ?? msg.options?.tag ?? "measurement";
+          this.showToast(`Distance measurement added${tag2 !== "measurement" ? ` ('${tag2}')` : ""}`);
           break;
         }
         case "add_angle_measurement": {
           await this.measurements.addAngle(msg);
-          const tag = msg.tag ?? msg.options?.tag ?? "measurement";
-          this.showToast(`Angle measurement added${tag !== "measurement" ? ` ('${tag}')` : ""}`);
+          const tag2 = msg.tag ?? msg.options?.tag ?? "measurement";
+          this.showToast(`Angle measurement added${tag2 !== "measurement" ? ` ('${tag2}')` : ""}`);
           break;
         }
         case "add_dihedral_measurement": {
           await this.measurements.addDihedral(msg);
-          const tag = msg.tag ?? msg.options?.tag ?? "measurement";
-          this.showToast(`Dihedral measurement added${tag !== "measurement" ? ` ('${tag}')` : ""}`);
+          const tag2 = msg.tag ?? msg.options?.tag ?? "measurement";
+          this.showToast(`Dihedral measurement added${tag2 !== "measurement" ? ` ('${tag2}')` : ""}`);
           break;
         }
         case "set_measurement_settings":
@@ -169975,8 +169975,8 @@ var MolSysViewerController = class _MolSysViewerController {
         case "create_region": {
           this.resetDynamicRegionEvaluation();
           await this.state.createRegion(msg);
-          const tag = msg.tag || "region";
-          this.showToast(`Region '${tag}' created`);
+          const tag2 = msg.tag || "region";
+          this.showToast(`Region '${tag2}' created`);
           break;
         }
         case "set_region_representation":
@@ -170136,8 +170136,8 @@ var MolSysViewerController = class _MolSysViewerController {
             brokenReason: typeof item2.broken_reason === "string" ? item2.broken_reason : void 0
           }));
           const currentTags = new Set(this.shapeSummaries.map((item2) => item2.tag));
-          for (const tag of this.shapeRenderStatuses.keys()) {
-            if (!currentTags.has(tag)) this.shapeRenderStatuses.delete(tag);
+          for (const tag2 of this.shapeRenderStatuses.keys()) {
+            if (!currentTags.has(tag2)) this.shapeRenderStatuses.delete(tag2);
           }
           break;
         }
@@ -170161,17 +170161,17 @@ var MolSysViewerController = class _MolSysViewerController {
           break;
         }
         case "dynamic_region_evaluation_warning": {
-          const tag = typeof msg.tag === "string" ? msg.tag : "region";
+          const tag2 = typeof msg.tag === "string" ? msg.tag : "region";
           if (msg.action === "frozen_to_static" && Array.isArray(msg.atom_indices)) {
             await this.state.setDynamicRegionAtoms({
               op: "set_dynamic_region_atoms",
-              regions: [{ tag, atom_indices: msg.atom_indices }]
+              regions: [{ tag: tag2, atom_indices: msg.atom_indices }]
             });
           }
           const elapsed = Number(msg.elapsed_ms);
           const budget = Number(msg.budget_ms);
           const timing = Number.isFinite(elapsed) && Number.isFinite(budget) ? ` (${elapsed.toFixed(0)}ms > ${budget.toFixed(0)}ms budget)` : "";
-          this.showToast(`Region '${tag}' frozen to static: too slow to follow frames${timing}`);
+          this.showToast(`Region '${tag2}' frozen to static: too slow to follow frames${timing}`);
           break;
         }
         case "set_system_sync_state":
@@ -170212,8 +170212,8 @@ var MolSysViewerController = class _MolSysViewerController {
         case "delete_region": {
           this.resetDynamicRegionEvaluation();
           await this.state.deleteRegion(msg);
-          const tag = msg.tag || "region";
-          this.showToast(`Region '${tag}' deleted`);
+          const tag2 = msg.tag || "region";
+          this.showToast(`Region '${tag2}' deleted`);
           break;
         }
         case "rename_region":
@@ -170625,10 +170625,10 @@ var MolSysViewerController = class _MolSysViewerController {
         case "backend_error_occurred": {
           if (msg.trigger_event === "request_dynamic_region_evaluation") {
             const id = msg.request_id;
-            const frame = this.dynamicRegionRequests.get(id);
-            if (frame !== void 0) {
+            const frame2 = this.dynamicRegionRequests.get(id);
+            if (frame2 !== void 0) {
               if (id === this.dynamicRegionRequestId) this.dynamicRegionEvaluationAppliedFrame = null;
-              this.handleDynamicRegionEvaluationResponse(frame, id, false, false);
+              this.handleDynamicRegionEvaluationResponse(frame2, id, false, false);
             }
           }
           const errorType = typeof msg.error_type === "string" ? msg.error_type : "BackendError";
@@ -170697,11 +170697,11 @@ var MolSysViewerController = class _MolSysViewerController {
     const last4 = structures.length ? structures[structures.length - 1] : void 0;
     return last4?.components ?? [];
   }
-  hasRegion(tag) {
-    return this.state.hasRegion(tag);
+  hasRegion(tag2) {
+    return this.state.hasRegion(tag2);
   }
-  isRegionHidden(tag) {
-    return this.state.isRegionHidden(tag);
+  isRegionHidden(tag2) {
+    return this.state.isRegionHidden(tag2);
   }
   captureCurrentStructure() {
     const structures = this.plugin.managers.structure.hierarchy.current.structures;
@@ -170756,8 +170756,8 @@ var MolSysViewerController = class _MolSysViewerController {
     let requested = !forceInitialGeometry;
     const sceneHasContent = () => (canvas3d.boundingSphere?.radius ?? 0) > 0;
     const request = () => {
-      canvas3d.requestCameraReset?.({ durationMs: 0, snapshot: (_scene, camera) => {
-        return token === this.frameRequestToken ? {} : camera.getSnapshot();
+      canvas3d.requestCameraReset?.({ durationMs: 0, snapshot: (_scene, camera2) => {
+        return token === this.frameRequestToken ? {} : camera2.getSnapshot();
       } });
       canvas3d.requestDraw?.();
       requested = true;
@@ -170885,10 +170885,10 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     if (op4 === "delete_layer") {
-      const tag = msg.tag;
-      if (typeof tag !== "string") return;
-      if (this.addonsActive?.tag === tag) this.addonsActive = null;
-      if (this.addonsContext?.tag === tag) this.addonsContext = null;
+      const tag2 = msg.tag;
+      if (typeof tag2 !== "string") return;
+      if (this.addonsActive?.tag === tag2) this.addonsActive = null;
+      if (this.addonsContext?.tag === tag2) this.addonsContext = null;
       return;
     }
     if (op4 === "set_layer_tag") {
@@ -171895,10 +171895,10 @@ var MolSysViewerController = class _MolSysViewerController {
     hooks.registerCleanup(release);
     hooks.signal.addEventListener("abort", abort2, { once: true });
     try {
-      request.call(canvas, { ...options, snapshot: (scene, camera) => {
+      request.call(canvas, { ...options, snapshot: (scene, camera2) => {
         if (hooks.signal.aborted || this.pendingCameraIntent !== owner) return canvas.camera.getSnapshot();
         hooks.beforeResolve();
-        return (typeof options?.snapshot === "function" ? options.snapshot(scene, camera) : options?.snapshot) ?? {};
+        return (typeof options?.snapshot === "function" ? options.snapshot(scene, camera2) : options?.snapshot) ?? {};
       } });
       canvas.requestDraw();
     } catch (error2) {
@@ -171919,17 +171919,17 @@ var MolSysViewerController = class _MolSysViewerController {
       console.warn("[MolSysViewer] setCameraSnapshot failed", err);
     }
   }
-  prepareFrameDependentQueries(frame) {
+  prepareFrameDependentQueries(frame2) {
     if (this.isPanelOnly) return;
-    this.interactions.onFrame(frame);
-    if (this.dynamicRegionObservedFrame !== frame) {
-      this.dynamicRegionObservedFrame = frame;
-      this.requestDynamicRegionEvaluationForFrame(frame);
+    this.interactions.onFrame(frame2);
+    if (this.dynamicRegionObservedFrame !== frame2) {
+      this.dynamicRegionObservedFrame = frame2;
+      this.requestDynamicRegionEvaluationForFrame(frame2);
     }
   }
-  requestDynamicRegionEvaluationForFrame(frame) {
+  requestDynamicRegionEvaluationForFrame(frame2) {
     if (this.disposed || this.isPanelOnly || !this.state.hasFrameDependentDynamicRegions()) return;
-    const normalizedFrame = Math.max(0, Math.trunc(Number(frame) || 0));
+    const normalizedFrame = Math.max(0, Math.trunc(Number(frame2) || 0));
     for (const [id, requestedFrame] of this.dynamicRegionRequests) {
       if (requestedFrame !== normalizedFrame) continue;
       this.dynamicRegionEvaluationInFlight = normalizedFrame;
@@ -171961,8 +171961,8 @@ var MolSysViewerController = class _MolSysViewerController {
     this.dynamicRegionObservedFrame = null;
     this.dynamicRegionRequestId = null;
   }
-  handleDynamicRegionEvaluationResponse(frame, requestId, applied = false, retryCurrent = true) {
-    const completed = Math.trunc(Number(frame));
+  handleDynamicRegionEvaluationResponse(frame2, requestId, applied = false, retryCurrent = true) {
+    const completed = Math.trunc(Number(frame2));
     if (requestId === void 0 || !Number.isFinite(completed) || this.dynamicRegionRequests.get(requestId) !== completed) return;
     this.dynamicRegionRequests.delete(requestId);
     if (requestId === this.dynamicRegionRequestId) {
@@ -171990,21 +171990,21 @@ var MolSysViewerController = class _MolSysViewerController {
   /** Called synchronously by the completed-draw reader; never mutates the scene. */
   readMovingVisualState() {
     this.assertLiveCaptureCanvas();
-    const frame = this.trajectory.getTrajectoryState().currentFrame;
-    if (!this.areFrameProjectionsCurrent(frame)) return;
+    const frame2 = this.trajectory.getTrajectoryState().currentFrame;
+    if (!this.areFrameProjectionsCurrent(frame2)) return;
     const snapshot = this.getCameraSnapshot();
     if (!snapshot) return;
     const box5 = this.boxDisplay.structureIndex;
     return {
       snapshot,
-      structure_index: frame,
+      structure_index: frame2,
       playback: this.trajectory.getPlaybackSnapshot(),
       ...box5 === void 0 ? {} : { box_structure_index: box5 }
     };
   }
-  areFrameProjectionsCurrent(frame) {
-    if (this.systemSyncState !== "synchronized" || this.plugin.state.data.behaviors.isUpdating.value || !this.trajectory.isCaptureFrameReady(frame) || !this.boxDisplay.isFrameReady(frame) || !this.shapes.isFrameReady(frame) || !this.interactions.isFrameReady(frame) || !this.annotations.isGeometryCurrent() || !this.movie.isCaptureSafe) return false;
-    if (this.state.hasFrameDependentDynamicRegions() && (this.dynamicRegionEvaluationInFlight !== null || this.dynamicRegionEvaluationPendingFrame !== null || this.dynamicRegionEvaluationAppliedFrame !== frame)) return false;
+  areFrameProjectionsCurrent(frame2) {
+    if (this.systemSyncState !== "synchronized" || this.plugin.state.data.behaviors.isUpdating.value || !this.trajectory.isCaptureFrameReady(frame2) || !this.boxDisplay.isFrameReady(frame2) || !this.shapes.isFrameReady(frame2) || !this.interactions.isFrameReady(frame2) || !this.annotations.isGeometryCurrent() || !this.movie.isCaptureSafe) return false;
+    if (this.state.hasFrameDependentDynamicRegions() && (this.dynamicRegionEvaluationInFlight !== null || this.dynamicRegionEvaluationPendingFrame !== null || this.dynamicRegionEvaluationAppliedFrame !== frame2)) return false;
     return true;
   }
   notifyTrajectoryState() {
@@ -175518,8 +175518,8 @@ var ProjectedTrajectoryControls = class {
     this.playPause.setAttribute("data-molsysviewer-trajectory-playback", this.state.isPlaying ? "stop" : "play");
     this.renderLabel(this.state.frame);
   }
-  renderLabel(frame) {
-    this.label.textContent = this.state.frameCount > 0 ? `${Math.min(frame, this.state.frameCount - 1) + 1} / ${this.state.frameCount}` : "0 / 0";
+  renderLabel(frame2) {
+    this.label.textContent = this.state.frameCount > 0 ? `${Math.min(frame2, this.state.frameCount - 1) + 1} / ${this.state.frameCount}` : "0 / 0";
   }
 };
 var nonNegativeInteger = (value, fallback) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : fallback;
@@ -175718,8 +175718,8 @@ var RemoteWorkbench = class {
       () => void 0,
       () => void 0,
       () => void 0,
-      (tag) => this.emitAction("activate_selection", { tag }),
-      (tag) => this.emitAction("focus_region", { tag }),
+      (tag2) => this.emitAction("activate_selection", { tag: tag2 }),
+      (tag2) => this.emitAction("focus_region", { tag: tag2 }),
       (action, details) => this.emitPanelAction(action, details),
       { floating: true }
     );
@@ -176917,6 +176917,252 @@ async function bootRemoteRenderedClient(options) {
   };
 }
 
+// src/managers/movie-timeline.ts
+var halfTurnTolerance = 1e-12;
+var collections = {
+  annotation: "annotations",
+  interaction: "interactions",
+  layer: "layers",
+  measurement: "measurements",
+  region: "regions",
+  shape: "shapes"
+};
+function record3(value, label2, fields) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label2} must be an object.`);
+  }
+  if (fields && (Object.keys(value).length !== fields.length || fields.some((field2) => !owns(value, field2)))) {
+    throw new Error(`${label2} must contain ${fields.join(", ")}.`);
+  }
+  return value;
+}
+function owns(value, field2) {
+  return Object.prototype.hasOwnProperty.call(value, field2);
+}
+function tag(value) {
+  if (typeof value !== "string" || !value.trim()) throw new Error("Movie tags must be nonempty.");
+  return value;
+}
+function time(value, maximum = Number.MAX_SAFE_INTEGER) {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > maximum) {
+    throw new Error(`Movie time must be between 0 and ${maximum} ms.`);
+  }
+  return value;
+}
+function frame(value, count3) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0 || value >= count3) {
+    throw new Error(`Movie structure index must be an integer in [0, ${count3}).`);
+  }
+  return value;
+}
+function visibility(value) {
+  if (typeof value !== "boolean") throw new Error("Movie visibility must be boolean.");
+  return value;
+}
+function vector(value) {
+  if (!Array.isArray(value) || value.length !== 3 || !Array.from(value).every((component) => typeof component === "number" && Number.isFinite(component))) {
+    throw new Error("Movie camera vectors must have three finite components.");
+  }
+  return Vec3.create(value[0], value[1], value[2]);
+}
+function camera(value) {
+  const pose = record3(value, "Movie camera pose");
+  const position = vector(pose.position);
+  const target = vector(pose.target);
+  const up3 = vector(pose.up);
+  const backward = Vec3.sub(Vec3(), position, target);
+  const distance2 = Math.hypot(...backward);
+  const upLength = Math.hypot(...up3);
+  if (!(distance2 > 0) || !(upLength > 0) || !Number.isFinite(distance2) || !Number.isFinite(upLength)) {
+    throw new Error("Movie camera requires a positive finite distance and a nonzero up vector.");
+  }
+  Vec3.set(backward, backward[0] / distance2, backward[1] / distance2, backward[2] / distance2);
+  Vec3.set(up3, up3[0] / upLength, up3[1] / upLength, up3[2] / upLength);
+  const right = Vec3.cross(Vec3(), up3, backward);
+  const rightLength = Math.hypot(...right);
+  if (rightLength < 1e-12) throw new Error("Movie camera up must not be parallel to its viewing direction.");
+  Vec3.scale(right, right, 1 / rightLength);
+  Vec3.cross(up3, backward, right);
+  const orientation = Quat.fromMat3(Quat(), Mat3.fromColumns(Mat3(), right, up3, backward));
+  return { pose: { position, target, up: up3 }, distance: distance2, orientation };
+}
+function ease(fraction, easing) {
+  switch (easing) {
+    case "ease-in":
+      return fraction ** 2;
+    case "ease-out":
+      return 1 - (1 - fraction) ** 2;
+    case "ease-in-out":
+      return fraction < 0.5 ? 2 * fraction ** 2 : 1 - 2 * (1 - fraction) ** 2;
+    default:
+      return fraction;
+  }
+}
+function interpolateCamera(left, right, fraction) {
+  const a8 = left.orientation;
+  const b8 = right.orientation;
+  const dot = Quat.dot(a8, b8);
+  const orientation = Quat();
+  const startWeight = 1 - fraction;
+  if (Math.abs(dot) <= halfTurnTolerance) {
+    const sign = (value) => Math.sign(value.find((component) => Math.abs(component) > halfTurnTolerance));
+    const leftWeight = Math.sin(startWeight * Math.PI / 2) * sign(a8);
+    const rightWeight = Math.sin(fraction * Math.PI / 2) * sign(b8);
+    for (let i = 0; i < 4; i++) orientation[i] = leftWeight * a8[i] + rightWeight * b8[i];
+  } else if (Math.abs(dot) > 0.9995) {
+    const endWeight = dot < 0 ? -fraction : fraction;
+    for (let i = 0; i < 4; i++) orientation[i] = startWeight * a8[i] + endWeight * b8[i];
+  } else {
+    Quat.slerp(orientation, a8, b8, fraction);
+  }
+  Quat.normalize(orientation, orientation);
+  const target = Vec3();
+  for (let i = 0; i < 3; i++) target[i] = startWeight * left.pose.target[i] + fraction * right.pose.target[i];
+  const distance2 = startWeight * left.distance + fraction * right.distance;
+  const offset4 = Vec3.transformQuat(Vec3(), Vec3.unitZ, orientation);
+  const position = Vec3.scaleAndAdd(Vec3(), target, offset4, distance2);
+  const up3 = Vec3.transformQuat(Vec3(), Vec3.unitY, orientation);
+  return camera({ position, target, up: up3 }).pose;
+}
+function keys2(value, duration, read, cameraTrack = false) {
+  if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
+  const result2 = [];
+  for (const item2 of value) {
+    const key2 = record3(item2, "Movie key");
+    if (Object.keys(key2).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
+      throw new Error("Movie keys accept time_ms, value and optional easing.");
+    }
+    const at = time(key2.time_ms, duration);
+    if (result2.length && at <= result2[result2.length - 1].time) {
+      throw new Error("Movie keys in one track must be strictly increasing.");
+    }
+    const easing = owns(key2, "easing") ? key2.easing : "linear";
+    if (easing !== "linear" && (!cameraTrack || easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out")) {
+      throw new Error("Only camera pose keys admit a non-linear easing.");
+    }
+    result2.push({ time: at, value: read(key2.value), easing });
+  }
+  return result2;
+}
+function upperBound(keys3, at) {
+  let low = 0;
+  let high = keys3.length;
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2);
+    if (keys3[middle].time <= at) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+function visibilityId(domain, name) {
+  return JSON.stringify([domain, name]);
+}
+function sceneVisibility(scene) {
+  const whole = { domain: "whole", tag: null, visible: visibility(record3(scene.whole, "Movie whole").visible) };
+  const rows = /* @__PURE__ */ new Map([[visibilityId("whole", null), whole]]);
+  for (const domain of Object.keys(collections)) {
+    const name = collections[domain];
+    const items = owns(scene, name) ? scene[name] : [];
+    if (!Array.isArray(items)) throw new Error(`Movie scene ${name} must be a list.`);
+    for (const value of items) {
+      const item2 = record3(value, `Movie ${domain}`);
+      const name2 = tag(item2.tag);
+      const id = visibilityId(domain, name2);
+      if (rows.has(id)) throw new Error(`Ambiguous Movie target ${id}.`);
+      rows.set(id, { domain, tag: name2, visible: !visibility(owns(item2, "hidden") ? item2.hidden : false) });
+    }
+  }
+  return rows;
+}
+function compileMovieTimeline(value) {
+  const recipe = record3(value, "Movie recipe", ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"]);
+  if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
+  const duration = time(recipe.duration_ms);
+  if (duration === 0) throw new Error("Movie duration must be positive.");
+  const units = record3(recipe.units, "Movie units", ["time", "camera_length"]);
+  if (units.time !== "ms" || units.camera_length !== "angstrom") {
+    throw new Error("Movie recipes use milliseconds and angstroms.");
+  }
+  const baseline = record3(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
+  const binding = record3(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
+  const count3 = binding.n_structures;
+  if (typeof count3 !== "number" || !Number.isSafeInteger(count3) || count3 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
+    throw new Error("Movie molecular binding requires positive counts and a SHA-256 fingerprint.");
+  }
+  const scene = record3(baseline.scene, "Movie scene");
+  if (scene.version !== 2 || owns(scene, "movie")) {
+    throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
+  }
+  if (scene.sources != null) {
+    const source = record3(
+      record3(scene.sources, "Movie scene sources").binding,
+      "Movie source binding",
+      ["n_atoms", "n_structures", "fingerprint"]
+    );
+    if (Object.keys(binding).some((key2) => binding[key2] !== source[key2])) {
+      throw new Error("Movie baseline source records do not match its molecular binding.");
+    }
+  }
+  const baseCamera = { time: 0, value: camera(baseline.camera), easing: "linear" };
+  const baseFrame = frame(record3(scene.view, "Movie view").structure_index, count3);
+  const rows = sceneVisibility(scene);
+  const trackTags = /* @__PURE__ */ new Set();
+  const visTracks = /* @__PURE__ */ new Map();
+  let poseTrack = [];
+  let frameTrack = [];
+  if (!Array.isArray(recipe.tracks)) throw new Error("Movie tracks must be an ordered list.");
+  for (const value2 of recipe.tracks) {
+    const track = record3(value2, "Movie track", ["tag", "target", "property", "keys"]);
+    const name = tag(track.tag);
+    if (trackTags.has(name)) throw new Error("Movie track tags must be unique.");
+    trackTags.add(name);
+    const target = record3(track.target, "Movie target");
+    const domain = target.domain;
+    if (typeof domain !== "string" || Object.keys(target).some((field2) => field2 !== "domain" && field2 !== "tag")) {
+      throw new Error("Movie targets require a domain and optionally a tag.");
+    }
+    const untagged = domain === "camera" || domain === "structure" || domain === "whole";
+    if (untagged && target.tag != null) throw new Error(`Movie target ${domain} has no tag.`);
+    if (domain === "camera" && track.property === "pose") {
+      if (poseTrack.length) throw new Error("Movie permits only one track per target property.");
+      poseTrack = keys2(track.keys, duration, camera, true);
+    } else if (domain === "structure" && track.property === "index") {
+      if (frameTrack.length) throw new Error("Movie permits only one track per target property.");
+      frameTrack = keys2(track.keys, duration, (value3) => frame(value3, count3));
+    } else if (track.property === "visible" && domain !== "camera" && domain !== "structure") {
+      const id = visibilityId(domain, untagged ? null : tag(target.tag));
+      if (!rows.has(id)) throw new Error(`Unknown Movie visibility target ${id}.`);
+      if (visTracks.has(id)) throw new Error("Movie permits only one track per target property.");
+      visTracks.set(id, keys2(track.keys, duration, visibility));
+    } else {
+      throw new Error(`Unsupported Movie property for ${domain}.`);
+    }
+  }
+  return {
+    duration_ms: duration,
+    evaluate(time_ms) {
+      const at = time(time_ms, duration);
+      const right = upperBound(poseTrack, at);
+      const start4 = poseTrack[right - 1] ?? baseCamera;
+      const end4 = poseTrack[right];
+      const pose = !end4 || start4.time === at ? {
+        position: Vec3.clone(start4.value.pose.position),
+        target: Vec3.clone(start4.value.pose.target),
+        up: Vec3.clone(start4.value.pose.up)
+      } : interpolateCamera(start4.value, end4.value, ease((at - start4.time) / (end4.time - start4.time), start4.easing));
+      return {
+        time_ms: at,
+        camera: pose,
+        structure_index: frameTrack[upperBound(frameTrack, at) - 1]?.value ?? baseFrame,
+        visibility: Array.from(rows, ([id, row3]) => {
+          const track = visTracks.get(id);
+          return { ...row3, visible: (track && track[upperBound(track, at) - 1]?.value) ?? row3.visible };
+        })
+      };
+    }
+  };
+}
+
 // src/index.ts
 function buildMeasurementOpFromInteractionEvent(event) {
   if (!event || event.event !== "interaction_measurement_created") return null;
@@ -177061,7 +177307,7 @@ async function bootDocsView(opts) {
   }, { once: true });
   const model = createLocalUiModel(ui, (values2) => {
     if (!hasAuthority) return;
-    const keys2 = [
+    const keys3 = [
       "viewer_mode",
       "controls_mode",
       "panel_mode_style",
@@ -177072,7 +177318,7 @@ async function bootDocsView(opts) {
       "controls_position_fullscreen",
       "addon_states"
     ];
-    notifyHost({ event: "qt_ui_state", values: Object.fromEntries(keys2.filter((key2) => key2 in values2).map((key2) => [key2, values2[key2]])) });
+    notifyHost({ event: "qt_ui_state", values: Object.fromEntries(keys3.filter((key2) => key2 in values2).map((key2) => [key2, values2[key2]])) });
   });
   let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
   if (typeof ui.messages_url === "string" && ui.messages_url) {
@@ -178287,6 +178533,7 @@ export {
   bootRemoteBrowserClient,
   bootRemoteRenderedClient,
   bootRenderWorker,
+  compileMovieTimeline,
   index_default as default,
   mountControls,
   needsRunningSession,

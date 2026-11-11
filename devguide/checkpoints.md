@@ -2898,9 +2898,10 @@ chronological status narrative here.
 5. **E:** retain the received scale anchors and complete the adopted same-kernel
    prolonged-use protocol. E1's continuous workflow
    remains received; human E4 stays postponed.
-6. **Movie:** retain the [first M1 Python implementation](movie_timeline_design.md)
-   for camera, structure and visibility tracks. Complete the remaining model
-   channels and the mandatory #320 authoring, playback and export stream.
+6. **Movie:** retain the [matched Python and JavaScript evaluators](movie_timeline_design.md)
+   for camera, structure and visibility tracks. Add live application with a
+   settled-draw acknowledgment, then complete the remaining #320 channels,
+   Studio authoring, playback and export.
 7. **G:** prepare #294's covering artifact and exact installed/downstream
    qualification when separately authorized. Candidate/tag/package actions and
    both 1.0 publications remain paused.
