@@ -2,6 +2,7 @@ import type { MolSysViewerController } from "../managers/viewer-controller";
 import { readCanvasDraw } from "../managers/canvas-draw";
 import type { MovingVisualSnapshot } from "./visual-state-snapshot";
 import { captureMovieFrame } from "./movie-frame-capture";
+import { readMovieEnvironment } from "../managers/movie-environment";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
     & Partial<Pick<MolSysViewerController, "moviePreviewClock" | "readMovieExportOverlays">>
@@ -101,6 +102,10 @@ export async function handleFrontendRequest(controller: RequestController, messa
             if (!canvas) throw new Error("No live canvas is available for capture.");
             const timeout = Number(message.capture_timeout_ms);
             const started = performance.now();
+            if (message.movie_environment_capture !== undefined
+                && (message.capture_version !== 2 || message.movie_environment_capture !== 1)) {
+                throw new Error("Unsupported Movie environment capture version.");
+            }
             if (message.capture_version === 2) {
                 if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
                 controller.prepareMovingVisualCapture?.();
@@ -111,6 +116,8 @@ export async function handleFrontendRequest(controller: RequestController, messa
                 }
                 let sample: MovingVisualSnapshot | undefined;
                 const captured = await readCanvasDraw(canvas, () => ({ ...sample!,
+                    ...(message.movie_environment_capture === 1
+                        ? { movie_environment_capture: 1, movie_environment: readMovieEnvironment(canvas) } : {}),
                     ...(nextMovieSample ? { movie_next_sample: nextMovieSample() } : {}) }),
                     Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000,
                     capture?.signal, () => !!(sample = controller.readMovingVisualState!()));

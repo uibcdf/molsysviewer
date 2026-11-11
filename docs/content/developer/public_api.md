@@ -458,7 +458,9 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     `await pause_async()`. Evaluation, preview and session persistence are
     described in [Timeline and keyframes](../user/movie/timeline.md#independent-tracks-experimental).
     `await capture_baseline_async(duration_ms, *, timeout=5.0)` starts an empty
-    track recipe from an acknowledged primary-canvas camera/structure.
+    track recipe from an acknowledged primary-canvas camera/structure and
+    supported resolved background/lighting, retaining the original declared
+    intent separately. This requires `movie_environment_capture: [1]`.
     `await reset_async(*, timeout=5.0)` restores the recorded scene before
     time-zero keys and returns its acknowledged state. These are experimental;
     [capture/reset semantics](../user/movie/timeline.md#capturing-and-restoring-the-baseline)
@@ -471,6 +473,10 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     camera unless explicitly replaced. The [rebase reference](../user/movie/timeline.md#reviewing-changes-to-the-baseline)
     specifies static-definition checks, excluded editor/projection fields,
     derived layer flags and logical layer/member visibility composition.
+    `await review_rebase_async(*, timeout=5.0)` instead observes a coherent live
+    camera/frame/environment without changing the recipe or scene. Explicit
+    `rebase(review)` accepts the latest unchanged per-view observation ticket;
+    tickets are ephemeral while accepted baseline metadata persists normally.
     The [appearance catalogue](../user/movie/timeline.md#animating-appearance)
     adds uniform colours/alpha, simple representations, text and declared
     background/lighting without new authoring method signatures.

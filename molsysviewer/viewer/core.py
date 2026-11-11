@@ -172,6 +172,9 @@ class MolSysView(
             ("pending work-file saves", self._work_file_saves.close),
             ("pending frontend requests", self._frontend_requests.close),
         ]
+        movie = getattr(self, "movie", None)
+        if movie is not None:
+            actions.insert(0, ("pending Movie review", movie._invalidate_observation))
         presentations = getattr(self, "_presentations", None)
         if presentations is not None:
             # Capture child owners before a close callback can remove records.
@@ -1021,6 +1024,7 @@ class MolSysView(
         if self._molsys is None:
             raise ValueError("No molecular system is available for projection.")
         self._molecular_projection_revision += 1
+        self.movie._invalidate_observation()
         revision = self._molecular_projection_revision
         molsys = self._molsys
         return LazyMolecularMessage(

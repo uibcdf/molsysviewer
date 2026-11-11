@@ -20224,6 +20224,32 @@
       "reason": "Experimental headless Movie rebase review; movie_timeline_design.md and #320",
       "stability": "experimental"
     },
+    "view.movie.review_rebase_async": {
+      "async": true,
+      "kind": "callable",
+      "parameters": [
+        {
+          "default": {
+            "binary64": "0x1.4000000000000p+2",
+            "kind": "float",
+            "value": 5.0
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "timeout"
+        },
+        {
+          "default": {
+            "kind": "literal",
+            "type": "bool",
+            "value": false
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "skip_digestion"
+        }
+      ],
+      "reason": "Acknowledged live Movie baseline review; movie_timeline_design.md",
+      "stability": "experimental"
+    },
     "view.movie.save": {
       "async": false,
       "kind": "callable",

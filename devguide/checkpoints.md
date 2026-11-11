@@ -907,22 +907,33 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+Experimental `review_rebase_async()` observes a coherent primary-canvas
+camera/frame and supported RGB background/ambient/primary-light intensities.
+Explicit acceptance preserves tracks and uses one private per-view ticket;
+failed captures preserve existing work, and stale molecular/closed owners
+release their retained observation. Captured environment constants replay
+alongside tracks and survive sessions, retaining declared intent separately.
+The [observation receipt](movie_observation_receiving_20261111.json) separates
+protocol, compiler, native/media and wider receiving. #360 corrects the typed
+Movie screenshot task-manager call. Explicit target mapping, richer recipes,
+Studio and portable web remain open.
+
 Experimental `review_rebase()`/`rebase(review)` preserve all tracks and keys
 while reviewing/accepting a current Python-scene baseline. Live Movie operations
 now check the untracked serialized scene before sending commands. The
 [rebase receipt](movie_rebase_receiving_20261111.json) keeps API, conflict,
 native/media and wider receiving separate. #359 corrects layer reversal by
 composing final member visibility from baseline intent and layer/member tracks;
-ordinary layer APIs are unchanged. Resolved renderer defaults, acknowledged
-live rebase review and target remapping remain open.
+ordinary layer APIs are unchanged. Target remapping and richer renderer
+catalogues remain open; supported live environment/rebase work is described above.
 
 Experimental `capture_baseline_async()` starts an empty Movie recipe from an
 acknowledged live camera/structure. `reset_async()` restores the recorded scene
 before zero-time keys, with stopped motion and one object-Undo step. The
 [baseline receipt](movie_baseline_receiving_20261111.json) separates protocol,
 native popup/session/media and broader receiving. #358 corrects saved region
-priority on creation/style messages during all state restores. Resolved native
-defaults, acknowledged live rebase review and target remapping remain open.
+priority on creation/style messages during all state restores. Explicit target
+remapping and broader native renderer catalogues remain open.
 
 The [bounded Movie appearance catalogue](movie_timeline_design.md#received-appearance-catalogue)
 now adds uniform colour/alpha, simple representations, annotation text and
@@ -2948,7 +2959,7 @@ chronological status narrative here.
    and bounded preview for camera, structure and visibility tracks. Retain
    preview/pause, popup convergence, save/reopen and initial bounded media
    export and bounded appearance receiving. Continue with
-   resolved native defaults, live rebase review, target mapping, richer style recipes, Studio authoring,
+   target mapping/migration, richer style recipes, Studio authoring,
    composited overlays, portable web export and
    installed-host receiving.
 7. **G:** prepare #294's covering artifact and exact installed/downstream

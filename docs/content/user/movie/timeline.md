@@ -269,11 +269,25 @@ recipe = await view.movie.capture_baseline_async(2000, timeout=5)
 ```
 
 This starts a new version-2 recipe with no tracks. The duration is in
-milliseconds and the timeout in seconds. It leaves the visible scene and
+milliseconds and the timeout in seconds. The same completed draw supplies
+the renderer's RGB background, ambient intensity and primary directional-light
+intensity. These are dimensionless lighting values in [0, 1], matching the
+supported scene controls. Unsupported values are refused rather than clamped.
+Light layout, light colours and other native renderer settings are outside
+this bounded capture, as are page/CSS backgrounds and transparent page compositing.
+An updated frontend must advertise
+`movie_environment_capture: [1]`; an older canvas is refused explicitly.
+
+Capture leaves the visible scene and
 trajectory motion alone. Finish or pause an active Movie operation first.
 Timeout, cancellation and intervening edits preserve the previous recipe.
 You can still use `set_baseline()` with an explicit camera when working
 without a renderer.
+
+The recipe preserves both the observed environment and its original Python
+intent, including unset defaults. Seeking, preview and export reapply the
+observed values; property tracks override them directly. This also works
+after session recovery. Later explicit changes still require review.
 
 To restore the recorded scene after previewing or editing it, use:
 
@@ -311,6 +325,29 @@ proposes the current Python scene and structure as the new baseline. By
 default it retains the original baseline camera. Supply `camera=...` explicitly
 to change it; position and target use Å and up is dimensionless. Pause live
 motion before reviewing: this is a headless operation, not a renderer capture.
+
+To review the actual live camera, structure and supported environment instead,
+use the asynchronous route:
+
+```python
+review = await view.movie.review_rebase_async(timeout=5)
+review["changes"]
+review["affected_tracks"]
+```
+
+It observes a coherent primary-canvas draw without changing the scene or
+recipe. Acceptance is still `view.movie.rebase(review)`. The observation
+describes that captured moment; subsequent camera/frame navigation does not
+silently replace it. Static-scene and scientific edits invalidate the review.
+Finish or pause an active Movie operation before capturing.
+
+A live review carries a private per-view observation ticket. Only the latest
+successful live review is retained. Recipe edits, molecular reload/reset and
+closing the view retire it; a failed or cancelled capture does not replace a
+previous valid ticket. A ticket cannot be transferred to another view or
+recovered from a session. The accepted baseline and its environment metadata
+are ordinary recipe/session data. Headless reviews remain usable without
+a renderer or observation ticket.
 
 `affected_tracks` names tracks whose implicit starting value would change.
 An explicit key at zero keeps its own starting value. `changes` uses compact

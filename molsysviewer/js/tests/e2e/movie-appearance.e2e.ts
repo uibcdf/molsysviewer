@@ -203,6 +203,27 @@ async function run() {
             assert.equal(captured.frame, 2);
             assert.equal(captured.tracks, 0);
             assert.equal(captured.session_reopened, true);
+            // Actual native values deliberately differ from Python's declared
+            // intent. The completed draw, not cached settings, must supply them.
+            await page.evaluate(() => {
+                const canvas = (window as any).__mirrorController.plugin.canvas3d;
+                const renderer = canvas.props.renderer;
+                canvas.setProps({ renderer: { ...renderer, backgroundColor: 0x123456, ambientIntensity: 0.35,
+                    light: renderer.light.map((light: any, index: number) => index ? light : { ...light, intensity: 0.65 }) } });
+            });
+            const liveReview = await operation(page, { live_rebase: true,
+                session_path: resolve(workspace, "observed.msv"), video_path: resolve(workspace, "observed.mp4") });
+            assert.equal(liveReview.session_reopened, true);
+            assert.notDeepEqual(liveReview.environment, liveReview.intent);
+            const observedNative = await native(page);
+            assert.equal(observedNative.background, 0x123456);
+            assert.equal(observedNative.ambient, 0.35);
+            assert.equal(observedNative.diffuse, 0.65);
+            await restoredPopup.waitForFunction(() => {
+                const renderer = (window as any).__mirrorController?.plugin.canvas3d?.props.renderer;
+                return renderer?.backgroundColor === 0x123456 && renderer.ambientIntensity === 0.35
+                    && renderer.light[0].intensity === 0.65;
+            });
             await operation(page, { layer_gate_setup: true });
             const gate: any[] = [];
             for (const at of [0, 1000, 0]) {
@@ -231,8 +252,10 @@ async function run() {
                 await copyFile(resolve(workspace, "appearance.mp4"), resolve(out, "appearance.mp4"));
                 await copyFile(resolve(workspace, "appearance.msv"), resolve(out, "appearance.msv"));
                 await copyFile(resolve(workspace, "baseline.msv"), resolve(out, "baseline.msv"));
+                await copyFile(resolve(workspace, "observed.msv"), resolve(out, "observed.msv"));
+                await copyFile(resolve(workspace, "observed.mp4"), resolve(out, "observed.mp4"));
                 await writeFile(resolve(out, "verified.json"), JSON.stringify({ snapshots, exported, drawOrders,
-                    baseline: { resetState: reset.state, native: baseline, captured }, rebase, gate }, null, 2));
+                    baseline: { resetState: reset.state, native: baseline, captured }, rebase, observed: liveReview, gate }, null, 2));
             }
             console.log("[Movie appearance] Native materials, boundary bonds, popup, preview, 720p MP4, baseline reset/capture and session agree.");
         } finally {

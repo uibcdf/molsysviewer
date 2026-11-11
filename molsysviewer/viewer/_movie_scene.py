@@ -82,9 +82,13 @@ def scene_definition(scene, tracks, collections, *, for_review=False):
 
 
 def check_scene(timeline, scene, collections):
+    from ._movie_environment import comparable_scene
+
     tracks = timeline._data["tracks"]
     baseline = timeline._data["baseline"]["scene"]
-    if scene_definition(baseline, tracks, collections) != scene_definition(scene, tracks, collections):
+    if scene_definition(baseline, tracks, collections) != scene_definition(
+        comparable_scene(timeline, scene), tracks, collections
+    ):
         raise ValueError("Movie scene has untracked changes; reset it or review a rebase before applying the movie.")
 
 

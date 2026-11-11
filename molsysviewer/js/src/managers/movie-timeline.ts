@@ -1,5 +1,6 @@
 import { Mat3, Quat, Vec3 } from "molstar/lib/mol-math/linear-algebra";
 import { appearanceBaseline, appearanceValue, colorInterpolation, continuousAppearance, interpolateAppearance, validateMovieEnvironment,
+    validateMovieEnvironmentCapture,
     type Appearance, type AppearanceValue } from "./movie-appearance";
 
 const halfTurnTolerance = 1e-12;
@@ -208,7 +209,11 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
     if (units.time !== "ms" || units.camera_length !== "angstrom") {
         throw new Error("Movie recipes use milliseconds and angstroms.");
     }
-    const baseline = record(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
+    const baselineFields = ["scene", "camera", "binding"];
+    if (recipe.baseline && typeof recipe.baseline === "object" && owns(recipe.baseline, "environment_capture")) {
+        baselineFields.push("environment_capture");
+    }
+    const baseline = record(recipe.baseline, "Movie baseline", baselineFields);
     const binding = record(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
     const count = binding.n_structures;
     if (typeof count !== "number" || !Number.isSafeInteger(count) || count < 1
@@ -218,6 +223,7 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
     }
     const scene = record(baseline.scene, "Movie scene");
     if (scene.environment !== undefined) validateMovieEnvironment(scene.environment);
+    if (owns(baseline, "environment_capture")) validateMovieEnvironmentCapture(baseline.environment_capture, scene.environment);
     if (scene.version !== 2 || owns(scene, "movie")) {
         throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
     }

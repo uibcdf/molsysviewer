@@ -53,6 +53,7 @@ class MovieManager:
         self._seek_request = None
         self._playback = None
         self._export_job = None
+        self._rebase_capture = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -329,6 +330,7 @@ class MovieManager:
         """Remove the current recipe without changing the visible scene."""
         self._keyframes = []
         self._timeline = None
+        self._rebase_capture = None
 
     # ── Properties ────────────────────────────────────────────────────────
 
@@ -381,8 +383,9 @@ class MovieManager:
     ) -> dict:
         """Start a new track recipe from an acknowledged live scene.
 
-        Capture the primary canvas's actual camera and structure, including
-        during trajectory playback. The duration is in milliseconds and the
+        Capture the primary canvas's actual camera, structure and supported
+        background/lighting channels, including during trajectory playback.
+        The duration is in milliseconds and the
         timeout in seconds. Success replaces the previous recipe with an empty
         set of tracks and returns its detached dictionary. Failure/cancellation
         preserves the recipe. An active Movie operation must finish first.
@@ -473,6 +476,20 @@ class MovieManager:
         from ._movie_rebase import review_rebase
 
         return review_rebase(self, camera)
+
+    @signal(tags=["movie"])
+    @digest()
+    async def review_rebase_async(self, *, timeout: float = 5.0, skip_digestion: bool = False) -> dict:
+        """Review an acknowledged camera/frame and supported renderer environment.
+
+        Keep all tracks/keys and leave scene and recipe unchanged. Return an
+        explicit proposal for rebase(review). Its observation ticket belongs
+        to this View and is superseded by the next successful live review or
+        recipe replacement; it is not part of a saved recipe/session.
+        """
+        from ._movie_rebase import review_rebase_async
+
+        return await review_rebase_async(self, timeout=timeout)
 
     @signal(tags=["movie"])
     @digest()
@@ -867,6 +884,11 @@ class MovieManager:
     def _install_timeline(self, timeline: _MovieTimeline) -> None:
         self._keyframes = []
         self._timeline = timeline
+        self._rebase_capture = None
+
+    def _invalidate_observation(self) -> None:
+        """Release a stale live review, including its reference to molecular data."""
+        self._rebase_capture = None
 
     def _session_recipe(self, state):
         if self._timeline is None:

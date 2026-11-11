@@ -237,6 +237,18 @@ The primary/canvas-popup/detached-Studio requester and result owner remain
 authenticated separately. Hidden/unavailable/disposed endpoints must provide a
 real new draw or refuse; an expired/cancelled request cannot revive a file write.
 
+Movie additionally negotiates `movie_environment_capture: [1]`. A version-2
+`request_visual_state` may explicitly request `movie_environment_capture: 1`.
+The same completed-draw reader returns that version and `movie_environment`,
+containing `background: {color: RGB}` and `lighting: {ambient, diffuse}`.
+RGB is a 24-bit integer and the dimensionless intensities are finite in [0, 1];
+diffuse names the first directional light, matching the scene setter. Unsupported
+versions/values fail without fabricated defaults. Other native lighting channels,
+page backgrounds and transparent page compositing are outside this profile.
+Ordinary version-1/2 capture replies keep their shape when this option is absent.
+Movie baseline capture and live rebase review require it; accepted recipes retain
+the original declared environment separately from observed replay values.
+
 The durable Jupyter/background and native Qt guards observe actual host
 visibility and independent file restoration without injecting capabilities.
 Wayland's minimized-state query is not a reliable oracle: native receiving uses

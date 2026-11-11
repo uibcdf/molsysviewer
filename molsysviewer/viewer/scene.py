@@ -631,6 +631,7 @@ class SceneMixin:
         """Clear the session, optionally as the first step of a prepared load."""
         self._cancel_binary_structure_stream("viewer reset")
         self._molecular_projection_revision += 1
+        self.movie._invalidate_observation()
         self._current_molecular_projection = None
         self.widget.has_molecular_system = False
         self.molecular_system = None

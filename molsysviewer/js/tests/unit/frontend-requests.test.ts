@@ -5,6 +5,49 @@ import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { readCanvasDraw, waitForCanvasDraw } from "../../src/managers/canvas-draw";
 import { captureAtScenePrefix, handleFrontendRequest, VisualStateCaptureRequests } from "../../src/messages/frontend-requests";
 
+test("Movie observes detached environment in the same completed draw as camera/frame", async () => {
+    const didDraw = new BehaviorSubject(0), camera = new Camera();
+    const renderer = { backgroundColor: 0x123456, ambientIntensity: 0.35, light: [{ intensity: 0.65 }] };
+    const replies: any[] = [], requests = new VisualStateCaptureRequests();
+    const message = { op: "request_visual_state", request_id: "environment", capture_revision: "scene",
+        capture_version: 2, movie_environment_capture: 1 };
+    const controller: any = { plugin: { canvas3d: { props: { renderer }, didDraw, requestDraw() {} } },
+        readMovingVisualState: () => ({ snapshot: camera.getSnapshot(), structure_index: 2,
+            playback: { fps: 30, step_size: 1, mode: "loop", direction: "forward", playing: false } }) };
+    const pending = handleFrontendRequest(controller, message, reply => replies.push(reply), requests.reserve(message)!);
+    const advance = didDraw.subscribe(draw => { if (draw) {
+        renderer.backgroundColor = 0xffffff; renderer.ambientIntensity = 0.9; renderer.light[0].intensity = 0.1;
+    } });
+    try {
+        didDraw.next(1); await pending;
+        assert.equal(replies[0].ok, true);
+        assert.equal(replies[0].movie_environment_capture, 1);
+        assert.deepEqual(replies[0].movie_environment, { background: { color: 0x123456 },
+            lighting: { ambient: 0.35, diffuse: 0.65 } });
+        assert.equal(replies[0].structure_index, 2);
+        assert.equal(renderer.ambientIntensity, 0.9);
+        assert.equal(didDraw.observers.length, 1, "only the independent later subscriber remains");
+    } finally { advance.unsubscribe(); requests.dispose(); }
+});
+
+test("unsupported environment versions and unsupported native values fail without a fabricated reply", async () => {
+    for (const [version, requested, ambient] of [[1, 1, 0.4], [2, true, 0.4], [2, 2, 0.4], [2, 1, 2]]) {
+        const didDraw = new BehaviorSubject(0), camera = new Camera(), requests = new VisualStateCaptureRequests();
+        const replies: any[] = [];
+        const message = { op: "request_visual_state", request_id: "unsupported", capture_revision: "scene",
+            capture_version: version, movie_environment_capture: requested };
+        const controller: any = { plugin: { canvas3d: { props: { renderer: {
+            backgroundColor: 0, ambientIntensity: ambient, light: [{ intensity: 0.6 }] } }, didDraw, requestDraw() {} } },
+            readMovingVisualState: () => ({ snapshot: camera.getSnapshot(), structure_index: 0,
+                playback: { fps: 30, step_size: 1, mode: "loop", direction: "forward", playing: false } }) };
+        const pending = handleFrontendRequest(controller, message, reply => replies.push(reply), requests.reserve(message)!);
+        didDraw.next(1); await pending;
+        assert.equal(replies.length, 1); assert.equal(replies[0].ok, false);
+        assert.equal(replies[0].movie_environment, undefined);
+        assert.equal(didDraw.observers.length, 0); requests.dispose();
+    }
+});
+
 test("draw cancellation ignores a replayed frame and releases its real subscription", async () => {
     const didDraw = new BehaviorSubject(0);
     const abort = new AbortController();

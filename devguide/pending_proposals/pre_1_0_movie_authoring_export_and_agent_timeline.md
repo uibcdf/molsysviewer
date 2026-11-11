@@ -298,8 +298,8 @@ updating simple native representation nodes in place. The recipe records its
 colour interpolation rule; Python/TypeScript numerical receiving and actual molecular browser/popup,
 session and 720p video receiving have distinct scopes. Declared viewport
 environment now travels in state/session files without making object Undo
-restore earlier camera/environment settings. Resolved renderer defaults,
-live rebase review, broader recipes, Studio, web and integrated M5 acceptance remain
+restore earlier camera/environment settings. Broader renderer/style catalogues,
+Studio, web and integrated M5 acceptance remain
 open; this does not complete #320.
 
 The [baseline tranche](../movie_baseline_receiving_20261111.json) adds
@@ -309,8 +309,9 @@ restored object changes into one Undo step. Reset restores the state catalogue,
 not arbitrary Mol* settings; unrecorded viewport/export preferences retain
 state-import semantics. Its native receiving exposed #358's pre-existing
 region-priority replay mismatch; restoration now declares saved priority
-before creation/style, without a transient promotion. Resolved defaults,
-acknowledged live rebase review, target mapping and M2/M4/M5 work stay open.
+before creation/style, without a transient promotion. Broader renderer
+catalogues, target mapping and M2/M4/M5 work stay open; the supported live
+environment/rebase tranche is described below.
 
 The [rebase tranche](../movie_rebase_receiving_20261111.json) adds a detached
 change/conflict/candidate report and explicit acceptance with stale/edited
@@ -320,7 +321,17 @@ navigation/editor/derived fields. #359 receives deterministic Movie layer
 gating with baseline member intent and explicit member tracks, without
 changing ordinary layer actions or issuing show-then-hide corrections.
 This is source support for the recorded catalogue; it does not qualify all
-native defaults, live rebase capture, Studio authoring or portable web playback.
+arbitrary native defaults, Studio authoring or portable web playback.
+
+The [observation tranche](../movie_observation_receiving_20261111.json) receives
+the supported RGB background and ambient/primary-light intensities at the same
+completed draw as camera/frame. It keeps declared intent separately, replays
+observed constants alongside property tracks and preserves metadata in sessions.
+`review_rebase_async()` adds explicit acceptance of the observed moment, with
+one private per-view ticket, stale/edited rejection, no late publication after
+cancellation and molecular/close disposal. #360 routes the screenshot through
+the native task manager's declared isolated-context API. Richer renderer
+catalogues, target mapping/migration and M2/M4/M5 work remain open.
 
 Post-1.0 agent planning translates instructions into this same inspectable,
 validated and editable plan, with preview and export through the same owner.

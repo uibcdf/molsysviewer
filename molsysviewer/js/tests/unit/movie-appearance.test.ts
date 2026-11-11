@@ -4,6 +4,20 @@ import { compileMovieTimeline } from "../../src/managers/movie-timeline";
 import { movieRepresentationTypes } from "../../src/managers/movie-appearance";
 import oracle from "../fixtures/movie-appearance-oracle.json";
 
+test("observed environments retain declared intent without changing logical evaluation", () => {
+    const recipe: any = structuredClone(oracle.recipe);
+    recipe.baseline.environment_capture = { version: 1, intent: { background: { mode: "dark" } } };
+    const timeline = compileMovieTimeline(recipe);
+    for (const expected of oracle.samples) compare(timeline.evaluate(expected.time_ms), expected);
+    for (const capture of [{ version: true, intent: {} }, { version: 2, intent: {} },
+        { version: 1, intent: {}, extra: true }, { version: 1, intent: { lighting: { ambient: 2 } } }]) {
+        const invalid = structuredClone(recipe); invalid.baseline.environment_capture = capture;
+        assert.throws(() => compileMovieTimeline(invalid));
+    }
+    delete recipe.baseline.scene.environment.lighting.diffuse;
+    assert.throws(() => compileMovieTimeline(recipe), /both lighting/);
+});
+
 function compare(actual: any, expected: any) {
     if (typeof expected === "number") {
         assert.ok(Number.isFinite(actual) && Math.abs(actual - expected) < 1e-12, `${actual} != ${expected}`);

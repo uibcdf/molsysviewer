@@ -128,6 +128,49 @@ def main():
                         }
                     )
                     result = {"ok": True}
+                elif event.get("live_rebase"):
+                    from copy import deepcopy
+
+                    before, recipe = view.export_state(), view.movie.to_dict()
+                    review = await view.movie.review_rebase_async(timeout=20)
+                    environment = review["candidate"]["baseline"]["scene"]["environment"]
+                    assert environment == {
+                        "background": {"color": 0x123456},
+                        "lighting": {"ambient": 0.35, "diffuse": 0.65},
+                    }
+                    assert view.movie.to_dict() == recipe
+                    assert view.export_state()["environment"] == before["environment"]
+                    view.movie.rebase(review)
+                    assert view.movie.to_dict()["tracks"] == recipe["tracks"]
+                    view.movie.validate()
+                    view.movie.set_duration(1000)
+                    recorded = deepcopy(view.movie.to_dict())
+                    session_path = Path(event["session_path"])
+                    view.save_session(session_path)
+                    with msv.load_session(session_path) as restored:
+                        assert restored.movie.to_dict() == recorded
+                        restored.movie.validate()
+                    await view.movie.seek_async(0, timeout=20)
+                    assert view.export_state()["environment"] == environment
+                    answer = await view.movie.export_async(
+                        Path(event["video_path"]), fps=2, width_px=320, height_px=180, sample_level=0, timeout=20
+                    )
+                    metadata, images, manifest = media["_video"](Path(answer["path"]))
+                    assert len(images) == 2 and metadata["fps"] == 2 and metadata["size"] == (320, 180)
+                    assert manifest == answer["manifest"] and manifest["recipe"] == recorded
+                    corners = [image[0, 0, :3].astype(int).tolist() for image in images]
+                    assert all(
+                        max(abs(a - b) for a, b in zip(pixel, [18, 52, 86], strict=True)) <= 8 for pixel in corners
+                    )
+                    result = {
+                        "ok": True,
+                        "environment": environment,
+                        "intent": recorded["baseline"]["environment_capture"]["intent"],
+                        "camera": recorded["baseline"]["camera"],
+                        "frame": recorded["baseline"]["scene"]["view"]["structure_index"],
+                        "session_reopened": True,
+                        "decoded_video_corners": corners,
+                    }
                 elif "layer_seek" in event:
                     await view.movie.seek_async(event["layer_seek"], timeout=20)
                     view.movie.validate()

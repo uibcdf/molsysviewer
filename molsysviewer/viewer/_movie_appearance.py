@@ -140,6 +140,22 @@ def interpolate_appearance(left, right, fraction, prop):
 def appearance_commands(view, timeline, sample):
     """Preflight every target, then return existing-owner calls for differences."""
     rows = sample.get("appearance", [])
+    baseline = timeline._data["baseline"]
+    if "environment_capture" in baseline:
+        # Replay observed constants too; tracked channels supply their final
+        # value directly, without a baseline-then-key flash.
+        owned = {row["property"] for row in rows if row["domain"] == "scene"}
+        rows = [*rows]
+        for prop, value in baseline["scene"]["environment"].items():
+            if prop not in owned:
+                rows.append(
+                    {
+                        "domain": "scene",
+                        "tag": None,
+                        "property": prop,
+                        "value": value["color"] if prop == "background" else value,
+                    }
+                )
     targets = {}
     for row in rows:
         domain, tag = row["domain"], row["tag"]

@@ -315,7 +315,10 @@ class _MovieTimeline:
         if data["units"] != {"time": "ms", "camera_length": "angstrom"}:
             raise ValueError("Movie recipes use milliseconds and angstroms.")
         duration = _duration(data["duration_ms"])
-        baseline = _record(data["baseline"], ("scene", "camera", "binding"), "Movie baseline")
+        baseline_fields = ("scene", "camera", "binding")
+        if isinstance(data["baseline"], Mapping) and "environment_capture" in data["baseline"]:
+            baseline_fields += ("environment_capture",)
+        baseline = _record(data["baseline"], baseline_fields, "Movie baseline")
         binding = _record(baseline["binding"], ("n_atoms", "n_structures", "fingerprint"), "Movie molecular binding")
         for field in ("n_atoms", "n_structures"):
             if type(binding[field]) is not int or not 0 < binding[field] <= _MAX_SAFE_INTEGER:
@@ -336,6 +339,11 @@ class _MovieTimeline:
             from .._scene_environment import validate_environment
 
             scene["environment"] = validate_environment(scene["environment"])
+        capture = None
+        if "environment_capture" in baseline:
+            from ._movie_environment import environment_capture
+
+            capture = environment_capture(baseline["environment_capture"], scene.get("environment"))
         sources = scene.get("sources")
         if sources is not None and (not isinstance(sources, dict) or sources.get("binding") != binding):
             raise ValueError("Movie baseline source records do not match its molecular binding.")
@@ -353,7 +361,12 @@ class _MovieTimeline:
             "molsysmovie_version": MOVIE_TIMELINE_VERSION,
             "duration_ms": duration,
             "units": {"time": "ms", "camera_length": "angstrom"},
-            "baseline": {"scene": scene, "camera": camera, "binding": dict(binding)},
+            "baseline": {
+                "scene": scene,
+                "camera": camera,
+                "binding": dict(binding),
+                **({"environment_capture": capture} if capture is not None else {}),
+            },
             "tracks": tracks,
             **({"color_interpolation": COLOR_INTERPOLATION} if has_color else {}),
         }
@@ -428,9 +441,11 @@ class _MovieTimeline:
     def track_records(self):
         return deepcopy(self._data["tracks"])
 
-    def rebased(self, scene, camera, binding):
+    def rebased(self, scene, camera, binding, *, environment_capture=None):
         data = self.to_dict()
         data["baseline"] = {"scene": scene, "camera": camera, "binding": binding}
+        if environment_capture is not None:
+            data["baseline"]["environment_capture"] = environment_capture
         revised = _MovieTimeline(data)
         # Existing keys are already validated; preserve their exact serialized
         # values rather than normalizing camera vectors a second time.

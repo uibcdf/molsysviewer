@@ -2,6 +2,7 @@
 
 import json
 from copy import deepcopy
+from uuid import uuid4
 
 from ._movie_appearance import appearance_baseline
 from ._movie_scene import fingerprint, same_data, scene_changes
@@ -11,17 +12,19 @@ from .frontend_requests import FrontendRequestError
 _SCHEMA = "molsysviewer.movie_rebase_review@1"
 
 
-def review_rebase(movie, camera):
+def review_rebase(movie, camera, *, observation=None, capture_id=None):
     timeline = movie._timeline
     if timeline is None:
         raise ValueError("Set a Movie baseline before reviewing a rebase.")
     original = timeline.to_dict()
     before = original["baseline"]
     selected = before["camera"] if camera is None else camera
+    if observation is not None:
+        selected = observation.captured.state["view"]["camera"]
     _camera(selected)  # Validate geometry before building any candidate.
     requested = {key: _vector(selected[key], key).tolist() for key in ("position", "target", "up")}
     view = movie._view
-    current = view.export_state(skip_digestion=True)
+    current = view.export_state(skip_digestion=True) if observation is None else deepcopy(observation.captured.state)
     binding = view._source_state_binding()
     conflicts = []
     candidate = None
@@ -52,7 +55,12 @@ def review_rebase(movie, camera):
         if not conflicts:
             try:
                 view._preflight_state_import(current, clear_first=True, on_conflict="raise")
-                candidate = timeline.rebased(current, requested, binding)
+                candidate = timeline.rebased(
+                    current,
+                    requested,
+                    binding,
+                    environment_capture=None if observation is None else observation.environment_capture,
+                )
             except (ValueError, TypeError, KeyError) as error:
                 conflicts.append({"reason": "invalid_scene", "track": None, "message": str(error)})
     changes = scene_changes(before["scene"], current, _VISIBILITY_DOMAINS)
@@ -103,17 +111,37 @@ def review_rebase(movie, camera):
     return {
         "schema": _SCHEMA,
         "recipe_sha256": fingerprint(original),
-        "scene_sha256": fingerprint(context),
+        "scene_sha256": fingerprint(context) if observation is None else "sha256:" + observation.captured.scene_key,
         "camera": requested,
         "changes": changes,
         "conflicts": conflicts,
         "affected_tracks": affected,
         "can_apply": candidate is not None and not conflicts,
         "candidate": None if candidate is None else candidate.to_dict(),
+        **(
+            {"capture": {"schema": "molsysviewer.movie_rebase_capture@1", "id": capture_id, "endpoint": "primary"}}
+            if observation is not None
+            else {}
+        ),
     }
 
 
-def rebase(movie, review):
+async def review_rebase_async(movie, *, timeout):
+    from ._movie_baseline import observe_movie_scene
+
+    observation = await observe_movie_scene(movie, timeout=timeout, require_baseline=True)
+    with movie._view._system_edits._locked():
+        observation.validate(movie, delivery=True)
+        capture_id = uuid4().hex
+        review = review_rebase(movie, None, observation=observation, capture_id=capture_id)
+        # Only the resumed caller may publish the private observation ticket.
+        # One current ticket bounds retained data; failed captures keep the old one.
+        observation.validate(movie, delivery=True)
+        movie._rebase_capture = capture_id, observation
+        return review
+
+
+def _accept_rebase(movie, review):
     if any(
         value is not None
         for value in (movie._seek_request, movie._playback, movie._export_job, movie._view._movie_export_frames)
@@ -122,7 +150,15 @@ def rebase(movie, review):
     if not isinstance(review, dict) or review.get("schema") != _SCHEMA or "camera" not in review:
         raise ValueError("Expected a Movie rebase review.")
     review = json.loads(json.dumps(review, allow_nan=False))
-    expected = review_rebase(movie, review["camera"])
+    observation = None
+    capture_id = None
+    if "capture" in review:
+        cached = movie._rebase_capture
+        if not isinstance(review["capture"], dict) or cached is None or review["capture"].get("id") != cached[0]:
+            raise ValueError("Movie rebase capture has expired; request a new live review.")
+        capture_id, observation = cached
+        observation.validate(movie)
+    expected = review_rebase(movie, review["camera"], observation=observation, capture_id=capture_id)
     if not same_data(review, expected):
         raise ValueError("Movie rebase review is stale or edited; request a new review.")
     if not expected["can_apply"]:
@@ -130,10 +166,21 @@ def rebase(movie, review):
     current = movie._view.export_state(skip_digestion=True)
     context = deepcopy(current)
     context.get("view", {}).pop("camera", None)
-    if (
-        fingerprint(movie._timeline.to_dict()) != expected["recipe_sha256"]
-        or fingerprint(context) != expected["scene_sha256"]
+    if observation is not None:
+        observation.validate(movie)
+    if fingerprint(movie._timeline.to_dict()) != expected["recipe_sha256"] or (
+        observation is None and fingerprint(context) != expected["scene_sha256"]
     ):
         raise ValueError("Movie rebase review was superseded while validating the scene.")
-    timeline = movie._timeline.rebased(current, expected["camera"], movie._view._source_state_binding())
+    timeline = movie._timeline.rebased(
+        current if observation is None else observation.captured.state,
+        expected["camera"],
+        movie._view._source_state_binding(),
+        environment_capture=None if observation is None else observation.environment_capture,
+    )
     movie._install_timeline(timeline)
+
+
+def rebase(movie, review):
+    with movie._view._system_edits._locked():
+        _accept_rebase(movie, review)

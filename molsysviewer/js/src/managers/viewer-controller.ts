@@ -4804,7 +4804,7 @@ export class MolSysViewerController {
                 });
                 const abort = () => this.plugin.managers.task.requestAbort(task.id, "Movie frame cancelled");
                 signal.addEventListener("abort", abort, { once: true });
-                try { return await this.plugin.runTask(task, { createNewContext: true }); }
+                try { return await this.plugin.managers.task.run(task, { createNewContext: true }); }
                 finally { signal.removeEventListener("abort", abort); }
             }
             return await helper.getImageDataUri();

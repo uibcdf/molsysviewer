@@ -20,8 +20,9 @@ encoder, browser and API scopes. Uniform colours/alpha, simple molecular
 representations, annotation text, RGB background and ambient/diffuse lighting
 have their first implementation. Acknowledged baseline capture and explicit
 recorded-scene reset, serialized static-scene checks and reviewed headless
-rebasing are implemented. Resolved renderer defaults, target remapping, richer style
-recipes, Studio authoring and a portable interactive web player remain open.
+rebasing are implemented. Supported live environment capture and asynchronous
+rebase reviews extend that route. Target remapping, richer renderer/style
+catalogues, Studio authoring and a portable interactive web player remain open.
 The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
 separate numerical, native-node, popup, session and media evidence.
 The sections below describe the broader M1–M6 design and its remaining work.
@@ -96,8 +97,9 @@ pending Movie jobs, stale/edited data and missing/replaced scientific/region
 identities, recheck context after validation, then install the candidate with
 no scene commands. Booleans remain distinct from numbers; JSON integer-valued
 float round trips are admitted. These hashes are change detectors, not origin
-authentication. Explicit target remapping and acknowledged live rebase review
-remain separate work; this route is headless and motion should be paused.
+authentication. This route is headless and motion should be paused; the separate
+acknowledged `review_rebase_async()` route is described below. Explicit target
+remapping remains open.
 
 The scene definition masks fields owned by tracks and normalizes renderable
 collections by domain/tag. Ignore camera/frame/playback navigation, editor
@@ -107,8 +109,8 @@ other serialized object definitions, styles, anchors, scientific/query
 references, memberships and ordering. Seek/preview/export and `validate()`
 check this definition; pure recipe/session operations retain their existing
 binding checks. Runtime revision barriers still protect in-flight work.
-This is the recorded-state catalogue, not arbitrary native Mol* settings or
-resolved renderer defaults. No trajectory or occurrence array is copied into
+This is the recorded-state catalogue plus explicitly observed supported
+environment channels, not arbitrary native Mol* settings. No trajectory or occurrence array is copied into
 individual keys or change summaries.
 
 Movie layer visibility composes a gate over member intent before issuing final
@@ -183,8 +185,8 @@ an older renderer is refused. The compact preview recipe carries only the
 required appearance fields, not molecular coordinates or analysis occurrences.
 Untracked material-parameter changes on an animated structural target require
 a reviewed new baseline. The serialized static-scene check and reviewed rebase
-are described above; native defaults and acknowledged live rebase review remain
-pending. Simple region updates reuse the existing component/representation
+are described above; supported observed environment and live rebase semantics
+are described below. Simple region updates reuse the existing component/representation
 nodes, including type changes, rather than deleting them for each material key.
 They retain region priority throughout the update and preserve the existing
 parent-bond context for ball-and-stick/line representations. The native guard
@@ -253,6 +255,8 @@ acknowledgments:
 ```python
 await view.movie.capture_baseline_async(2000, timeout=5.0)
 await view.movie.reset_async(timeout=5.0)     # restore baseline before zero keys
+review = await view.movie.review_rebase_async(timeout=5.0)
+view.movie.rebase(review)                   # explicit acceptance after review
 ```
 
 Capture starts a new empty plan from the primary renderer's observed camera
@@ -261,8 +265,31 @@ capture barrier owns static-scene/scientific consistency; pending Movie jobs
 are refused. Candidate preparation can wait for scene ownership, but final
 recipe installation runs on the resumed caller with no subsequent yield.
 Cancellation after a preparation grant therefore cannot install a baseline.
-Environment capture still records declared intent; making supported resolved
-renderer defaults explicit remains part of the complete-baseline work.
+The explicit `movie_environment_capture: [1]` capability additionally receives
+actual RGB background and ambient/primary directional-light intensities from
+that same completed draw. Both intensities must fit the existing [0, 1]
+catalogue; no clamping or fabricated defaults are allowed. Other light layout,
+colour, postprocessing and renderer settings are not a complete native snapshot.
+The optional baseline `environment_capture: {version: 1, intent: ...}` retains
+the original declared intent; full resolved values live in scene.environment.
+Python and TypeScript validate the same closed metadata/value profile.
+
+Static comparison permits the original declared intent or the observed values,
+not arbitrary later edits. Live application replays the observed constants and
+lets property tracks supply their final values directly. Ordinary state/session
+capture without this explicit Movie request keeps its existing protocol shape.
+
+`review_rebase_async()` uses that same observation owner, with no recipe/scene
+mutation. Its `capture` record identifies a private per-view ticket; the owner
+retains at most one observation. The resumed caller publishes it only after
+deadline, recipe and captured-scene validation with no subsequent yield. Failed
+or cancelled captures preserve the previous valid review. Acceptance verifies
+the exact regenerated report against the private observation and current
+scene/science, including reentrant preflight changes. Camera/frame telemetry
+alone does not replace the reviewed moment. New successful reviews supersede
+old tickets; recipe replacement, molecular projection/reset and close release
+their retained molecular reference. Tickets are not persisted or portable;
+accepted candidate baselines and environment metadata are.
 
 Reset retains the recipe and molecular system. It preflights the recorded
 state using the existing isolated restore owner, then restores its scene
@@ -274,8 +301,7 @@ hides an absent baseline box. It may recreate object handles and does not
 promise rollback of accepted scene commands after a timeout. It is a restore
 of the recorded state catalogue, not a snapshot of arbitrary Mol* settings.
 
-Resolved native defaults, acknowledged live rebase review and explicit target
-mapping remain pending. Proposed import extension:
+Explicit target mapping and v1 migration remain pending. Proposed import extension:
 
 ```python
 view.movie.from_dict(recipe, target_map=...)
@@ -341,8 +367,9 @@ PNG dimensions before decoding; a stale or malformed reply cannot complete a
 new job. Revision changes during export refuse publication. Serialized
 static-definition checks reject unreviewed changes to the recorded catalogue;
 explicit reviewed rebasing can adopt intentional scene edits before export.
-Resolved native defaults and acknowledged live rebase reviews remain M1 work;
-the recorded state catalogue does not imply a snapshot of every renderer setting.
+Observed supported environment channels and acknowledged live rebase reviews
+extend M1; explicit mapping/migration and richer catalogues remain open. The
+recorded state catalogue does not imply a snapshot of every renderer setting.
 
 Export uses Mol*'s public image pass in an independently owned task. Abort is
 cooperative at its task checkpoints and never calls a global task abort. An

@@ -150421,6 +150421,25 @@ function validateMovieEnvironment(value) {
     for (const value2 of Object.values(lighting)) appearanceValue(value2, "alpha");
   }
 }
+function resolvedMovieEnvironment(value) {
+  const environment = record2(value);
+  validateMovieEnvironment(environment);
+  if (Object.keys(environment).length !== 2 || !environment.background || !environment.lighting || Object.keys(environment.background).length !== 1 || !("color" in environment.background) || Object.keys(environment.lighting).length !== 2 || !("ambient" in environment.lighting) || !("diffuse" in environment.lighting)) {
+    throw new Error("Movie environment capture requires RGB background and both lighting intensities.");
+  }
+  return {
+    background: { color: environment.background.color },
+    lighting: { ambient: environment.lighting.ambient, diffuse: environment.lighting.diffuse }
+  };
+}
+function validateMovieEnvironmentCapture(value, environment) {
+  const capture = record2(value);
+  if (Object.keys(capture).length !== 2 || capture.version !== 1 || !("intent" in capture)) {
+    throw new Error("Invalid Movie environment capture record.");
+  }
+  resolvedMovieEnvironment(environment);
+  validateMovieEnvironment(capture.intent);
+}
 function appearanceValue(value, property2) {
   if (property2 === "color" || property2 === "background") {
     if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 16777215) {
@@ -150671,7 +150690,11 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
   if (units.time !== "ms" || units.camera_length !== "angstrom") {
     throw new Error("Movie recipes use milliseconds and angstroms.");
   }
-  const baseline = record3(recipe.baseline, "Movie baseline", ["scene", "camera", "binding"]);
+  const baselineFields = ["scene", "camera", "binding"];
+  if (recipe.baseline && typeof recipe.baseline === "object" && owns(recipe.baseline, "environment_capture")) {
+    baselineFields.push("environment_capture");
+  }
+  const baseline = record3(recipe.baseline, "Movie baseline", baselineFields);
   const binding = record3(baseline.binding, "Movie molecular binding", ["n_atoms", "n_structures", "fingerprint"]);
   const count3 = binding.n_structures;
   if (typeof count3 !== "number" || !Number.isSafeInteger(count3) || count3 < 1 || typeof binding.n_atoms !== "number" || !Number.isSafeInteger(binding.n_atoms) || binding.n_atoms < 1 || typeof binding.fingerprint !== "string" || !/^sha256:[0-9a-f]{64}$/.test(binding.fingerprint)) {
@@ -150679,6 +150702,7 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
   }
   const scene = record3(baseline.scene, "Movie scene");
   if (scene.environment !== void 0) validateMovieEnvironment(scene.environment);
+  if (owns(baseline, "environment_capture")) validateMovieEnvironmentCapture(baseline.environment_capture, scene.environment);
   if (scene.version !== 2 || owns(scene, "movie")) {
     throw new Error("Movie baseline requires a version-2 overlay scene without a nested Movie.");
   }
@@ -172292,7 +172316,7 @@ var MolSysViewerController = class _MolSysViewerController {
         const abort2 = () => this.plugin.managers.task.requestAbort(task.id, "Movie frame cancelled");
         signal.addEventListener("abort", abort2, { once: true });
         try {
-          return await this.plugin.runTask(task, { createNewContext: true });
+          return await this.plugin.managers.task.run(task, { createNewContext: true });
         } finally {
           signal.removeEventListener("abort", abort2);
         }
@@ -172592,6 +172616,15 @@ async function captureMovieFrame(controller, value, timeout, signal) {
   }
 }
 
+// src/managers/movie-environment.ts
+function readMovieEnvironment(canvas) {
+  const renderer = canvas.props.renderer;
+  return resolvedMovieEnvironment({
+    background: { color: renderer.backgroundColor },
+    lighting: { ambient: renderer.ambientIntensity, diffuse: renderer.light[0]?.intensity }
+  });
+}
+
 // src/messages/frontend-requests.ts
 function captureKey(message) {
   return typeof message?.request_id === "string" && message.request_id.length > 0 && typeof message?.capture_revision === "string" && message.capture_revision.length > 0 ? JSON.stringify([message.request_id, message.capture_revision]) : null;
@@ -172666,6 +172699,9 @@ async function handleFrontendRequest(controller, message, send, capture) {
       if (!canvas) throw new Error("No live canvas is available for capture.");
       const timeout = Number(message.capture_timeout_ms);
       const started = performance.now();
+      if (message.movie_environment_capture !== void 0 && (message.capture_version !== 2 || message.movie_environment_capture !== 1)) {
+        throw new Error("Unsupported Movie environment capture version.");
+      }
       if (message.capture_version === 2) {
         if (!controller.readMovingVisualState) throw new Error("Moving capture is unavailable on this renderer.");
         controller.prepareMovingVisualCapture?.();
@@ -172678,6 +172714,7 @@ async function handleFrontendRequest(controller, message, send, capture) {
           canvas,
           () => ({
             ...sample,
+            ...message.movie_environment_capture === 1 ? { movie_environment_capture: 1, movie_environment: readMovieEnvironment(canvas) } : {},
             ...nextMovieSample ? { movie_next_sample: nextMovieSample() } : {}
           }),
           Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 3e4) : 5e3,
@@ -177985,7 +178022,8 @@ async function bootDocsView(opts) {
       visual_state_capture: [1, 2],
       movie_preview: [1],
       movie_frame_capture: [1],
-      movie_appearance: [1]
+      movie_appearance: [1],
+      movie_environment_capture: [1]
     } });
   } catch (err) {
     console.error("[MolSysViewer docs] Init error:", err);
@@ -178700,7 +178738,8 @@ function render({ model, el, runtimeSource }) {
           visual_state_capture: [1, 2],
           movie_preview: [1],
           movie_frame_capture: [1],
-          movie_appearance: [1]
+          movie_appearance: [1],
+          movie_environment_capture: [1]
         }
       });
     } catch (err) {

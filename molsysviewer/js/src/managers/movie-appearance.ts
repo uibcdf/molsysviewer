@@ -36,6 +36,28 @@ export function validateMovieEnvironment(value: unknown): void {
     }
 }
 
+export function resolvedMovieEnvironment(value: unknown) {
+    const environment = record(value);
+    validateMovieEnvironment(environment);
+    if (Object.keys(environment).length !== 2 || !environment.background || !environment.lighting
+        || Object.keys(environment.background).length !== 1 || !("color" in environment.background)
+        || Object.keys(environment.lighting).length !== 2
+        || !("ambient" in environment.lighting) || !("diffuse" in environment.lighting)) {
+        throw new Error("Movie environment capture requires RGB background and both lighting intensities.");
+    }
+    return { background: { color: environment.background.color as number },
+        lighting: { ambient: environment.lighting.ambient as number, diffuse: environment.lighting.diffuse as number } };
+}
+
+export function validateMovieEnvironmentCapture(value: unknown, environment: unknown): void {
+    const capture = record(value);
+    if (Object.keys(capture).length !== 2 || capture.version !== 1 || !("intent" in capture)) {
+        throw new Error("Invalid Movie environment capture record.");
+    }
+    resolvedMovieEnvironment(environment);
+    validateMovieEnvironment(capture.intent);
+}
+
 export function appearanceValue(value: unknown, property: string): AppearanceValue {
     if (property === "color" || property === "background") {
         if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 0xFFFFFF) {

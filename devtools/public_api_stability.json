@@ -177,6 +177,12 @@
       "reason": "Experimental acknowledged recorded-scene Movie reset; movie_timeline_design.md and #320"
     },
     {
+      "route": "view.movie.review_rebase_async",
+      "priority": 110,
+      "stability": "experimental",
+      "reason": "Acknowledged live Movie baseline review; movie_timeline_design.md"
+    },
+    {
       "route": "view.movie.review_rebase",
       "priority": 100,
       "stability": "experimental",

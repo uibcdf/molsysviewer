@@ -21,7 +21,11 @@ def authored():
     with make_appearance_view() as view:
         # Protocol receiving only. The browser guard receives actual Mol* draws.
         view._ready = True
-        view._frontend_capabilities = {"visual_state_capture": [2], "movie_appearance": [1]}
+        view._frontend_capabilities = {
+            "visual_state_capture": [2],
+            "movie_appearance": [1],
+            "movie_environment_capture": [1],
+        }
         yield view
 
 
@@ -40,6 +44,8 @@ def reply(view, request, *, frame=0, camera=None):
         "request_id": request.request_id,
         "capture_revision": request.revision,
         "capture_version": 2,
+        "movie_environment_capture": 1,
+        "movie_environment": {"background": {"color": 0}, "lighting": {"ambient": 0.2, "diffuse": 0.8}},
         "ok": True,
         "snapshot": deepcopy(baseline["camera"] if camera is None else camera),
         "structure_index": frame,
@@ -195,6 +201,37 @@ def test_state_restore_retains_saved_priority_during_styling(authored):
 def test_native_baseline_reset_and_capture():
     root = Path(__file__).parents[1]
     subprocess.run(["node", "tests/e2e/movie-appearance.e2e.js"], cwd=root / "molsysviewer/js", check=True, timeout=180)
+
+
+@pytest.mark.skipif(
+    os.environ.get("MOLSYSVIEWER_MOVIE_TYPES_TEST") != "1",
+    reason="Explicit frontend TypeScript compiler receiving is required.",
+)
+def test_movie_frontend_type_contract():
+    """Compile the actual Movie request/controller graph against native declarations."""
+    js = Path(__file__).parents[1] / "molsysviewer/js"
+    subprocess.run(
+        [
+            "node",
+            str(js / "node_modules/typescript/bin/tsc"),
+            "--noEmit",
+            "--strict",
+            "--skipLibCheck",
+            "--target",
+            "es2022",
+            "--module",
+            "es2022",
+            "--moduleResolution",
+            "node",
+            "--esModuleInterop",
+            "--resolveJsonModule",
+            "src/messages/frontend-requests.ts",
+            "src/managers/movie-timeline.ts",
+        ],
+        cwd=js,
+        check=True,
+        timeout=120,
+    )
 
 
 def test_cancellation_after_preparation_grant_cannot_install_a_baseline(authored):

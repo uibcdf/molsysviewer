@@ -1,0 +1,593 @@
+{
+  "schema": "molsysviewer.movie_observation_receiving@1",
+  "date": "2026-11-11",
+  "completed_utc": "2026-11-11T18:38:45.393133+00:00",
+  "issue": "uibcdf/molsysviewer#320",
+  "related_bug": "uibcdf/molsysviewer#360",
+  "status": "source_received",
+  "scope": "Experimental coherent primary renderer observation and explicit live rebase review; actual molecular Python owners, native Mol*/Chromium with persistent Python bridge, canvas popup, sessions and encoded video. Not actual Jupyter, native Qt, hosted, installed or human qualification.",
+  "sources": {
+    "molsysviewer_base": "e46abaac670f2505a91173feed191ac1454c43ec",
+    "molsysmt": "8d05bc33e75327a2c4f55a8c06ed3a132627fb5b",
+    "molsysmt_native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "sha256": {
+      "molsysviewer/viewer/_movie_environment.py": "bea801d37b5a41813358b8add3651a2b1dc5bfc772e374403a81320821289052",
+      "molsysviewer/viewer/_movie_baseline.py": "b725b28170380e9958b902b004f396b961b857234df3d5cd5c051c122974a2a5",
+      "molsysviewer/viewer/_movie_rebase.py": "1701f6a95d1dacc6416dc1f900789143ef5f13e15351142ae69cec4e70ded184",
+      "molsysviewer/viewer/_movie_scene.py": "1fcfa358fc6bf05e9ec50a7cbdddf6796e23528c81ad912dcd60b0371f5110cc",
+      "molsysviewer/viewer/_movie_timeline.py": "ce2e48ec55e3c18f7a5ac152912c1ad30f9b4f3ee11cca5eed6184a75bb265ff",
+      "molsysviewer/viewer/_movie_appearance.py": "6067721a5f6249d1ef6978cb7334f8370545a467b1601e3da0d4a7134963e6e9",
+      "molsysviewer/viewer/_movie_seek.py": "3aa42d813aded8ad8ffd8b49bb5b9bc2daa4f5dc8f740d994e4c762b6fd390be",
+      "molsysviewer/viewer/_movie_playback.py": "55d6c3e992f5b15fbaf1815cf30af034aac206a551791a538df0ea9908c3ddc1",
+      "molsysviewer/viewer/_movie_export.py": "ab3d46ec487ffdb0d658c0963ef1e03ea6737b284811d8023c1c6c935d62b7c9",
+      "molsysviewer/viewer/movie.py": "903fb060b48d64f5789586098064fe850cb1665e9e1819ff8082561857622c7d",
+      "molsysviewer/viewer/visual_capture.py": "ef8dd0662748706ed37050baaf4053ed9977b0c6b7f7c2eb86e4f36820b7b148",
+      "molsysviewer/viewer/core.py": "901a133e33367409b1b831a80c02a021269808b1db655ded1a8a23be5a07cf38",
+      "molsysviewer/viewer/scene.py": "67f21841c7820a3957498e32231fc9320a74d4c019e4f728ed9339675a4e957b",
+      "molsysviewer/js/src/index.ts": "79ce03327bb87fee75c614433912aa19e9f1ccd6cbcaae34845c3121cf578cca",
+      "molsysviewer/js/src/managers/movie-appearance.ts": "0b9893f06af1733139c926f98983b578996e494f7c6c0c6479dbca7b981dc343",
+      "molsysviewer/js/src/managers/movie-environment.ts": "65907d3403329b4b06349f987bce24d3ac8fcc3febfc1916263c0c8729af1ead",
+      "molsysviewer/js/src/managers/movie-timeline.ts": "0bfa334f0570d558ed98434379705414840ab77abcf4484b688f75841f9ea355",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "0109e18afa6efe616e7a9ebf05f2b817b3dddd7c6dc063508120fe333488c5b6",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "2a3d43a15b6f8169a363a2ee0e4e894ccb000cd1340aa429944144289ca38c78",
+      "molsysviewer/js/tests/e2e/movie-appearance-bridge.py": "cfa58cc04a86a32a0b12e0eb1ec67ea5653f2632de8f927a21f6dc415d1aa9f6",
+      "molsysviewer/js/tests/e2e/movie-appearance.e2e.ts": "f6eb50d848a9f90b38f618bca9a0c32e4aeea1adcdced970d4cd722c4b593223",
+      "molsysviewer/js/tests/unit/frontend-requests.test.ts": "66cf0fe7387bfcf8ec8e261ecf2115c02e9014dde13b1a6583f3134b912c4020",
+      "molsysviewer/js/tests/unit/movie-appearance.test.ts": "0b18ff53b3e3918ecaac14c8224f7d671a615c606eed53a5b1038c58e2ed7108",
+      "tests/test_movie_baseline.py": "b782c10f1ef56162205f717ae8cd7de47d68513098133da108c116790007262f",
+      "tests/test_movie_observation.py": "eeaa2f235260cc7c0e96ebe8e05448f4aa74aa4a52cd90e52f63277bc989e411",
+      "devtools/public_api_contract_baseline.json": "44d6173dc7b636255b623e9b9b0396f5bdaaf4f17e0dded33fa8ae0229cfb19b",
+      "devtools/public_api_inventory_baseline.json": "4a6df7e1b6afb7b6c5b954553548103ab3af051fa147f8edfdaab5e3be5417f9",
+      "devtools/public_api_stability.json": "58e848a494e6434f9cdb04d16c218919ea8989752c15e0102e1a235dcfbd119d",
+      "molsysviewer/js/package.json": "ec5bfaad7792f530e1d3b9ad7310ff42e5fca769fe7c4e0a8d78c24dfcc9e426",
+      "molsysviewer/js/package-lock.json": "d20e7b34bbc9901925e8a2c7d4109794c21ec4ee911245d402dcbe36a5c0a3fd"
+    },
+    "generated_runtime_sha256": "f77b3f06132c271ed97f4d997b40db3ea5cefdf87c66f3251538694d4dd9da51",
+    "harness_sha256": "3ca314e853e49f990c073adee897001c8d3850ae0e7f56199aed9204f7d89d85",
+    "runtime_notice": "Runtime and harness built from TypeScript via build:runtime/build:harness, without package version synchronization. Profile 413 completed those two stages before its separate E2E lexical error; profile 418 rebuilt the corrected E2E entries only. Final bundle/source bytes are received in 419/420/421/422. No generated bundle was manually read or edited.",
+    "compiler_launcher_adjustment": {
+      "path": "tests/test_movie_baseline.py",
+      "previous_sha256": "f869837478d612b595d24bf81e15a49bef5ceca0b7bd9e88acf05ccefdb88ca7",
+      "current_sha256": "b782c10f1ef56162205f717ae8cd7de47d68513098133da108c116790007262f",
+      "scope": "Only the explicit compiler guard launcher changes from the Unix .bin shim to node + typescript/bin/tsc. All other module ASTs, including the native receiving guard and its fixture helpers, are identical; compiler flags and the rest of the guard AST are identical. Production/runtime/JS inputs are unchanged. Broad default execution skips this opt-in body. Retain 419/420/421/422 and receive this final launcher explicitly in 424.",
+      "ast_equality_verified": true,
+      "platform_scope": "Actual compiler receiving remains Linux; selecting a portable Node entrypoint is not execution on other platforms."
+    }
+  },
+  "environment": {
+    "name": "molsyssuite@uibcdf_3.14",
+    "python": "3.14.7",
+    "providers": "Isolated frozen MolSysMT source, published PyUnitWizard 0.29.2 and cached public support. Routine environment not modified.",
+    "runtime_version_notice": "Archived MolSysMT reports 0+unknown; existing editable Viewer metadata reports 0.24.0+97.gdf4bf477.dirty. Neither identifies an installed release candidate. Exact source commits and retained hashes establish this scope.",
+    "public_support": {
+      "pyunitwizard": "0.29.2",
+      "smonitor": "0.21.0",
+      "argdigest": "0.15.0",
+      "depdigest": "0.15.1",
+      "ackredit": "0.9.0",
+      "pytest-receptor": "1.2.1",
+      "imageio": "2.37.4",
+      "imageio-ffmpeg": "0.6.0"
+    },
+    "imageio_ffmpeg_wheel": {
+      "filename": "imageio_ffmpeg-0.6.0-py3-none-manylinux2014_x86_64.whl",
+      "sha256": "c7e46fcec401dd990405049d2e2f475e2b397779df2519b544b8aab515195282",
+      "bytes": 29498237
+    },
+    "encoder_executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+    "encoder_version": "FFmpeg 7.0.2-static",
+    "molstar": "5.4.1"
+  },
+  "resource_policy": {
+    "maximum_receiving_cpus": 2,
+    "ram_gib": 4,
+    "own_swap_gib": 0,
+    "minimum_globally_available_gib": 2,
+    "execution": "Sequential user systemd scopes, CPU affinity, low-thread native/encoder settings, resource monitoring and owned-process cleanup. Free resources are not reservations."
+  },
+  "contracts": {
+    "wire": "Primary bootstraps advertise movie_environment_capture:[1]. Only an explicit request_visual_state capture_version=2 with movie_environment_capture=1 adds movie_environment_capture=1 and movie_environment to its reply. Background RGB and ambient/first directional-light intensity are read synchronously in the same completed draw as camera/frame. Ordinary replies retain their shape. No clamped/fabricated values; the closed lighting profile is dimensionless [0,1].",
+    "bounded_catalogue": "Renderer RGB background, ambient intensity and primary directional-light intensity only. Light layout/colours, other native renderer settings, page/CSS backgrounds and transparent page compositing are outside this profile; this is not a complete native renderer snapshot.",
+    "baseline": "capture_baseline_async retains its signature and starts an empty recipe from observed camera/frame/environment. Optional baseline environment_capture:{version:1,intent:...} records original declared intent separately from full observed scene.environment. Both Python and TypeScript validate the metadata and resolved catalogue; old recipes keep their previous shape.",
+    "application": "Static checking admits the original declared intent or recorded resolved values, not other later edits. Seek/preview/export replay captured environment constants, while tracked scene properties supply final values directly. Recipe/session recovery preserves metadata and scientific analyses. No scientific calculation or automatic preparation is introduced.",
+    "live_review": "review_rebase_async(timeout=5) uses the same observed-scene owner and returns a detached review/candidate. The latest successful review publishes one private per-view ticket only on the resumed caller after deadline/recipe/scene validation with no subsequent yield. Failed/cancelled capture preserves the previous valid review. Candidate camera/frame describe that observed moment; later navigation alone does not replace it.",
+    "acceptance": "Existing rebase(review) accepts an unchanged regenerated live report against the private observation and current scene/science. It preserves every track/key and sends no scene commands. Headless review_rebase remains independent of renderer tickets. Tickets are consumed/superseded by recipe replacement, a new successful live review, molecular projection/reset or close; accepted baseline metadata persists, tickets do not. Molecular invalidation releases the observation reference instead of retaining a replaced system.",
+    "task_api_fix": "#360 changes the screenshot task call from PluginContext.runTask to plugin.managers.task.run, whose Mol* 5.4.1 declaration supports createNewContext. The native wrapper already delegates there, so task isolation, task-ID cooperative abort and listener cleanup are retained. Do not cast away the type mismatch or globally abort unrelated tasks.",
+    "api": "Exactly one experimental async public addition: view.movie.review_rebase_async. 757/757 callables digested, zero missing/undigested routes, 456 declared digesters. Existing signatures unchanged."
+  },
+  "profiles": {
+    "probe-409-movie-observation-api": {
+      "native_exit": 0,
+      "seconds": 6.1788529539480805,
+      "selected_inputs": 5765,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 397.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Exactly one experimental async addition; 757/757 public callables digested, no existing call-shape changes.",
+      "invocation_sha256": "69f0149385b2333ea838726ba26ab4b5158b1fe58ac949977a2b724c458ca89c",
+      "inputs_sha256": "fe89ae2748a52fbdcef3185bc5f519a72db25156abcac2c1084fed23d34ba9b3",
+      "stdout_sha256": "356d14cd7d255424deceb758b0a0ec7df97575b3eb7eccfe204f4aa0deacd76b"
+    },
+    "probe-412-movie-observation-types": {
+      "native_exit": 0,
+      "seconds": 14.25758637394756,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 697.4,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Explicit pytest compiler guard passes with strict/module/JSON options against the actual Movie frontend/controller graph and Mol* native declarations.",
+      "invocation_sha256": "8fdc6a0f78f75867383f7d38375e0022b9ec6b8282cc605f113ab78331fb2520",
+      "inputs_sha256": "e56e392fd24d4c98771e2ef437720ab522af826857aecf33d518247177290d27",
+      "stdout_sha256": "72ae39df11d38bd0a09abdb0240b642701c309528a1402d08138c4435f710d0b"
+    },
+    "build-movie-observation-e2e-418": {
+      "native_exit": 0,
+      "seconds": 1.2812193189747632,
+      "selected_inputs": 5765,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 56.4,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Compile final Movie appearance/export/seek E2E entries; runtime/harness are retained from the completed first two stages of 413.",
+      "invocation_sha256": "82c88269a020303ae43f5904489c57b734fa831b3de4c6fbe0a2aba44fce68c3",
+      "inputs_sha256": "9084a4f7fbb4e992e850b38bb767433bcb6ee5240297e0feb29b9794e9990f1e",
+      "stdout_sha256": "f82cccb78e92a4cbaf5774114190b93a9acec5906e8e0d425f1dee7525ee7e3e"
+    },
+    "probe-416-movie-observation-lifecycle": {
+      "native_exit": 0,
+      "seconds": 18.38925371482037,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 434.9,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "42 passed: observations and real View close/reload/reset, construction/factory failure cleanup, no retained stale observation and navigation after review.",
+      "invocation_sha256": "52f401f2f0312553b1cfcc497d43fdc572cad3ba35bbe5b5d9772e063336a2ce",
+      "inputs_sha256": "09cd9a08b370eb13749e1d61cec1bbf45d0c3d3ac76574bd0cfd94900b68466d",
+      "stdout_sha256": "9ca676c084ef2b471887aa4d961b72e6f6cc7ad180356b9c9f5ead639f0c9907"
+    },
+    "probe-419-movie-observation-native": {
+      "native_exit": 0,
+      "seconds": 108.34136643307284,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2677.0,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "1 passed: real native scene/popup, observed environment different from declared Python intent, explicit acceptance, session recovery, 320x180 decoded observation video, existing 720p twelve-track/reset/capture story and layer reversal.",
+      "invocation_sha256": "9022d0091281a7903291585da36d902675cc1d4b5fc72de92c06660d68494d9b",
+      "inputs_sha256": "d41788b8c7cf481db919a837561c6c8436ebb57a2800d1a884143cd12a453143",
+      "stdout_sha256": "5178fa31758b3c547e6fefb1380ac21c9369eff499ab7f7dc2c304bee5e943e1"
+    },
+    "probe-420-movie-observation-export": {
+      "native_exit": 0,
+      "seconds": 109.61233730986714,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2116.3,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Real native export/browser decode, independent pixel references, cancellation, healthy unrelated task, late replies, invalid PNG and overlay refusal preserving the destination; screenshot settings/reservations restored.",
+      "invocation_sha256": "d5f431f1796fd570da9b868d7cbf71280784c77e1a8268021cf807ffc6ab7d2f",
+      "inputs_sha256": "d41788b8c7cf481db919a837561c6c8436ebb57a2800d1a884143cd12a453143",
+      "stdout_sha256": "f638a4b928d1da3a529393b1a0e9c209f5203336d72a85afbcf1746268fd452e"
+    },
+    "probe-421-movie-observation-regression": {
+      "native_exit": 0,
+      "seconds": 293.1318887260277,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 969.7,
+      "cleanup": {
+        "tracked": 45,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Root Ruff lint/format (1,026 files), dependency contract, indexes and whitespace; complete 61-file directed regression. Native and type opt-ins are received explicitly in 419/412, not inferred from broad skips.",
+      "invocation_sha256": "28c48666787438a2dd360deb6d7738d8c9ede72feb7b6cc749f626e6dae049a2",
+      "inputs_sha256": "d41788b8c7cf481db919a837561c6c8436ebb57a2800d1a884143cd12a453143",
+      "stdout_sha256": "8d1cdf75cd81088393410843605ecc1d33590f39b5ce33ffebd48bd640c18365"
+    },
+    "probe-422-movie-observation-js": {
+      "native_exit": 0,
+      "seconds": 3.48457687208429,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 120.2,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "Final exact-source unit receiving: 28 native Node cases, no failure/cancel/skip; detached same-draw values, legacy reply shape, compiler/catalogue and Python/TypeScript numerical oracle.",
+      "invocation_sha256": "5a7f9e5f7d84fac3e0f7cc0ca41700ee9c0e70974f0bed8714ceee979f7dd315",
+      "inputs_sha256": "d41788b8c7cf481db919a837561c6c8436ebb57a2800d1a884143cd12a453143",
+      "stdout_sha256": "65403814dd4739bf19f39fc32eca6eeb58c6f1ee36da515755d83efd2159c7ce"
+    },
+    "probe-423-movie-observation-docs": {
+      "native_exit": 0,
+      "seconds": 7.978082241956145,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 398.2,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "411 overlapping documentation/reference/reporting passes after the final receiving record. No source/guard inputs changed.",
+      "invocation_sha256": "ead5bd188fa66ee642186aeb82c106acde430f52e3788d77ede55a901deda7c3",
+      "inputs_sha256": "d41788b8c7cf481db919a837561c6c8436ebb57a2800d1a884143cd12a453143",
+      "stdout_sha256": "c47e0f8862601b9eed6803cbc9df343c5c5316079a03ac9b2e3b56b4eb90f3fc"
+    },
+    "probe-424-movie-portable-compiler": {
+      "native_exit": 0,
+      "seconds": 17.478170325048268,
+      "selected_inputs": 5767,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 694.6,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "scope": "1 explicit compiler guard passes using Node and the actual TypeScript bin entry. Final test source snapshot; no production/runtime changes.",
+      "invocation_sha256": "077b8eedffb6b49eac405936952114523c9887063c1732f2c1421c551ef3a1ab",
+      "inputs_sha256": "5e10a84466b264e5239f77fc938e5dfd0a1edb81c719e263506cc072122fd856",
+      "stdout_sha256": "2a4c4c670e4df358496706337335820973bca66929455cd91b8f3eb08e700753"
+    }
+  },
+  "native_observation": {
+    "ok": true,
+    "environment": {
+      "background": {
+        "color": 1193046
+      },
+      "lighting": {
+        "ambient": 0.35,
+        "diffuse": 0.65
+      }
+    },
+    "intent": {
+      "background": {
+        "color": 0
+      },
+      "lighting": {
+        "ambient": 0.2,
+        "diffuse": 0.8
+      }
+    },
+    "camera": {
+      "position": [
+        3,
+        4,
+        50
+      ],
+      "target": [
+        3,
+        4,
+        5
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ]
+    },
+    "frame": 2,
+    "session_reopened": true,
+    "decoded_video_corners": [
+      [
+        18,
+        51,
+        85
+      ],
+      [
+        18,
+        51,
+        85
+      ]
+    ]
+  },
+  "native_layer_members": [
+    {
+      "at": 0,
+      "site": true,
+      "other": false
+    },
+    {
+      "at": 1000,
+      "site": false,
+      "other": false
+    },
+    {
+      "at": 0,
+      "site": true,
+      "other": false
+    }
+  ],
+  "native_export": {
+    "size": [
+      1280,
+      720
+    ],
+    "frames": 4,
+    "fps": 4,
+    "duration": 1,
+    "scene_change": 3.2348802806712964,
+    "embedded_recipe": true,
+    "independent_capture_mean_errors": [
+      0.09805627893518519,
+      0.09888237847222223,
+      0.10372902199074074,
+      0.10504593460648148
+    ],
+    "timeout": 15,
+    "nativeCancellation": {
+      "observed": true,
+      "aborted": true,
+      "unrelatedHealthy": true,
+      "imageReserved": false,
+      "sampleLevel": 4
+    },
+    "browserVideo": {
+      "mean_color_error": 1.8151041666666667,
+      "sampled_channels": 384,
+      "width": 1280,
+      "height": 720,
+      "duration": 1
+    },
+    "image_timings": [
+      {
+        "width": 640,
+        "height": 360,
+        "start": 7708.5,
+        "elapsed": 2585
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "start": 11088.700000047684,
+        "elapsed": 3143.600000143051
+      },
+      {
+        "width": 640,
+        "height": 360,
+        "start": 15520.200000047684,
+        "elapsed": 3095.7999999523163
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 19966,
+        "elapsed": 9083.200000047684
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 29905.60000014305,
+        "elapsed": 8993.299999952316
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 39908.5,
+        "elapsed": 9066
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 49952.5,
+        "elapsed": 9062.5
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 60084.5,
+        "elapsed": 9128.100000143051
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 70104.10000014305,
+        "elapsed": 9158.5
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 80149,
+        "elapsed": 9202.300000190735
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "start": 90232.90000009537,
+        "elapsed": 9083.5
+      }
+    ]
+  },
+  "media": {
+    "media-observation-419": {
+      "appearance.mp4": {
+        "bytes": 43615,
+        "sha256": "fedfd442d2d195babde5efa60a9fceb276e336ea233f586fd91074499cc91e1c"
+      },
+      "appearance.msv": {
+        "bytes": 18526,
+        "sha256": "98797064e7d020ffc7a147a4e98006d5c5dfc7d7abd03e1b64aa809bab1e3a21"
+      },
+      "baseline.msv": {
+        "bytes": 18122,
+        "sha256": "02695ac074b6423cc24eb3234f78ec13fad892bc32edf2fd622655a488f07c2a"
+      },
+      "observed.mp4": {
+        "bytes": 8141,
+        "sha256": "fa8061c165545a64d619f2d075865d8a07078859c3c7cca45a56d6f338fe7e9b"
+      },
+      "observed.msv": {
+        "bytes": 18139,
+        "sha256": "36aa92c0deca08f23671b47cc01cdc16f198468f69f26ee0cafea872bb987eb5"
+      },
+      "verified.json": {
+        "bytes": 29328,
+        "sha256": "057aa406d1529ba2f14dfbb995541075652040d364a8f1769d47922b7c548b85"
+      }
+    },
+    "media-observation-export-420": {
+      "browser-decode.json": {
+        "bytes": 7856,
+        "sha256": "8000726cb8213e12e4fff24cc9222f88deb35de091523c620076581e81217ecf"
+      },
+      "browser-reference.json": {
+        "bytes": 4884,
+        "sha256": "936357cbe1e80cfd5aadbfa5157a6ef942dd65f612366ac396709347c973e6be"
+      },
+      "movie.mp4": {
+        "bytes": 40462,
+        "sha256": "2207c7b1bf70bda7c9a31820140092ae60f0962c99b2fcaa04b27c531ad82910"
+      },
+      "movie.zip": {
+        "bytes": 290703,
+        "sha256": "d032bdec18e1aec99acabab1980c15161885fa2d72b9a9fabc2e89130d0e9b69"
+      },
+      "verified.json": {
+        "bytes": 34648,
+        "sha256": "6642f9442bfd57cef0750d30d1ff4930d6d459b614487aa34a895cbd5855f49a"
+      }
+    }
+  },
+  "diagnostics": [
+    {
+      "profile": "probe-407-movie-observation",
+      "outcome": "51 passed, 2 failed, 1 skipped. New tests constructed a protocol reply while holding a foreign molecular lock and supplied full public visibility to a tracked-only private owner map. Prepare the reply before taking that lock and evaluate tracked visibility for that adapter. No scientific algorithm correction."
+    },
+    {
+      "profile": "probe-408-movie-observation",
+      "outcome": "116 passed, 1 native opt-in skipped before the later disposal and navigation/metadata cases. Final source is received by 416/421."
+    },
+    {
+      "profile": "probe-410-movie-observation-js",
+      "outcome": "28 passed before the type-safe task-manager call and E2E fixture path refinements; final unit owners are received by 422."
+    },
+    {
+      "profile": "probe-411-movie-observation-types",
+      "outcome": "Initial command lacked module/JSON compiler options and exposed the pre-existing #360 typed task API mismatch. Keep all three errors. Final explicit guard 412 uses the correct options and declared task-manager API."
+    },
+    {
+      "profile": "build-movie-observation-413",
+      "outcome": "Runtime and harness builds completed; E2E compilation failed on a new duplicate observed variable. Rename only that E2E local; completed runtime/harness outputs are reused, with final hashes tested natively."
+    },
+    {
+      "profile": "build-movie-observation-e2e-414",
+      "outcome": "Invocation failed before compilation: relative helper path resolved under the isolated provider cwd. Use the absolute helper path in 415/418."
+    },
+    {
+      "profile": "build-movie-observation-e2e-415",
+      "outcome": "E2E compilation passed before the subsequent output-path correction; final entries are rebuilt in 418."
+    },
+    {
+      "profile": "probe-417-movie-observation-native",
+      "outcome": "Run failed copying observed.msv after all functional assertions. Two new fixture outputs used relative worker paths and landed in repository root. Retain those exact bytes under the failed profile, then use explicit fresh-workspace paths. The failed run is not reclassified as green; final native 419 passes without weakening assertions."
+    }
+  ],
+  "validation_composition": {
+    "broad": {
+      "passed": 1439,
+      "failed": 0,
+      "skipped": 3,
+      "pytest_seconds": 288.18,
+      "warnings": 958
+    },
+    "native_observation": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "strict_types": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "javascript": {
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0
+    },
+    "reuse": "Overlapping directed/closeout counts are not summed. Broad native/type opt-ins and the installed imageio absence-path skip retain their explicit reasons.",
+    "documentation_closeout": {
+      "passed": 411,
+      "failed": 0,
+      "skipped": 0,
+      "pytest_seconds": 4.78
+    }
+  },
+  "guards": {
+    "task_api": "tests/test_movie_baseline.py::test_movie_frontend_type_contract",
+    "native_observation": "tests/test_movie_baseline.py::test_native_baseline_reset_and_capture",
+    "protocol_and_lifetime": "tests/test_movie_observation.py"
+  },
+  "remaining": [
+    "Explicit target mapping and v1 migration",
+    "Richer supported style/label/overlay and renderer catalogues",
+    "Studio authoring and portable interactive web assets/player",
+    "Complete M5 story and applicable hosted/installed/native Qt/actual-Jupyter/human qualification"
+  ],
+  "evidence_custody": {
+    "state": "verified",
+    "custodian": "Diego",
+    "approved_private_root": "~/.local/state/molsysviewer/evidence/robustness-20261106",
+    "subdirectory": "movie-observation-20261111",
+    "files": 144,
+    "bytes": 50441739,
+    "manifest_sha256": "b57e724d099236939692916fa9890266378b5bbd07dd0a45647b19a8aa0c365a",
+    "all_hashes_verified": true,
+    "private_directories_mode": "0700",
+    "private_files_mode": "0600",
+    "originals_retained": true,
+    "fixture_output_cleanup": "Two relative-path outputs from failed fixture 417 are preserved byte-for-byte in its retained profile and private manifest; remove only the redundant root copies by exact hash after transfer. Done; canonical workspace/private evidence retained.",
+    "compiler_launcher_supplement": {
+      "subdirectory": "movie-observation-compiler-20261111",
+      "files": 8,
+      "bytes": 1946051,
+      "manifest_sha256": "227b9a62dc27d5c1a469e21b846a83f17db7f8a60c2c79f5d1da45d81551aae9",
+      "all_hashes_verified": true,
+      "originals_retained": true
+    }
+  },
+  "publication": {
+    "tags_created": false,
+    "packages_published": false,
+    "remote_ci_dispatched": false,
+    "both_1_0_publications_paused": true
+  }
+}
