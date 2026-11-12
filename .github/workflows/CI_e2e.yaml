@@ -181,6 +181,15 @@ jobs:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
         run: python tests/_jupyter_live_capture.py
 
+      # Movie uses the same isolated kernel/server owner and retains its own
+      # receipt; the comm bridge E2E does not substitute for this host boundary.
+      - name: Receive Movie authoring in actual Jupyter
+        if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.e2e_lane == 'core') }}
+        shell: bash -l {0}
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: python tests/_jupyter_live_capture.py --profile movie
+
       - name: Preserve safe live-Jupyter command receipts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

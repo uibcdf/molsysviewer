@@ -73,8 +73,16 @@ def _scene_call_guard(args, kwargs, name, *, function=None):
         if (getattr(function, "__module__", None), getattr(function, "__qualname__", None)) in {
             ("molsysviewer.viewer.state", "StateMixin.save_state_async"),
             ("molsysviewer.viewer.state", "StateMixin.save_session_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.capture_baseline_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.review_rebase_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.reset_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.seek_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.play_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.pause_async"),
+            ("molsysviewer.viewer.movie", "MovieManager.export_async"),
         }:
-            # These two async owners acquire/validate at preparation and commit.
+            # These async owners acquire/validate at preparation and commit;
+            # pause only signals its existing owner and awaits its retirement.
             # Brief playback callbacks may own the lock on another kernel thread;
             # the capture service waits within its deadline instead of rejecting.
             if manager._blocked():

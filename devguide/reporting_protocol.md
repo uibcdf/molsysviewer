@@ -96,6 +96,18 @@ requires a bounded local selector profile before it can be used for a new closur
 
 ### Movie playback browser guard profile
 
+Actual-notebook Movie receiving uses the ordinary pytest selector
+`tests/test_movie_studio.py::test_live_jupyter_movie_authoring` with
+`MOLSYSVIEWER_JUPYTER_TEST=1`, or the explicit owner CLI
+`python tests/_jupyter_live_capture.py --profile movie`. Unselected skips are
+not receiving. The isolated owner checks kernel origins, keeps raw logs private
+and retires its own server/kernel/browser processes and ephemeral credentials.
+Core E2E CI registers this in addition to the transport-adapted `movie-studio`
+browser entry. The deterministic scene/loop controls live in
+`tests/test_movie_async_ownership.py`; each closing report must identify its
+relevant assertions. A passing adapted comm bridge or registration alone does
+not establish actual-notebook, native Qt, installed or human acceptance.
+
 For rendered Movie camera completion and interruption, the bounded frontend profile
 also accepts exactly `molsysviewer/js/tests/e2e/movie-playback.e2e.ts`. From
 `molsysviewer/js/`, build with `npm run build:harness` and

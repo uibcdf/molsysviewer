@@ -1,0 +1,283 @@
+{
+  "schema": "molsysviewer.movie_jupyter_receiving@1",
+  "date": "2026-11-12",
+  "completed_utc": "2026-11-12T22:46:44.413714+00:00",
+  "issues": [
+    "uibcdf/molsysviewer#365",
+    "uibcdf/molsysviewer#366"
+  ],
+  "parent": "uibcdf/molsysviewer#320",
+  "status": "source_received",
+  "scope": "Actual isolated Jupyter/kernel/anywidget/Mol* Movie authoring, native popups and Python/Studio interoperability; plus scoped Python/JS/native-media regressions. Not installed, hosted, native Qt, postponed human or full Movie acceptance.",
+  "sources": {
+    "molsysviewer_base": "7dd79c53c19f13852848d079d4189768fdd92435",
+    "working_code_sha256": {
+      ".github/workflows/CI_e2e.yaml": "9d2f6c631f9b91be59fd685bc2a7f2f90aa83847f9c58668ca0c96dc2bf9b761",
+      "molsysviewer/js/src/ui/panels/movie-panel.ts": "b0e2b2689f2a71a455bf533c5c6e61b5efed13feb2c55670a638c4475b6f01c7",
+      "molsysviewer/system_edits.py": "a9e1500f97f45e68de39fb53781ec45c887ea337149181e1e865b1f41f361e47",
+      "molsysviewer/viewer.js": "836966e4ed02baf46509d0afb9df8e7fd7d003b817ba08e3aaca7980c1c60882",
+      "molsysviewer/viewer/_movie_baseline.py": "a5183b09212153088c98b7e37093f40609a034fcff89fb5595d1dc1248512014",
+      "molsysviewer/viewer/_movie_export.py": "576abc9a6facc94cafdcf1e67ad205aa54b2761ef845a880410e598ea1fc3e7f",
+      "molsysviewer/viewer/_movie_playback.py": "78f1f12f05382e9bad80efafcb0789d2335fe7b7d94627e6bb030f43681d90c9",
+      "molsysviewer/viewer/_movie_rebase.py": "653ff1e94ad1266a2ecbfe0519f604d33067c13499c26db23ad45dd086e1a2fb",
+      "molsysviewer/viewer/_movie_seek.py": "216e77c8a4c94cdc7a0546847ff59bace573c355a5d0285c68226da56fb5f357",
+      "molsysviewer/viewer/_movie_studio.py": "c464c37fcaa9761e6432dd70edd2eb32423bda18a7b668a3017808a954e0ff5c",
+      "molsysviewer/viewer/core.py": "63cd1435ddfb4570901400ef9f11ec05699a746da0bb21a3dd597af9f82f484a",
+      "molsysviewer/viewer/movie.py": "99027a8a2d56a86446660d387148c6339e07c2f42a859c3e40186087e005a981",
+      "molsysviewer/viewer/panel_actions/__init__.py": "4e192937bc885e0e9175a623047ce94f6f2bd27a9c0423ed640693413cce3059",
+      "tests/_jupyter_live_capture.mjs": "1d2a8d971ac69677f183b7af735d282ba702101b286ac33e1cf224cdf8e56a7f",
+      "tests/_jupyter_live_capture.py": "083826aa720f1cd99fb8e5e759ccb98ee90ea2e4365180a57e5276a2c30c95c7",
+      "tests/_jupyter_movie.mjs": "3be516c08832d3b01dca4bb6795f91f53a568d84a23a5ea6af7d04b9c26a48cd",
+      "tests/_jupyter_movie.py": "810dea3bfa78950f4b3dae4f2a189e091b85977be22ba43a83ab26d8bd013ea8",
+      "tests/test_jupyter_live_capture.py": "fff898fd53b15f19e9ec38f8eb9cb93a82c920bab425082868e549e0a8af28c9",
+      "tests/test_movie_async_ownership.py": "d5bef4d7d1bab00050d68f7f0ff9aa8ad53a83654cdf16a64273787ac3bc96a3",
+      "tests/test_movie_studio.py": "393f4a8843eb28d85ad8ff26e4cb9b338ac80fa4ca9a37d367ed6ae8c312028b"
+    },
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "pyunitwizard": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+    "native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "runtime_notice": "Frozen source/support routes in the explicit Python 3.14 environment, not public package identities."
+  },
+  "actual_kernel": {
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "module_origin_file_sha256": {
+      "molsysviewer": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+      "molsysmt": "c3a838c2e858b86ed2ac484faa9632eb6a4d2ba314914d6e321c0dec9e935304",
+      "pyunitwizard": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+      "molsysmt._rust": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+    },
+    "private_origin_record_sha256": "e1391b6bb858e238203245bf70039d90b78a7ba8815794dc4a4e0bf936514e16",
+    "matches_independently_declared_origins": true
+  },
+  "results": {
+    "python": {
+      "passed": 549,
+      "skipped": 9,
+      "warnings": 592,
+      "scope": "Movie/capture/lifecycle/managed edits/API and Jupyter tools; native and optional skips are not passes. Native Movie/TypeScript/actual Movie Jupyter are separately received; other unselected host profiles remain separate."
+    },
+    "canonical_js": {
+      "passed": 466,
+      "skipped": 0
+    },
+    "strict_types_runtime_harness_build": true,
+    "ruff_check_and_format": "passed",
+    "actual_jupyter": {
+      "passed": 1,
+      "phases": 8,
+      "python_pause_of_gui_preview": true,
+      "gui_pause_of_python_preview": true,
+      "source_and_coordinates_preserved": true,
+      "close_late_reply_preserved": true,
+      "archive": {
+        "frames": 2,
+        "resolution": {
+          "width": 320,
+          "height": 180
+        },
+        "bytes": 31088
+      },
+      "independent_session_recipe_coordinates_evaluation_preserved": true,
+      "ephemeral_credentials_removed": true
+    },
+    "native_suites": [
+      "movie-playback",
+      "movie-seek",
+      "movie-appearance",
+      "movie-export",
+      "movie-legacy",
+      "movie-studio"
+    ],
+    "native_media": "Actual 1280x720 MP4 and independent decoded/frame checks, original 15-second image budget, native cancellation/late reply/invalid PNG refusal and session/legacy controls.",
+    "documentation": {
+      "passed": 452,
+      "index_check": "passed",
+      "full_sphinx_build": "not executed in this tranche"
+    }
+  },
+  "profiles": {
+    "build-612-movie-cross-surface": {
+      "native_exit": 0,
+      "seconds": 24.366216883063316,
+      "selected_inputs": 9905,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 577.0,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 596987904,
+      "evidence_sha256": {
+        "invocation.json": "eb4dd8cbffbeea75720e349786cc68708fcaa65472b4917624761c0f39602d39",
+        "inputs-before.json": "d0a6387bfaf7b10b30c89a3d0d562c6770e2d37b73ac3e6b2e2832e47dc36962",
+        "inputs-after.json": "d0a6387bfaf7b10b30c89a3d0d562c6770e2d37b73ac3e6b2e2832e47dc36962",
+        "stdout.log": "4f8dd0dc193fca54a57e097725c4f3c2394d85ecdc9e96c8de6e681054bc79f6"
+      }
+    },
+    "movie-studio-613-headless-final": {
+      "native_exit": 0,
+      "seconds": 146.5954772310797,
+      "selected_inputs": 9907,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 666.0,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 579198976,
+      "evidence_sha256": {
+        "invocation.json": "4c5567e997ad42bd3147f49db1b4e78b39e6e49342232e085d6df9c65f352250",
+        "inputs-before.json": "d11e4da5ef4eb649a338c02787faab96118be4654f41cd676a9015d14777b649",
+        "inputs-after.json": "d11e4da5ef4eb649a338c02787faab96118be4654f41cd676a9015d14777b649",
+        "stdout.log": "f9436843f3aea6edb7c0cbcc27ede374c8b4831bba5595e13dbcac5750538ed3"
+      }
+    },
+    "movie-studio-614-jupyter-interop-final": {
+      "native_exit": 0,
+      "seconds": 85.49681552313268,
+      "selected_inputs": 9907,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2810.6,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1759535104,
+      "evidence_sha256": {
+        "invocation.json": "6eb91d058a4a378a0cdc244fd0ae8898477c1eec339721a9c2e55355213e4eef",
+        "inputs-before.json": "d11e4da5ef4eb649a338c02787faab96118be4654f41cd676a9015d14777b649",
+        "inputs-after.json": "d11e4da5ef4eb649a338c02787faab96118be4654f41cd676a9015d14777b649",
+        "stdout.log": "d40393540e14643ea3630557b86dba2679bd5cc50219b5ac110202b144797293"
+      }
+    },
+    "movie-studio-615-native-regressions": {
+      "native_exit": 0,
+      "seconds": 272.6863418892026,
+      "selected_inputs": 9907,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2560.0,
+      "cleanup": {
+        "tracked": 87,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1584521216,
+      "evidence_sha256": {
+        "invocation.json": "42ab9f3fdfe843a2aa0f88ad3345e2c3c48645056446f9c0760092b9bb0b5886",
+        "inputs-before.json": "1fac346c4f4a5ade1260c78593d78ab9d8fc828480f3c1824edf7dea1a63b075",
+        "inputs-after.json": "1fac346c4f4a5ade1260c78593d78ab9d8fc828480f3c1824edf7dea1a63b075",
+        "stdout.log": "0969e76a7dc07f3cd3e620f5ad7cc391c229958babb85f8be09edaf4bbfa1a11"
+      }
+    },
+    "movie-studio-616-records-final": {
+      "native_exit": 0,
+      "seconds": 9.133367694914341,
+      "selected_inputs": 9907,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "evidence_sha256": {
+        "invocation.json": "928c40c845a9612fd8e5b80166ab4f508570d10231c296e7dbb08c484c9083cd",
+        "stdout.log": "e76e41e259f8b2e15f54daeb271f7bd75ba0ebca3fcb1b33a6a547de4b94fbd4",
+        "inputs-before.json": "1fac346c4f4a5ade1260c78593d78ab9d8fc828480f3c1824edf7dea1a63b075",
+        "inputs-after.json": "1fac346c4f4a5ade1260c78593d78ab9d8fc828480f3c1824edf7dea1a63b075"
+      }
+    }
+  },
+  "negative_to_positive": {
+    "scene_entry": {
+      "before": "602: 7 failed",
+      "after": "603: 8 passed including synchronous guard"
+    },
+    "correlated_admission": {
+      "before": "606: 3 failed, 8 passed",
+      "after": "607: 11 passed; 608: 17 passed with commit/encoder/CI controls"
+    },
+    "cross_loop": {
+      "before": "610: 1 failed, 17 passed (different-loop completion)",
+      "after": "611: 22 passed; all included in final 613"
+    }
+  },
+  "preserved_attempts": {
+    "600": "Actual notebook reaches detached Pause then fails UI idle wait.",
+    "601": "Actual seek refusal retains native/Python frame 0 and valid frame-2 recipe.",
+    "604": "Missing correlated seek result; diagnostics wait also reaches outer bound. This does not prove a blocked computation or thread deadlock.",
+    "605": "Diagnostic full flow passes before final admission/interop correction; does not erase failures.",
+    "609": "Full flow after admission fix passes; final interop is separately received in 614."
+  },
+  "guards": [
+    "tests/test_movie_async_ownership.py",
+    "tests/test_movie_studio.py::test_live_jupyter_movie_authoring"
+  ],
+  "ci": "Actual Movie host step registered in CI_e2e core lane, with separate safe command receipt; not dispatched in this tranche.",
+  "counter_scope": {
+    "source_delivered": 38,
+    "final_accepted": 1,
+    "original_total": 46,
+    "movie_stream": "additional mandatory work; #320 remains open"
+  },
+  "remaining": [
+    "Full M2 authoring/accessibility and applicable host receiving",
+    "M4 portable interactive Movie and accepted DOM overlay composition",
+    "M5 integrated pocket/ligand/interactions/labels story and media/web agreement",
+    "Hosted, exact installed, native Qt and postponed human acceptance"
+  ],
+  "human_files_unchanged": true,
+  "publication": "Paused: no candidate, tag, package, release, promotion or 1.0 declaration.",
+  "private_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-jupyter-20261112",
+    "custodian": "Diego Prada Gracia",
+    "files": 186,
+    "bytes": 79302774,
+    "manifest_sha256": "3b8644ad351bedf72d8905d7ea2359efa8b038c6a035061dc130046b49a227b3",
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "originals_retained": true,
+    "scope": "Original receiving artifacts and final changed code; not a full environment or complete intermediate source checkout. Originals retained. Runtime/config/credential trees excluded.",
+    "manifest_file": "manifest-2.json"
+  },
+  "integration": {
+    "guide_only_fast_forward": "d1e8b136a9df5b003775cda1b6a3bdc89191b4aa",
+    "changed_remote_paths": [
+      "MOLSYSSUITE_GUIDE.md"
+    ],
+    "tested_product_code_unchanged": true,
+    "environment": "Explicit maintainer-selected legacy Python 3.14 prefix with recorded frozen receiving scope; no environment installation or migration performed.",
+    "docs_hint": "The existing MolSysViewer PyPI-extra hint was replaced by the third-party Conda dependencies, following the received channel guidance; no product dependency changed."
+  }
+}

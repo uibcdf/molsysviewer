@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [#366: Python and Studio share loop-independent Movie completion and actual runtime control.](movie_python_studio_completion.md)
+- [#365: Movie async admission and bounded commits receive actual Jupyter across scene owners.](movie_async_scene_ownership.md)
+
 - [#352: Optional keyword changes preserve positional/variadic binding checks while every signature drift still requires review.](public_api_optional_keyword_classification.md)
 
 - [#351: Ordered native page/profile/window retirement preserves graphics cleanup, including failed independent result initialization.](qt_independent_window_teardown_abort.md)

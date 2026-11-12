@@ -923,6 +923,14 @@ failures have bounded scope. M2 host/accessibility receiving, M4 portable web
 and composition, and the integrated M5 story remain open; follow #320's
 active plan. No audit counter, manual pause or publication state changes.
 
+The [actual-notebook Movie receiving](movie_jupyter_receiving_20261112.json)
+extends that source scope through Jupyter's real kernel/comm boundary and both
+Python/Studio pause directions. #365/#366 protect transient scene admission,
+bounded commits, loop-independent completion and actual runtime projection.
+Their failed originals, deterministic controls and final media/session checks
+remain in the receipt. The next Movie work is full M2 host/accessibility review,
+M4 portable web/composition and the integrated M5 story; #320 stays open.
+
 The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
 receives #344's source recurrence: followers retain coherent prefixes until a
 native draw; scientific frame queries survive foreign scene ownership and

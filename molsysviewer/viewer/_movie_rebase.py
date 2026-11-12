@@ -128,9 +128,11 @@ def review_rebase(movie, camera, *, observation=None, capture_id=None):
 
 async def review_rebase_async(movie, *, timeout):
     from ._movie_baseline import observe_movie_scene
+    from .visual_capture import _capture_owned_call
 
     observation = await observe_movie_scene(movie, timeout=timeout, require_baseline=True)
-    with movie._view._system_edits._locked():
+
+    def commit():
         observation.validate(movie, delivery=True)
         capture_id = uuid4().hex
         review = review_rebase(movie, None, observation=observation, capture_id=capture_id)
@@ -139,6 +141,8 @@ async def review_rebase_async(movie, *, timeout):
         observation.validate(movie, delivery=True)
         movie._rebase_capture = capture_id, observation
         return review
+
+    return await _capture_owned_call(movie._view, commit, deadline=observation.deadline)
 
 
 def _accept_rebase(movie, review):

@@ -77,6 +77,7 @@ async def observe_movie_scene(movie, *, timeout, require_baseline=False):
             view, timeout=max(1e-9, deadline - time.monotonic()), endpoint_id=movie_endpoint(view)
         )
         movie._seek_request = request
+        movie._studio_runtime_changed()
         send_live_capture(view, request, protocol_version=2, movie_environment_capture=True)
         return captured, binding, original
 
@@ -100,12 +101,14 @@ async def observe_movie_scene(movie, *, timeout, require_baseline=False):
             finally:
                 if movie._seek_request is request:
                     movie._seek_request = None
+                    movie._studio_runtime_changed()
 
 
 async def capture_baseline(movie, duration_ms, *, timeout):
     duration = _duration(duration_ms)
     observation = await observe_movie_scene(movie, timeout=timeout)
-    with movie._view._system_edits._locked():
+
+    def commit():
         observation.validate(movie, delivery=True)
         scene = observation.captured.state
         timeline = _MovieTimeline(
@@ -125,3 +128,5 @@ async def capture_baseline(movie, duration_ms, *, timeout):
         recipe = timeline.to_dict()
         movie._install_timeline(timeline)
         return recipe
+
+    return await _capture_owned_call(movie._view, commit, deadline=observation.deadline)

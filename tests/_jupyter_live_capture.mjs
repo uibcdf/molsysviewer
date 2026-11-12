@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile, writeFile} from 'node:fs/promises';
 import {receiveJupyterMoving} from './_jupyter_moving_capture.mjs';
+import {receiveJupyterMovie} from './_jupyter_movie.mjs';
 
 const config=JSON.parse(await readFile(process.env.MOLSYSVIEWER_JUPYTER_CAPTURE_SETTINGS,'utf8'));
 const {chromium}=createRequire(config.viewer_root+'/molsysviewer/js/package.json')('playwright');
@@ -60,6 +61,11 @@ async function observeControllers(target){
     return c;
    };
   }});
+ });
+ await target.addInitScript(observePopupChildren);
+}
+
+function observePopupChildren(){
   const open=window.open.bind(window);window.__capturePopups=[];
   window.open=(...args)=>{
    const popup=open(...args);if(!popup)return popup;
@@ -71,7 +77,6 @@ async function observeControllers(target){
    };
    return popup;
   };
- });
 }
 
 async function kernel(code){
@@ -285,6 +290,10 @@ try{
     target:data.target_endpoint_id,viewer:data.viewer_id,session:data.session_id,stream:data.stream_id});if(window.__captureProtocolTraffic.length>512)window.__captureProtocolTraffic.shift();}
   });
  });
+ if(config.profile==='movie'){
+  await receiveJupyterMovie({page,kernel,config,report,openCanvas,rotate,camera,
+   observePopupChildren:target=>target.evaluate(observePopupChildren),setStage:value=>{stage=value;}});
+ }else{
  await receivePython(page,'state','notebook');await receivePython(page,'session','notebook');
  await receiveStudio(page,'state','notebook');await receiveStudio(page,'session','notebook');
  stage='canvas popup';const popup=await openCanvas();
@@ -315,6 +324,7 @@ try{
  // Delay actual rendered replies, never supply fake camera/scientific data.
  await page.bringToFront();const work=await openWork(page);
  await delayedReply(work,'cancel');await delayedReply(work,'timeout');
+ }
  report.known_host_diagnostics=report.page_errors.filter(error=>error.message==='No active debugger session');
  report.unexpected_page_errors=report.page_errors.filter(error=>error.message!=='No active debugger session');
  assert.deepEqual(report.unexpected_page_errors,[]);report.outcome='passed';

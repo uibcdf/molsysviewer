@@ -71,9 +71,15 @@ through **Studio → Export** to preserve the plan with its molecular data.
 
 Live actions require a compatible renderer and a running integrated async
 host. Unsupported hosts show an explanation and disable those actions. The
-ordinary experimental Qt host still needs that loop integration; this editor's
-browser tests do not qualify live Qt or actual-notebook acceptance. Interactive
+ordinary experimental Qt host still needs that loop integration. Automated
+development receiving covers actual Jupyter, canvas popups and detached Studio;
+native Qt and human acceptance remain separate. Interactive
 portable Movie playback and visible plot/legend composition remain in development.
+
+Python and Studio share the running Movie: either can pause a preview started
+by the other. Studio also shows when a capture or export was started from
+Python. Cancel such an operation through its Python task; **Cancel operation**
+in Studio belongs to operations started there.
 
 ## Pages
 

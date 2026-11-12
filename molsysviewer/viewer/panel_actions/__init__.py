@@ -60,6 +60,14 @@ MOVIE_ACTIONS = {
 }
 STUDIO_RESULT_DOMAINS.update(dict.fromkeys(MOVIE_ACTIONS, "movie"))
 
+# Only these correlated live/control intents may wait for scene admission.
+# Their owner, recipe revision or cancellation job is checked after unlock;
+# ordinary synchronous scene edits keep their immediate-refusal contract.
+_DEFERRED_MOVIE_ACTIONS = frozenset(
+    MOVIE_ACTIONS - {"movie_set_duration", "movie_clear", "movie_set_key", "movie_remove_track", "movie_remove_key"}
+    | {"movie_inspect"}
+)
+
 
 def _build_handlers() -> dict[str, PanelActionHandler]:
     handlers: dict[str, PanelActionHandler] = {}

@@ -76,7 +76,52 @@ cancellation and explicit overwrite/overlay policy. The destination is a path
 in the Python session, including for a remote session. Browser download,
 portable web presentation, visible DOM-overlay composition and the complete
 integrated scientific story remain separate M4/M5 work. This slice does not
-complete #320 or qualify installed, hosted, actual-notebook, Qt or human use.
+complete #320. The original adapted-transport receiving does not qualify an
+actual notebook; that boundary has its separate receiving below. Installed,
+hosted, native Qt and postponed human acceptance remain separate.
+
+### Actual notebook and Python/Studio ownership
+
+The [actual Jupyter receiving](movie_jupyter_receiving_20261112.json) uses the
+same isolated server/kernel owner as work-file capture, with the explicit
+`--profile movie` route. Its pytest guard is
+`tests/test_movie_studio.py::test_live_jupyter_movie_authoring`; core browser CI
+registers this actual-host step in addition to the adapted-transport Movie
+entry. Registration is not a hosted result. The kernel checks its own Viewer,
+MolSysMT, PyUnitWizard and native-module origins and native binary digest before
+constructing the real three-structure pentalanine view.
+
+The exact public Movie async entries delegate scene access to their bounded
+preparation/sample/commit owners. They retain pending molecular-edit refusal,
+but do not reject solely because a callback on another kernel thread briefly
+owns the scene. Capture/rebase commit waits within the original observation
+deadline. Export rejects a plan changed during encoder preparation before
+publishing a destination. Synchronous scene methods and `skip_digestion`
+retain their ordinary guard.
+
+Correlated live/control Movie intents may await scene admission using the
+existing unlock callback and widget host. This is one invocation admitted after
+unlock, not a retry of a scientific operation. Owner endpoint, recipe revision
+or cancellation job is revalidated then; stale plans and closed Views cannot
+apply a late intention. Ordinary synchronous scene edits keep their existing
+refusal behavior. Admission can wait for the current foreground owner; the
+renderer/capture budget remains the original budget once its async operation
+is admitted.
+
+Preview completion uses a thread-safe Future adapted to the waiting caller's
+loop, with cancellation shielding. Python and Studio share one existing
+execution owner: each can pause a preview started by the other. Connected
+Studio projects Python-started preview/capture/export activity too. Such an
+operation has no Studio cancellation job; the GUI does not offer a false
+Cancel action, and its Python task retains cancellation authority.
+
+Receiving covers typed keys, kept drafts after Python edits, fresh native
+structure/region/annotation draws, physical popup camera input, nested detached
+Studio preview and both pause directions, PNG/manifest export, independent
+session recovery and closing the initiator before releasing an actual held
+reply. Original failed entries and negative-to-positive ownership controls
+remain preserved under #365/#366. This does not complete Qt integration,
+authoring/accessibility review, portable web, overlay composition or M5.
 
 ## One model, several consumers
 

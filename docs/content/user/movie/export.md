@@ -19,7 +19,13 @@ print(result["path"])
 print(result["manifest"]["sampling"])
 ```
 
-Install the optional Movie dependencies with `pip install 'molsysviewer[movie]'`.
+For development, add the third-party Movie dependencies to the qualified Conda
+environment:
+
+```bash
+conda install -c conda-forge imageio imageio-ffmpeg
+```
+
 MP4/H.264 and WebM/VP9 use `imageio-ffmpeg>=0.6.0`; all formats use ImageIO for
 PNG decoding. A missing renderer or encoder raises an error.
 

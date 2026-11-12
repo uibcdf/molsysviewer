@@ -363,7 +363,8 @@ async def export_movie(
         raise FileExistsError(path)
     if not path.parent.is_dir():
         raise FileNotFoundError(path.parent)
-    sampling = _MovieSampling(movie._require_timeline().duration_ms, fps)
+    timeline = movie._require_timeline()
+    sampling = _MovieSampling(timeline.duration_ms, fps)
     view = movie._view
     require_host = getattr(view.widget, "_require_async_capture_host", None)
     if callable(require_host):
@@ -374,9 +375,12 @@ async def export_movie(
 
     def begin():
         nonlocal job
+        if movie._timeline is not timeline:
+            raise FrontendRequestError(reason="movie_export_superseded")
         job = _MovieExport(movie, sampling, width, height, include_overlays, sample_level)
         job.manifest["encoder"] = encoder
         movie._export_job = job
+        movie._studio_runtime_changed()
 
     try:
         await _capture_owned_call(view, begin, deadline=time.monotonic() + timeout)
@@ -444,3 +448,4 @@ async def export_movie(
     finally:
         if movie._export_job is job:
             movie._export_job = None
+            movie._studio_runtime_changed()

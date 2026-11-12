@@ -1,8 +1,9 @@
-"""Bounded live Movie preview driven by the primary renderer's draw clock."""
+"""Bounded live Movie preview driven by its explicit renderer's draw clock."""
 
 import asyncio
 import math
 import time
+from concurrent.futures import Future
 from copy import deepcopy
 from functools import partial
 from numbers import Real
@@ -72,7 +73,7 @@ class _MoviePlayback:
         self.endpoint = movie_endpoint(view)
         self.loop = loop
         self.revisions = _revisions(view)
-        self.done = asyncio.get_running_loop().create_future()
+        self.done = Future()
         self.pause_requested = False
         self.last = None
         self.error = None
@@ -167,6 +168,7 @@ async def play_movie(movie, *, loop, start_time_ms, timeout):
         nonlocal owner
         owner = _MoviePlayback(movie, loop=loop, start_time_ms=start_time_ms)
         movie._playback = owner
+        movie._studio_runtime_changed()
 
     try:
         await _capture_owned_call(view, begin, deadline=time.monotonic() + timeout)
@@ -196,6 +198,7 @@ async def play_movie(movie, *, loop, start_time_ms, timeout):
             finally:
                 movie._playback = None
                 owner.done.set_result(None)
+                movie._studio_runtime_changed()
 
 
 async def pause_movie(movie):
@@ -203,7 +206,7 @@ async def pause_movie(movie):
     if owner is None:
         return None
     owner.pause_requested = True
-    await asyncio.shield(owner.done)
+    await asyncio.shield(asyncio.wrap_future(owner.done))
     if owner.error is not None:
         raise owner.error
     return deepcopy(owner.last)

@@ -1,8 +1,12 @@
 """Real Movie model/host-loop protocol controls; native draws are received separately."""
 
 import asyncio
+import json
+import os
+import runpy
 from concurrent.futures import Future
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -237,3 +241,21 @@ def test_a_track_name_cannot_silently_retarget_a_new_key(view, target, prop):
     with pytest.raises(ValueError, match="another target or property"):
         send(view, "movie_set_key", **key(target=target, property=prop, time_ms=600, value=1))
     assert view.movie.to_dict() == before
+
+
+@pytest.mark.jupyter_runtime
+def test_live_jupyter_movie_authoring(tmp_path):
+    if os.environ.get("MOLSYSVIEWER_JUPYTER_TEST") != "1":
+        pytest.skip("Select MOLSYSVIEWER_JUPYTER_TEST=1 for actual Jupyter Movie receiving.")
+    output = tmp_path / "jupyter-movie"
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    assert owner["run"](output, profile="movie") == 0, f"Private Movie diagnostics: {output}"
+    receipt = json.loads((output / "command-result.json").read_text())
+    assert receipt["profile"] == "movie" and receipt["browser_summary"]["movie_authoring_cases"] == 8
+    observed = json.loads((output / "observations.json").read_text())
+    assert observed["outcome"] == "passed" and observed["movie_source_unchanged"]
+    assert observed["movie_cancel_late_reply_preserved"]
+    assert observed["movie_python_studio_pause"]
+    assert receipt["process_cleanup"]["survivors"] == [] and receipt["process_cleanup"]["errors"] == []
+    assert not (output / "settings.json").exists()
+    assert not (output / "config/jupyter_server_config.py").exists()

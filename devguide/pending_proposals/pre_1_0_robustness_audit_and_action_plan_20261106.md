@@ -40,6 +40,14 @@ capture and detached preview/export. Full M2 host/accessibility receiving,
 portable web/composition and M5's integrated scientific story remain with
 #320. This additional stream changes neither original counter above.
 
+**Actual-notebook Movie tranche — 2026-11-12:** the
+[shared receiving](../movie_jupyter_receiving_20261112.json) closes source
+defects #365/#366 and receives the complete notebook/popup flow, including
+Python/Studio pause in both directions. It retains 549 broader Python passes,
+466 JS passes, six native Movie entries and original failed attempts. This
+advances #320's M2 source scope; full host/accessibility acceptance, portable
+web/composition and M5 remain. Both original counters are unchanged.
+
 **E2 host-memory follow-up — 2026-11-12:** the
 [matched controls](../jupyter_memory_host_controls_receiving_20261112.json)
 isolate Jupyter active-cell-toolbar DOM/event growth without molecular imports.

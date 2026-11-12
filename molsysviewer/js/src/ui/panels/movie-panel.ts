@@ -201,7 +201,8 @@ export class MoviePanel extends BasePanel {
         if (this.state && !this.state.live_available) this.host.appendChild(note("Live Movie actions require a compatible renderer and an integrated async host. Timeline editing remains available; this host has not advertised that live route."));
         if (this.state?.busy) {
             const progress = note(""); progress.setAttribute("data-molsysviewer-movie-progress", "true"); this.host.appendChild(progress);
-            this.host.appendChild(this.button("Cancel operation", () => this.submit("movie_cancel", { job_id: this.state?.job_id })));
+            if (this.state.job_id) this.host.appendChild(this.button("Cancel operation", () => this.submit("movie_cancel", { job_id: this.state?.job_id })));
+            else this.host.appendChild(note("This operation was started from Python."));
         }
         if (this.tab === "timeline") this.timeline();
         else if (this.tab === "preview") this.preview();

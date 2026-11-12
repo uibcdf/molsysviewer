@@ -407,6 +407,15 @@ portable web playback, overlay composition and integrated scientific story
 remain open. Do not mark M2 or
 #320 complete from this slice. Human review and publication remain paused.
 
+The [separate actual-Jupyter receipt](../movie_jupyter_receiving_20261112.json)
+extends this slice through the real kernel/comm boundary and both Python/Studio
+pause directions. #365 tracks transient scene admission and #366 loop-bound
+completion/runtime projection. Their original failures and deterministic
+controls remain; kernel/source/binary origins, native drawing, independent
+session recovery, media and late-reply retirement are separately checked.
+The admitted browser/actual-notebook source scope does not close the remaining
+M2/M4/M5 or exact installed, hosted, Qt and human acceptance.
+
 Post-1.0 agent planning translates instructions into this same inspectable,
 validated and editable plan, with preview and export through the same owner.
 It must not create another playback engine or require direct DOM manipulation.

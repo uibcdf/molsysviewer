@@ -76,7 +76,7 @@ from .interaction import InteractionMixin
 from .load import LoadMixin
 from .molsysmt_interface import MolSysMTInterfaceMixin
 from .movie import MovieManager
-from .panel_actions import dispatch_panel_action
+from .panel_actions import _DEFERRED_MOVIE_ACTIONS, dispatch_panel_action
 from .panel_mode import PanelModeMixin
 from .popup_snapshot import PopupSnapshotMixin
 
@@ -1707,18 +1707,28 @@ class MolSysView(
         # edit owns the View. Preserve them until release, then re-enter through
         # the connector's host loop; scene commands keep their ordinary rejection.
         defer = None
-        if content.get("event") in {
-            "ready",
-            "registry_cleared",
-            "popup_endpoint_closed",
-            "structure_data_begin_ack",
-            "structure_data_chunk_ack",
-            "structure_data_complete",
-            "structure_data_error",
-            "request_dynamic_region_evaluation",
-            "request_interaction_frame",
-        }:
-            retained = dict(content)
+        movie_intent = (
+            content.get("event") == "interaction_context_action" and content.get("action") in _DEFERRED_MOVIE_ACTIONS
+        )
+        if (
+            content.get("event")
+            in {
+                "ready",
+                "registry_cleared",
+                "popup_endpoint_closed",
+                "structure_data_begin_ack",
+                "structure_data_chunk_ack",
+                "structure_data_complete",
+                "structure_data_error",
+                "request_dynamic_region_evaluation",
+                "request_interaction_frame",
+            }
+            or movie_intent
+        ):
+            # Movie live/control intentions have a separate async owner and
+            # are revalidated after admission. Do not lose their UI correlation
+            # merely because a brief host-loop callback owns the scene.
+            retained = deepcopy(dict(content)) if movie_intent else dict(content)
             retained_context = copy_context()
 
             def defer():

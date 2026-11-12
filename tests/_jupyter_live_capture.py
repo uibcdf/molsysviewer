@@ -54,6 +54,14 @@ def _safe_browser_summary(path: Path) -> dict:
                 "background session",
                 "visible retry state",
                 "visible retry session",
+                "Movie notebook authoring",
+                "Movie Python edit",
+                "Movie notebook seek",
+                "Movie popup camera",
+                "Movie detached preview",
+                "Movie detached export",
+                "Movie session recovery",
+                "Movie close cancellation",
             }
             | {
                 f"{api} {origin} {kind}"
@@ -80,7 +88,13 @@ def _safe_browser_summary(path: Path) -> dict:
         for source, target, allowed in (("stage", "phase", phases), ("error_type", "error_type", error_types)):
             value = report.get(source)
             summary[target] = value if isinstance(value, str) and value in allowed else "unclassified"
-    for key in ("capture_restore_cases", "strong_restore_cases", "studio_cases", "moving_capture_cases"):
+    for key in (
+        "capture_restore_cases",
+        "strong_restore_cases",
+        "studio_cases",
+        "moving_capture_cases",
+        "movie_authoring_cases",
+    ):
         value = report.get(key)
         if type(value) is int and 0 <= value <= 100:
             summary[key] = value
@@ -150,8 +164,8 @@ def _stop_owned_processes(owned):
 
 
 def run(output: Path, *, profile: str = "full") -> int:
-    if profile not in {"full", "background", "lifecycle"}:
-        raise ValueError("Select the full, background or lifecycle receiving profile.")
+    if profile not in {"full", "background", "lifecycle", "movie"}:
+        raise ValueError("Select the full, background, lifecycle or movie receiving profile.")
     for name in ("jupyterlab", "ipykernel", "anywidget", "psutil"):
         if importlib.util.find_spec(name) is None:
             raise RuntimeError(f"The live Jupyter guard requires {name}.")
@@ -201,7 +215,8 @@ def run(output: Path, *, profile: str = "full") -> int:
     interrupted = None
     started = time.monotonic()
     result = {
-        "scope": "Actual Jupyter/kernel/anywidget/Mol* work-file receiving; no installed or visible Qt claim.",
+        "scope": f"Actual Jupyter/kernel/anywidget/Mol* {profile} receiving; no installed or visible Qt claim.",
+        "profile": profile,
         "state": "starting",
         "output": str(output),
     }
@@ -213,6 +228,7 @@ def run(output: Path, *, profile: str = "full") -> int:
                     "token": token,
                     "viewer_root": str(root),
                     "output": str(output),
+                    "profile": profile,
                 }
             )
         )
@@ -309,6 +325,27 @@ def run(output: Path, *, profile: str = "full") -> int:
                     runpy.run_path(str(Path(__file__).with_name("_jupyter_widget_lifecycle.py")))["notebook_cells"]()
                 )
             ]
+        elif profile == "movie":
+            import runpy
+
+            expected = {
+                name: importlib.util.find_spec(name).origin
+                for name in ("molsysviewer", "molsysmt", "pyunitwizard", "molsysmt._rust")
+            }
+            cells = runpy.run_path(str(Path(__file__).with_name("_jupyter_movie.py")))["notebook_cells"](
+                output, expected
+            )
+            notebook["cells"] = [
+                {
+                    "id": f"movie-{index}",
+                    "cell_type": "code",
+                    "metadata": {},
+                    "source": source.splitlines(True),
+                    "execution_count": None,
+                    "outputs": [],
+                }
+                for index, source in enumerate(cells)
+            ]
         (output / "notebooks/capture.ipynb").write_text(json.dumps(notebook))
         with (output / "server.log").open("w") as log:
             (output / "server.log").chmod(0o600)
@@ -343,6 +380,7 @@ def run(output: Path, *, profile: str = "full") -> int:
                     "background": "_jupyter_background_capture.mjs",
                     "lifecycle": "_jupyter_widget_lifecycle.mjs",
                     "full": "_jupyter_live_capture.mjs",
+                    "movie": "_jupyter_live_capture.mjs",
                 }[profile]
             )
             browser = subprocess.Popen([str(node), str(entry)], env=env, stdout=log, stderr=log)
@@ -418,7 +456,7 @@ def run(output: Path, *, profile: str = "full") -> int:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--profile", choices=("full", "background", "lifecycle"), default="full")
+    parser.add_argument("--profile", choices=("full", "background", "lifecycle", "movie"), default="full")
     arguments = parser.parse_args()
     selected = arguments.output
     if selected is None:

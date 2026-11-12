@@ -111,6 +111,29 @@ def test_safe_browser_summary_accepts_completed_receiving_without_a_failure_phas
     }
 
 
+def test_safe_movie_summary_retains_closed_counts_without_kernel_origins(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    report.write_text(
+        json.dumps(
+            {
+                "outcome": "failed",
+                "stage": "Movie popup camera",
+                "error_type": "AssertionError",
+                "movie_authoring_cases": 3,
+                "kernel_origin": {"private": "private-sentinel"},
+            }
+        )
+    )
+    assert owner["_safe_browser_summary"](report) == {
+        "status": "available",
+        "outcome": "failed",
+        "phase": "Movie popup camera",
+        "error_type": "AssertionError",
+        "movie_authoring_cases": 3,
+    }
+
+
 def test_safe_browser_summary_retains_moving_scope_without_raw_transport(tmp_path):
     owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
     report = tmp_path / "observations.json"

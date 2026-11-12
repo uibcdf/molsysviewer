@@ -173,6 +173,7 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
             timeout=remaining,
         )
         movie._seek_request = request
+        movie._studio_runtime_changed()
         if reset_baseline:
             with view.history._atomic_operation(("movie", "", "reset")):
                 with view.history.suspended():
@@ -226,3 +227,4 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
             finally:
                 if movie._seek_request is request:
                     movie._seek_request = None
+                    movie._studio_runtime_changed()

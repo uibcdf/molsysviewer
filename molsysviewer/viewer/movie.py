@@ -955,6 +955,10 @@ class MovieManager:
             self._studio = MovieStudio(self)
         return self._studio
 
+    def _studio_runtime_changed(self):
+        if self._studio is not None:
+            self._studio.publish()
+
     def _session_recipe(self, state):
         if self._timeline is None:
             return None

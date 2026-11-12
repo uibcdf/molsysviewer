@@ -86,7 +86,17 @@ class MovieStudio:
             "n_tracks": timeline.n_tracks if timeline else 0,
             "system_loaded": view.molsys is not None,
             "live_available": available,
-            "busy": self.job.action if self.job else None,
+            "busy": (
+                self.job.action
+                if self.job
+                else "movie_play"
+                if movie._playback is not None
+                else "movie_export"
+                if movie._export_job is not None
+                else "movie_capture"
+                if movie._seek_request is not None
+                else None
+            ),
             "job_id": self.job.id if self.job else None,
             "progress": deepcopy(self.progress),
             "last_output": deepcopy(self.last_output),
