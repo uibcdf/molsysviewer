@@ -229,3 +229,18 @@ and all 26 owned processes retire. Isolate that control before another full
 campaign. Do not merge it with #354's recovered-widget observation or #305's
 hosted context-menu failure. No prolonged acceptance or original outcome is
 credited; the exact cache/backing-buffer guard remains a separate pass.
+
+The [corrected receiver receipt](../jupyter_popup_controls_receiving_20261112.json)
+reproduces the hidden-control focus race separately and records actual kernel
+imports through MolSysMT PR #721. Its `519` campaign completes thirty scientific
+cycles in one kernel over 1,749.912 s. All 10,182 selected inputs are unchanged;
+all 25 owned processes retire and no resource stop occurs. The last weak
+controller observation contains only the connected 3,983-atom witness.
+
+Keep memory acceptance partial: median Python RSS stays within the observed
+block ranges and median cycle time is about 57–59 s, but median browser JS heap
+grows from 225.682 to 312.548 to 397.349 MiB. Charged-memory medians also grow
+from 1,902.945 to 2,197.049 to 2,429.283 MiB. That is not by itself a retaining
+path, a leak diagnosis or evidence of a new Mol* defect. Attribute it with a
+small controlled comparison, retaining the original scientific and ownership
+checks; do not repeat full heaps or another thirty-cycle run blindly.

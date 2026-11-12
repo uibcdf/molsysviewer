@@ -402,6 +402,18 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Receiver qualification — 2026-11-12:** the
+[source receipt](../jupyter_popup_controls_receiving_20261112.json) receives
+the hidden-controls focus correction and actual kernel imports through
+[MolSysMT PR #721](https://github.com/uibcdf/molsysmt/pull/721). Two current-support
+guards and 52 affected controls pass in distinct scopes. #364 narrows the
+original `513`/`515` outer-provider claim without rewriting raw results.
+The corrected same-kernel campaign passes thirty functional cycles in
+1,749.912 s with all actual selected inputs unchanged. Browser heap/charged
+memory grows across blocks and needs targeted attribution before complete E2
+memory acceptance; owner review and #344 remain separate. Original progress
+stays 38/46 source-delivered and 1/46 finally accepted.
+
 **Working receiving — 2026-11-12:** the
 [component-cache correction](../molstar_component_cache_receiving_20261112.json)
 has an actual-Jupyter backing-buffer before/after guard and five corrected
@@ -656,8 +668,10 @@ plan plus #705 evidence.
    without a new hosted matrix or CI run for every incremental commit.
 4. Retain the completed scale anchors and fifteen correct same-kernel cycles.
    Retain #356's corrected backing-buffer guard and #363's upstream monitoring.
-   Isolate `513`'s cycle-four popup Next/frame observation before repeating the
-   complete thirty-cycle gate; keep #354's original observation separate. Retain
+   Receive MolSysMT #718 / PR #721's readiness correction and #364's actual-kernel
+   provenance. Retain the thirty passing functional cycles and attribute the
+   cross-block browser-memory growth with a smaller controlled run; keep the
+   original `513` failure and #354's observation separate. Retain
    source/installed/human scopes separately. Complete mandatory Movie #320;
    B3.6/E3 remain separate recommendations and E4 human review remains postponed.
 5. Finish F2 documentation, then prepare the concrete separately authorized

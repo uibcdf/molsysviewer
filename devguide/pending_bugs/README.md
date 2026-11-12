@@ -25,11 +25,12 @@ list.
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
-### Partially done (10)
+### Partially done (11)
 
 - [`direct_state_rejection_erases_scene.md`](direct_state_rejection_erases_scene.md) — [#317](https://github.com/uibcdf/molsysviewer/issues/317) — Rejected direct state imports erase existing scene objects before validation finishes. *(high, reproduced)*
 - [`empty_whole_summary_queries_none.md`](empty_whole_summary_queries_none.md) — [#323](https://github.com/uibcdf/molsysviewer/issues/323) — Empty Whole summaries query MolSysMT with None and emit eight startup errors. *(low, reproduced)*
 - [`failed_factory_retains_owned_view.md`](failed_factory_retains_owned_view.md) — [#316](https://github.com/uibcdf/molsysviewer/issues/316) — Failed new_view initialization retains its unreturned View and widgets. *(medium, reproduced)*
+- [`nested_jupyter_receiving_provenance.md`](nested_jupyter_receiving_provenance.md) — [#364](https://github.com/uibcdf/molsysviewer/issues/364) — Qualify the molecular sources actually imported by nested Jupyter receiving. *(medium, reproduced)*
 - [`qt_file_dialog_absolute_path_typing.md`](qt_file_dialog_absolute_path_typing.md) — [#287](https://github.com/uibcdf/molsysviewer/issues/287) — Native Qt file-dialog guard types while its modal window is inactive. *(medium, reproduced)*
 - [`retired_notebook_molecular_data.md`](retired_notebook_molecular_data.md) — [#356](https://github.com/uibcdf/molsysviewer/issues/356) — Identify why closed notebook controllers retain molecular data during repeated real work. *(medium, measured)*
 - [`standalone_html_retains_owned_view.md`](standalone_html_retains_owned_view.md) — [#324](https://github.com/uibcdf/molsysviewer/issues/324) — Standalone HTML construction retains internally created Views and widget registrations. *(medium, reproduced)*

@@ -502,7 +502,8 @@
       "errors": []
     },
     "tracking": "Unclassified E2 receiving observation under #315; distinguish earlier recovered-hidden-frame #354 and hosted context-menu #305. No new product cause or pass claimed.",
-    "next": "Preserve the original attempt. Isolate actual popup button readiness/event/request propagation before repeating the full campaign; do not lengthen the wait or send a repair seek."
+    "next": "Preserve the original attempt. Isolate actual popup button readiness/event/request propagation before repeating the full campaign; do not lengthen the wait or send a repair seek.",
+    "source_inputs_scope": "Unchanged selected outer inputs only; complete original inner molecular source was not included. See the dated #364 correction."
   },
   "integration_custody": {
     "state": "verified_copy",
@@ -514,5 +515,13 @@
     "manifest_sha256": "ee60935db88d9539873fa8fa0efd632b5e126e426858d3fb652adde525930c3e",
     "permissions": "directories 0700; files 0600",
     "originals_deleted": false
+  },
+  "qualification_correction_20261112": {
+    "issue": "uibcdf/molsysviewer#364",
+    "affected_nested_attempts": [
+      513,
+      515
+    ],
+    "correction": "The nested owner launcher selected a copied working molecular source different from the outer declared aee7aa65. The original outcomes and raw records remain. Their unchanged outer input set is not a complete inner-source qualification. Current 517 receiving records actual kernel imports and freezes the actual scientific/addon/support roots. Do not generalize this correction automatically to differently routed controls."
   }
 }

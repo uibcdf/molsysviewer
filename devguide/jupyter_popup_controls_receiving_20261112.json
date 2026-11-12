@@ -1,0 +1,365 @@
+{
+  "schema": "molsysviewer.jupyter_popup_receiving@1",
+  "date_utc": "2026-11-12",
+  "viewer_source": "c5115dff7f94fe17b5724e4863465a803c76f60e",
+  "owner_issue": "uibcdf/molsysmt#718",
+  "owner_pr": "https://github.com/uibcdf/molsysmt/pull/721",
+  "contribution_source": "5816bec86d03eb08d8ee3bebf4d033dbcc85187b",
+  "consumer_provenance_issue": "uibcdf/molsysviewer#364",
+  "causal_diagnostic": {
+    "profile": 515,
+    "trial": 2,
+    "legacy_failure": {
+      "name": "TimeoutError",
+      "error": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded."
+    },
+    "after_focus": {
+      "active_next": false,
+      "active": "Show canvas controls",
+      "visibility": "visible",
+      "inert": false,
+      "frame": 1
+    },
+    "enter_target": "Show canvas controls; no Next click",
+    "qualified_control": {
+      "active_next": true,
+      "active": "Next Step",
+      "visibility": "visible",
+      "inert": false,
+      "frame": 2
+    },
+    "scope": "Actual focus/key/click evidence on the copied working-source route. It does not prove the original 513 focus state or exact-aee7aa65 qualification."
+  },
+  "source_preparation": {
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "qualified_python_files": 3169,
+    "scope": "Every Git-owned scientific/addon Python file matches the named source. All actual inner files/data are covered by the retained unchanged 516 manifest. Not an installed artifact or one clean checkout.",
+    "runtime_version": "0+unknown; no generated _version.py present; source identity comes from the file comparison, not that version label.",
+    "receiver_base": "d9c9d4b75bd2",
+    "inner_manifest_files": 3693,
+    "inputs_before_sha256": "f95efaf7a598ae82393f3168a227620efb447e20c5053ed1610fe4e8b6083069",
+    "inputs_unchanged": true,
+    "original_preparation_failure": "Initial preparation verified Git-owned bytes but failed while recording a nonexistent generated _version.py; no source or test was repaired to disguise that failure. This existing-tree record is separate."
+  },
+  "kernel_imports": {
+    "molsysmt": {
+      "origin_role": "scientific/addon receiving tree",
+      "module_version": "0+unknown",
+      "origin_file_sha256": "c3a838c2e858b86ed2ac484faa9632eb6a4d2ba314914d6e321c0dec9e935304"
+    },
+    "molsysmt._rust": {
+      "origin_role": "scientific/addon receiving tree",
+      "module_version": null,
+      "origin_file_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+    },
+    "molsysviewer": {
+      "origin_role": "MolSysViewer checkout",
+      "module_version": "0.24.0+97.gdf4bf477.dirty",
+      "origin_file_sha256": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4"
+    },
+    "molsysviewer_molsysmt": {
+      "origin_role": "scientific/addon receiving tree",
+      "module_version": null,
+      "origin_file_sha256": "1665840cb208aabed8ea4e6f800c3444e3219c14abb5ed1eb90ae3bfa16ef3f0"
+    },
+    "pyunitwizard": {
+      "origin_role": "copied support",
+      "module_version": "0.29.4+2.g9bb4f5f",
+      "origin_file_sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f"
+    },
+    "smonitor": {
+      "origin_role": "copied support",
+      "module_version": "0.21.0",
+      "origin_file_sha256": "f60b1c2bff72dbbb70fe403e23908e62a8297f6190e18fdcac090092b84e6800"
+    },
+    "argdigest": {
+      "origin_role": "copied support",
+      "module_version": "0.15.0",
+      "origin_file_sha256": "64d9f5893968c71bce80599c9da0580346b728e0fad18990e58e9a69f251df2f"
+    },
+    "depdigest": {
+      "origin_role": "copied support",
+      "module_version": "0.15.1",
+      "origin_file_sha256": "401e1f2b69d68053bdf91b524eb9d876fa2839908ca2dc5df17e77d3a389b6b1"
+    }
+  },
+  "results": {
+    "original_support_guards": {
+      "profile": 516,
+      "passed": 2,
+      "failed": 0,
+      "pyunitwizard": "0.28.1 copied overlay; distinct from the outer editable 0.29.4 route"
+    },
+    "current_support_guards": {
+      "profile": 517,
+      "passed": 2,
+      "failed": 0,
+      "pyunitwizard": "0.29.4+2.g9bb4f5f copied editable source",
+      "science": "Exact compared aee7aa65 scientific/addon Python bytes and canonical extension; not an installed artifact"
+    },
+    "receiver_quality": {
+      "profile": 518,
+      "passed": 52,
+      "failed": 0,
+      "other": [
+        "Ruff check",
+        "Ruff format check",
+        "Node syntax",
+        "developer-guide validation and indexes",
+        "diff check"
+      ]
+    },
+    "counting": "Separate overlapping scopes; not a single aggregate full run.",
+    "final_records": {
+      "profile": 520,
+      "passed": 431,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Reporting protocol, developer-guide links and architecture status. Overlaps earlier quality scopes."
+    }
+  },
+  "profiles": {
+    "515": {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 80.20982963196002,
+      "selected_inputs": 6158,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2858.3,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "5a4e6e4d60893c46929256f825f0fc79b283a5ebf2eea142e8a11dd10fb3f90f"
+    },
+    "516": {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 94.50800734804943,
+      "selected_inputs": 9852,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3054.5,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "ba3237be7aec0c1154bdb1882d8c315f6341ff7be4d172ca190b74e094fff232"
+    },
+    "517": {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 88.99283108301461,
+      "selected_inputs": 10180,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2963.5,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "1871eec75f1fd84e295a3b23e51cd7d36c11beba4478020b1148717c8c59cf65"
+    },
+    "518": {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 8.477518976898864,
+      "selected_inputs": 10182,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 112.6,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "invocation_sha256": "12f2c0b27c75a5dc014697be300dd65161b03be6db4a69acc3085b81af6d245c"
+    },
+    "520": {
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 5.485550349811092,
+      "selected_inputs": 10182,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 179.3,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
+  },
+  "prolonged": {
+    "profile": 519,
+    "state": "passed_functional_campaign",
+    "cycles": 30,
+    "scientific_kernel_count": 1,
+    "seconds": 1749.912,
+    "active_seconds_per_cycle": 10,
+    "blocks": [
+      {
+        "first": 1,
+        "last": 10,
+        "seconds": 586.667,
+        "cycle_seconds": {
+          "median": 58.674,
+          "mad": 1.935,
+          "min": 52.618,
+          "max": 62.623
+        },
+        "native_rss_mib": {
+          "median": 566.506,
+          "mad": 1.1,
+          "min": 490.727,
+          "max": 567.645
+        },
+        "charged_mib": {
+          "median": 1902.945,
+          "mad": 85.783,
+          "min": 1604.246,
+          "max": 2098.746
+        },
+        "js_heap_mib": {
+          "median": 225.682,
+          "mad": 19.01,
+          "min": 155.442,
+          "max": 254.106
+        },
+        "observed_controller_counts": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "first": 11,
+        "last": 20,
+        "seconds": 567.543,
+        "cycle_seconds": {
+          "median": 57.225,
+          "mad": 1.416,
+          "min": 52.432,
+          "max": 60.527
+        },
+        "native_rss_mib": {
+          "median": 514.381,
+          "mad": 5.1,
+          "min": 509.25,
+          "max": 567.391
+        },
+        "charged_mib": {
+          "median": 2197.049,
+          "mad": 83.348,
+          "min": 2013.453,
+          "max": 2438.645
+        },
+        "js_heap_mib": {
+          "median": 312.548,
+          "mad": 13.325,
+          "min": 258.536,
+          "max": 387.63
+        },
+        "observed_controller_counts": [
+          2,
+          3
+        ]
+      },
+      {
+        "first": 21,
+        "last": 30,
+        "seconds": 575.372,
+        "cycle_seconds": {
+          "median": 57.105,
+          "mad": 1.29,
+          "min": 54.781,
+          "max": 61.101
+        },
+        "native_rss_mib": {
+          "median": 541.004,
+          "mad": 27.625,
+          "min": 513.328,
+          "max": 568.762
+        },
+        "charged_mib": {
+          "median": 2429.283,
+          "mad": 74.922,
+          "min": 2320.637,
+          "max": 2665.52
+        },
+        "js_heap_mib": {
+          "median": 397.349,
+          "mad": 27.952,
+          "min": 339.19,
+          "max": 468.062
+        },
+        "observed_controller_counts": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "all_popup_controls_start_hidden_and_receive_focus": true,
+    "all_cycle_scientific_and_persistence_assertions": true,
+    "last_observed_controllers": [
+      {
+        "disposed": false,
+        "connected": true,
+        "atoms": 3983
+      }
+    ],
+    "inputs_unchanged": true,
+    "selected_inputs": 10182,
+    "peak_sum_owned_rss_mib": 3836.1,
+    "peak_cgroup_observed_mib": 2798.93,
+    "minimum_observed_global_available_gib": 10.97,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 25,
+      "survivors": [],
+      "errors": []
+    },
+    "source_and_artifact_scope": "Source receiving only: scientific/addon bytes aee7aa65, receiver contribution files, copied editable PyUnitWizard 0.29.4+2.g9bb4f5f, compiled extension 4ffb82e4 and Viewer c5115dff. Not owner integration, a current-main full run, installed qualification or human acceptance.",
+    "memory_disposition": "Python RSS and cycle latency stay in the observed block ranges; the browser JS heap and charged memory grow across blocks. That alone proves neither a leak nor a specific molecular owner. Retain #356/#315 E2 for targeted attribution before complete memory acceptance.",
+    "result_sha256": "939accb5828941cb45b3c2c0e8155b0fd71481e76c11d0db873e32b49bcf9e1f",
+    "kernel_imports_sha256": "4ce7bece00ffb39019b620ae35f239f5d74822dd1a9930b09b2a6498f5d1b2a3",
+    "invocation_sha256": "f3cd8dc20801701c2fd5f70bb1fa7f7008081d05a63c9ff1d402c3c8da95b210"
+  },
+  "remaining": [
+    "Explain the cross-block browser-heap/charged-memory growth with a small controlled run; functional 30-cycle completion is not complete E2 memory acceptance.",
+    "Owner review/integration of PR #721 and the bounded retrospective #364 source-claim review.",
+    "Keep #344, changed-head hosted/installed and postponed human qualification separate. No tag/package/release action."
+  ],
+  "original_progress": "38/46 source-delivered; final applicable acceptance 1/46. No new original outcome credited by these receiver corrections.",
+  "initial_contribution_source": "076bc95affac57a6f0c05f0a780cce37a6610617",
+  "receiver_files_sha256": {
+    "system_panel_jupyter.py": "a367cd9884683055e5c46db6c7fabaaa2eeec61ed91015ea514daa989263f429",
+    "jupyter_receiving_guard.py": "53dc836045725ed9cc46b91e7d362fb507ba38533b2b3687da27ee8e40964c05",
+    "prolonged_session_jupyter.mjs": "89075eabbe46e694b16a74132e9f2d3c605fde1bd8acd3b4a48d1d9c48804b8a"
+  },
+  "contribution_receiving_scope": "The three executed receiver files match the reconciled contribution; merged native/main changes are not qualified by this older-scientific-source run.",
+  "temporary_resources": {
+    "review_worktree": ".pytest_cache/mt-popup-focus-20261112/source",
+    "receiving_tree": ".pytest_cache/mt-popup-focus-20261112/receiving",
+    "purpose": "PR #721 review and smaller E2 memory attribution; preserve while those owners need exact source/data.",
+    "cleanup_condition": "After owner integration, verified evidence custody and the follow-up scope no longer needs these exact copies. No automatic cleanup of unrelated files."
+  },
+  "custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "jupyter-receiver-20261112",
+    "file_count": 3894,
+    "payload_bytes": 194021337,
+    "manifest_sha256": "a911c5266d41823659294604af7bc7a8c7846d5015fc2861f0c6548702649c53",
+    "permissions": "directories 0700; files 0600",
+    "originals_deleted": false,
+    "ephemeral_configuration_and_runtime_credential_files_excluded": true,
+    "original_logs": "Preserved privately; not claimed credential-free and never published with this receipt."
+  }
+}
