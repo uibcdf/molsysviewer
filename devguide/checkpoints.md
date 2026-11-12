@@ -907,6 +907,14 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current delivery objective — 2026-11-12:** follow the
+[documentation-review handoff](path_to_1_0.md#documentation-review-handoff).
+Finish Movie, scientific integration, integrated/prolonged receiving, complete
+documentation and the applicable source/installed/manual acceptance before
+asking the maintainer for the final documentary review. The existing ledger
+owns detailed IDs and evidence; no new percentage, publication authorization
+or resumption of postponed human tests follows from this objective.
+
 The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
 receives #344's source recurrence: followers retain coherent prefixes until a
 native draw; scientific frame queries survive foreign scene ownership and
@@ -3048,7 +3056,8 @@ Main findings:
 
 ## What is next
 
-Follow the [current dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard),
+Follow the [agreed closure route](path_to_1_0.md#closure-route),
+then the [current dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard),
 [activation card](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#activation-card-and-priorities) and
 [work-item queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions).
 Unresolved scope decisions and release/manual boundaries stay explicit there.

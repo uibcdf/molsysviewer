@@ -1,5 +1,97 @@
 # Path to 1.0.0 (Unified Release Plan)
 
+## Documentation review handoff
+
+**Objective adopted with the principal maintainer — 2026-11-12:** reach a
+technically complete, qualified and documented MolSysViewer 1.0 candidate,
+so that the maintainer can concentrate on reviewing the documentation and
+writing the paper before publication. Do not call this milestone reached
+while planned implementation, unresolved required acceptance or package
+qualification still needs doing.
+
+This section defines the delivery objective and closure order under
+`uibcdf/molsysviewer#315`. The
+[robustness ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
+retains the detailed work IDs, dispositions and evidence; the
+[Movie plan](pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md)
+owns #320's accepted functional scope. This is one programme, not a new
+backlog or progress denominator. The audit's source-delivery percentage is
+not a percentage of release readiness or an estimate of remaining time.
+
+### Closure route
+
+| Order | Existing work | Required exit |
+| --- | --- | --- |
+| 1. Finish Movie | #320, M2/M4/M5, retaining the received model/evaluator/export foundations | Author the agreed pocket/ligand/interactions/labels story through Python and Studio; preview, seek, save/reopen, video and portable web playback agree. Complete the accepted renderer/overlay scope and document its limits. Future natural-language planning remains post-1.0. |
+| 2. Close scientific integration | #264; C4, D5.4 and D6.7 in #315; linked provider issues | Receive remaining contact-family/panel work and the current addon/provider pair. Give initialization and popup failures a causal correction or an explicitly accepted, bounded evidenced disposition. Preserve scientific ownership and the Python-first API. |
+| 3. Receive integrated and prolonged use | E2, #354/#356/#364 and MolSysMT #723 | Complete the adopted scale and same-kernel protocol with qualified host-only/settled memory measurements, actual kernel provenance and save/recover/continue assertions. Keep original failures and diagnostic host ablations distinct from default-host acceptance. |
+| 4. Complete documentation and qualify the agreed pair | F1/F2/F3, G1 and G2 preparation, #294 and MolSysMT #524 | Finish and internally review documentation/examples against settled functionality; consolidate applicable source/browser/scientific CI and, when separately authorized, exact installed-candidate checks. Record actual versions, producer commits, builds, files, channels and hashes. |
+| 5. Complete earlier human acceptance | E4 and the already agreed manual scenarios | Prepare one short, concrete review round and resume it when the maintainer chooses. Receive required observations before the documentation handoff, or obtain an explicit scoped disposition. Postponed observations are not passes. |
+| 6. Deliver the documentation for final review | This milestone, under #315 | All technical exits below are evidenced; provide a bounded reading route and the prepared publication procedure. Only the maintainer's documentary review, paper and subsequent publication decision remain. |
+
+Independent work may overlap: provider coordination need not stop Movie or
+documentation preparation, and documentation should enter candidate checks
+once the relevant functionality is settled. Do not leave its first technical
+review until the maintainer's final reading. Batch hosted checks at substantive
+checkpoints rather than running CI after every incremental change.
+
+### Definition of done
+
+Before announcing this handoff, the current readiness record under #315 must reference
+evidence for all of the following:
+
+- The accepted 1.0 functionality is implemented and its Python, Studio,
+  context-menu, popup and persistence paths agree where applicable. Stable,
+  experimental and unavailable capabilities are stated accurately.
+- Required defects and integration outcomes have verified fixes or explicit
+  accepted dispositions. A closed provider issue, successful subset or old
+  source campaign does not qualify changed consumer code.
+- Applicable complete source/platform/browser/scientific gates and exact
+  installed-pair qualification are received on their declared inputs. Retain
+  failures, skips and exclusions; qualify replacements instead of combining
+  successful prefixes.
+- The accepted integrated/scale/prolonged-use protocol and prior required
+  human observations are complete within their declared scope. No unspecified
+  manual round remains to be requested after handing over the documentation.
+- The documentation is written, built and internally reviewed; its references,
+  tutorials and executable examples match the qualified functionality. Core
+  and addon documentation follow the
+  [ownership rule](core_and_addon_boundary.md#add-on-documentation-and-catalogue-ownership).
+- The maintainer receives a concise reading checklist, the source/artifact
+  identities and qualification record, declared limitations and the prepared
+  [publication/citation procedure](release_and_citation.md). Publication steps
+  that can only be observed after release remain identified as such; G2's
+  actual public distribution and archival checks are not marked complete early.
+
+Do not silently drop mandatory Movie or accepted addon families to reach this
+milestone. B3.6/E3 retain their explicit scope decisions rather than becoming
+automatic implementation requirements. Experimental Qt keeps its own stated
+qualification; this goal does not require promoting it to a supported core
+host. Already deferred remotes, Mol* upgrades and agent-language integration
+retain their post-1.0 scope.
+
+### After the handoff
+
+The maintainer reviews the documentation and writes the paper. Apply review
+corrections and run the checks affected by the final diff. If that review
+exposes a functional or scientific defect, reopen the affected acceptance
+before claiming readiness; do not hide it as an editorial adjustment.
+
+No further feature-development phase is planned between that handoff and
+publication. Final metadata, immutable source/artifact identities, required
+qualification for any changed producer and post-publication verification
+remain normal release operations. Earlier receipts apply only while their
+inputs and scope remain valid.
+
+**Authorization is unchanged:** agreeing this goal does not lift the pauses
+on candidates, tags, packages, promotions or either 1.0 publication, and does
+not resume postponed human observations. Prepare concrete reviewable actions
+through the existing authorization route. The agreed final publication remains
+coordinated MolSysViewer 1.0.0 and MolSysMT 1.0.0; no intermediate version or
+artifact is selected by this planning change.
+
+## Current ledger and dated checkpoints
+
 **Current action ledger — 2026-11-11:** the
 [robustness audit and plan under #315](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 records the new integrity/lifecycle findings, plot and scientific-figure work,

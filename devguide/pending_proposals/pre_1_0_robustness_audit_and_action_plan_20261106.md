@@ -14,6 +14,16 @@ supersedes: []
 
 # Pre-1.0 robustness audit and action plan — 2026-11-06
 
+**Delivery objective adopted — 2026-11-12:** this ledger closes toward the
+[documentation-review handoff](../path_to_1_0.md#documentation-review-handoff).
+The maintainer must receive a technically complete, qualified and documented
+tool, with only final documentary review, the paper and publication decision
+remaining. The linked plan owns the closure order and definition of done;
+this ledger retains detailed IDs, evidence and the original counters. Earlier
+human observations and exact installed qualification must not remain hidden
+work after that handoff. Their current pauses require their established
+authorization/resumption route; this objective does not lift them.
+
 **Current consolidation — 2026-11-11:** the original counter remains
 **38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance.
 The [C3 receipt](../host_integration_closeout_20261110.json) receives host
@@ -673,6 +683,12 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
+Use the [adopted closure route](../path_to_1_0.md#closure-route) for programme
+order: finish Movie, close scientific integration and prolonged/reliability
+receiving, then deliver internally checked documentation and the applicable
+source/installed/manual qualification. The items below retain the technical
+dependencies and existing stable IDs; they are not another priority order.
+
 H5MSM public-default 1.0 consumption is
 [received](../h5msm_default_receiving_20261111.json) on MolSysMT `aee7aa65`,
 including ordinary session save/reopen with stored mechanics and retained
@@ -714,8 +730,11 @@ plan plus #705 evidence.
    original `513` failure and #354's observation separate. Retain
    source/installed/human scopes separately. Complete mandatory Movie #320;
    B3.6/E3 remain separate recommendations and E4 human review remains postponed.
-5. Finish F2 documentation, then prepare the concrete separately authorized
-   artifact/platform/installed/manual gates. Candidate/publication remain paused.
+5. Finish and internally review F2 documentation alongside the concrete,
+   separately authorized artifact/platform/installed/manual gates. All required
+   technical acceptance precedes the maintainer's final documentary handoff;
+   final review corrections retain their applicable release checks.
+   Candidate/publication remain paused.
 
 Viewer incremental commits use `[skip ci]`; do not launch CI for every small
 change. MolSysMT contributions retain its owner PR/checkpoint rules. Human

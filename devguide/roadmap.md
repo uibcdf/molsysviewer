@@ -1,8 +1,12 @@
 # Development roadmap
 
-**Current execution:** use the [active #315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
+**Current objective — 2026-11-12:** reach the
+[documentation-review handoff](path_to_1_0.md#documentation-review-handoff):
+implementation, required acceptance, exact-pair qualification and internally
+reviewed documentation complete before the maintainer's final reading and paper.
+Follow that closure route and the [active #315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
 and its [executable queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions).
-It owns work order, delivered/final counters and outstanding acceptance. The
+That ledger owns detailed work items, delivered/final counters and outstanding acceptance. The
 dated roadmap below retains its historical inputs; it does not override that
 ledger or authorize a candidate, package, tag or either 1.0 publication.
 

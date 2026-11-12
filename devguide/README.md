@@ -6,8 +6,9 @@ Git and `docs/content/developer/changes_notes.md` already preserve chronology.
 
 ## Read first
 
-For a new session aimed at 1.0, begin with the
-[active robustness audit and action ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md),
+For a new session aimed at 1.0, begin with the agreed
+[documentation-review handoff objective](path_to_1_0.md#documentation-review-handoff),
+then the [active robustness audit and action ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md),
 then the [current handoff](checkpoints.md#resume-in-one-page), its
 [ordered next actions](checkpoints.md#what-is-next) and the
 [1.0 release plan](path_to_1_0.md). The middle of the checkpoint
@@ -47,9 +48,10 @@ documents, and historical audits.
 ## Current status and planning
 
 The [2026-11-06 robustness audit](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
-under #315 owns the current action order, stable work IDs, evidence boundaries
-and closure criteria. Start with file/state integrity and lifecycle findings,
-then plot authority, scientific figures and integrated receiving. New design
+under #315 owns the detailed work IDs, evidence boundaries and closure criteria.
+Follow the [agreed closure route](path_to_1_0.md#closure-route) toward a
+technically qualified tool whose documentation is ready for the maintainer's
+final review. New design
 recommendations remain distinguishable from previously approved task families.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
