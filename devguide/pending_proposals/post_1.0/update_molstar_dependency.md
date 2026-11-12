@@ -38,6 +38,12 @@ The current package lock installs 5.4.1; the local upstream source checkout
 is newer but is not the viewer's installed dependency. Newer Mol* capabilities
 must not silently become 1.0 promises.
 
+The separate [component-cache follow-up](../molstar_component_cache_upstream_followup.md)
+under uibcdf/molsysviewer#363 tracks the already known upstream
+`01/B1 = 04/B1` lifetime defect and eventual removal of the narrow local build
+repair. A published version must be inspected and received before dropping
+that adapter; monitoring does not change this report's post-1.0 scope.
+
 ## How
 
 Select an exact published version, inspect upstream changes affecting the

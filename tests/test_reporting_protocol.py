@@ -70,6 +70,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         try:
             entry = (root / selector).read_text(encoding="utf-8")
             index = (js_root / "tests/unit/index.test.ts").read_text(encoding="utf-8")
+            builder = (js_root / "scripts/build-test-bundles.mjs").read_text(encoding="utf-8")
             scripts = json.loads((js_root / "package.json").read_text(encoding="utf-8"))["scripts"]
         except (OSError, ValueError, KeyError) as error:
             return [f"guard {selector!r} cannot be indexed: {error}"]
@@ -94,7 +95,13 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         requirements = (
             'import test from "node:test";' in entry,
             *owner_requirements,
-            "tests/unit/index.test.ts" in scripts.get("build:test:js", ""),
+            scripts.get("build:test:js") == "node scripts/build-test-bundles.mjs unit",
+            'entryPoints: [path.join(root, "tests/unit/index.test.ts")]' in builder,
+            'outfile: path.join(root, "tests/unit/dist-index.js")' in builder,
+            'platform: "node"' in builder,
+            'format: "esm"' in builder,
+            "const target = targets[process.argv[2]];" in builder,
+            "await build({ ...target, bundle: true, plugins: [molstarComponentCachePlugin()] });" in builder,
             "npm run build:test:js" in scripts.get("test:js", ""),
             "node --test tests/unit/dist-index.js" in scripts.get("test:js", ""),
         )
@@ -655,6 +662,35 @@ def test_state_handler_unit_guard_resolves_its_runner(tmp_path):
     assert validate_guard(ROOT, STATE_HANDLER_UNIT_GUARD) == []
     assert validate_guard(tmp_path, STATE_HANDLER_UNIT_GUARD)
     assert validate_guard(ROOT, STATE_HANDLER_UNIT_GUARD + "::run")
+
+
+@pytest.mark.parametrize("broken", ["entry", "runner", "missing_builder"])
+def test_unit_guard_rejects_a_shared_build_route_that_loses_its_owner(tmp_path, broken):
+    """An addressable guard needs the real canonical bundle and its runner."""
+    js_root = ROOT / "molsysviewer/js"
+    target = tmp_path / "molsysviewer/js"
+    files = [
+        "tests/unit/state-handler.test.ts",
+        "tests/unit/index.test.ts",
+        "scripts/build-test-bundles.mjs",
+        "package.json",
+    ]
+    for relative in files:
+        destination = target / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text((js_root / relative).read_text())
+    assert validate_guard(tmp_path, STATE_HANDLER_UNIT_GUARD) == []
+    if broken == "entry":
+        path = target / "scripts/build-test-bundles.mjs"
+        path.write_text(path.read_text().replace("tests/unit/index.test.ts", "tests/unit/other.test.ts"))
+    elif broken == "runner":
+        path = target / "package.json"
+        metadata = json.loads(path.read_text())
+        metadata["scripts"]["test:js"] = "node --test tests/unit/other.js"
+        path.write_text(json.dumps(metadata))
+    else:
+        (target / "scripts/build-test-bundles.mjs").unlink()
+    assert validate_guard(tmp_path, STATE_HANDLER_UNIT_GUARD)
 
 
 def test_the_protocol_records_the_flat_archive_as_a_decision():

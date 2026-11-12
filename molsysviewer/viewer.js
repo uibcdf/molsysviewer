@@ -60727,15 +60727,18 @@ function getSaccharideComponentMap(data) {
   }
   return map4;
 }
-var getUniqueComponentNames = memoize1((data) => {
+var uniqueComponentNamesCache = /* @__PURE__ */ new WeakMap();
+var getUniqueComponentNames = (data) => {
+  if (uniqueComponentNamesCache.has(data)) return uniqueComponentNamesCache.get(data);
   const uniqueNames = /* @__PURE__ */ new Set();
   const { label_comp_id, auth_comp_id } = data.atom_site;
   const comp_id = label_comp_id.isDefined ? label_comp_id : auth_comp_id;
   for (let i = 0, il = comp_id.rowCount; i < il; ++i) {
     uniqueNames.add(comp_id.value(i));
   }
+  uniqueComponentNamesCache.set(data, uniqueNames);
   return uniqueNames;
-});
+};
 function getStructAsymMap(atomic, data) {
   const map4 = /* @__PURE__ */ new Map();
   const { auth_asym_id, label_asym_id, label_entity_id } = atomic.chains;

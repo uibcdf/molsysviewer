@@ -907,6 +907,20 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The working [component-cache receiving](molstar_component_cache_receiving_20261112.json)
+identifies Mol*'s strong BasicData-keyed cache and receives the narrow local
+repair with an actual-Jupyter backing-buffer before/after guard. Upstream
+already tracks it as `01/B1 = 04/B1`; Diego chose
+[local follow-up #363](pending_proposals/molstar_component_cache_upstream_followup.md)
+instead of another upstream report. Ten build/refusal controls, 443 JS units,
+actual-Jupyter backing-buffer release and the corrected 442-case covering
+quality collection pass in their separate recorded scopes. The full thirty-cycle
+attempt passes three cycles, then fails the fourth popup's Next/frame wait;
+inputs are unchanged and all owned processes retire without a resource stop.
+Isolate that E2 observation before another campaign. #356 remains partial;
+#344 remains a separate failed combined-capture gate;
+no original outcome or final release acceptance is added at this checkpoint.
+
 The [Jupyter/buffer isolation receipt](jupyter_buffer_isolation_receiving_20261111.json)
 keeps #344 and #356 open. Capture prefixes pass separately but the complete
 entry remains failed. Direct Mol* controls release the native owners while

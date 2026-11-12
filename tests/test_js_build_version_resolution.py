@@ -18,6 +18,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 JS = ROOT / "molsysviewer" / "js"
 NODE = shutil.which("node")
@@ -59,6 +61,48 @@ def test_the_runtime_takes_its_version_from_the_release_when_there_is_no_version
     bundle = _build(js, RELEASE_VERSION="9.8.7")
 
     assert '"9.8.7"' in bundle, "the runtime did not take the release version it was given"
+
+
+@pytest.mark.parametrize("target", ["runtime", "unit", "harness"])
+@pytest.mark.parametrize("unreviewed", ["version", "bytes"])
+def test_build_routes_refuse_unreviewed_molstar_cache_inputs(tmp_path, target, unreviewed):
+    """Every actual build route must reject an unqualified provider repair."""
+    assert NODE is not None
+    js = _miniature_checkout(tmp_path)
+    (js / "node_modules").unlink()
+    (js / "node_modules").mkdir()
+    (js / "node_modules" / "esbuild").symlink_to(JS / "node_modules" / "esbuild")
+    provider = js / "node_modules" / "molstar"
+    provider.mkdir()
+    metadata = json.loads((JS / "node_modules" / "molstar" / "package.json").read_text())
+    if unreviewed == "version":
+        metadata["version"] = "99.0.0"
+    (provider / "package.json").write_text(json.dumps(metadata))
+    relative = Path("lib/mol-model-formats/structure/basic/properties.js")
+    source = provider / relative
+    source.parent.mkdir(parents=True)
+    native = (JS / "node_modules" / "molstar" / relative).read_text()
+    source.write_text(native + "\n// Unreviewed provider bytes.\n" if unreviewed == "bytes" else native)
+
+    entry = {
+        "runtime": "src/index.ts",
+        "unit": "tests/unit/index.test.ts",
+        "harness": "tests/e2e/harness.ts",
+    }[target]
+    (js / entry).parent.mkdir(parents=True, exist_ok=True)
+    (js / entry).write_text(
+        'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n'
+    )
+    command = [NODE, str(js / "scripts" / "build-runtime.mjs")]
+    if target != "runtime":
+        command = [NODE, str(js / "scripts" / "build-test-bundles.mjs"), target]
+    result = subprocess.run(command, cwd=js, capture_output=True, text=True, timeout=30)
+    assert result.returncode != 0
+    expected = "component-cache compatibility before building" if unreviewed == "version" else "reviewed bytes"
+    assert expected in result.stderr
+    assert not (js.parent / "viewer.js").exists()
+    assert not (js / "tests/unit/dist-index.js").exists()
+    assert not (js / "tests/e2e/harness.bundle.js").exists()
 
 
 def test_the_version_file_outranks_the_environment(tmp_path):

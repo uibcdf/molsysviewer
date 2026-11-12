@@ -316,6 +316,15 @@ build/core registration.
 
 ### GroupPanel unit guard profile
 
+The shared Node unit lane builds through exactly
+`node scripts/build-test-bundles.mjs unit`, then runs
+`node --test tests/unit/dist-index.js`. The builder owns the canonical
+`tests/unit/index.test.ts` entry, Node/ESM output and the same qualified native
+component-cache adapter used by the runtime and browser harness. The local
+validator follows this explicit builder as well as each unit's index import;
+an unrelated entry, missing builder or changed runner is not addressability.
+This shared route also applies to the addon-panel and state-handler profiles.
+
 The bounded frontend unit selector is exactly
 `molsysviewer/js/tests/unit/group-panel.test.ts`, with no suffixes, globs or
 commands. From `molsysviewer/js`, run `npm run test:js`; its bundled Node test

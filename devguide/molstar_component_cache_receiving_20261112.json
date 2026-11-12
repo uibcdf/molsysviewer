@@ -1,0 +1,518 @@
+{
+  "schema": "molsysviewer.molstar_component_cache_research@1",
+  "time_utc": "2026-11-12T02:09:34.453148+00:00",
+  "viewer_base": "c061b865",
+  "upstream_after_pull": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+  "upstream_worktree": "clean; pull --ff-only; no source edits",
+  "external_publication": "No Mol* issue/comment/PR is published or authorized. Diego selected MolSysViewer #363 for upstream-resolution monitoring and local continuation.",
+  "finding": "getUniqueComponentNames uses memoize1 -> strong Map<BasicData,Set<string>> -> atom_site -> coordinate columns -> shared buffer. Trigger: missing explicit chem_comp.",
+  "reproductions": {
+    "5_4_1": "Native independent minimal CommonJS control: 5/5 inputs retain BasicData/table and 36 coordinate bytes. Real five-cycle molecular input retains 5 x 744-byte buffers.",
+    "current_v6": "Executed selected unchanged source modules after pull through actual workspace exports; fallback 5/5 retained, explicit-table 5/5 collected. WeakMap-only differential collects all 10; full chemical/saccharide-map values unchanged.",
+    "actual_jupyter_before": {
+      "profile": 499,
+      "passed": 0,
+      "failed": 1,
+      "failure": "buffer must actually be collected",
+      "native_collected": {
+        "structure": true,
+        "model": true,
+        "axis": true,
+        "buffer": false
+      }
+    },
+    "actual_jupyter_fixed": {
+      "profile": 503,
+      "passed": 1,
+      "failed": 0,
+      "native_collected": {
+        "structure": true,
+        "model": true,
+        "axis": true,
+        "buffer": true
+      },
+      "witness_coordinates_unchanged": true,
+      "witness_fresh_draw": true
+    },
+    "javascript_units": {
+      "profile": 500,
+      "passed": 443,
+      "failed": 0
+    },
+    "native_fixed_five_cycles": {
+      "profile": 508,
+      "cycles": 5,
+      "retired_controllers_models_axes_backing_buffers_collected": true,
+      "witness_coordinates_unchanged": true,
+      "witness_fresh_draw": true,
+      "scope": "Direct Mol*/Python receiving, not a Jupyter run."
+    }
+  },
+  "failed_or_incomplete_scopes": {
+    "492_and_494": "No usable Node heap snapshot; native SIGTERM retained, no cause inferred. No more heap snapshots selected.",
+    "498": "Preflight rejected 4-GiB allocation; no test ran.",
+    "502": "Shared-pressure safety stop before browser receiving; not a passing five-cycle repeat.",
+    "509": "433 passed, 6 failed, 3 explicit opt-in skips. The reporting validator still expected the direct esbuild command; corrected to resolve the shared builder, then received by 510 and the complete 512 collection. Original failure retained.",
+    "511": "Child command used a relative diagnostic path under the archived provider working directory; exit 2 before checks. Corrected to an absolute command in 512. No product or test result from 511.",
+    "513": "Three complete cycles, then cycle-four popup-next-frame wait fails at 30 seconds. Source inputs unchanged; no shared-resource stop, all 26 owned processes retired. Not thirty cycles or prolonged acceptance."
+  },
+  "working_repair": "Build-time adapter for exact 5.4.1/source SHA; only this private cache becomes WeakMap. Runtime, harness and unit builds share it. node_modules unchanged. No copying/detaching/deleting coordinate data.",
+  "working_source_sha256": {
+    "molsysviewer/js/package.json": "eea2798fc789d8f8203891cab0fb5e4d531f8617fd017293789d8f21c4356fad",
+    "molsysviewer/js/scripts/build-runtime.mjs": "02fc7640294093962250539930cf8a1fe54e23fa88de438e0f0d7a1863f5fe9a",
+    "molsysviewer/js/scripts/build-test-bundles.mjs": "9d7a8f702e9703bc227de9fa6bcf85f6534549cb23bbf682569b37d2c0377ea5",
+    "molsysviewer/js/scripts/molstar-component-cache.mjs": "af48a6cc167407f27883c32fcba350bddd484e30b9fa0346415d42571cd7883b",
+    "tests/test_jupyter_live_capture.py": "5a792fa75cb00ab7ed805976df69e44ade7a8227671498028a8a696273a1db7f",
+    "tests/_jupyter_widget_lifecycle.mjs": "5b699e9d87180774c0d7680b20e84e42bb86c8ae67dc8e5819a455ce547cd45f",
+    "molsysviewer/viewer.js": "c251e22e920c1d780bfbed755927c48a4888b353639d5341157915be2ea1e9ff",
+    "tests/test_js_build_version_resolution.py": "3417d3acb9ce86cc66e0f88c748f80c51c7d09990999dc68de588da896012404",
+    "tests/test_reporting_protocol.py": "9e115d90ce5af2895aae0b1f564fda73d5bb5b0295d21cd29740c9d7f541c662"
+  },
+  "profiles": [
+    {
+      "profile": "probe-485-json-buffer",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 24.314976628869772,
+      "peak_owned_rss_mib": 1879.6,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-486-copied-buffer",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 21.16556549910456,
+      "peak_owned_rss_mib": 1813.6,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-487-native-gc",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 20.305081943050027,
+      "peak_owned_rss_mib": 1893.5,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-488-split-axes",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 22.381997545948252,
+      "peak_owned_rss_mib": 1887.9,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-489-buffer-cycles",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 34.38470185198821,
+      "peak_owned_rss_mib": 1894.3,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-490-native-stages",
+      "state": "completed",
+      "native_exit": 1,
+      "seconds": 3.2942230759654194,
+      "peak_owned_rss_mib": 117.1,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-491-native-stages",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 4.276040768949315,
+      "peak_owned_rss_mib": 252.0,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-492-node-model-heap",
+      "state": "completed",
+      "native_exit": -15,
+      "seconds": 6.637222100049257,
+      "peak_owned_rss_mib": 1096.4,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-493-native-parser",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 5.00418926589191,
+      "peak_owned_rss_mib": 274.3,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-494-reduced-node-heap",
+      "state": "completed",
+      "native_exit": -15,
+      "seconds": 7.089218701934442,
+      "peak_owned_rss_mib": 1044.2,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-495-targeted-node-owners",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 6.816836117068306,
+      "peak_owned_rss_mib": 348.3,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-496-node-owner-chain",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 6.886496338993311,
+      "peak_owned_rss_mib": 372.7,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-497-native-weak-cache",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 5.820238963002339,
+      "peak_owned_rss_mib": 276.0,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-498-buffer-guard-before",
+      "state": "preflight_refused",
+      "native_exit": null,
+      "seconds": null,
+      "peak_owned_rss_mib": null,
+      "inputs_unchanged": null,
+      "cleanup": null,
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-499-buffer-guard-before",
+      "state": "completed",
+      "native_exit": 1,
+      "seconds": 85.41446684417315,
+      "peak_owned_rss_mib": 2386.4,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "build-500-component-cache",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 24.327697031898424,
+      "peak_owned_rss_mib": 543.1,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-501-native-minimal",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 2.9876428719144315,
+      "peak_owned_rss_mib": 98.8,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-502-fixed-buffer-cycles",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 11.333015457028523,
+      "peak_owned_rss_mib": 410.4,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": "Shared resource margin requires releasing this execution"
+    },
+    {
+      "profile": "probe-503-buffer-guard-fixed",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 62.418615902075544,
+      "peak_owned_rss_mib": 2451.8,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-504-current-upstream",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 3.561561316018924,
+      "peak_owned_rss_mib": 144.3,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-507-cache-build-contract",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 29.47570453118533,
+      "peak_owned_rss_mib": 232.2,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-508-native-buffer-receiving",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 38.07927489303984,
+      "peak_owned_rss_mib": 1865.9,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-509-cache-quality",
+      "state": "completed",
+      "native_exit": 1,
+      "seconds": 51.18079848308116,
+      "peak_owned_rss_mib": 206.8,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-510-unit-guard-route",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 4.543959005968645,
+      "peak_owned_rss_mib": 180.0,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-511-cache-quality",
+      "state": "completed",
+      "native_exit": 2,
+      "seconds": 1.139175440883264,
+      "peak_owned_rss_mib": 7.1,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "probe-512-cache-quality",
+      "state": "completed",
+      "native_exit": 0,
+      "seconds": 6.218571116914973,
+      "peak_owned_rss_mib": 207.3,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    {
+      "profile": "prolonged-513-cache-received",
+      "state": "completed",
+      "native_exit": 1,
+      "seconds": 233.45317103597336,
+      "peak_owned_rss_mib": 3051.1,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
+  ],
+  "remaining": [
+    "Receive the full prolonged E2 campaign after isolating the cycle-four popup control observation; #356 remains partial.",
+    "#344 complete Jupyter capture is independently pending; not closed by this memory repair.",
+    "Focused source checkpoint only. Covering hosted, clean installed-artifact and postponed human qualification remain separate; no tag/package/release or upstream publication."
+  ],
+  "consumer_followup": "https://github.com/uibcdf/molsysviewer/issues/363",
+  "source_quality": {
+    "build_safety": {
+      "profile": 507,
+      "passed": 10,
+      "failed": 0,
+      "includes": "Runtime/unit/harness actual build refusal of unreviewed provider version or bytes."
+    },
+    "reporting_recovery": {
+      "profile": 510,
+      "passed": 418,
+      "failed": 0,
+      "scope": "Fixed shared unit builder addressability; broken-entry, missing-builder and changed-runner refusal."
+    },
+    "covering_quality": {
+      "profile": 512,
+      "passed": 442,
+      "failed": 0,
+      "skipped": 3,
+      "skips": "Explicit opt-in live-Jupyter tests; not executed or credited by this offline collection.",
+      "other_checks": [
+        "Ruff check",
+        "Ruff format check",
+        "developer queue indexes",
+        "git diff check"
+      ]
+    },
+    "counting": "Scopes overlap; do not add them into one full-suite total."
+  },
+  "prolonged_receiving": {
+    "profile": 513,
+    "requested_cycles": 30,
+    "completed_cycles": 3,
+    "outcome": "failed",
+    "stage": "Cycle 4: stale rejection/windows; waiting for canvas popup structure 1 after focused Enter on Next.",
+    "observed": "Main source request trace reaches structure 0; it records no subsequent structure-1 request. Popup DOM remains 1 / 5000. The main controller is connected, visible and paused at structure 0. This does not establish event delivery, popup readiness, root cause or a relation to the cache repair.",
+    "source_inputs_unchanged": true,
+    "selected_inputs": 6156,
+    "limits": {
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "own_swap_gib": 0,
+      "global_available_reserve_gib": 6.5
+    },
+    "peak_sum_owned_rss_mib": 3051.1,
+    "minimum_observed_global_available_gib": 12.67,
+    "resource_stop": null,
+    "owned_cleanup": {
+      "tracked": 26,
+      "survivors": [],
+      "errors": []
+    },
+    "tracking": "Unclassified E2 receiving observation under #315; distinguish earlier recovered-hidden-frame #354 and hosted context-menu #305. No new product cause or pass claimed.",
+    "next": "Preserve the original attempt. Isolate actual popup button readiness/event/request propagation before repeating the full campaign; do not lengthen the wait or send a repair seek."
+  },
+  "integration_custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "component-cache-integration-20261112",
+    "file_count": 93,
+    "payload_bytes": 38462300,
+    "manifest_sha256": "ee60935db88d9539873fa8fa0efd632b5e126e426858d3fb652adde525930c3e",
+    "permissions": "directories 0700; files 0600",
+    "originals_deleted": false
+  }
+}

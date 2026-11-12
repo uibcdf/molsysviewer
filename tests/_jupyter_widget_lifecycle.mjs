@@ -103,19 +103,19 @@ try {
             native_collected:Object.fromEntries(Object.entries(window.__lifecycleNative).map(([name,ref])=>[name,!ref.deref()])),
             witness:Array.from(witness.getStructureData().model.atomicConformation.x)};
     });
-    // Preserve the buffer observation separately; #356's residual owner stays open.
+    // Receive the backing storage too; collecting the model alone is insufficient.
     const evidence={outcome:'in_progress',initial,samples,...observed};
     await writeFile(output+'/lifecycle-observations.json',JSON.stringify(evidence,null,2));
     assert.deepEqual(observed.retired_callbacks,[],'Closed output must not retain live popup methods');
     for(const observedSample of samples)assert.deepEqual(observedSample,[{disposed:false,connected:true,atoms:22}]);
-    for(const name of ['structure','model','axis'])assert.equal(observed.native_collected[name],true,`${name} must actually be collected`);
+    for(const name of ['structure','model','axis','buffer'])assert.equal(observed.native_collected[name],true,`${name} must actually be collected`);
     assert.deepEqual(observed.witness,initial.witness,'Independent molecular data must survive disposal');
     await cdp.detach();
     await execute(3);await marker('LIFETIME_DONE');
     evidence.outcome='passed';
     await writeFile(output+'/lifecycle-observations.json',JSON.stringify(evidence,null,2));
     await writeFile(output+'/observations.json',JSON.stringify({outcome:'passed'}));
-    console.log('Actual Jupyter controller/native model release and independent witness passed; buffer observation retained separately.');
+    console.log('Actual Jupyter controller/native model/backing-buffer release and independent witness passed.');
 }catch(error){
     await writeFile(output+'/observations.json',JSON.stringify({outcome:'failed',stage,error_type:error.name,error:String(error),stack:error.stack},null,2));
     console.error(error);process.exitCode=1;

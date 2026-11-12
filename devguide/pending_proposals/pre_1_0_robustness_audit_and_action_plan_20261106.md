@@ -402,6 +402,22 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Working receiving — 2026-11-12:** the
+[component-cache correction](../molstar_component_cache_receiving_20261112.json)
+has an actual-Jupyter backing-buffer before/after guard and five corrected
+direct native close cycles with an unchanged independently drawn witness.
+The [report review](../molstar_component_cache_report_review_20261112.json)
+confirms the already known native audit `01/B1 = 04/B1`; Diego chose local
+[follow-up #363](molstar_component_cache_upstream_followup.md), with no upstream
+report. Ten build/refusal controls, 443 JS units and 442 covering quality cases
+pass in separate overlapping scopes; three offline live-Jupyter opt-in skips
+remain explicit. The full thirty-cycle attempt passes three cycles, then fails
+the fourth popup's unchanged Next/frame wait without a resource stop or changed
+inputs. Its control/readiness cause remains unclassified; preserve the original
+and isolate it before another campaign. #356's combined/prolonged acceptance
+and #344 remain open. This does
+not change the original 38/46 counter or final applicable acceptance.
+
 **Reconciled source state — 2026-11-11:** H5MSM default 1.0 is
 [source-received](../h5msm_default_receiving_20261111.json) on MolSysMT
 `aee7aa65`; previous default-0.5 and retained-session controls keep their
@@ -639,8 +655,9 @@ plan plus #705 evidence.
    ancestors of public owner main. Receive changed combined-head gates in one agreed batch,
    without a new hosted matrix or CI run for every incremental commit.
 4. Retain the completed scale anchors and fifteen correct same-kernel cycles.
-   Diagnose #356's retained data with a small controlled run before repeating
-   the complete thirty-cycle gate; keep #354's original observation separate. Retain
+   Retain #356's corrected backing-buffer guard and #363's upstream monitoring.
+   Isolate `513`'s cycle-four popup Next/frame observation before repeating the
+   complete thirty-cycle gate; keep #354's original observation separate. Retain
    source/installed/human scopes separately. Complete mandatory Movie #320;
    B3.6/E3 remain separate recommendations and E4 human review remains postponed.
 5. Finish F2 documentation, then prepare the concrete separately authorized

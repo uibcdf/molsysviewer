@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { mkdir, copyFile, readFile } from "node:fs/promises";
 import { build } from "esbuild";
 import { resolveBuildVersion } from "./resolve-version.mjs";
+import { molstarComponentCachePlugin } from "./molstar-component-cache.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(__filename), "..");
@@ -34,6 +35,7 @@ await build({
   tsconfig: path.join(root, "tsconfig.json"),
   banner: { js: banner },
   define: { __MOLSYSVIEWER_VERSION__: JSON.stringify(runtimeVersion) },
+  plugins: [molstarComponentCachePlugin()],
 });
 
 await copyFile(outfile, path.join(root, "..", "viewer.js"));

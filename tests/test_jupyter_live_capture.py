@@ -235,7 +235,7 @@ def test_live_jupyter_controller_release(tmp_path):
     observed = json.loads((output / "lifecycle-observations.json").read_text())
     assert observed["outcome"] == "passed"
     assert observed["retired_callbacks"] == []
-    assert all(observed["native_collected"][name] for name in ("structure", "model", "axis"))
+    assert all(observed["native_collected"][name] for name in ("structure", "model", "axis", "buffer"))
     assert observed["witness"] == observed["initial"]["witness"]
     assert not (output / "settings.json").exists()
     assert not (output / "config/jupyter_server_config.py").exists()

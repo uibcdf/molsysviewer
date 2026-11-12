@@ -13,7 +13,7 @@ blocked_by: []
 supersedes: []
 ---
 
-# Retired notebook molecular data — controller correction; buffer diagnosis open
+# Retired notebook molecular data — cache correction; prolonged receiving pending
 
 After 15 complete E2 cycles in one actual Jupyter kernel, the independent
 1TCD witness is the only connected controller. Thirty other controllers remain
@@ -161,3 +161,71 @@ on this shared host. Next isolate native/input-buffer ownership with a bounded
 control, then receive the residual disposition and complete same-kernel gate
 within the agreed resource stops. Universal memory/VRAM bounds, installed/human
 qualification and a cause of the original pressure stop remain unestablished.
+
+## Working cache finding — 2026-11-12
+
+The [new receiving record](../molstar_component_cache_receiving_20261112.json)
+identifies a native retaining path. Without an explicit `chem_comp` table,
+Mol*'s private `getUniqueComponentNames` calls `memoize1`, whose strong Map
+keys retain BasicData, `atom_site`, coordinate columns and shared backing
+storage. Five direct molecular cycles retain five non-detached 744-byte
+buffers. Native CPU parsing and a smaller component-properties-only control
+reproduce without Jupyter, a controller or WebGL.
+
+After a clean fast-forward pull to upstream `dabbf29f9`, selected unmodified
+v6 source modules reproduce the same fallback retention. Five explicit-table
+controls collect. A private WeakMap-only differential releases all ten inputs
+and preserves complete chemical/saccharide maps. This is selected-source
+evidence, not the complete upstream suite or installed v6 qualification.
+
+The working MolSysViewer repair applies that cache-lifetime change at build
+time only to exact reviewed Mol* 5.4.1 source bytes. Runtime, harness and unit
+builds share the adapter; installed dependencies and scientific data are not
+edited. Its actual-Jupyter guard fails on the original runtime (`499`) and
+passes after rebuilding (`503`), now checking backing-buffer collection too,
+unchanged independent coordinates and a fresh witness draw. All 443 JS units
+pass. The five-cycle corrected repeat `502` stops for shared pressure before
+browser receiving and is not passing evidence.
+
+This correction is working source, not integrated or final E2 acceptance.
+Focused build/reporting checks, the prolonged campaign and compatibility
+removal/expiry documentation remain pending. Diego requested a critical report
+after pulling upstream and before publication; no upstream issue/PR is
+authorized or published. Retain the current partial state and distinguish
+this cause from the separately open consolidated-capture issue #344.
+
+The [pre-publication review](../molstar_component_cache_report_review_20261112.json)
+finds that upstream already tracks this exact cause as audit `01/B1 = 04/B1`.
+PR #2032 explicitly leaves it pending a forced-GC heap-tier regression, with
+later deferrals in #2045/#2046/#2048. The earlier issue-only search did not
+establish novelty. Unmodified registry-verified 5.4.1 and current public 5.13.1
+tarballs both reproduce the exact draft snippet. Caller/empty-table and
+negative/positive ownership controls pass on 5.13.1. Reframe any proposed
+contribution as a follow-up to the known audit, preferably a usable regression;
+do not publish the earlier draft as a new finding. No upstream write is
+authorized or has occurred.
+
+Diego chose uibcdf/molsysviewer#363 for native-resolution monitoring instead
+of another upstream report. The
+[compatibility contract](../molstar_component_cache_compatibility.md) records
+the narrow build repair, ownership, review deadline and removal condition;
+the [follow-up](../pending_proposals/molstar_component_cache_upstream_followup.md)
+keeps published-native adoption separate from #356's local receiving.
+
+The corrected direct five-cycle control `508` releases all retired molecular
+backing buffers and preserves the independent witness and its fresh draw.
+Build/refusal controls pass ten cases (`507`); the shared-builder reporting
+recovery passes 418 (`510`), and its complete covering quality collection
+passes 442 with three explicit live-Jupyter opt-in skips (`512`). Ruff,
+formatting, queue and diff checks pass. The original stale-validator failure
+`509` and wrong-working-directory invocation `511` remain preserved; neither
+is silently counted as a pass. These scopes overlap and do not constitute one
+full suite. The thirty-cycle actual-Jupyter attempt `513` passes three cycles,
+then fails the fourth popup's unchanged 30-second wait for structure 1 after
+the receiver focuses Next and sends Enter. The main trace records no corresponding frame-1
+request; the popup still displays 1 / 5000. Readiness, event delivery and cause
+remain unestablished. Its 6,156 inputs are unchanged, no resource stop occurs,
+and all 26 owned processes retire. Isolate that control before another full
+campaign. Do not merge it with #354's recovered-widget observation or #305's
+hosted context-menu failure. No prolonged acceptance or original outcome is
+credited; the exact cache/backing-buffer guard remains a separate pass.

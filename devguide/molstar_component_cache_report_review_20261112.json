@@ -1,0 +1,253 @@
+{
+  "schema": "molsysviewer.molstar_report_review@1",
+  "reviewed_utc": "2026-11-12T02:46:41.500109+00:00",
+  "publication": "Not authorized; no external issue, comment or PR created.",
+  "finding": "Technical mechanism confirmed; already documented upstream as 01/B1 = 04/B1, still open. Earlier issue-only searches were insufficient to establish novelty.",
+  "upstream": {
+    "master": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+    "v5": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+    "known_audit": "https://github.com/molstar/molstar/blob/dabbf29f952880a034a9637e28c9844e3ae73d9f/.v6/perf-audit-2/bugs.md",
+    "deferred_guard": "https://github.com/molstar/molstar/pull/2032",
+    "additional_explicit_deferrals": [
+      2045,
+      2046,
+      2048
+    ]
+  },
+  "package_tests": {
+    "scope": "Exact current draft snippet, unmodified verified npm tarballs, no bundler, source substitution, Viewer imports or installed-package full-suite claim.",
+    "rows": [
+      {
+        "requested": "5.4.1",
+        "version": "5.4.1",
+        "tarball_sha256": "73065c9cd8d14a59ff7e3f0b494cf805c7f656c28817daeb2eece0d6e0f0dbc5",
+        "tarball_bytes": 15719526,
+        "registry_sha512_verified": true,
+        "extracted_bytes": 12204059,
+        "snippet_sha256": "b559363e3ebc13eccf530a4c984e26ff931766efbb86fc5ac314390d659ca862",
+        "exit_code": 0,
+        "retained": 5,
+        "bytes_each": 36,
+        "dependencies": "Only extracted original Mol* CommonJS files; NODE_PATH removed and no other package installed."
+      },
+      {
+        "requested": "latest",
+        "version": "5.13.1",
+        "tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+        "tarball_bytes": 17782753,
+        "registry_sha512_verified": true,
+        "extracted_bytes": 13986682,
+        "snippet_sha256": "b559363e3ebc13eccf530a4c984e26ff931766efbb86fc5ac314390d659ca862",
+        "exit_code": 0,
+        "retained": 5,
+        "bytes_each": 36,
+        "dependencies": "Only extracted original Mol* CommonJS files; NODE_PATH removed and no other package installed."
+      }
+    ]
+  },
+  "caller_controls": {
+    "version": "5.13.1",
+    "rows": [
+      {
+        "mode": "no_calls",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "no_calls",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "no_calls",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "no_calls",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "no_calls",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "chemical_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "chemical_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "chemical_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "chemical_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "chemical_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "saccharide_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "saccharide_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "saccharide_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "saccharide_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "saccharide_only",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "both",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "both",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "both",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "both",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "both",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "explicit_empty",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "explicit_empty",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "explicit_empty",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "explicit_empty",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "explicit_empty",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "explicit_populated",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "explicit_populated",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "explicit_populated",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "explicit_populated",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "explicit_populated",
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "mode": "live_owner",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "live_owner",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "live_owner",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "live_owner",
+        "data": true,
+        "bytes": 36
+      },
+      {
+        "mode": "live_owner",
+        "data": true,
+        "bytes": 36
+      }
+    ],
+    "releasedOwner": [
+      {
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "data": false,
+        "bytes": 0
+      },
+      {
+        "data": false,
+        "bytes": 0
+      }
+    ]
+  },
+  "source_qualification": "Source properties/cache files were independently compared to the verified tar members after execution; identical.",
+  "recommendation": "Do not publish the previous draft as a new discovery. If contributing, explicitly follow the known audit and offer a regression suited to the owner heap tier; a focused owner-reviewed patch/test would add more value than repeating the diagnosis.",
+  "draft_sha256": "cd9be3b7f476728736f988c412c981027f153338ee6afaea9ab65205c215e670"
+}
