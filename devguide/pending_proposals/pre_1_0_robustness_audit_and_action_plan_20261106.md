@@ -36,10 +36,20 @@ not an environment upgrade or a received fix.
 **Movie camera prerequisite — 2026-11-12:** the
 [Cartesian profile](../movie_cartesian_receiving_20261112.json) is received
 through headless/JavaScript controls and native primary/popup preview/session
-checks. Default motion remains unchanged. Complete legacy migration, Studio,
+checks. Default motion remains unchanged. Studio,
 portable web and integrated #320 acceptance remain; the original default-preview
 wait in run `540` is retained without a causal closure. This additional stream
 does not change the 46-outcome counter.
+
+**Reviewed legacy Movie tranche — 2026-11-12:** the
+[migration receipt](../movie_legacy_receiving_20261112.json) receives the bounded
+version-1 profile, explicit correspondence/provenance, scheduled fixture comms
+and capture draw liveness. It retains 828 headless passes/five explicit skips,
+457 JS passes and seven selected native browser suite passes. An isolated full
+moving scenario passes in `564`; a later complete attempt `566` still fails
+the sixth moving Studio save. #344 and consolidated actual-host acceptance
+remain open. These are separate source scopes, not a new original outcome or
+a passing full core lane. Both counters above are unchanged.
 
 **Previous source delivery — 2026-11-10, independent construction:**
 [The construction receipt](../molsysmt_construction_receiving_20261110.json)

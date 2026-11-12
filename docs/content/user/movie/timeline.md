@@ -260,8 +260,49 @@ Only the latest successful review belongs to that View. Scene or recipe edits
 can make it stale. Acceptance rechecks the private source/options and preserves
 the old Movie on error. It changes the recipe only; use `reset_async()` when
 ready to apply its baseline. The compact import record survives JSON/session
-save and media export. Reviewed import currently accepts version 2; legacy
-version-1 recipes continue to use their existing reader and playback.
+save and media export.
+
+### Reviewing a legacy recipe
+
+You can migrate a version-1 recipe through the same review and acceptance
+steps. Migration preserves safe Cartesian camera paths with constant `up`
+and compiles rounded structure sweeps into discrete steps, including their
+intermediate structures. Each present camera or structure channel must occur
+at every global keyframe. Partial channels, unsafe paths and sweeps exceeding
+the conservative 100,000-event expansion budget produce named conflicts.
+
+Legacy visibility tags have no scene domain. Declare their destination even
+if its name is unchanged. When the recipe has no camera channel, supply a
+baseline camera explicitly:
+
+```python
+import molsysviewer as msv
+
+with msv.demo["dialanine"] as view:
+    view.regions.add(tag="site", atom_indices=[0, 1, 2])
+    recipe = {"molsysmovie_version": 1, "keyframes": [
+        {"time_ms": 0},
+        {"time_ms": 1000, "layer_visibility": {"site": False}}
+    ]}
+    review = view.movie.review_import(recipe, camera={
+        "position": [0, 0, 30], "target": [0, 0, 0], "up": [0, 1, 0]
+    }, target_map=[{
+        "source": {"domain": "legacy", "tag": "site"},
+        "target": {"domain": "region", "tag": "site"}
+    }])
+    assert review["can_apply"], review["conflicts"]
+    view.movie.apply_import(review)
+    assert view.movie.to_dict()["provenance"]["source_binding"] is None
+```
+
+Camera coordinates are in ångströms. Legacy recipes do not identify their
+original molecular system or initial visibility. The report keeps that source
+binding unknown and uses the prepared destination's initial visibility until
+the first explicit change. Accepting the review declares these correspondences;
+it does not authenticate or align systems. A supplied structure map must cover
+every referenced intermediate frame uniquely. A camera override cannot change
+an existing legacy camera path. The existing version-1 reader and playback
+remain available for recipes outside this admitted migration profile.
 
 ### Animating appearance
 

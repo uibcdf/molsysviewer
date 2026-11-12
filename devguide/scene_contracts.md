@@ -2107,6 +2107,15 @@ later draw subscriber and requires the saved file to retain the completed
 draw's camera/frame. Frame-dependent projections and moving-timeline acceptance
 remain additional obligations; this sampling rule does not replace them.
 
+A rejected incoherent draw keeps the next native draw requested until the
+sample is coherent or the existing deadline/cancellation terminates the wait.
+Scientific metadata, including an evaluated-empty result, can become ready
+without changing native geometry. Do not depend on another molecular/camera
+change to wake the capture. Reuse Mol*'s draw loop; do not introduce another
+playback clock, supply geometry or pause/seek for capture. The idle-canvas
+control in `js/tests/unit/frontend-requests.test.ts` protects this liveness
+boundary; native moving-capture receiving retains actual geometry and deadlines.
+
 **Trajectory-shape refresh ownership — 2026-11-07 (#328).** Overlapping
 updates share one bounded owner and retain the latest requested frame. After
 an older clear/render finishes, that owner catches up to the latest target;
@@ -2131,10 +2140,11 @@ Automatic frame following changes neither definition. Fingerprint all saved
 named analyses with bounded numeric buffers; that work still scales with the
 analysis and does not imply selective disk queries or constant-time work.
 Revalidate before the atomic writer, without navigating, pausing or cloning
-the live trajectory. The current frontend advertises version 1 only: protocol
-tests of this backend preparation do not qualify frame-affine rendering or
-authorize advertising version 2. Existing explicit synchronization of raw
-MolSys edits remains required.
+the live trajectory. The source frontend advertises versions 1 and 2, retaining
+negotiation with protocol-1 renderers. Native browser receiving and model tests
+do not replace the actual-host, installed and human acceptance scopes; the
+consolidated Jupyter recurrence remains tracked in #344. Existing explicit
+synchronization of raw MolSys edits remains required.
 
 **Shape-only framing — 2026-10-21 (#257).** Camera authority also makes the host
 responsible for initial absolute geometry without a molecular system. New

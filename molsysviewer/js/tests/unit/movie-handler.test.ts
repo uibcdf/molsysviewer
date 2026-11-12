@@ -2,6 +2,61 @@ import assert from "node:assert";
 import test from "node:test";
 
 import { MovieHandlers } from "../../src/managers/handlers/movie-handlers";
+import { compileMovieTimeline } from "../../src/managers/movie-timeline";
+import legacyMigration from "../fixtures/movie-legacy-oracle.json";
+
+for (const [index, control] of legacyMigration.entries()) {
+    test(`public legacy migration agrees with the original renderer at binary64 thresholds ${index}`, async () => {
+        let structure = -1, camera: any;
+        const movie = new MovieHandlers({
+            getCameraSnapshot: () => undefined,
+            waitForDraw: async () => {},
+            setCameraSnapshot: async value => { camera = value; },
+            setTrajectoryFrame: async value => { structure = value; },
+            getImageDataUri: async () => undefined,
+            showLayer: async () => {}, hideLayer: async () => {}, notify: undefined,
+        });
+        const timeline = compileMovieTimeline(control.recipe);
+        for (const at of [...control.times].reverse()) {
+            // Invoke the existing export sampler, not a copy of its rounding,
+            // easing or interpolation formulas. This is an algorithm control;
+            // the native browser guard separately receives actual Mol* draws.
+            await (movie as any).applyStateForExport(control.legacy.keyframes, at, undefined, {}, undefined);
+            const migrated = timeline.evaluate(at);
+            assert.strictEqual(migrated.structure_index, structure, `${index} at ${at}`);
+            for (const vector of ["position", "target", "up"] as const) {
+                migrated.camera[vector].forEach((component, i) => {
+                    assert.ok(Math.abs(component - camera[vector][i]) < 1e-12, `${index} ${vector} at ${at}`);
+                });
+            }
+        }
+    });
+}
+
+test("legacy migration provenance preserves unknown origin and refuses invented identity", () => {
+    const original = legacyMigration[0].recipe;
+    assert.strictEqual(original.provenance.source_binding, null);
+    for (const [field, value] of [["source_binding", {}], ["source_version", 2], ["schema", "molsysviewer.movie_import@1"]] as const) {
+        const changed = JSON.parse(JSON.stringify(original));
+        changed.provenance[field] = value;
+        assert.throws(() => compileMovieTimeline(changed));
+    }
+});
+
+test("the original sampler ignores a JSON boolean __proto__ visibility tag", async () => {
+    const actions: string[] = [];
+    const movie = new MovieHandlers({
+        getCameraSnapshot: () => undefined, waitForDraw: async () => {},
+        setCameraSnapshot: async () => {}, setTrajectoryFrame: async () => {},
+        getImageDataUri: async () => undefined,
+        showLayer: async tag => { actions.push(tag); },
+        hideLayer: async tag => { actions.push(tag); }, notify: undefined,
+    });
+    const keyframes = JSON.parse('[{"time_ms":0,"layer_visibility":{"__proto__":false}},{"time_ms":1000}]');
+    assert.ok(Object.hasOwn(keyframes[0].layer_visibility, "__proto__"));
+    await (movie as any).applyStateForExport(keyframes, 1000, undefined, {}, undefined);
+    assert.deepStrictEqual(actions, []);
+});
 
 test("stop_movie drains an in-flight camera write and restores the stopped position", async () => {
     const originalRequest = globalThis.requestAnimationFrame;

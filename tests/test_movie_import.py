@@ -284,8 +284,9 @@ def test_invalid_persisted_provenance_is_rejected(authored, field, value):
 def test_legacy_reader_is_retained_without_claiming_a_lossy_conversion(authored):
     before = authored.movie.to_dict()
     legacy = {"molsysmovie_version": 1, "keyframes": [{"time_ms": 0}, {"time_ms": 1000}]}
-    with pytest.raises(ValueError, match="version-2 recipe"):
-        authored.movie.review_import(legacy)
+    report = authored.movie.review_import(legacy)
+    assert not report["can_apply"] and report["candidate"] is None
+    assert {row["reason"] for row in report["conflicts"]} == {"legacy_baseline_camera_required"}
     assert authored.movie.to_dict() == before
     authored.movie.from_dict(legacy)
     assert authored.movie.to_dict() == legacy

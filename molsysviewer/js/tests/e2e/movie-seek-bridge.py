@@ -1,6 +1,8 @@
 """Real MolSysViewer authority for the browser Movie seek guard."""
 
 import asyncio
+import json
+import os
 import runpy
 import sys
 from pathlib import Path
@@ -12,6 +14,21 @@ import molsysviewer as msv
 
 
 def main():
+    diagnostics = os.environ.get("MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR")
+    if diagnostics:
+        import pyunitwizard
+
+        Path(diagnostics, "movie-authority-origin.json").write_text(
+            json.dumps(
+                {
+                    "molsysviewer": {"file": msv.__file__, "version": msv.__version__},
+                    "molsysmt": {"file": msm.__file__, "version": msm.__version__},
+                    "pyunitwizard": {"file": pyunitwizard.__file__, "version": pyunitwizard.__version__},
+                },
+                indent=2,
+            )
+            + "\n"
+        )
     bridge = runpy.run_path(str(Path(__file__).with_name("canvas-popup-bridge.py")))
     source = msm.systems["pentalanine"]["traj_pentalanine.h5msm"]
     with msv.new_view(source, structure_indices=[4999, 0, 73]) as view:
@@ -78,12 +95,37 @@ def main():
                         "visible": restored.regions["site"].visible,
                         "same_recipe": restored.movie.to_dict() == view.movie.to_dict(),
                         "camera_interpolation": restored.movie.to_dict().get("camera_interpolation"),
+                        "import_schema": restored.movie.to_dict().get("provenance", {}).get("schema"),
+                        "source_version": restored.movie.to_dict().get("provenance", {}).get("source_version"),
+                        "source_binding": restored.movie.to_dict().get("provenance", {}).get("source_binding"),
                     }
             except Exception as error:
                 preview["save"] = {"ok": False, "error": str(error)}
 
         def action(owner, event):
             nonlocal result
+            if event.get("movie_use_legacy"):
+                first = {"position": [0, 0, 30], "target": [0, 0, 0], "up": [0, 1, 0]}
+                last = {**first, "position": [30, 0, 0]}
+                source = {
+                    "molsysmovie_version": 1,
+                    "keyframes": [
+                        {"time_ms": 0, "camera": first, "structure_index": 0, "layer_visibility": {"site": True}},
+                        {"time_ms": 1000, "camera": last, "structure_index": 2, "layer_visibility": {"site": False}},
+                    ],
+                }
+                review = owner.movie.review_import(
+                    source,
+                    target_map=[
+                        {
+                            "source": {"domain": "legacy", "tag": "site"},
+                            "target": {"domain": "region", "tag": "site"},
+                        }
+                    ],
+                )
+                assert review["can_apply"], review["conflicts"]
+                owner.movie.apply_import(review)
+                return True
             if event.get("movie_use_cartesian"):
                 recipe = owner.movie.to_dict()
                 recipe["camera_interpolation"] = "cartesian-constant-up@1"

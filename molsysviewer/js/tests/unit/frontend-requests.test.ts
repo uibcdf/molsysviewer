@@ -90,17 +90,37 @@ test("a failed draw reader preserves its original rejection and retires the subs
     }
 });
 
-test("a filtered draw waits for coherent data without reading a rejected draw or adding a clock", async () => {
+test("a filtered draw requests the next coherent frame without reading rejected draws or adding a clock", async () => {
     const didDraw = new BehaviorSubject(0);
     let ready = false, reads = 0, requests = 0;
     const canvas: any = { didDraw, requestDraw() { requests++; } };
     const pending = readCanvasDraw(canvas, () => ++reads, 1000, undefined, () => ready);
     didDraw.next(1); didDraw.next(2);
     assert.equal(reads, 0);
-    assert.equal(requests, 1);
+    assert.equal(requests, 3);
     ready = true; didDraw.next(3);
     assert.equal(await pending, 1);
     assert.equal(didDraw.observers.length, 0);
+});
+
+test("metadata becoming ready cannot strand a capture on an otherwise idle native canvas", async () => {
+    const didDraw = new BehaviorSubject(0);
+    let requested = false, ready = false, draws = 0;
+    const canvas: any = { didDraw, requestDraw() { requested = true; } };
+    const nativeTick = () => {
+        if (!requested) return false;
+        requested = false;
+        didDraw.next(++draws);
+        return true;
+    };
+    const pending = readCanvasDraw(canvas, () => draws, 1000, undefined, () => ready);
+    assert.equal(nativeTick(), true);
+    // Scientific metadata completes with no native geometry/camera change.
+    ready = true;
+    assert.equal(nativeTick(), true, "the waiting capture must have requested a fresh draw");
+    assert.equal(await pending, 2);
+    assert.equal(didDraw.observers.length, 0);
+    assert.equal(nativeTick(), false, "completion must stop requesting additional frames");
 });
 
 test("a failing coherence predicate preserves its error and releases the draw subscription", async () => {

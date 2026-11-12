@@ -516,9 +516,9 @@ class MovieManager:
         camera: dict | None = None,
         skip_digestion: bool = False,
     ) -> dict:
-        """Review a version-2 recipe against this View's prepared scene.
+        """Review a version-1 or version-2 recipe against the prepared scene.
 
-        Target maps contain source/target domain and tag records, within the
+        Version-2 target maps contain source/target domain and tag records, within the
         same domain. Structure correspondence is new-to-old, one entry per
         destination structure. Each referenced source frame needs exactly one
         destination. Changed molecular bindings require both explicit maps;
@@ -527,6 +527,13 @@ class MovieManager:
         replaces only the baseline pose. The returned report is detached and
         does not change either the scene or the current Movie. Only the latest
         successful review belongs to this View and can be accepted.
+
+        Version-1 migration admits complete camera/structure channels, safe
+        constant-up Cartesian paths and bounded rounded structure sweeps.
+        Its untyped visibility sources require explicit domain="legacy" maps
+        to tagged scene targets. Camera-free recipes require camera. Unknown
+        source binding and initial visibility remain explicit in the report;
+        partial channels or unsupported paths produce conflicts.
         """
         from ._movie_import import review_import
 

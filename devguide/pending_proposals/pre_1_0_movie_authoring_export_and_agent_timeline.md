@@ -214,7 +214,8 @@ in [the import receipt](../movie_import_receiving_20261111.json), including
 explicit scientific associations, region-definition checks, private-ticket
 acceptance and retained session/media provenance. The
 [timeline contract](../movie_timeline_design.md#reviewed-version-2-imports)
-owns those rules. Legacy migration, richer renderer channels, Studio authoring,
+owns those rules. The admitted legacy profile below is now source-received.
+Richer renderer channels, Studio authoring,
 portable web playback and the complete integrated story remain open. The
 receiving entries below retain their original source/date scope; earlier
 remapping/appearance gaps are not a claim about current implementation.
@@ -232,6 +233,29 @@ it remains an unresolved receiving observation here. Diagnostic `542` proceeds
 beyond that phase but exposes a synchronous-initial-emission bug in the newly
 added draw observer. The corrected observer receives `544`; neither later
 result retroactively explains `540`.
+
+The [legacy migration receipt](../movie_legacy_receiving_20261112.json)
+receives complete safe Cartesian channels, binary64 rounded-step compilation,
+explicit legacy-domain target maps and unknown source-binding provenance.
+The original reader/playback remain; unsupported profiles are explicit
+conflicts. Headless receiving passes 828 cases with five explicit skips;
+the canonical JS entry passes 457. Seven selected native browser suites receive
+Movie seek/preview, migrated steps, materials, popup/session symmetry, readable
+720p video, cancellation, widget transport and actual renderer lifetimes.
+These scopes are not the complete core lane, installed packages or actual
+Jupyter/Qt acceptance, and do not close #320.
+
+The test transport now delivers scheduled Python comms spontaneously and
+keeps Python alive when the browser closes. The original transport fails the
+new isolated scheduled-send control; the corrected route passes. Module
+origins and frozen copied support distinguish the current receiving from the
+earlier live-owner route. A rejected incoherent draw keeps another native draw
+requested without a new clock or a capture-specific pause. Isolated moving
+receiving `564` passes the full scenario; `566` still fails the sixth moving
+Studio save. Retain both complete outcomes under #344; no successful prefixes
+are combined into acceptance. Earlier typing/test-setup failures, resource
+interruptions, `554`'s failed aggregate input integrity and the historical
+`540` observation remain in the receipt/custody.
 
 The first M1 tranche is source-delivered. `tests/test_movie_timeline.py` exercises
 arbitrary seeks and independent channels on a bundled trajectory, detached

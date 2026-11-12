@@ -907,11 +907,30 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [legacy Movie receipt](movie_legacy_receiving_20261112.json) receives the
+admitted version-1 profile through explicit review/acceptance: safe Cartesian
+camera paths, rounded intermediate structures, typed visibility and unknown
+source provenance. The original reader/playback remain. Headless receiving
+passes 828 cases with five explicit skips, canonical JS passes 457 and seven
+selected native browser suites pass. The corrected test comm delivers scheduled
+messages without another request and retains Python after actual browser loss.
+Coherent capture keeps a fresh native draw requested after an incoherent draw.
+Module origins and copied support are recorded; original failures/resource
+interruptions remain. These are source scopes, not a complete core-lane,
+actual-Jupyter/Qt, installed or human qualification.
+
+The full native moving scenario passes once in `564`, then `566` fails its
+sixth moving Studio save. Keep both outcomes under the existing #344 receiving
+recurrence; do not combine prefixes or declare its cause resolved. That is the
+next consolidated capture boundary to isolate before claiming robust live
+capture. #320 still needs Studio authoring, portable web and integrated-story
+receiving. The 38/46 source and 1/46 final counters are unchanged.
+
 The [Cartesian Movie profile](movie_cartesian_receiving_20261112.json) adds
 explicit straight position/target motion with whole-segment admission, while
 preserving the default quaternion rule. Source controls and real Mol* primary/
-popup preview/session checks pass; version-1 migration and the rest of #320
-remain open. Retain the unexplained first default-preview timeout separately
+popup preview/session checks pass; the newer receipt above receives bounded
+version-1 migration. The rest of #320 remains open. Retain the unexplained first default-preview timeout separately
 from the corrected test-observer error and later positive native receiving.
 MolSysMT has integrated PR #721 and admitted #723; its last response requests
 a bounded metrology proposal for owner review. Avoid parallel implementation

@@ -1,0 +1,914 @@
+{
+  "schema": "molsysviewer.movie_legacy_receiving@1",
+  "date_utc": "2026-11-12",
+  "issue": "uibcdf/molsysviewer#320",
+  "audit_issue": "uibcdf/molsysviewer#315",
+  "status": "source_received_with_open_combined_capture",
+  "source": {
+    "base": "e8bdf97d67b59addf766b6fc6802d3ac90be9921",
+    "kind": "Reviewed source tranche over this base; file hashes identify the final implementation. Qualifying scopes and retained failures below are separate. Not an installed candidate.",
+    "files": {
+      "molsysviewer/viewer/_movie_legacy.py": "222f8c80b89e42ed7239e6755bc24514b4900a6c8c6ca210b4608696f5316559",
+      "molsysviewer/viewer/_movie_import.py": "e810d686e845ff71b01354dbd4cb6b928303953d461f0eb131f326a1cd9aba64",
+      "molsysviewer/viewer/movie.py": "0e03744df6167a94ac5715ad9f3e9ee0900fec201a7f9c74699d9c9f8568c912",
+      "molsysviewer/js/src/managers/movie-import-provenance.ts": "5abb782d35086f2e317c7f0e18a1f605ac1624805e8586f2b57c8fa530f097f3",
+      "molsysviewer/js/tests/unit/movie-handler.test.ts": "d58c4cd456643f55e1566fed43852c46778a980dcee10445ab75df28e53510ac",
+      "molsysviewer/js/tests/fixtures/movie-legacy-oracle.json": "878cc01f451b57ca7074e69a0856f412060cc9ff4a3a585334d3f8d1330a42f3",
+      "molsysviewer/js/tests/e2e/movie-seek-bridge.py": "cc8c14c7d43f13bdb39c147b6bd77b84dcf1fe23f33b9ecc00f863c8b093c571",
+      "molsysviewer/js/tests/e2e/movie-seek.e2e.ts": "a65ffd1cb8ecb6250e6796c2ffdb1d1d167ece3c2fedcc57ebbbe3591538f47e",
+      "molsysviewer/js/tests/e2e/movie-legacy.e2e.ts": "be4f6f0fe13e57342a361db63c442f16e237950d22b08fd3eaea9db18ecdd87d",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "d51ff2d2469c353c23cac672e1484d9f1642920e722929042f2d4e2d7d4d5608",
+      "molsysviewer/js/package.json": "1a4cd927ca1baa14680e5dd1f4745c23fe259cce3a990caecda3c3627575d856",
+      "tests/test_movie_import.py": "0ea36027da6650782418c6d6919f9c626259232ad72e9a5ff4060bc89b8de2c1",
+      "tests/test_movie_legacy.py": "b19a4f49bf8fdcdac8e314ba09c796c2f07ec12e1a8c814c2297915370e2c047",
+      "docs/content/user/movie/timeline.md": "0fbefe0488b1406f47037c1c221940cd5b5b790707bfc778c748555d377308d9",
+      "devguide/movie_timeline_design.md": "2d97b04b9c5db770a6ec9965fc998c5603750c3365504ce1363533ad497a5cc9",
+      "molsysviewer/js/src/managers/canvas-draw.ts": "4d788938e9dcb88bbd62f47f3f0ebb4480e832ccbbb9693d4cf9e019db57dda4",
+      "molsysviewer/js/tests/unit/frontend-requests.test.ts": "c06e9de3870d1bd13e1e07a73a298e2e8ccb3d4a55dacfdf95292e1a7e921ebc",
+      "molsysviewer/js/tests/e2e/canvas-popup-bridge.py": "cf4b82aa9ac84f0701037826dad1ad55772d562142aa132d3f42c7cf14cd8ea9",
+      "molsysviewer/js/tests/e2e/canvas-popup-fixture.ts": "e20a958d014618a26e7256a5a98d7a3481890b586713641b439948f768075d9a",
+      "molsysviewer/js/tests/e2e/python-fixture-bridge.ts": "563c01fd4a57061e8a8cdd4256185b7ebc799006c5b44b36b6692c96bb6fa271",
+      "molsysviewer/js/tests/e2e/async-comm-bridge.py": "f7d02b940dd62abc048ddc98f6e3a8719559d07a02e490be59c1009ada24d359",
+      "tests/test_browser_fixture_transport.py": "00d6bc9ea3d905f9841775626ec5f8e047448c1a690b5c540bcca8c0ab9f783d",
+      "devguide/scene_contracts.md": "bd1989c8566d7816d589ce6e78dd60800b7fc7c9210715a6cc6c41236a46cc97",
+      "devguide/session_reproducibility.md": "6a7cb61c41806063e60ab00d44658f9a48de74814039a2a95b39cdf5c0d4259f"
+    },
+    "runtime_sha256": "c8753250758e9ae43c5141d77502d3c048b45fe0d89418a876e30500a8590639"
+  },
+  "contract": {
+    "profile": "Reviewed version-1 to version-2 migration; original legacy reader/playback unchanged.",
+    "camera": "Complete constant-up safe Cartesian channel; no path-changing override; explicit baseline if absent.",
+    "structures": "Original outgoing easing and positive Math.round ties, binary64 change thresholds; conservative 100000-event expansion cap; uniquely mapped intermediate frames.",
+    "visibility": "Explicit legacy-domain to existing typed target map; destination initial state is declared where source state is absent. The legacy __proto__ tag is refused because the old sampler ignored its boolean value.",
+    "provenance": "molsysviewer.movie_import@2, source_version=1, source_binding=null, empty source target identities; no fabricated molecular origin.",
+    "acceptance": "Existing detached private-ticket review/re-proposal; no scene commands on acceptance.",
+    "capture_liveness": "An incoherent completed draw requests another native draw until coherence/deadline/cancellation; no extra clock, pause, seek or fabricated geometry.",
+    "fixture_transport": "Scheduled comms arrive spontaneously in stdout order; a closed browser detaches its receiver while the Python authority continues independently."
+  },
+  "outcomes": {
+    "python_550": {
+      "passed": 79,
+      "failed": 0,
+      "warnings": 156,
+      "scope": "Affected import/migration files. Later large-index and independent native guards were not yet present. These are not final-tree or installed qualification."
+    },
+    "javascript_553": {
+      "passed": 455,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Unchanged canonical unit entry; eight public-migration fixtures compared with actual legacy TS sampler at outgoing-easing binary64 boundaries."
+    },
+    "native_554": {
+      "passed": 0,
+      "failed": 1,
+      "scope": "Existing movie-seek guard fails at original loop-preview start before reaching the legacy checks. Later phases, including broad regression, did not run.",
+      "observation": "No next samples, request_timeout, visible/connected 850x600 canvas, no page errors; original default-preview observation 540 remains unresolved.",
+      "aggregate_input_integrity": "False: 12393 transient Python files beneath the live PyUnitWizard owner .governance-tools tree disappeared. No shared selected-file digest changed; retain aggregate failure, do not reinterpret it as qualified.",
+      "phase_status": "Strict type/runtime/harness builds returned zero before failure; not final aggregate qualification."
+    },
+    "resources": "551 interrupted after 59219968 bytes shared swap activity/5s; 552 and 555 preflight refused. Neither is passing evidence.",
+    "initial_test_errors_549": "Three failures: shared mutable BEGIN contaminated later path test; visibility assertion expected only tracked rows. Tests corrected and 550 passed. Preserve original JUnit.",
+    "not_received": [
+      "Stable complete moving capture under #344",
+      "Complete core lane / hosted exact-head CI",
+      "Actual Jupyter/native Qt/human acceptance",
+      "Clean installed pair or public artifacts",
+      "Studio authoring, portable Movie web and integrated M5 story"
+    ],
+    "headless_final": {
+      "profile": 563,
+      "cases": 833,
+      "passed": 828,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 5,
+      "skip_reasons": [
+        "imageio is installed; cannot test ImportError path",
+        "Explicit real Mol*/Chromium legacy migration receiving is required.",
+        "Explicit real Mol*/Chromium Cartesian Movie receiving is required.",
+        "Explicit real Mol*/Chromium Movie receiving is required.",
+        "Explicit frontend TypeScript compiler receiving is required."
+      ],
+      "sha256": "e8a62a1d28225fd495f50a0233807a745acfea3ce947393468d5cf40c2dcc354",
+      "warnings": 496,
+      "scope": "22 directed Python Movie/session/state/API/reporting/reference files. Not the complete repository suite. The later renderer/fixture corrections receive independent unit/native coverage below."
+    },
+    "javascript_final": {
+      "profile": 564,
+      "passed": 457,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Canonical complete Node unit entry, including 8 actual-legacy-sampler controls, prototype-tag preservation and idle-canvas liveness."
+    },
+    "types_and_runtime": {
+      "profiles": [
+        564,
+        566
+      ],
+      "scope": "Strict frontend request/Movie/unit/native fixture graph; runtime/harness rebuilt through build:runtime without version synchronization."
+    },
+    "selected_browser_final": {
+      "profile": 567,
+      "passed_suites": 7,
+      "failed_suites": 0,
+      "suites": [
+        "moving-capture-lifecycle",
+        "popup-channel",
+        "widget-seam",
+        "movie-seek",
+        "movie-legacy",
+        "movie-export",
+        "movie-appearance"
+      ],
+      "scope": "Selected core suites with real Python authority and Mol* / Chromium; actual transport loss, closed owners, source/result matching, primary/popup draws, preview, saved sessions, native materials and readable 720p media. Not a complete core lane or Jupyter/native Qt/installed/human qualification."
+    },
+    "transport_before_after": {
+      "before_profile": 560,
+      "before_failed": 1,
+      "before_expected": "Old server strands the scheduled real-View message without another request. Native exit 1 and JUnit retained as a negative control.",
+      "after_profile": 558,
+      "after_passed": 3,
+      "guard": "tests/test_browser_fixture_transport.py"
+    },
+    "moving_complete_not_accepted": {
+      "issue": "uibcdf/molsysviewer#344",
+      "before": [
+        {
+          "profile": 562,
+          "cpus": 2,
+          "outcome": "Moving popup save fails."
+        },
+        {
+          "profile": 563,
+          "cpus": 4,
+          "outcome": "Moving detached Studio save fails."
+        }
+      ],
+      "isolated_positive": {
+        "profile": 564,
+        "cpus": 4,
+        "outcome": "Complete native moving entry passes: six uninterrupted saves, empty frame and presentation controls."
+      },
+      "later_failure": {
+        "profile": 566,
+        "cpus": 4,
+        "outcome": "Complete repetition fails the sixth moving Studio save."
+      },
+      "interpretation": "Retain both complete outcomes; neither prefixes nor independent selected suites close the combined recurrence or establish one cause for older Jupyter failures."
+    },
+    "retained_development_failures": {
+      "556": "Strict typing exposes the fixture empty-array never[] inference; explicitly typed string[] without weakening the strict graph.",
+      "557": "New transport controls omitted the real ready handshake; fixed their setup and retain all three failures.",
+      "558": "Resource interruption after transport/types/build pass; interrupted native guard is not positive receiving.",
+      "561": "Existing clean-checkout link guard catches the new unregistered receipt. Register only this work in Git; retain 1 failure/826 passes/5 skips. Later 563 passes 828/5.",
+      "565": "Lifecycle guard exposes fixture delivery to a closed page killing Python; detach the receiver on actual page close and receive unchanged lifecycle scope in 567."
+    },
+    "initial_pending_scope": [
+      "Final-tree Python broad regression",
+      "New independent movie-legacy native guard",
+      "Final strict frontend graph after independent guard addition",
+      "Actual Jupyter/native Qt/human acceptance",
+      "Installed artifacts",
+      "New encoded-video or portable-web qualification"
+    ],
+    "reporting_after_docs": {
+      "profile": 568,
+      "passed": 462,
+      "failed": 0,
+      "skipped": 0,
+      "junit_sha256": "b167d2f415c9cdf6e5b058baec273deb6ced76ca1e825cbb703b3671fefed574",
+      "scope": "Reporting/index links and public API/signature/digestion contracts after final documentation corrections."
+    }
+  },
+  "providers": {
+    "prior_headless": "Original supervisor PYTHONPATH includes the live PyUnitWizard source checkout. Exact executed package inputs are retained by 548/549/550 manifests; do not substitute a copied-support or installed-runtime claim.",
+    "prior_scientific_source": "Unchanged archived MolSysMT Python source aee7aa65da56e896d1cb2d655bf73736f6453a43; canonical native 4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345.",
+    "next_route": "Adopted fixed copied-support route; direct and inner Movie authority module origins are recorded. Reported source-generated versions are not package identities; Git/file/native hashes identify this receiving.",
+    "observed_final": {
+      "molsysviewer": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "version": "0.24.0+97.gdf4bf477.dirty"
+      },
+      "molsysmt": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/__init__.py",
+        "version": "0+unknown"
+      },
+      "pyunitwizard": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+        "version": "0.29.4+2.g9bb4f5f"
+      },
+      "smonitor": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/smonitor/__init__.py",
+        "version": "0.21.0"
+      },
+      "depdigest": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/depdigest/__init__.py",
+        "version": "0.15.1"
+      },
+      "argdigest": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/argdigest/__init__.py",
+        "version": "0.15.0"
+      },
+      "pytest_receptor": {
+        "file": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pytest_receptor/__init__.py",
+        "version": "1.2.1"
+      }
+    },
+    "authority_origins_sha256": "0c915b58b0e594dec0fc882fff72ea2c12e7bc4fe932401e3ca75fc8026e056c"
+  },
+  "profiles": {
+    "legacy-548-prepare": {
+      "native_exit": 0,
+      "seconds": 6.9384346581064165,
+      "selected_inputs": 10207,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 386.4,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.034576416015625,
+        "cpu_percent": 7.9,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2730207604\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2630590791\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      }
+    },
+    "legacy-549-affected": {
+      "native_exit": 1,
+      "seconds": 35.95280227996409,
+      "selected_inputs": 10208,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 447.8,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.221733093261719,
+        "cpu_percent": 4.4,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2730207604\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2630590791\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "affected.junit.xml_sha256": "8e7c8c09e42ab2e5a055b9b45ecae02c918ac5d3e9c19a87b6f75a1c3a48a2cc"
+    },
+    "legacy-550-affected": {
+      "native_exit": 0,
+      "seconds": 41.20262719807215,
+      "selected_inputs": 10208,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 446.7,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.025447845458984,
+        "cpu_percent": 9.3,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2730207604\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2630590791\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "affected.junit.xml_sha256": "3a5a2a7006ea407c669400d78b593d17949f0c741ff32f9e17bd505b69cc9df2"
+    },
+    "build-legacy-551-js": {
+      "native_exit": 0,
+      "seconds": 6.930946632986888,
+      "selected_inputs": 10939,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 496.1,
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "resources": {
+        "available_gib": 10.97750473022461,
+        "cpu_percent": 11.5,
+        "memory_pressure": "some avg10=0.10 avg60=0.23 avg300=0.06 total=2730477002\nfull avg10=0.09 avg60=0.21 avg300=0.06 total=2630849999\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 2,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      }
+    },
+    "build-legacy-552-js": {
+      "state": "preflight_refused",
+      "execution_started": false,
+      "resources": {
+        "available_gib": 11.668510437011719,
+        "cpu_percent": 4.7,
+        "memory_pressure": "some avg10=6.78 avg60=1.90 avg300=0.47 total=2731955459\nfull avg10=6.23 avg60=1.75 avg300=0.43 total=2632225466\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      }
+    },
+    "build-legacy-553-js": {
+      "native_exit": 0,
+      "seconds": 21.54525537486188,
+      "selected_inputs": 22758,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 523.4,
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.19509506225586,
+        "cpu_percent": 7.4,
+        "memory_pressure": "some avg10=0.02 avg60=0.49 avg300=0.79 total=2735923268\nfull avg10=0.01 avg60=0.46 avg300=0.75 total=2636089498\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      }
+    },
+    "build-legacy-554-verify": {
+      "native_exit": 1,
+      "seconds": 93.47265248303302,
+      "selected_inputs": 22758,
+      "inputs_unchanged": false,
+      "peak_owned_rss_mib": 2255.7,
+      "cleanup": {
+        "tracked": 30,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.209537506103516,
+        "cpu_percent": 3.8,
+        "memory_pressure": "some avg10=0.00 avg60=0.21 avg300=0.71 total=2737400206\nfull avg10=0.00 avg60=0.21 avg300=0.69 total=2637555389\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 3,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "native.junit.xml_sha256": "213b855a8624b3f32b40a8cf9e589200fddbc56863ec6f51cba808fb6075f122",
+      "preview-failure.json_sha256": "e617b1509f07b46eb3887154143c0b638ffabc581b7686be39f6d2ce486dbfcc"
+    },
+    "build-legacy-555-verify": {
+      "state": "preflight_refused",
+      "execution_started": false,
+      "resources": {
+        "available_gib": 14.216743469238281,
+        "cpu_percent": 4.0,
+        "memory_pressure": "some avg10=3.75 avg60=2.43 avg300=2.64 total=2751896619\nfull avg10=3.63 avg60=2.38 avg300=2.57 total=2651641133\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 3,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      }
+    },
+    "build-legacy-556-verify": {
+      "native_exit": 1,
+      "seconds": 13.513535764068365,
+      "selected_inputs": 9878,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 644.6,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.439804077148438,
+        "cpu_percent": 3.1,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2753015873\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2652750272\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 3,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {}
+    },
+    "build-legacy-557-verify": {
+      "native_exit": 1,
+      "seconds": 23.9633368330542,
+      "selected_inputs": 9880,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 625.1,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.377445220947266,
+        "cpu_percent": 3.7,
+        "memory_pressure": "some avg10=0.00 avg60=0.05 avg300=0.09 total=2753758096\nfull avg10=0.00 avg60=0.05 avg300=0.09 total=2653479872\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 3,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {
+        "transport.junit.xml": {
+          "cases": 3,
+          "passed": 0,
+          "failed": 3,
+          "errors": 0,
+          "skipped": 0,
+          "skip_reasons": [],
+          "sha256": "fa4068dffb43d2cb8d9c189a9daecf446c95fcf3552e7fbb60475c3371aeb299"
+        }
+      }
+    },
+    "build-legacy-558-verify": {
+      "native_exit": 0,
+      "seconds": 78.38100980501622,
+      "selected_inputs": 9880,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2327.7,
+      "cleanup": {
+        "tracked": 35,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "resources": {
+        "available_gib": 14.07021713256836,
+        "cpu_percent": 10.1,
+        "memory_pressure": "some avg10=0.00 avg60=0.02 avg300=0.06 total=2753800876\nfull avg10=0.00 avg60=0.02 avg300=0.06 total=2653522356\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 3,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {
+        "transport.junit.xml": {
+          "cases": 3,
+          "passed": 3,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "skip_reasons": [],
+          "sha256": "5de707857cad4b97119926c99651d786c0f47e83afa614dee87484e7a42ed4e0"
+        }
+      }
+    },
+    "legacy-559-native": {
+      "native_exit": 0,
+      "seconds": 54.45899207284674,
+      "selected_inputs": 9882,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2317.5,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.327159881591797,
+        "cpu_percent": 3.3,
+        "memory_pressure": "some avg10=0.58 avg60=0.43 avg300=0.20 total=2754526558\nfull avg10=0.58 avg60=0.43 avg300=0.20 total=2654240888\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {
+        "native-legacy.junit.xml": {
+          "cases": 1,
+          "passed": 1,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "skip_reasons": [],
+          "sha256": "0d939196cf8a215cbcbbdd5546dbc17d037c237b2ace0f481875c2f9aabe5dff"
+        }
+      }
+    },
+    "legacy-560-before-control": {
+      "native_exit": 1,
+      "seconds": 32.65318312612362,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 440.0,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.162235260009766,
+        "cpu_percent": 4.5,
+        "memory_pressure": "some avg10=0.00 avg60=0.04 avg300=0.13 total=2754816608\nfull avg10=0.00 avg60=0.04 avg300=0.13 total=2654530343\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {
+        "before.junit.xml": {
+          "cases": 1,
+          "passed": 0,
+          "failed": 1,
+          "errors": 0,
+          "skipped": 0,
+          "skip_reasons": [],
+          "sha256": "c4a3ea04e8aa65f590a16285ce25aa4d2d6406077d2e44615710d0384f29cb29"
+        }
+      }
+    },
+    "covering-legacy-561-receive": {
+      "native_exit": 1,
+      "seconds": 203.21488152095117,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2324.4,
+      "cleanup": {
+        "tracked": 29,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 13.567554473876953,
+        "cpu_percent": 13.0,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.08 total=2754823709\nfull avg10=0.00 avg60=0.00 avg300=0.08 total=2654536760\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {
+        "native.junit.xml": {
+          "cases": 1,
+          "passed": 1,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "skip_reasons": [],
+          "sha256": "2626057ac1077a37108f821bb21deb62f67d143fc5cda934c8df2359a00801aa"
+        },
+        "regression.junit.xml": {
+          "cases": 832,
+          "passed": 826,
+          "failed": 1,
+          "errors": 0,
+          "skipped": 5,
+          "skip_reasons": [
+            "imageio is installed; cannot test ImportError path",
+            "Explicit real Mol*/Chromium legacy migration receiving is required.",
+            "Explicit real Mol*/Chromium Cartesian Movie receiving is required.",
+            "Explicit real Mol*/Chromium Movie receiving is required.",
+            "Explicit frontend TypeScript compiler receiving is required."
+          ],
+          "sha256": "986d7131b6567fd934661eaf2c23584348ed7c11292bd558c27a8049ee86ed6f"
+        }
+      }
+    },
+    "covering-legacy-562-browser": {
+      "native_exit": 1,
+      "seconds": 73.29961061105132,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3158.2,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.113998413085938,
+        "cpu_percent": 3.7,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.01 total=2754823869\nfull avg10=0.00 avg60=0.00 avg300=0.01 total=2654536921\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 2,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {}
+    },
+    "build-legacy-563-final": {
+      "native_exit": 1,
+      "seconds": 230.89523992012255,
+      "selected_inputs": 9883,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3510.7,
+      "cleanup": {
+        "tracked": 41,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 13.984977722167969,
+        "cpu_percent": 3.4,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2754827151\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2654540082\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 4,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {
+        "regression.junit.xml": {
+          "cases": 833,
+          "passed": 828,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 5,
+          "skip_reasons": [
+            "imageio is installed; cannot test ImportError path",
+            "Explicit real Mol*/Chromium legacy migration receiving is required.",
+            "Explicit real Mol*/Chromium Cartesian Movie receiving is required.",
+            "Explicit real Mol*/Chromium Movie receiving is required.",
+            "Explicit frontend TypeScript compiler receiving is required."
+          ],
+          "sha256": "e8a62a1d28225fd495f50a0233807a745acfea3ce947393468d5cf40c2dcc354"
+        }
+      }
+    },
+    "build-legacy-564-draw": {
+      "native_exit": 0,
+      "seconds": 119.05857168394141,
+      "selected_inputs": 9883,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3556.7,
+      "cleanup": {
+        "tracked": 41,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.231697082519531,
+        "cpu_percent": 3.6,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2754827162\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2654540093\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 4,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {}
+    },
+    "covering-legacy-565-browser": {
+      "native_exit": 1,
+      "seconds": 71.87235853611492,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3117.5,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.24874496459961,
+        "cpu_percent": 3.3,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2754827162\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2654540093\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 4,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {}
+    },
+    "covering-legacy-566-browser": {
+      "native_exit": 1,
+      "seconds": 109.6376685150899,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3468.1,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.285114288330078,
+        "cpu_percent": 3.0,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2754827162\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2654540093\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 4,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {}
+    },
+    "covering-legacy-567-browser": {
+      "native_exit": 0,
+      "seconds": 320.88581413496286,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3071.0,
+      "cleanup": {
+        "tracked": 55,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.296905517578125,
+        "cpu_percent": 4.6,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2754827162\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2654540093\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 4,
+          "ram_gib": 4,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      },
+      "junit": {}
+    },
+    "legacy-568-reporting": {
+      "native_exit": 0,
+      "seconds": 11.946085677947849,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 512.0,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "available_gib": 14.226814270019531,
+        "cpu_percent": 3.3,
+        "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=2754828252\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=2654541181\n",
+        "swap_in": 0,
+        "swap_out": 0,
+        "limits": {
+          "logical_cpus": 1,
+          "ram_gib": 1,
+          "swap_gib": 0,
+          "minimum_globally_available_gib": 6.5
+        }
+      }
+    }
+  },
+  "counters": {
+    "source_delivered": 38,
+    "final_acceptance": 1,
+    "denominator": 46,
+    "movie_stream": "Separate adopted #320 stream; no counter change."
+  },
+  "next": "Isolate the #344 combined capture recurrence without retrying it into acceptance, changing scientific assertions or enlarging deadlines. #320 still needs reviewed Studio authoring, portable web and integrated-story receiving; owner #723 precedes another long E2 campaign. Installed/hosted and both 1.0 publications remain separate.",
+  "initial_checkpoint": {
+    "status": "implementation_prepared_receiving_pending",
+    "integrated": false,
+    "source": {
+      "base": "e8bdf97d67b59addf766b6fc6802d3ac90be9921",
+      "kind": "Uncommitted reviewed working source; earlier outcomes below retain their executed input manifests.",
+      "files": {
+        "molsysviewer/viewer/_movie_legacy.py": "2d1e6e60fb8b1c531a153fd9caf7c3be721db81064a677e83088bd454fd4bdc5",
+        "molsysviewer/viewer/_movie_import.py": "e810d686e845ff71b01354dbd4cb6b928303953d461f0eb131f326a1cd9aba64",
+        "molsysviewer/viewer/movie.py": "a93fccc106ad97677d1b1c06973cc227bcd5863edd176bc54212830593e83c56",
+        "molsysviewer/js/src/managers/movie-import-provenance.ts": "5abb782d35086f2e317c7f0e18a1f605ac1624805e8586f2b57c8fa530f097f3",
+        "molsysviewer/js/tests/unit/movie-handler.test.ts": "a87db65db81ac1141ebb73964c9cfc5b3133ea6469301ddf2c0449b3b0fe0b5d",
+        "molsysviewer/js/tests/fixtures/movie-legacy-oracle.json": "878cc01f451b57ca7074e69a0856f412060cc9ff4a3a585334d3f8d1330a42f3",
+        "molsysviewer/js/tests/e2e/movie-seek-bridge.py": "cc8c14c7d43f13bdb39c147b6bd77b84dcf1fe23f33b9ecc00f863c8b093c571",
+        "molsysviewer/js/tests/e2e/movie-seek.e2e.ts": "a65ffd1cb8ecb6250e6796c2ffdb1d1d167ece3c2fedcc57ebbbe3591538f47e",
+        "molsysviewer/js/tests/e2e/movie-legacy.e2e.ts": "be4f6f0fe13e57342a361db63c442f16e237950d22b08fd3eaea9db18ecdd87d",
+        "molsysviewer/js/tests/e2e/e2e-runner.ts": "d51ff2d2469c353c23cac672e1484d9f1642920e722929042f2d4e2d7d4d5608",
+        "molsysviewer/js/package.json": "1a4cd927ca1baa14680e5dd1f4745c23fe259cce3a990caecda3c3627575d856",
+        "tests/test_movie_import.py": "0ea36027da6650782418c6d6919f9c626259232ad72e9a5ff4060bc89b8de2c1",
+        "tests/test_movie_legacy.py": "824cc0b8967c296b1df99387f0a6d7957380fdb9970ffba6b0527ff52cfccd7c",
+        "docs/content/user/movie/timeline.md": "0fbefe0488b1406f47037c1c221940cd5b5b790707bfc778c748555d377308d9",
+        "devguide/movie_timeline_design.md": "b10e4bc63435b3f82b548c7fba9d6b610136eedab9ef2a4de6c7905c959322f6"
+      },
+      "runtime_sha256": "6da22825c3ac16037b3f0cf941e866439628b964775e275dfee3438a327c2007"
+    },
+    "private_custody": {
+      "state": "verified_copy",
+      "custodian": "Diego Prada Gracia",
+      "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+      "leaf": "movie-legacy-checkpoint-20261112",
+      "file_count": 60,
+      "payload_bytes": 122220677,
+      "manifest_sha256": "1598c857971890e7bda669d7589fd71b6782616e321a570b6b2239cc6f92c973",
+      "permissions": "directories 0700; files 0600",
+      "originals_deleted": false,
+      "scope": "Final prepared source and original profile artifacts; not pre-attempt source snapshots or passing final receiving."
+    }
+  },
+  "completed_utc": "2026-11-12T16:58:03.238717+00:00",
+  "integration": "The reviewed Git commit delivering this receipt identifies integration; no published package/tag is implied.",
+  "integration_base": {
+    "commit": "5155ed6b65cf0e46ad3677718edddb1fef7e85d7",
+    "changes_since_receiving_base": "Guide-only fast-forward: complete remote inventories and PyUnitWizard 0.29.5 consumer guidance. Executed product/support bytes remain identified by the frozen receiving manifests. No runtime/provider upgrade.",
+    "guide_sha256": {
+      "MOLSYSSUITE_GUIDE.md": "5f7008788d5e830e0f7d528afa35c072e1e81430e1170c181329196932683b93",
+      "PYUNITWIZARD_GUIDE.md": "2bebdab26b9f5ac70bafd35bc48522e1a07535953e2a1b8939e0a3feb6d5b860"
+    }
+  },
+  "resources_notice": "Peak owned RSS sums per-process RSS and can count shared pages more than once; it is not physical RAM usage. Own cgroup caps, global reserve, inactive-swap preflight and runtime pressure stops are preserved per profile.",
+  "evidence_custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "movie-legacy-received-20261112",
+    "file_count": 175,
+    "payload_bytes": 174876838,
+    "manifest_sha256": "8964e24823779cfd4519f231dfadcd23d41846beb5d4625421bbd2bc2d494f11",
+    "permissions": "directories 0700; files 0600",
+    "originals_deleted": false,
+    "prior_scientific_source_custody": "jupyter-receiver-20261112"
+  }
+}

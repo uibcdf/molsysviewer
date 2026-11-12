@@ -382,11 +382,12 @@ the candidate; reject edits, stale context and active Movie work. Failed review
 construction preserves the previous accepted plan and valid review. Accepted
 imports do not apply scene commands and remain headless/composable.
 
-### Legacy migration — pending
+### Reviewed legacy migration
 
-The reviewed import implementation accepts version 2 only. Existing version-1
-`from_dict()` and playback remain available; the following is the migration
-design, not a delivered conversion route.
+`review_import()` also admits a bounded version-1 migration profile.
+Existing version-1 `from_dict()` and playback remain available. Restoration
+does not silently convert a legacy artifact; migration uses the same detached
+review, private ticket and explicit `apply_import()` boundary as version 2.
 
 Legacy version 1 has global keyframes, Cartesian camera interpolation and
 rounded structure sweeps. Migration must not silently substitute quaternion
@@ -395,15 +396,43 @@ requires complete camera/structure channels across the global keys, whenever
 those channels occur. It retains Cartesian movement with an explicit camera
 interpolation marker and compiles rounded sweeps into bounded discrete events.
 The explicit Cartesian profile above supplies its camera prerequisite.
-Constant-up, nonsingular Cartesian segments are planned for migration; unsupported/unsafe
-paths and partial global channels are named conflicts, leaving legacy reading
-and playback available. Legacy visibility tags require explicit domain/tag
-mapping. A camera-free legacy recipe requires an explicit baseline camera.
+Constant-up, nonsingular Cartesian segments preserve physical camera orientation;
+the final pose derives its orthonormal up as in the version-2 evaluator.
+Unsupported/unsafe paths and partial global channels are named conflicts.
+The legacy `__proto__` visibility tag is also refused: the original sampler
+ignored its boolean value, so assigning a typed target would add a new effect.
+Legacy visibility tags require explicit mapping from
+`{"domain": "legacy", "tag": ...}` to an existing tagged scene domain.
+A camera-free legacy recipe requires an explicit baseline camera;
+an override may not alter a recorded camera path. Before the first legacy
+camera key, the first recorded pose is held, matching the original sampler.
+
+Structure compilation uses the original outgoing easing and positive-tie
+`Math.round` semantics. Each change starts at the first representable binary64
+timestamp that reaches the new integer under the original operation order;
+descending ties are not converted with Python's `round()`. Coincident events
+coalesce to the actual sampled value. A conservative preflight of
+`1 + sum(abs(next_index - previous_index))` must not exceed 100,000 serialized
+events. This budget is not a universal renderer-memory guarantee. All actual
+intermediate frames must resolve uniquely through a supplied new-to-old map,
+or match declared destination indices when no map is supplied.
+
+Legacy recipes lack source binding and initial scene visibility. Receipt
+`molsysviewer.movie_import@2` records source version 1 and
+`source_binding: null`; source target identities remain empty. It retains the
+source digest, explicit maps, real destination identities and warning codes.
+Sparse visibility uses the prepared destination's initial values before its
+first key and reports affected tracks. Acceptance declares correspondence,
+without authenticating origins or performing alignment. Version-2 imports keep
+their existing `@1` receipt and actual source binding. Importing a migrated
+recipe again records only its immediate version-2 parent, not recursive history.
+
+`tests/test_movie_legacy.py` protects the public review/acceptance, safe-path
+refusal, intermediate-frame maps, exact boundaries, sparse visibility, session
+recovery and executable example. Shared fixtures compare the public migration
+to the actual legacy TS sampler. The Movie seek browser guard additionally
+checks imported discrete steps, primary/popup draws, preview and sessions.
 This bounded profile is not a claim that every historical artifact can migrate.
-The migration still needs rounded-structure compilation, source/target
-correspondences and complete boundary/native receiving before being offered.
-`tests/test_movie_import.py` protects the
-current refusal rather than allowing a silent change of interpolation.
 
 The export job has a correlated identity, synchronous progress callbacks,
 task cancellation and a detached result manifest. Synchronous existing

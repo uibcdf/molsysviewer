@@ -19,19 +19,27 @@ def serve(view=None, fixture_event_handler=None, *, async_processing=False):
         view = msv.new_view(msv.demo["pentalanine"].molsys, structure_indices=[0, 8, 3], controls_mode="compact")
     view.set_controls_visible(True, autohide=False, position=["top", "left"])
     sent = []
+    processing = False
 
     def capture(content, buffers=None):
-        sent.append(
-            {
-                "content": wrap_outbound(content, view.widget.runtime_viewer_id, view.widget.runtime_session_id),
-                "buffers": [base64.b64encode(memoryview(buffer)).decode("ascii") for buffer in buffers or []],
-            }
-        )
+        message = {
+            "content": wrap_outbound(content, view.widget.runtime_viewer_id, view.widget.runtime_session_id),
+            "buffers": [base64.b64encode(memoryview(buffer)).decode("ascii") for buffer in buffers or []],
+        }
+        if async_processing and not processing:
+            # Notebook comms deliver scheduled sends without a subsequent
+            # browser request. Keep synchronous replies and unsolicited sends
+            # on the same ordered stdout wire, rather than adding polling.
+            print(json.dumps({"event": "widget_messages", "messages": [message]}), flush=True)
+        else:
+            sent.append(message)
 
     view.widget.send = capture
 
     def process_request(line):
+        nonlocal processing
         request = json.loads(line)
+        processing = True
         try:
             if not async_processing:
                 sent.clear()
@@ -92,6 +100,8 @@ def serve(view=None, fixture_event_handler=None, *, async_processing=False):
             print(json.dumps({"id": request["id"], "result": result}), flush=True)
         except Exception:
             print(json.dumps({"id": request["id"], "error": traceback.format_exc()}), flush=True)
+        finally:
+            processing = False
 
     async def process_async():
         # The same authority receives each event on its owning loop. Reading

@@ -14,6 +14,10 @@ export class PythonFixtureBridge {
     private readonly transport = { responseCount: 0, responseBytes: 0, maxResponseBytes: 0,
         maxPending: 0, observations: [] as Array<{ id: number; label: string; elapsedMs: number; bytes: number }> };
     private readonly observeTransport: boolean;
+    private messageListener?: (messages: any[]) => void | Promise<void>;
+    private messageBacklog: any[][] = [];
+    private backlogBytes = 0;
+    private delivery = Promise.resolve();
 
     constructor(script: string, cwd: string, private readonly timeoutMs = 90000,
         options: { args?: readonly string[], env?: NodeJS.ProcessEnv, observeTransport?: boolean } = {}) {
@@ -31,6 +35,18 @@ export class PythonFixtureBridge {
         this.lines.on("line", line => {
             try {
                 const response = JSON.parse(line);
+                if (response.event === "widget_messages") {
+                    if (!Array.isArray(response.messages)) throw new Error("Invalid unsolicited fixture message.");
+                    if (this.messageListener) this.deliver(response.messages);
+                    else {
+                        this.backlogBytes += Buffer.byteLength(line);
+                        if (this.messageBacklog.length >= 64 || this.backlogBytes > 32 * 1024 * 1024) {
+                            throw new Error("Unconsumed fixture messages exceeded their bounded buffer.");
+                        }
+                        this.messageBacklog.push(response.messages);
+                    }
+                    return;
+                }
                 const request = this.pending.get(response.id);
                 if (!request) throw new Error(`Unexpected Python fixture response: ${line.slice(0, 300)}`);
                 if (this.observeTransport) {
@@ -43,9 +59,37 @@ export class PythonFixtureBridge {
                 }
                 clearTimeout(request.timer);
                 this.pending.delete(response.id);
-                if (response.error) request.reject(new Error(response.error)); else request.resolve(response.result);
+                if (response.error) request.reject(new Error(response.error));
+                else {
+                    const result = response.result;
+                    if (this.messageListener && Array.isArray(result?.messages)) {
+                        this.deliver(result.messages);
+                        result.messages = [];
+                    }
+                    // Capture this wire prefix, not later traffic: an active
+                    // preview may continuously add independent responses.
+                    void this.delivery.then(() => request.resolve(result), error => request.reject(error));
+                }
             } catch (error) { this.fail(error instanceof Error ? error : new Error(String(error))); }
         });
+    }
+
+    /** Receive synchronous and unsolicited widget messages in stdout order. */
+    onMessages(listener: (messages: any[]) => void | Promise<void>): () => void {
+        if (this.messageListener) throw new Error("The fixture already has a widget-message receiver.");
+        this.messageListener = listener;
+        for (const messages of this.messageBacklog) this.deliver(messages);
+        this.messageBacklog = []; this.backlogBytes = 0;
+        return () => { if (this.messageListener === listener) this.messageListener = undefined; };
+    }
+
+    private deliver(messages: any[]): void {
+        if (!messages.length) return;
+        const listener = this.messageListener;
+        this.delivery = this.delivery.then(async () => {
+            if (listener && listener === this.messageListener) await listener(messages);
+        });
+        void this.delivery.catch(error => this.fail(error instanceof Error ? error : new Error(String(error))));
     }
 
     request(events: unknown[] = [], family?: string): Promise<any> {
@@ -74,6 +118,8 @@ export class PythonFixtureBridge {
     }
 
     async close(): Promise<void> {
+        this.messageListener = undefined;
+        this.messageBacklog = []; this.backlogBytes = 0;
         if (this.child.exitCode !== null || this.child.signalCode !== null) { this.lines.close(); return; }
         await new Promise<void>(resolve => {
             const timer = setTimeout(() => this.child.kill("SIGKILL"), 5000);

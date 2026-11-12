@@ -8,23 +8,33 @@ from .._private.structure_correspondence import normalize_structure_index_map
 from ._movie_appearance import appearance_baseline
 from ._movie_baseline import check_idle
 from ._movie_scene import fingerprint, same_data, scene_changes
-from ._movie_timeline import _VISIBILITY_DOMAINS, _binding, _camera, _MovieTimeline, _scene_visibility, _tag
+from ._movie_timeline import (
+    _MAX_SAFE_INTEGER,
+    _VISIBILITY_DOMAINS,
+    _binding,
+    _camera,
+    _MovieTimeline,
+    _scene_visibility,
+    _tag,
+)
 from .visual_capture import _scene_key
 
 _SCHEMA = "molsysviewer.movie_import_review@1"
 _PROVENANCE = "molsysviewer.movie_import@1"
+_LEGACY_PROVENANCE = "molsysviewer.movie_import@2"
 
 
-def _reference(value):
+def _reference(value, *, legacy=False):
     if not isinstance(value, dict) or set(value) != {"domain", "tag"}:
         raise ValueError("A Movie target-map reference requires domain and tag.")
     domain = value["domain"]
-    if not isinstance(domain, str) or domain not in _VISIBILITY_DOMAINS:
-        raise ValueError("Target maps require an existing tagged scene domain.")
+    valid = isinstance(domain, str) and (domain == "legacy" if legacy else domain in _VISIBILITY_DOMAINS)
+    if not valid:
+        raise ValueError("Target maps require a legacy source or an existing tagged scene domain, as applicable.")
     return {"domain": domain, "tag": _tag(value["tag"])}
 
 
-def normalize_target_map(value):
+def normalize_target_map(value, *, legacy=False):
     if value is None:
         return []
     if not isinstance(value, (list, tuple)):
@@ -33,9 +43,9 @@ def normalize_target_map(value):
     for row in value:
         if not isinstance(row, dict) or set(row) != {"source", "target"}:
             raise ValueError("Each target map requires source and target references.")
-        source = _reference(row["source"])
+        source = _reference(row["source"], legacy=legacy)
         target = _reference(row["target"])
-        if source["domain"] != target["domain"]:
+        if not legacy and source["domain"] != target["domain"]:
             raise ValueError("Version-2 target maps retain the scene domain.")
         a, b = tuple(source.values()), tuple(target.values())
         if a in sources or b in targets:
@@ -57,10 +67,11 @@ def validate_provenance(value, *, destination_count):
         "warnings",
         "targets",
     }
-    if not isinstance(value, dict) or set(value) != fields or value["schema"] != _PROVENANCE:
+    if not isinstance(value, dict) or set(value) != fields or value["schema"] not in (_PROVENANCE, _LEGACY_PROVENANCE):
         raise ValueError("Invalid Movie import provenance.")
+    legacy = value["schema"] == _LEGACY_PROVENANCE
     version = value["source_version"]
-    if type(version) is not int or version != 2:
+    if type(version) is not int or version != (1 if legacy else 2):
         raise ValueError("Invalid imported Movie source version.")
     digest = value["source_sha256"]
     if (
@@ -70,11 +81,16 @@ def validate_provenance(value, *, destination_count):
         or any(c not in "0123456789abcdef" for c in digest[7:])
     ):
         raise ValueError("Movie import provenance requires a SHA-256 source digest.")
-    binding = _binding(value["source_binding"])
-    normalize_target_map(value["target_map"])
+    if legacy and value["source_binding"] is not None:
+        raise ValueError("Legacy Movie provenance cannot invent a source molecular binding.")
+    binding = None if legacy else _binding(value["source_binding"])
+    normalize_target_map(value["target_map"], legacy=legacy)
     indices = value["structure_index_map"]
     if indices is not None:
-        normalize_structure_index_map(indices, binding["n_structures"], destination_count)
+        # This is a representable-index bound, not an inferred source count.
+        normalize_structure_index_map(
+            indices, _MAX_SAFE_INTEGER + 1 if legacy else binding["n_structures"], destination_count
+        )
     warnings = value["warnings"]
     if not isinstance(warnings, list) or any(not isinstance(code, str) or not code for code in warnings):
         raise ValueError("Movie import warnings must be explicit string codes.")
@@ -89,8 +105,12 @@ def validate_provenance(value, *, destination_count):
         if tag in tags:
             raise ValueError("Movie import associations require unique track tags.")
         tags.add(tag)
-        if _reference(row["source"])["domain"] != _reference(row["target"])["domain"]:
+        source = _reference(row["source"], legacy=legacy)
+        target = _reference(row["target"])
+        if not legacy and source["domain"] != target["domain"]:
             raise ValueError("Movie import associations retain the scene domain.")
+        if legacy and (row["source_identity"] != {} or {"source": source, "target": target} not in value["target_map"]):
+            raise ValueError("Legacy Movie associations require a declared target and an unknown source identity.")
         for field in ("source_identity", "target_identity"):
             identity = row[field]
             if (
@@ -146,6 +166,8 @@ def _identity(scene, domain, record):
 
 
 def _propose(movie, source, options, review_id):
+    if source["molsysmovie_version"] == 1:
+        return _propose_legacy(movie, source, options, review_id)
     view = movie._view
     scene = view.export_state(skip_digestion=True)
     context_key = _scene_key(scene, version=2)
@@ -285,11 +307,6 @@ def _propose(movie, source, options, review_id):
                 value(new_track, scene, candidate["baseline"]["camera"], new_vis),
             ):
                 affected.append(old_track["tag"])
-    if (
-        _scene_key(view.export_state(skip_digestion=True), version=2) != context_key
-        or fingerprint(movie.to_dict(skip_digestion=True)) != destination_movie
-    ):
-        raise ValueError("Movie import context changed while validating the proposal.")
     changes = scene_changes(before["scene"], scene, _VISIBILITY_DOMAINS)
     for domain, field, a, b in (
         ("camera", "pose", before["camera"], selected_camera),
@@ -299,6 +316,30 @@ def _propose(movie, source, options, review_id):
             changes.append(
                 {"domain": domain, "tag": None, "change": "changed", "fields": [field], "before": a, "after": b}
             )
+    return _finish(
+        movie,
+        source,
+        options,
+        review_id,
+        context_key,
+        destination_movie,
+        target_binding=binding,
+        targets=targets,
+        changes=changes,
+        affected_tracks=affected,
+        warnings=sorted(set(warnings)),
+        conflicts=conflicts,
+        can_apply=candidate is not None and not conflicts,
+        candidate=candidate,
+    )
+
+
+def _finish(movie, source, options, review_id, context_key, destination_movie, **report):
+    if (
+        _scene_key(movie._view.export_state(skip_digestion=True), version=2) != context_key
+        or fingerprint(movie.to_dict(skip_digestion=True)) != destination_movie
+    ):
+        raise ValueError("Movie import context changed while validating the proposal.")
     return {
         "schema": _SCHEMA,
         "review_id": review_id,
@@ -307,15 +348,134 @@ def _propose(movie, source, options, review_id):
         "scene_sha256": "sha256:" + context_key,
         "destination_movie_sha256": destination_movie,
         "source_sha256": fingerprint(source),
-        "target_binding": binding,
-        "targets": targets,
-        "changes": changes,
-        "affected_tracks": affected,
-        "warnings": sorted(set(warnings)),
-        "conflicts": conflicts,
-        "can_apply": candidate is not None and not conflicts,
-        "candidate": candidate,
+        **report,
     }
+
+
+def _propose_legacy(movie, source, options, review_id):
+    from ._movie_legacy import compile_legacy
+
+    view = movie._view
+    scene = view.export_state(skip_digestion=True)
+    context_key = _scene_key(scene, version=2)
+    destination_movie = fingerprint(movie.to_dict(skip_digestion=True))
+    binding = view._source_state_binding()
+    if binding is None:
+        raise ValueError("Load a molecular system before importing a Movie.")
+    before = deepcopy(scene)
+    compiled = compile_legacy(source, options["camera"])
+    conflicts, tracks = compiled["conflicts"], compiled["tracks"]
+    warnings, targets, affected = ["legacy_source_binding_unknown"], [], []
+    mapping = options["target_map"]
+    explicit = {(r["source"]["domain"], r["source"]["tag"]): r["target"] for r in mapping}
+    indices = options["structure_index_map"]
+    inverse = None
+    if indices is not None:
+        indices = normalize_structure_index_map(indices, _MAX_SAFE_INTEGER + 1, binding["n_structures"])
+        inverse = {}
+        for new, old in enumerate(indices):
+            if old is not None:
+                inverse.setdefault(old, []).append(new)
+    frame_conflicts = {}
+
+    def remap_frame(index):
+        matches = ([index] if index < binding["n_structures"] else []) if inverse is None else inverse.get(index, [])
+        if len(matches) != 1:
+            reason = "unmapped_structure" if not matches else "ambiguous_structure"
+            frame_conflicts.setdefault(reason, set()).add(index)
+            return index
+        return matches[0]
+
+    if compiled["camera"] is not None:
+        scene["view"]["camera"] = compiled["camera"]
+    if compiled["initial_structure"] is not None:
+        scene["view"]["structure_index"] = remap_frame(compiled["initial_structure"])
+        warnings.append("legacy_structure_correspondence_declared")
+    used = set()
+    for track in tracks:
+        domain = track["target"]["domain"]
+        if domain == "structure":
+            for key in track["keys"]:
+                key["value"] = remap_frame(key["value"])
+        if domain != "legacy":
+            continue
+        identity = domain, track["target"]["tag"]
+        used.add(identity)
+        target = explicit.get(identity)
+        if target is None:
+            conflicts.append({"reason": "legacy_target_map_required", "source": track["target"], "track": track["tag"]})
+            continue
+        record = _target_record(scene, target["domain"], target["tag"])
+        if record is None:
+            conflicts.append({"reason": "target_missing", "source": track["target"], "target": target})
+            continue
+        targets.append(
+            {
+                "track": track["tag"],
+                "source": deepcopy(track["target"]),
+                "target": deepcopy(target),
+                "source_identity": {},
+                "target_identity": _identity(scene, target["domain"], record),
+            }
+        )
+        track["target"] = deepcopy(target)
+        warnings.append("legacy_target_correspondence_declared")
+        if track["keys"][0]["time_ms"] > 0:
+            affected.append(track["tag"])
+            warnings.append("legacy_initial_visibility_from_destination")
+    if set(explicit) - used:
+        raise ValueError("Target map contains a source not referenced by this Movie.")
+    for reason, values in sorted(frame_conflicts.items()):
+        conflicts.append({"reason": reason, "source_indices": sorted(values)})
+    candidate = None
+    if not conflicts:
+        data = {
+            "molsysmovie_version": 2,
+            "duration_ms": compiled["duration_ms"],
+            "units": {"time": "ms", "camera_length": "angstrom"},
+            "baseline": {"scene": scene, "camera": compiled["camera"], "binding": binding},
+            "camera_interpolation": "cartesian-constant-up@1",
+            "tracks": tracks,
+            "provenance": {
+                "schema": _LEGACY_PROVENANCE,
+                "source_sha256": fingerprint(source),
+                "source_version": 1,
+                "source_binding": None,
+                "target_map": mapping,
+                "structure_index_map": indices,
+                "warnings": sorted(set(warnings)),
+                "targets": targets,
+            },
+        }
+        try:
+            view._preflight_state_import(scene, clear_first=True, on_conflict="raise")
+            candidate = _MovieTimeline(data).to_dict()
+        except (ValueError, TypeError, KeyError) as error:
+            conflicts.append({"reason": "incompatible_legacy_scene_or_path", "message": str(error)})
+    changes = []
+    for domain, field in (("camera", "pose"), ("structure", "index")):
+        key = "camera" if domain == "camera" else "structure_index"
+        a, b = before["view"].get(key), scene["view"].get(key)
+        if not same_data(a, b):
+            changes.append(
+                {"domain": domain, "tag": None, "change": "changed", "fields": [field], "before": a, "after": b}
+            )
+    return _finish(
+        movie,
+        source,
+        options,
+        review_id,
+        context_key,
+        destination_movie,
+        target_binding=binding,
+        targets=targets,
+        changes=changes,
+        affected_tracks=affected,
+        warnings=sorted(set(warnings)),
+        conflicts=conflicts,
+        can_apply=candidate is not None and not conflicts,
+        candidate=candidate,
+    )
 
 
 def review_import(movie, data, *, target_map, structure_index_map, camera):
@@ -325,11 +485,11 @@ def review_import(movie, data, *, target_map, structure_index_map, camera):
         if (
             not isinstance(source, dict)
             or type(source.get("molsysmovie_version")) is not int
-            or source["molsysmovie_version"] != 2
+            or source["molsysmovie_version"] not in (1, 2)
         ):
-            raise ValueError("Reviewed imports require a version-2 recipe; legacy recipes retain from_dict()/play().")
+            raise ValueError("Reviewed imports require a version-1 or version-2 Movie recipe.")
         options = {
-            "target_map": normalize_target_map(target_map),
+            "target_map": normalize_target_map(target_map, legacy=source["molsysmovie_version"] == 1),
             "structure_index_map": None if structure_index_map is None else list(structure_index_map),
             "camera": None if camera is None else _camera(camera)[0],
         }

@@ -150534,9 +150534,11 @@ function text(value) {
   if (typeof value !== "string" || !value.trim()) throw new Error("Movie import references require nonempty tags.");
   return value;
 }
-function reference(value) {
+function reference(value, legacy = false) {
   const row3 = record3(value, ["domain", "tag"]);
-  if (typeof row3.domain !== "string" || !domains.has(row3.domain)) throw new Error("Invalid Movie import domain.");
+  if (typeof row3.domain !== "string" || (legacy ? row3.domain !== "legacy" : !domains.has(row3.domain))) {
+    throw new Error("Invalid Movie import domain.");
+  }
   return { domain: row3.domain, tag: text(row3.tag) };
 }
 function digest(value) {
@@ -150557,23 +150559,28 @@ function validateMovieImportProvenance(value, destinationCount) {
     "warnings",
     "targets"
   ]);
-  if (row3.schema !== "molsysviewer.movie_import@1" || row3.source_version !== 2) {
+  const legacy = row3.schema === "molsysviewer.movie_import@2";
+  if (legacy ? row3.source_version !== 1 || row3.source_binding !== null : row3.schema !== "molsysviewer.movie_import@1" || row3.source_version !== 2) {
     throw new Error("Unsupported Movie import provenance.");
   }
   digest(row3.source_sha256);
-  const binding = record3(row3.source_binding, ["n_atoms", "n_structures", "fingerprint"]);
-  count3(binding.n_atoms);
-  const structures = count3(binding.n_structures);
-  digest(binding.fingerprint);
+  let structures = Number.MAX_SAFE_INTEGER + 1;
+  if (!legacy) {
+    const binding = record3(row3.source_binding, ["n_atoms", "n_structures", "fingerprint"]);
+    count3(binding.n_atoms);
+    structures = count3(binding.n_structures);
+    digest(binding.fingerprint);
+  }
   if (!Array.isArray(row3.target_map)) throw new Error("Movie target maps require a list.");
-  const sources = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new Set();
+  const sources = /* @__PURE__ */ new Set(), targets = /* @__PURE__ */ new Set(), associations = /* @__PURE__ */ new Set();
   for (const entry of row3.target_map) {
     const pair2 = record3(entry, ["source", "target"]);
-    const source = reference(pair2.source), target = reference(pair2.target);
+    const source = reference(pair2.source, legacy), target = reference(pair2.target);
     const a8 = JSON.stringify(source), b8 = JSON.stringify(target);
-    if (source.domain !== target.domain || sources.has(a8) || targets.has(b8)) throw new Error("Invalid Movie target map.");
+    if (!legacy && source.domain !== target.domain || sources.has(a8) || targets.has(b8)) throw new Error("Invalid Movie target map.");
     sources.add(a8);
     targets.add(b8);
+    associations.add(JSON.stringify([source, target]));
   }
   if (row3.structure_index_map !== null && (!Array.isArray(row3.structure_index_map) || row3.structure_index_map.length !== destinationCount || row3.structure_index_map.some((value2) => value2 !== null && (typeof value2 !== "number" || !Number.isSafeInteger(value2) || value2 < 0 || value2 >= structures)))) {
     throw new Error("Invalid Movie structure correspondence.");
@@ -150586,10 +150593,14 @@ function validateMovieImportProvenance(value, destinationCount) {
   for (const entry of row3.targets) {
     const target = record3(entry, ["track", "source", "target", "source_identity", "target_identity"]);
     const track = text(target.track);
-    if (tracks.has(track) || reference(target.source).domain !== reference(target.target).domain) {
+    const sourceRef = reference(target.source, legacy), targetRef = reference(target.target);
+    if (tracks.has(track) || !legacy && sourceRef.domain !== targetRef.domain) {
       throw new Error("Invalid Movie import association.");
     }
     tracks.add(track);
+    if (legacy && (!associations.has(JSON.stringify([sourceRef, targetRef])) || !target.source_identity || typeof target.source_identity !== "object" || Array.isArray(target.source_identity) || Object.keys(target.source_identity).length !== 0)) {
+      throw new Error("Legacy Movie association requires a declared target and unknown source identity.");
+    }
     for (const key2 of ["source_identity", "target_identity"]) {
       const identity3 = target[key2];
       if (!identity3 || typeof identity3 !== "object" || Array.isArray(identity3) || Object.entries(identity3).some(([field2, value2]) => !["uid", "definition_sha256", "analysis_name", "analysis_revision", "op"].includes(field2) || value2 !== null && typeof value2 !== "string")) throw new Error("Invalid Movie import identity.");
@@ -150994,7 +151005,10 @@ async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal, ready) {
       subscription = canvas.didDraw.subscribe(() => {
         if (!requested || settled) return;
         try {
-          if (ready && !ready()) return;
+          if (ready && !ready()) {
+            canvas.requestDraw();
+            return;
+          }
           finish({ value: read() });
         } catch (error2) {
           finish({ error: error2 });

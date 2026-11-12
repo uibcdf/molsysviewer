@@ -14,9 +14,11 @@ function text(value: unknown): string {
     return value;
 }
 
-function reference(value: unknown): { domain: string; tag: string } {
+function reference(value: unknown, legacy = false): { domain: string; tag: string } {
     const row = record(value, ["domain", "tag"]);
-    if (typeof row.domain !== "string" || !domains.has(row.domain)) throw new Error("Invalid Movie import domain.");
+    if (typeof row.domain !== "string" || (legacy ? row.domain !== "legacy" : !domains.has(row.domain))) {
+        throw new Error("Invalid Movie import domain.");
+    }
     return { domain: row.domain, tag: text(row.tag) };
 }
 
@@ -32,22 +34,29 @@ function count(value: unknown): number {
 export function validateMovieImportProvenance(value: unknown, destinationCount: number): void {
     const row = record(value, ["schema", "source_sha256", "source_version", "source_binding", "target_map",
         "structure_index_map", "warnings", "targets"]);
-    if (row.schema !== "molsysviewer.movie_import@1" || row.source_version !== 2) {
+    const legacy = row.schema === "molsysviewer.movie_import@2";
+    if (legacy ? row.source_version !== 1 || row.source_binding !== null
+        : row.schema !== "molsysviewer.movie_import@1" || row.source_version !== 2) {
         throw new Error("Unsupported Movie import provenance.");
     }
     digest(row.source_sha256);
-    const binding = record(row.source_binding, ["n_atoms", "n_structures", "fingerprint"]);
-    count(binding.n_atoms);
-    const structures = count(binding.n_structures);
-    digest(binding.fingerprint);
+    // Legacy recipes have no source binding. This is only an index bound.
+    let structures = Number.MAX_SAFE_INTEGER + 1;
+    if (!legacy) {
+        const binding = record(row.source_binding, ["n_atoms", "n_structures", "fingerprint"]);
+        count(binding.n_atoms);
+        structures = count(binding.n_structures);
+        digest(binding.fingerprint);
+    }
     if (!Array.isArray(row.target_map)) throw new Error("Movie target maps require a list.");
-    const sources = new Set<string>(), targets = new Set<string>();
+    const sources = new Set<string>(), targets = new Set<string>(), associations = new Set<string>();
     for (const entry of row.target_map) {
         const pair = record(entry, ["source", "target"]);
-        const source = reference(pair.source), target = reference(pair.target);
+        const source = reference(pair.source, legacy), target = reference(pair.target);
         const a = JSON.stringify(source), b = JSON.stringify(target);
-        if (source.domain !== target.domain || sources.has(a) || targets.has(b)) throw new Error("Invalid Movie target map.");
+        if ((!legacy && source.domain !== target.domain) || sources.has(a) || targets.has(b)) throw new Error("Invalid Movie target map.");
         sources.add(a); targets.add(b);
+        associations.add(JSON.stringify([source, target]));
     }
     if (row.structure_index_map !== null && (!Array.isArray(row.structure_index_map)
         || row.structure_index_map.length !== destinationCount || row.structure_index_map.some(value => value !== null
@@ -62,10 +71,16 @@ export function validateMovieImportProvenance(value: unknown, destinationCount: 
     for (const entry of row.targets) {
         const target = record(entry, ["track", "source", "target", "source_identity", "target_identity"]);
         const track = text(target.track);
-        if (tracks.has(track) || reference(target.source).domain !== reference(target.target).domain) {
+        const sourceRef = reference(target.source, legacy), targetRef = reference(target.target);
+        if (tracks.has(track) || (!legacy && sourceRef.domain !== targetRef.domain)) {
             throw new Error("Invalid Movie import association.");
         }
         tracks.add(track);
+        if (legacy && (!associations.has(JSON.stringify([sourceRef, targetRef]))
+            || !target.source_identity || typeof target.source_identity !== "object"
+            || Array.isArray(target.source_identity) || Object.keys(target.source_identity).length !== 0)) {
+            throw new Error("Legacy Movie association requires a declared target and unknown source identity.");
+        }
         for (const key of ["source_identity", "target_identity"]) {
             const identity = target[key];
             if (!identity || typeof identity !== "object" || Array.isArray(identity)

@@ -26,7 +26,14 @@ export async function readCanvasDraw<T>(canvas: Canvas3D, read: () => T, timeout
             subscription = canvas.didDraw.subscribe(() => {
                 if (!requested || settled) return;
                 try {
-                    if (ready && !ready()) return;
+                    if (ready && !ready()) {
+                        // A dependency can become ready without changing native
+                        // geometry (for example an evaluated-empty result).
+                        // Keep the next native draw requested; no extra clock,
+                        // fabricated frame or playback pause is introduced.
+                        canvas.requestDraw();
+                        return;
+                    }
                     finish({ value: read() });
                 } catch (error) { finish({ error }); }
             });

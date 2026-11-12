@@ -63,6 +63,7 @@ const SUITES = [
     "trajectory-plot",
     "movie-playback",
     "movie-seek",
+    "movie-legacy",
     "movie-export",
     "movie-appearance",
 ] as const;

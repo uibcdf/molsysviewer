@@ -69,3 +69,26 @@ deadline. Compare the live and retired owners before attributing the failure
 to widget cleanup. If the receiver precondition is wrong, correct and guard it;
 if the product cannot reach coherence, fix that owner and receive the full
 entry. #315's consolidated gate and publication qualification remain open.
+
+## Native prerequisite receiving — 2026-11-12
+
+The [Movie migration receipt](../movie_legacy_receiving_20261112.json) also
+receives two bounded prerequisites, without requalifying this actual-Jupyter
+entry. The browser fixture's previous request/reply-only transport strands
+scheduled comm sends until another browser request; the old-source control
+fails and the corrected real-View scheduled-send guard passes. A closed browser
+now detaches its receiver without killing the independently running Python
+authority. Renderer capture keeps another native draw requested after a
+rejected incoherent draw: metadata can become ready without changed geometry.
+The idle-canvas unit guard receives that liveness correction independently.
+
+Native source attempt `562` with 2 CPU / 4 GiB fails a moving popup save;
+`563` with 4 CPU / 4 GiB progresses farther but fails a detached Studio save.
+After the draw correction, `564` passes the complete isolated native scenario,
+including six moving saves and the empty-frame/presentation controls. The
+covering repetition `566` still fails the sixth moving save. Both complete
+outcomes remain; the passing isolated entry and later successful prefixes do
+not establish stable combined acceptance or a single cause for older traces.
+Seven separate selected browser suites receive Movie, lifecycle, transport and
+media scopes. No new actual Jupyter, native Qt, installed or human acceptance
+is claimed. This issue remains active.

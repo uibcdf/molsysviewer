@@ -123,9 +123,11 @@ not the claimed original file's authenticity. Original files are not required.
 The topological scene fingerprint is unchanged by this separate source check.
 
 Sessions use the public MolSysMT H5MSM writer without overriding its default
-schema (currently 0.5), preserving array precision and named analyses. The
-session manifest version is independent of the embedded molecular schema.
-With a supporting provider, the loader also accepts explicit H5MSM 1.0.
+schema, preserving array precision and named analyses. The source-qualified
+provider `aee7aa65` writes H5MSM 1.0 by default; the earlier default-0.5 route
+remains separately covered. Both schemas are accepted with a supporting
+provider. The session manifest version is independent of the embedded molecular
+schema. This source receiving is not clean installed-pair qualification.
 The legacy route requests double precision so
 coordinate edits survive a source-binding round trip. That legacy route is
 inspected but is not separately installed-provider qualified in this slice.
@@ -136,12 +138,14 @@ Native molecular edits require explicit View synchronization before saving.
 When public coordinate setters already invalidate only the affected scientific
 coverage, `apply_system_edit(..., interactions_policy="preserve")` can retain
 that invalidation while refreshing the source binding and scene projection.
-Its ordinary default remains conservative invalidation. A 1.0 file carrying
-mechanics can be read, but the current default 0.5 writer refuses to save those
-data; it preserves an existing destination instead of silently discarding the
-domain. The [1.0 source receipt](molsysmt_h5msm10_receiving_20261110.json) and
-`tests/test_session_h5msm_migration.py` cover these paths. A provider-default
-transition or a session-format override requires its own receiving.
+Its ordinary default remains conservative invalidation. The source-qualified
+default-1.0 writer preserves mechanics, including unresolved requests, partial
+charges and quantity units. The earlier default-0.5 writer refuses those
+unrepresentable data and preserves an existing destination instead of silently
+discarding the domain. The [1.0 source receipt](molsysmt_h5msm10_receiving_20261110.json),
+[default-transition receipt](h5msm_default_receiving_20261111.json) and
+`tests/test_session_h5msm_migration.py` distinguish these scopes. A future
+provider-default transition or a session-format override requires new receiving.
 
 ### Preserving scientific interaction analyses
 

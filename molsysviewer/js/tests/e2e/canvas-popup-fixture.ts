@@ -73,7 +73,14 @@ export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureB
                     return queue;
                 },
             };
-            const errors = w.__popupFixtureErrors = [];
+            const errors: string[] = w.__popupFixtureErrors = [];
+            w.__popupFixtureReceive = (messages: any[]) => {
+                for (const { content, buffers } of messages) {
+                    const views = buffers.map((encoded: string) => new DataView(
+                        Uint8Array.from(atob(encoded), char => char.charCodeAt(0)).buffer));
+                    for (const callback of listeners.get("msg:custom") || []) callback(content, views);
+                }
+            };
             w.__popupFixtureDrain = async () => {
                 // Responses may enqueue further stream acknowledgments.
                 while (true) {
@@ -88,6 +95,21 @@ export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureB
                 w.__popupWidgetDispose = await bootstrap.default.render({ model, el: document.getElementById("notebook") });
             } finally { URL.revokeObjectURL(url); }
         }, fixture);
+        const releaseMessages = bridge.onMessages(async messages => {
+            if (page.isClosed()) return;
+            try {
+                await page.evaluate(value => (window as any).__popupFixtureReceive(value), messages);
+            } catch (error) {
+                // Losing the browser comm must not kill its Python authority.
+                // Keep genuine delivery errors observable while the page lives.
+                if (!page.isClosed()) throw error;
+            }
+        });
+        const stopReceiving = () => {
+            releaseMessages();
+            if (activeFixtures.get(page) === bridge) activeFixtures.delete(page);
+        };
+        page.once("close", stopReceiving);
         const trajectoryLabel = options.trajectoryLabel === undefined ? "1 / 3" : options.trajectoryLabel;
         if (trajectoryLabel !== null) {
             await page.waitForFunction(label => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === label, trajectoryLabel);
@@ -96,7 +118,8 @@ export async function mountCanvasPopupFixture(page: Page, bridge: PythonFixtureB
             await page.evaluate(() => (window as any).__popupFixtureDrain());
         }
         return async () => {
-            if (activeFixtures.get(page) === bridge) activeFixtures.delete(page);
+            page.off("close", stopReceiving);
+            stopReceiving();
         };
 }
 

@@ -201,9 +201,49 @@ async function run() {
             const cartesianFinished = (await previewResult("play")).sample;
             assert.equal(cartesianFinished.time_ms, 1000);
             assert.deepEqual(cartesianFinished.camera.position, [30, 0, 0]);
+
+            await command(page, { movie_use_legacy: true });
+            for (const [at, frame] of [[0, 0], [249, 0], [250, 1], [749, 1], [750, 2], [1000, 2], [100, 0]]) {
+                await command(page, { movie_seek: at });
+                const migrated = await movieResult(page, { movie_seek_status: true }, reply => reply.movie_seek_result);
+                assert.equal(migrated.frame, frame);
+                assert.equal(migrated.sample.structure_index, frame);
+                const expected = [30 * at / 1000, 0, 30 * (1 - at / 1000)];
+                for (const surface of [page, popup]) {
+                    await surface.waitForFunction(({ frame, expected, visible }) => {
+                        const c = (window as any).__mirrorController;
+                        const hidden = (ref: string) => c.plugin.state.data.cells.get(ref)?.state.isHidden === true;
+                        const region = c.state.regionIndex.get("site").representations;
+                        const shapes = [...c.state.tagIndex.get(c.state.taggedKey("shape", "site"))] as string[];
+                        return c.trajectory.getTrajectoryState().currentFrame === frame
+                            && c.getCameraSnapshot().position.every((v: number, i: number) => Math.abs(v - expected[i]) <= 1e-6)
+                            && region.length > 0 && region.every((ref: string) => hidden(ref) === !visible)
+                            && shapes.length > 0 && shapes.every(ref => !hidden(ref));
+                    }, { frame, expected, visible: at < 1000 });
+                    await surface.evaluate(async () => {
+                        const c = (window as any).__mirrorController;
+                        await new Promise<void>(resolve => {
+                            let requested = false;
+                            const subscription = c.plugin.canvas3d.didDraw.subscribe(() => {
+                                if (!requested) return;
+                                subscription.unsubscribe(); resolve();
+                            });
+                            requested = true;
+                            c.plugin.canvas3d.requestDraw();
+                        });
+                    });
+                }
+            }
+            await command(page, { movie_preview_save: resolve(workspace, "legacy.msv") });
+            assert.ok((await previewResult("save")).same_recipe);
+            await command(page, { movie_preview_play: { loop: false, start: 200 } });
+            const legacyFinished = (await previewResult("play")).sample;
+            assert.equal(legacyFinished.time_ms, 1000);
+            assert.equal(legacyFinished.structure_index, 2);
+            assert.deepEqual(legacyFinished.camera.position, [30, 0, 0]);
             assert.deepEqual(await page.evaluate(() => (window as any).__popupFixtureErrors), []);
             assert.deepEqual(errors, []);
-            console.log("[E2E Movie] Default and Cartesian seek/preview, popup mirror, restored session and terminal draw agree.");
+            console.log("[E2E Movie] Default/Cartesian preview and reviewed legacy steps, popup mirror and restored sessions agree.");
         } finally {
             await popup?.close();
             await release?.();

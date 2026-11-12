@@ -1,0 +1,4097 @@
+[
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0,
+          "easing": "linear"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 0,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 325.0,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 775.0,
+              "value": 2,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:e244f9e62981412e9bd4321c1c9cfda7fdb85aa4a4bbfce0950deb7c964295ce",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 0,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 325.0,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 775.0,
+            "value": 2,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      324.99999999999994,
+      325,
+      325.00000000000006,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      774.9999999999999,
+      775.0,
+      775.0000000000001,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2,
+          "easing": "linear"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 2,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 2,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 325.0000000000001,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 775.0000000000001,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:5752dc938c9bb5222c54c82733308bb9dfeea5eda83b9b7da2088b0a792e6508",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 2,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 325.0000000000001,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 775.0000000000001,
+            "value": 0,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      325.00000000000006,
+      325.0000000000001,
+      325.00000000000017,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      775.0,
+      775.0000000000001,
+      775.0000000000002,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0,
+          "easing": "ease-in"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 0,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "ease-in"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 550.0,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 879.4228634059948,
+              "value": 2,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:566e89bf9bbb933dd7f29102caad4f19a37feed4613c69aecfd4ad29690b9184",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-in"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 0,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 550.0,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 879.4228634059948,
+            "value": 2,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      549.9999999999999,
+      550.0,
+      550.0000000000001,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      879.4228634059947,
+      879.4228634059948,
+      879.4228634059949,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2,
+          "easing": "ease-in"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 2,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "ease-in"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 2,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 550.0000000000001,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 879.4228634059948,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:14b7683032a35f5f1b4917e76dcbbd7ea88f23275676d586b03878dcbf71d507",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-in"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 2,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 550.0000000000001,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 879.4228634059948,
+            "value": 0,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      550.0,
+      550.0000000000001,
+      550.0000000000002,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      879.4228634059947,
+      879.4228634059948,
+      879.4228634059949,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0,
+          "easing": "ease-out"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 0,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "ease-out"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 220.57713659400522,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 550.0,
+              "value": 2,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:049ea966acb482b4ff0db84111d8e1b522b1d0ff7ca9c906bc5592017235cc05",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-out"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 0,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 220.57713659400522,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 550.0,
+            "value": 2,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      220.5771365940052,
+      220.57713659400522,
+      220.57713659400525,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      549.9999999999999,
+      550.0,
+      550.0000000000001,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2,
+          "easing": "ease-out"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 2,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "ease-out"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 2,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 220.57713659400522,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 550.0000000000001,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:c988a74ce33c311eb5c2c6d327feaf550e3907a98555a52b847460437c980621",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-out"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 2,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 220.57713659400522,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 550.0000000000001,
+            "value": 0,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      220.5771365940052,
+      220.57713659400522,
+      220.57713659400525,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      550.0,
+      550.0000000000001,
+      550.0000000000002,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0,
+          "easing": "ease-in-out"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 0,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "ease-in-out"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 0,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 418.1980515339464,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 681.8019484660537,
+              "value": 2,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:fdd4423923cb87c8e88b83e4e11ea4e3bb2e4644c660bb85056162e3c3f32248",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-in-out"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 0,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 418.1980515339464,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 681.8019484660537,
+            "value": 2,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      418.19805153394634,
+      418.1980515339464,
+      418.19805153394645,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      681.8019484660535,
+      681.8019484660537,
+      681.8019484660538,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  },
+  {
+    "legacy": {
+      "molsysmovie_version": 1,
+      "keyframes": [
+        {
+          "time_ms": 100,
+          "camera": {
+            "position": [
+              0,
+              0,
+              30
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 2,
+          "easing": "ease-in-out"
+        },
+        {
+          "time_ms": 1000,
+          "camera": {
+            "position": [
+              30,
+              0,
+              0
+            ],
+            "target": [
+              0,
+              0,
+              0
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          },
+          "structure_index": 0
+        }
+      ]
+    },
+    "recipe": {
+      "molsysmovie_version": 2,
+      "duration_ms": 1000.0,
+      "units": {
+        "time": "ms",
+        "camera_length": "angstrom"
+      },
+      "baseline": {
+        "scene": {
+          "version": 2,
+          "view": {
+            "structure_index": 2,
+            "playback": {
+              "fps": 30,
+              "step_size": 1,
+              "mode": "loop",
+              "direction": "forward",
+              "playing": false
+            },
+            "camera": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            }
+          },
+          "structure": {
+            "n_atoms": 62,
+            "fingerprint": "sha256:76db7ca17c506e03faeaa421435a4c5666eff346ee2d1c53dfc24f73fd669622",
+            "identity_schema": 2
+          },
+          "annotations": [],
+          "measurements": [],
+          "measurement_settings": {
+            "endpoint_policy_default": "centroid",
+            "representative_atoms": {
+              "protein": "CA",
+              "nucleic": "P",
+              "lipid": "P",
+              "other": ""
+            }
+          },
+          "shapes": [
+            {
+              "op": "add_sphere",
+              "options": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "radius": 1.0,
+                "color": 65280,
+                "alpha": 0.4,
+                "tag": "site",
+                "layer_tag": "site"
+              },
+              "tag": "site",
+              "layer_tag": "site",
+              "hidden": false
+            }
+          ],
+          "layers": [],
+          "selections": [],
+          "regions": [
+            {
+              "uid": "region-uid-1",
+              "tag": "site",
+              "selection": "all",
+              "provenance": {
+                "kind": "active_selection",
+                "atom_indices": [
+                  0,
+                  1
+                ],
+                "frame_dependent": false
+              },
+              "mode": "static",
+              "order": 2,
+              "layer": null,
+              "representation": "ball-and-stick",
+              "preset": null,
+              "params": {},
+              "hidden": false,
+              "enabled": true,
+              "color_layer": {},
+              "atom_indices": [
+                0,
+                1
+              ]
+            }
+          ],
+          "sections": [],
+          "whole": {
+            "representation": null,
+            "preset": null,
+            "params": {},
+            "visible": true,
+            "color_scheme": null,
+            "color_layer": {}
+          },
+          "active_selection": {
+            "atom_indices": []
+          },
+          "order_high_water_mark": 2,
+          "uid_high_water_mark": 1,
+          "tag_high_water_marks": {
+            "region": 0,
+            "shape": 0,
+            "interaction": 0,
+            "annotation": 0,
+            "measurement": 0,
+            "section": 0,
+            "layer": 0,
+            "selection": 0
+          }
+        },
+        "camera": {
+          "position": [
+            0.0,
+            0.0,
+            30.0
+          ],
+          "target": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "binding": {
+          "n_atoms": 62,
+          "n_structures": 3,
+          "fingerprint": "sha256:774754f980d18ff5c52047f5d3afc681cd0b107edc213cdfa6a7084264425f53"
+        }
+      },
+      "tracks": [
+        {
+          "tag": "legacy-camera",
+          "target": {
+            "domain": "camera"
+          },
+          "property": "pose",
+          "keys": [
+            {
+              "time_ms": 100.0,
+              "value": {
+                "position": [
+                  0.0,
+                  0.0,
+                  30.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "ease-in-out"
+            },
+            {
+              "time_ms": 1000.0,
+              "value": {
+                "position": [
+                  30.0,
+                  0.0,
+                  0.0
+                ],
+                "target": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "up": [
+                  0.0,
+                  1.0,
+                  0.0
+                ]
+              },
+              "easing": "linear"
+            }
+          ]
+        },
+        {
+          "tag": "legacy-structures",
+          "target": {
+            "domain": "structure"
+          },
+          "property": "index",
+          "keys": [
+            {
+              "time_ms": 0.0,
+              "value": 2,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 418.19805153394645,
+              "value": 1,
+              "easing": "linear"
+            },
+            {
+              "time_ms": 681.8019484660538,
+              "value": 0,
+              "easing": "linear"
+            }
+          ]
+        }
+      ],
+      "camera_interpolation": "cartesian-constant-up@1",
+      "provenance": {
+        "schema": "molsysviewer.movie_import@2",
+        "source_sha256": "sha256:9000646e5ecb1837fa31e798d09030f88b85f405414bdf9bbac8803516ab155d",
+        "source_version": 1,
+        "source_binding": null,
+        "target_map": [],
+        "structure_index_map": null,
+        "warnings": [
+          "legacy_source_binding_unknown",
+          "legacy_structure_correspondence_declared"
+        ],
+        "targets": []
+      }
+    },
+    "tracks": [
+      {
+        "tag": "legacy-camera",
+        "target": {
+          "domain": "camera"
+        },
+        "property": "pose",
+        "keys": [
+          {
+            "time_ms": 100.0,
+            "value": {
+              "position": [
+                0.0,
+                0.0,
+                30.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "ease-in-out"
+          },
+          {
+            "time_ms": 1000.0,
+            "value": {
+              "position": [
+                30.0,
+                0.0,
+                0.0
+              ],
+              "target": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "up": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "easing": "linear"
+          }
+        ]
+      },
+      {
+        "tag": "legacy-structures",
+        "target": {
+          "domain": "structure"
+        },
+        "property": "index",
+        "keys": [
+          {
+            "time_ms": 0.0,
+            "value": 2,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 418.19805153394645,
+            "value": 1,
+            "easing": "linear"
+          },
+          {
+            "time_ms": 681.8019484660538,
+            "value": 0,
+            "easing": "linear"
+          }
+        ]
+      }
+    ],
+    "camera_interpolation": "cartesian-constant-up@1",
+    "times": [
+      0,
+      99,
+      100,
+      101,
+      108,
+      115,
+      122,
+      129,
+      136,
+      143,
+      150,
+      157,
+      164,
+      171,
+      178,
+      185,
+      192,
+      199,
+      206,
+      213,
+      220,
+      227,
+      234,
+      241,
+      248,
+      255,
+      262,
+      269,
+      276,
+      283,
+      290,
+      297,
+      304,
+      311,
+      318,
+      325,
+      332,
+      339,
+      346,
+      353,
+      360,
+      367,
+      374,
+      381,
+      388,
+      395,
+      402,
+      409,
+      416,
+      418.1980515339464,
+      418.19805153394645,
+      418.1980515339465,
+      423,
+      430,
+      437,
+      444,
+      451,
+      458,
+      465,
+      472,
+      479,
+      486,
+      493,
+      500,
+      507,
+      514,
+      521,
+      528,
+      535,
+      542,
+      549,
+      556,
+      563,
+      570,
+      577,
+      584,
+      591,
+      598,
+      605,
+      612,
+      619,
+      626,
+      633,
+      640,
+      647,
+      654,
+      661,
+      668,
+      675,
+      681.8019484660537,
+      681.8019484660538,
+      681.8019484660539,
+      682,
+      689,
+      696,
+      703,
+      710,
+      717,
+      724,
+      731,
+      738,
+      745,
+      752,
+      759,
+      766,
+      773,
+      780,
+      787,
+      794,
+      801,
+      808,
+      815,
+      822,
+      829,
+      836,
+      843,
+      850,
+      857,
+      864,
+      871,
+      878,
+      885,
+      892,
+      899,
+      906,
+      913,
+      920,
+      927,
+      934,
+      941,
+      948,
+      955,
+      962,
+      969,
+      976,
+      983,
+      990,
+      997,
+      1000
+    ]
+  }
+]
