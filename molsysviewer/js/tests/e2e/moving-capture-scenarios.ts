@@ -301,7 +301,8 @@ export async function checkMovingCapture(page: Page, dir: string,
                         readiness: m.readiness, timing: m.timing, activeCapture: m.activeCapture,
                         endpoints: [...m.monitors.entries()].filter(([id, entry]: any) => id === entry.endpointId)
                             .map(([id, entry]: any) => ({ endpointId: id, frames: entry.frames, gates: entry.gates,
-                                readiness: entry.readiness, stages: entry.stages, drawCount: entry.draws.length, captureErrors: entry.captureErrors })) };
+                                readiness: entry.readiness, stages: entry.stages, frameDelivery: entry.frameDelivery?.slice(-256),
+                                drawCount: entry.draws.length, captureErrors: entry.captureErrors })) };
                 });
                 await writeFile(resolve(process.env.E2E_MOVING_CAPTURE_ARTIFACT_DIR ?? workspace, `capture-${sample}-timing.json`),
                     JSON.stringify({ source: result.timeline, transport: bridge.getTransportObservation(), renderer: diagnostic }, null, 2));

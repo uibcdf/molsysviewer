@@ -3,7 +3,61 @@ import test from "node:test";
 import { BehaviorSubject } from "rxjs";
 import { Camera } from "molstar/lib/mol-canvas3d/camera";
 import { readCanvasDraw, waitForCanvasDraw } from "../../src/managers/canvas-draw";
+import { CapturePresentationFence } from "../../src/managers/capture-presentation";
 import { captureAtScenePrefix, handleFrontendRequest, VisualStateCaptureRequests } from "../../src/messages/frontend-requests";
+
+test("a coherent follower prefix is drawn before the next queued projection without blocking scientific replies", async () => {
+    const didDraw = new BehaviorSubject(0), camera = new Camera(), captures = new VisualStateCaptureRequests();
+    const fence = new CapturePresentationFence(), replies: any[] = [], delivered: number[] = [];
+    let coherent = false, frame = 0;
+    const controller: any = { plugin: { canvas3d: { didDraw, requestDraw() {} } },
+        retainMovingCapturePresentation: (capture: Promise<unknown>) => fence.retain(capture),
+        readMovingVisualState: () => coherent ? { snapshot: camera.getSnapshot(), structure_index: frame,
+            playback: { fps: 2, step_size: 1, mode: "loop", direction: "forward", playing: true } } : undefined };
+    const message = { op: "request_visual_state", request_id: "present", capture_revision: "scene", capture_version: 2 };
+    await captureAtScenePrefix(controller, message, reply => replies.push(reply), captures.reserve(message)!);
+    await fence.afterSceneMessage(() => coherent);
+    frame = 2; coherent = true; // The real scientific reply may now finish.
+    const queuedProjection = fence.afterSceneMessage(() => coherent).then(() => { frame = 3; delivered.push(frame); });
+    await Promise.resolve();
+    assert.equal(delivered.length, 0, "a coherent prefix must survive until its native draw");
+    assert.equal(replies.length, 0);
+    didDraw.next(1);
+    await queuedProjection;
+    assert.equal(replies[0].structure_index, 2);
+    assert.equal(replies[0].playback.playing, true);
+    assert.deepEqual(delivered, [3]);
+    assert.equal(didDraw.observers.length, 0);
+    captures.dispose(); fence.dispose();
+});
+
+test("cancellation and native draw failure release a retained coherent prefix", async () => {
+    for (const cancel of [true, false]) {
+        const didDraw = new BehaviorSubject(0), abort = new AbortController(), fence = new CapturePresentationFence();
+        const original = new Error("projection failed");
+        const pending = readCanvasDraw({ didDraw, requestDraw() {} } as any, () => { throw original; }, 1000, abort.signal);
+        const failed = assert.rejects(pending, cancel ? { name: "AbortError" } : error => error === original);
+        fence.retain(pending);
+        let advanced = false;
+        const barrier = fence.afterSceneMessage(() => true).then(() => { advanced = true; });
+        await Promise.resolve(); assert.equal(advanced, false);
+        if (cancel) abort.abort(); else didDraw.next(1);
+        await failed; await barrier;
+        assert.equal(advanced, true);
+        assert.equal(didDraw.observers.length, 0);
+        fence.dispose();
+    }
+});
+
+test("teardown releases retained prefixes and refuses to retain future captures", async () => {
+    const fence = new CapturePresentationFence();
+    fence.retain(new Promise(() => {}));
+    const pending = fence.afterSceneMessage(() => true);
+    fence.dispose();
+    await pending;
+    fence.retain(new Promise(() => {}));
+    await fence.afterSceneMessage(() => { throw new Error("retired fence must not inspect the scene"); });
+});
 
 test("Movie observes detached environment in the same completed draw as camera/frame", async () => {
     const didDraw = new BehaviorSubject(0), camera = new Camera();

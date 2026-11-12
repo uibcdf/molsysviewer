@@ -1,9 +1,9 @@
 ---
-summary: Diagnose failed consolidated Jupyter capture after moving saves.
+summary: Receive coherent moving capture and preserve contended scientific queries.
 issue: uibcdf/molsysviewer#344
-status: active
+status: resolved
 opened: 2026-11-11
-closed:
+closed: 2026-11-12
 severity: medium
 verification: measured
 area: [jupyter, capture, lifecycle, performance]
@@ -15,7 +15,16 @@ supersedes: []
 
 # Consolidated Jupyter capture — receiving reopened
 
-The earlier [font-content correction](../archive/jupyter_moving_capture_residual_uploads.md)
+**Resolved 2026-11-12.** Follower presentation retains a coherent prefix for
+its pending native draw; contended scientific queries survive the outer scene
+unlock. The [receiving record](../moving_capture_presentation_receiving_20261112.json)
+preserves the failed entries and the complete actual-Jupyter guards `578`
+and `579`. The latter requires successful, fresh native replies for both
+delayed-delivery controls. Earlier partial scopes below remain historical.
+This receives the source defect, not packages, native Qt, human acceptance or
+the wider #315/#320 release obligations.
+
+The earlier [font-content correction](jupyter_moving_capture_residual_uploads.md)
 and its exact-source receiving remain historical evidence. This reopening does
 not establish repeated font uploads, invalidate that bounded correction or
 justify changing Mol* and its adapter without new causal evidence.
@@ -92,3 +101,46 @@ not establish stable combined acceptance or a single cause for older traces.
 Seven separate selected browser suites receive Movie, lifecycle, transport and
 media scopes. No new actual Jupyter, native Qt, installed or human acceptance
 is claimed. This issue remains active.
+
+## Coherent presentation and contended queries — 2026-11-12
+
+Passive native observation `570` receives 47 coherent popup message
+completions but only four draw-readiness observations during its capture
+window. Its reduced popup-only control passes; it does not receive the full
+entry. A follower presentation fence now retains a coherent serial scene
+prefix until the pending capture's actual draw or terminal outcome. It does
+not block incoherent prefixes, add a clock, pause camera/trajectory motion,
+force synchronous native rendering or change deadlines. Native complete
+entry `573` receives all six moving saves, the evaluated-empty frame and
+perspective/orthographic annotation-presentation controls. The prior failures
+`569` and `566` remain evidence, not superseded passes.
+
+Actual Jupyter entry `574` receives all six stopped/restored cases and all six
+moving captures, then fails the cancel-late-reply precondition. After the real
+stop/teardown, the visible primary canvas remains at frame 1 with dynamic
+query 16 in flight and frame 2's last applied membership. Native draws continue;
+the actual Python authority is open and ready. No repair seek or longer wait
+is used. The frozen kernel import record identifies archived MolSysMT
+`aee7aa65`, its canonical Rust backend and copied PyUnitWizard `9bb4f5f`;
+this is source receiving, not installed qualification.
+
+Independent real-View control `575` reproduces rejected dynamic/interactions
+queries during foreign scene ownership in eight cases. Lifecycle acknowledgments
+already had an unlock handoff; scientific frame queries did not. Those two
+query events now retain their context/correlation until the outer unlock,
+re-enter through the host loop and revalidate endpoint ownership. Ordinary
+scene/edit commands keep their rejection rules. Control `577` passes all 15
+contention cases, including retirement during the wait and close before delivery.
+The original `576` also retains two test-assertion failures: the interaction
+completion envelope correctly has no frame field; its preceding data envelope
+carries the frame.
+
+After that correction, complete actual-Jupyter entry `578` passes six stopped
+roundtrips, six moving captures and both late-delivery controls. Entry `579`
+adds explicit proof that each retained reply is successful version 2, belongs
+to the stopped scene and matches a fresh actual draw; it also passes the whole
+entry without changing public/Studio deadlines. Both verify independent file
+recovery, unchanged source coordinates and no writes after cancel/expiration.
+The kernel's scientific/native import origins are preserved. All owned processes
+retire, with unchanged selected inputs and no resource stop. The receiving
+record owns the final covering browser and regression outcomes separately.

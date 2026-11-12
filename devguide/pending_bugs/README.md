@@ -19,9 +19,8 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (3)
+### Being worked on (2)
 
-- [`jupyter_capture_receiving_recurrence.md`](jupyter_capture_receiving_recurrence.md) — [#344](https://github.com/uibcdf/molsysviewer/issues/344) — Diagnose failed consolidated Jupyter capture after moving saves. *(medium, measured)*
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 

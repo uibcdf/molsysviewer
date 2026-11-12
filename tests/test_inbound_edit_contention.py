@@ -11,6 +11,88 @@ from molsysviewer.transport import TransferState
 import molsysviewer as msv
 
 
+@pytest.mark.parametrize("event", ["request_dynamic_region_evaluation", "request_interaction_frame"])
+@pytest.mark.parametrize(
+    "endpoint,terminal",
+    [
+        ("primary", "deliver"),
+        ("popup-review", "deliver"),
+        ("primary", "close"),
+        ("popup-review", "close"),
+        ("popup-review", "retire"),
+    ],
+)
+def test_frame_queries_survive_foreign_scene_ownership(event, endpoint, terminal):
+    async def exercise():
+        with msv.demo["dialanine"] as view:
+            original = view.molsys
+            region = view.regions.add(
+                selection="atom_index==1 within 1 nm without pbc of atom_index==0", tag="query-region"
+            )
+            region.mode = "dynamic"
+            view.interactions.hbonds.get_buch_hbonds(name="query-analysis", structure_indices="all")
+            view.interactions.add("query-analysis", tag="query-hbonds")
+            view._ready = True
+            if endpoint != "primary":
+                view._endpoint_transfers.register(endpoint, "canvas")
+            sent, errors, contexts = [], [], []
+            scope = ContextVar("frame_query_context", default="scene-owner")
+            native_send = view.widget.send
+
+            def observe(message, buffers=None):
+                if message.get("request_id") == 17:
+                    sent.append(dict(message))
+                    contexts.append(scope.get())
+                return native_send(message, buffers=buffers)
+
+            view.widget.send = observe
+
+            def receive():
+                scope.set("connector")
+                try:
+                    view._handle_frontend_event(
+                        {"event": event, "frame": 0, "request_id": 17, "_query_endpoint_id": endpoint}
+                    )
+                except Exception as error:
+                    errors.append(error)
+
+            with view._system_edits._locked():
+                worker = Thread(target=receive)
+                worker.start()
+                worker.join(timeout=2)
+                assert not worker.is_alive(), "Scientific callbacks must not block the connector thread."
+                assert not errors, errors
+                assert not sent, "Scientific queries must wait for the current scene owner."
+                if terminal == "close":
+                    view.close()
+                elif terminal == "retire":
+                    view._endpoint_transfers.close(endpoint)
+            if terminal == "close":
+                assert not sent and not view.widget._scheduled_callbacks
+                return
+            expected = (
+                ["set_dynamic_region_atoms"]
+                if event.endswith("evaluation")
+                else ["set_interaction_frame", "interaction_frame_complete"]
+            )
+            deadline = asyncio.get_running_loop().time() + 2
+            if terminal == "retire":
+                while view.widget._scheduled_callbacks and asyncio.get_running_loop().time() < deadline:
+                    await asyncio.sleep(0.001)
+                assert not sent and not view.widget._scheduled_callbacks
+                return
+            while len(sent) < len(expected) and asyncio.get_running_loop().time() < deadline:
+                await asyncio.sleep(0.001)
+            assert [message["op"] for message in sent] == expected
+            owner = f"widget-host:{view._binary_session_id}" if endpoint == "primary" else endpoint
+            assert all(message["target_endpoint_id"] == owner for message in sent)
+            assert sent[0]["frame"] == 0
+            assert contexts == ["connector"] * len(expected)
+            assert view.molsys is original and not view.widget._scheduled_callbacks
+
+    asyncio.run(exercise())
+
+
 @pytest.mark.parametrize("endpoint,terminal", [(None, "deliver"), ("popup-review", "deliver"), (None, "close")])
 def test_transfer_ack_waits_for_foreign_edit_owner_without_losing_identity(endpoint, terminal):
     async def exercise():

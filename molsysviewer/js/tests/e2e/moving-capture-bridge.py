@@ -1,8 +1,9 @@
-"""Real trajectory/camera capture pilot; production negotiation remains v1."""
+"""Real trajectory/camera receiving with the negotiated production protocol."""
 
 import asyncio
 import importlib.util
 import json
+import os
 import sys
 import time
 import traceback
@@ -58,7 +59,32 @@ def configure_moving_scene(view):
     near = view.regions.add(selection="atom_index==1 within 1 nm without pbc of atom_index==0", tag="moving-near")
     near.mode = "dynamic"
     near.set_representation("ball-and-stick")
+    _record_runtime_origin()
     return coordinates, cells, near
+
+
+def _record_runtime_origin():
+    """Record the actual authority, including a real Jupyter kernel, when requested."""
+    artifacts = os.environ.get("E2E_MOVING_CAPTURE_ARTIFACT_DIR")
+    if artifacts:
+        Path(artifacts, "moving-authority-origin.json").write_text(
+            json.dumps(
+                {
+                    "python": sys.version,
+                    "molsysviewer": {"file": msv.__file__, "version": msv.__version__},
+                    "molsysmt": {"file": msm.__file__, "version": msm.__version__},
+                    "pyunitwizard": {"file": msv.pyunitwizard.__file__, "version": msv.pyunitwizard.__version__},
+                    "native_modules": {
+                        name: module.__file__
+                        for name, module in sys.modules.copy().items()
+                        if name.startswith("molsysmt")
+                        and str(getattr(module, "__file__", "")).endswith((".so", ".pyd"))
+                    },
+                },
+                indent=2,
+            )
+            + "\n"
+        )
 
 
 def main():

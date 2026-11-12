@@ -6,7 +6,8 @@ import { readMovieEnvironment } from "../managers/movie-environment";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
     & Partial<Pick<MolSysViewerController, "moviePreviewClock" | "readMovieExportOverlays">>
-    & { prepareMovingVisualCapture?(): void; readMovingVisualState?(): MovingVisualSnapshot | undefined };
+    & { prepareMovingVisualCapture?(): void; readMovingVisualState?(): MovingVisualSnapshot | undefined;
+        retainMovingCapturePresentation?(capture: Promise<unknown>): () => void };
 
 export type VisualStateCaptureReservation = {
     signal: AbortSignal;
@@ -115,12 +116,16 @@ export async function handleFrontendRequest(controller: RequestController, messa
                     throw new Error("Movie preview is unavailable on this renderer.");
                 }
                 let sample: MovingVisualSnapshot | undefined;
-                const captured = await readCanvasDraw(canvas, () => ({ ...sample!,
+                const pendingDraw = readCanvasDraw(canvas, () => ({ ...sample!,
                     ...(message.movie_environment_capture === 1
                         ? { movie_environment_capture: 1, movie_environment: readMovieEnvironment(canvas) } : {}),
                     ...(nextMovieSample ? { movie_next_sample: nextMovieSample() } : {}) }),
                     Number.isFinite(timeout) && timeout > 0 ? Math.min(timeout, 30000) : 5000,
                     capture?.signal, () => !!(sample = controller.readMovingVisualState!()));
+                const releasePresentation = controller.retainMovingCapturePresentation?.(pendingDraw);
+                let captured: Awaited<typeof pendingDraw>;
+                try { captured = await pendingDraw; }
+                finally { releasePresentation?.(); }
                 let frame: Record<string, unknown> | undefined;
                 if (message.movie_frame !== undefined) {
                     if (message.movie_preview !== undefined) throw new Error("Movie frame export cannot run a preview clock.");

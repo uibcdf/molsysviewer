@@ -64,6 +64,7 @@ export function observeMovingCaptureCanvas() {
     const monitor = w.__movingCapture ??= { inbound: [], commands: [], outbound: [], captures: [], draws: [], frames: [],
         gates: {}, captureErrors: [], annotationOffsets: [], readiness: [], timing: [], activeCapture: null, heldSource: null };
     monitor.endpointId = endpointId;
+    monitor.frameDelivery = w.__movingFrameDelivery;
     monitor.localDocument = c.plugin.canvas3dContext.canvas.ownerDocument.defaultView === window;
     if (!monitor.localDocument) throw new Error("Capture observer must inspect its own native canvas.");
     const stages: any[] = monitor.stages = [];
@@ -79,10 +80,24 @@ export function observeMovingCaptureCanvas() {
         const original = owner[key];
         const wrapped = function(this: any, ...args: any[]) {
             const id = ++sequence, started = clock();
-            const detail = name === "task" ? args[0]?.name : args[0]?.frame ?? args[0]?.index;
+            const detail = name === "task" ? args[0]?.name : name === "message"
+                ? { op: args[0]?.op, frame: args[0]?.frame ?? args[0]?.index, request_id: args[0]?.request_id }
+                : args[0]?.frame ?? args[0]?.index;
             recordStage({ id, name, detail, stage: "start", ms: started });
             const finish = (error = false) => { const ended = clock();
-                recordStage({ id, name, detail, stage: "end", ms: ended, duration: ended - started, error }); };
+                let settled: any;
+                if (["model", "dynamic", "interactions", "message"].includes(name)) {
+                    try {
+                        const frame = c.trajectory.getTrajectoryState().currentFrame;
+                        settled = { frame, coherent: !!c.readMovingVisualState(),
+                            dynamic: { applied: c.dynamicRegionEvaluationAppliedFrame,
+                                inFlight: c.dynamicRegionEvaluationInFlight, pending: c.dynamicRegionEvaluationPendingFrame },
+                            interactions: { frame: c.interactions.frame, pending: c.interactions.pending, work: c.interactions.pendingWork },
+                            updating: c.plugin.state.data.behaviors.isUpdating.value };
+                    } catch (failure: any) { settled = { error: failure?.name ?? "UnknownError" }; }
+                }
+                recordStage({ id, name, detail, stage: "end", ms: ended, duration: ended - started, error,
+                    ...(settled ? { settled } : {}) }); };
             try {
                 const result = original.apply(this, args);
                 if (result?.then) result.then(() => finish(), () => finish(true));
@@ -94,6 +109,7 @@ export function observeMovingCaptureCanvas() {
         restore.push(() => { if (owner[key] === wrapped) owner[key] = original; });
     };
     observe(c.plugin, "runTask", "task");
+    observe(c, "handleMessage", "message");
     observe(c.trajectory, "applyTrajectoryFrame", "model");
     observe(c.annotations, "refresh", "annotations");
     observe(c.state, "setDynamicRegionAtoms", "dynamic");

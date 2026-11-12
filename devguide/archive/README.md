@@ -524,3 +524,4 @@ Completed work, kept for the reasoning:
 
 - [Curated representation parameters](curated_representation_parameter_digestion.md) — #357 validates advertised renderer options before mutation and receives real native forwarding.
 - [Movie camera guard precondition](movie_baseline_camera_guard_precondition.md) — #361 uses the production snapshot authority after a native queued-reset adverse control, preserving exact capture assertions.
+- [Consolidated Jupyter capture](jupyter_capture_receiving_recurrence.md) — #344 receives follower presentation and contended scientific-query handoffs through complete actual-Jupyter captures, cancellation and deadlines.

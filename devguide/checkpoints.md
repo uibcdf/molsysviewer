@@ -907,6 +907,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
+receives #344's source recurrence: followers retain coherent prefixes until a
+native draw; scientific frame queries survive foreign scene ownership and
+revalidate their endpoint after unlock. Complete actual-Jupyter entries `578`
+and the stronger `579` pass six stopped/restored and six moving cases, genuine
+delayed native replies, cancellation and autonomous expiration without late
+writes. Original failures, actual kernel origins and resource limits remain.
+The receipt separates covering browser/headless checks from installed, native
+Qt, human and hosted acceptance. The original counters remain 38/46 source
+and 1/46 final. Continue #320's Studio authoring and portable-web work; receive
+MolSysMT #723's metrology before the next comparable prolonged E2 campaign.
+
 The [legacy Movie receipt](movie_legacy_receiving_20261112.json) receives the
 admitted version-1 profile through explicit review/acceptance: safe Cartesian
 camera paths, rounded intermediate structures, typed visibility and unknown
@@ -920,10 +932,9 @@ interruptions remain. These are source scopes, not a complete core-lane,
 actual-Jupyter/Qt, installed or human qualification.
 
 The full native moving scenario passes once in `564`, then `566` fails its
-sixth moving Studio save. Keep both outcomes under the existing #344 receiving
-recurrence; do not combine prefixes or declare its cause resolved. That is the
-next consolidated capture boundary to isolate before claiming robust live
-capture. #320 still needs Studio authoring, portable web and integrated-story
+sixth moving Studio save. Both are retained in the later #344 receiving above;
+neither is rewritten as a passing entry. #320 still needs Studio authoring,
+portable web and integrated-story
 receiving. The 38/46 source and 1/46 final counters are unchanged.
 
 The [Cartesian Movie profile](movie_cartesian_receiving_20261112.json) adds
@@ -991,8 +1002,9 @@ methods, resize resources and target. The actual-notebook regression checks
 collection of the controller/native model and preserves an independently drawn
 witness. The coordinate backing buffer still needs an owner/disposition; #356
 and E2 remain open. The expanded capture entry fails in two distinct scopes;
-[#344 is reopened](pending_bugs/jupyter_capture_receiving_recurrence.md), with
-the original prefixes/deadlines preserved rather than a global passing claim.
+[#344 was reopened](archive/jupyter_capture_receiving_recurrence.md), with
+the original prefixes/deadlines preserved. The newer capture-presentation
+receipt above receives that source recurrence through complete Jupyter entries.
 #362 separately repairs two stale unit fixtures without
 changing the production state handler. Follow the ledger for the remaining
 Jupyter reliability and integrated receiving.

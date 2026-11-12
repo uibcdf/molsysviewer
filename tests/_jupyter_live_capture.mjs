@@ -208,6 +208,7 @@ async function delayedReply(work,kind){
    return send(event,...rest);
   };
  });
+ const drawMark=await page.evaluate(()=>window.__captureDraws.count);
  await work.getByRole('button',{name:'Save file',exact:true}).click();
  try{await page.waitForFunction(()=>window.__heldCapture.length===1);}
  catch(error){
@@ -236,6 +237,14 @@ async function delayedReply(work,kind){
    .catch(failure=>({diagnostic_error:failure.name}));
   throw error;
  }
+ const held=await page.evaluate(()=>window.__heldCapture[0]?.payload??window.__heldCapture[0]);
+ assert.equal(held.ok,true,'The delayed reply must be a successful native capture, not an error envelope.');
+ assert.equal(held.capture_version,2);
+ assert.equal(held.playback.playing,false);
+ await drawnCamera(page,drawMark,held.snapshot);
+ report.delayed_captures??=[];
+ report.delayed_captures.push({kind,request_id:held.request_id,structure_index:held.structure_index,
+  capture_version:held.capture_version,ok:held.ok,playing:held.playback.playing,fresh_native_draw:true});
  assert.equal(await work.getByLabel('Path in Python session',{exact:true}).isDisabled(),true);
  if(kind==='cancel')await work.getByRole('button',{name:'Cancel save',exact:true}).click();
  // In the timeout case there is no kernel request or transport poll between

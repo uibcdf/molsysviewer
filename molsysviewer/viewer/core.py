@@ -1698,7 +1698,7 @@ class MolSysView(
                     endpoint = "primary"
                 self._frontend_requests.receive(dict(content), endpoint_id=endpoint)
             return
-        # These lifecycle/data-plane replies do not carry molecular selections.
+        # Lifecycle acknowledgements and frame queries carry no edit intent.
         # A real kernel can deliver them on another registered thread while an
         # edit owns the View. Preserve them until release, then re-enter through
         # the connector's host loop; scene commands keep their ordinary rejection.
@@ -1711,6 +1711,8 @@ class MolSysView(
             "structure_data_chunk_ack",
             "structure_data_complete",
             "structure_data_error",
+            "request_dynamic_region_evaluation",
+            "request_interaction_frame",
         }:
             retained = dict(content)
             retained_context = copy_context()

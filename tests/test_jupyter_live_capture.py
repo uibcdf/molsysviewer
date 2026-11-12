@@ -261,6 +261,12 @@ def test_live_jupyter_work_files(tmp_path):
     assert observed["strong_restore_cases"] == observed["capture_restore_cases"]
     assert observed["no_late_write_after_cancel"] is True
     assert observed["no_late_write_after_timeout"] is True
+    assert len(observed["delayed_captures"]) == 2
+    assert {case["kind"] for case in observed["delayed_captures"]} == {"cancel", "timeout"}
+    assert all(
+        case["ok"] and case["capture_version"] == 2 and case["fresh_native_draw"] and case["playing"] is False
+        for case in observed["delayed_captures"]
+    )
     assert observed["moving_capture_cases"] == 6
     assert {(case["origin"], case["method"], case["kind"]) for case in observed["moving_cases"]} == {
         (origin, method, kind)

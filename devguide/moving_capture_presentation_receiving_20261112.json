@@ -1,0 +1,364 @@
+{
+  "schema": "molsysviewer.moving_capture_presentation_receiving@1",
+  "date_utc": "2026-11-12",
+  "issue": "uibcdf/molsysviewer#344",
+  "audit_issue": "uibcdf/molsysviewer#315",
+  "status": "source_received",
+  "source": {
+    "base": "d8714c1c449ad0c3484f229c5ace18671861aa5e",
+    "kind": "Reviewed working tranche over this base; frozen input hashes and final file hashes identify the qualified sources. No installed candidate.",
+    "files": {
+      "molsysviewer/js/src/managers/capture-presentation.ts": "5462cc53e4003d3eb2de1188053333325d5f40c30004ced79d54058692200006",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "d1d0c957f6d17eaa50a464336bc706bc8c8ce529ead8a7f15aefc20cabf00720",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "a6ae11644569e0b1557cc781e880aee440b916e248b69e6f059425a8c4fc8ef4",
+      "molsysviewer/js/tests/unit/frontend-requests.test.ts": "6c7399895b2c7e64505eca96e76fda12492bc34531970765e68347ac27fb69d3",
+      "molsysviewer/js/tests/e2e/moving-canvas-observer.ts": "15c1cae5e2acfcada286ffdfc1d3a9ff32b4d8c1c879a6a63681fce0b53ccd43",
+      "molsysviewer/js/tests/e2e/moving-capture-bridge.py": "321b9010e009b6611ab46659d731b9108a97adc7e296958f447711af67d6a6c1",
+      "molsysviewer/js/tests/e2e/moving-capture-scenarios.ts": "41c27bb6936af9008e5f4d538132fe5bcad3d115dc6cb70051077f029f266bee",
+      "molsysviewer/viewer/core.py": "c2a541ad81e2d89f36e16901103b879b91ffa8ab409ff76ca97fec75565a1245",
+      "tests/test_inbound_edit_contention.py": "3b723d611fa9665e0356d93f419e3f054b65c4e698f12bf32ca1f6496db159ad",
+      "tests/_jupyter_live_capture.mjs": "8ed04fba9e2d7fc0cf4b6d4f1a06c7daaeb9685d429fa7ab1084de19a654a14f",
+      "tests/test_jupyter_live_capture.py": "37f5c70ebbf225dcdb5afe3fd4cf63e229b7f3bdc0882026ca674dbcb6c46445",
+      "molsysviewer/viewer.js": "46639026499bbac84be954411df835a223b4c2324c865ed47d1fca40faa52a4e"
+    },
+    "test_only_delta_after_native": "After 579/580, two unit assertions use length equality to avoid TypeScript assertion narrowing. 582 repeats all 460 JS cases and the strict unit graph; production runtime/Python files remain unchanged from the received native/Jupyter entries."
+  },
+  "provider": {
+    "molsysmt_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "pyunitwizard_source": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+    "scope": "Archived scientific source and copied support. Real native/Jupyter authorities emit their actual import origins. Development version strings are not public package identities.",
+    "prior_source_custody": "jupyter-receiver-20261112"
+  },
+  "results": {
+    "diagnosis": {
+      "before_native": "569 fails the complete moving entry; 570 passes only a reduced popup control. Its capture window has 47 coherent popup message completions and four native draw-readiness samples. Not complete acceptance.",
+      "follower_fix": "Retain an already coherent serial scene prefix until the capture native draw or terminal outcome; incoherent prefixes stay runnable. No added playback clock, synchronous native rendering, pause/seek, fabricated science or changed deadline.",
+      "jupyter_before_query_fix": "574 receives six stopped and six moving cases, then fails the delayed-reply precondition with a real frame-1 dynamic query pending after stop/teardown.",
+      "query_before": {
+        "profile": 575,
+        "failed": 8,
+        "reason": "Real scientific frame queries reject foreign scene ownership before an unlock handoff exists."
+      },
+      "query_fix": "Retain dynamic/interactions frame queries with their context and correlation until the outer scene unlock; revalidate endpoints on the host loop. Existing edit rejection rules remain."
+    },
+    "js": {
+      "profile": 582,
+      "passed": 460,
+      "failed": 0,
+      "skipped": 0,
+      "strict_graph": "passed",
+      "runtime_and_harness_build": "passed",
+      "runtime_and_harness_build_profile": 572
+    },
+    "contention": {
+      "profile": 577,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Real View, science and threads; primary/popup correlation, caller context, close and endpoint retirement."
+    },
+    "actual_jupyter": {
+      "profiles": [
+        578,
+        579
+      ],
+      "passed_complete_entries": 2,
+      "stopped_roundtrips_per_entry": 6,
+      "moving_captures_per_entry": 6,
+      "scope": "Whole original host entry, independent file restores, genuine held scientific queries and two real post-request frame changes; cancel/timeout have no late writes. 579 additionally requires each delayed reply to be successful version 2 and match a fresh native draw. No new kernel poll during the autonomous timeout."
+    },
+    "native": {
+      "isolated_profile": 573,
+      "covering_profile": 580,
+      "suites": [
+        "moving-state-capture",
+        "moving-capture-lifecycle",
+        "popup-channel",
+        "widget-seam",
+        "movie-seek",
+        "movie-legacy",
+        "movie-export",
+        "movie-appearance"
+      ],
+      "scope": "Eight selected native Chromium/Mol* suites, including the full moving scenario, empty-frame and annotation presentation, real transport loss/endpoint lifetimes and Movie/media scopes. Not the complete core lane."
+    },
+    "retained_intermediate_failures": {
+      "571": "20 existing constructor-bypassing unit fixtures fail the eager fence field; capture-only lazy ownership restores their unchanged behavior. Later types/build phases did not run.",
+      "576": "71 passes, two test-assertion failures: interaction completion envelopes have no frame field. Check the preceding data envelope; add retirement controls. The product payload contract is unchanged.",
+      "581": "Ruff and Node syntax pass; the newly included strict unit graph finds Node assertion narrowing to never[]. Replace empty-array deep equality with equal length checks; same ordering assertions, no product change. Regression had not run."
+    },
+    "not_claimed": [
+      "hosted exact-head gates",
+      "complete core browser lane",
+      "installed/clean-solver qualification",
+      "native Qt/GPU qualification",
+      "human acceptance",
+      "prolonged E2 acceptance",
+      "new release or publication"
+    ],
+    "quality": {
+      "profile": 582,
+      "passed": 1065,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 8,
+      "skip_reasons": {
+        "imageio is installed; cannot test ImportError path": 1,
+        "Explicit real Mol*/Chromium legacy migration receiving is required.": 1,
+        "Explicit real Mol*/Chromium Cartesian Movie receiving is required.": 1,
+        "Explicit real Mol*/Chromium Movie receiving is required.": 1,
+        "Explicit frontend TypeScript compiler receiving is required.": 1,
+        "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and native Chromium available.": 2,
+        "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and Playwright available.": 1
+      },
+      "checks": [
+        "canonical JS entry: 460 passed, zero skipped",
+        "Ruff full check and format check",
+        "Node syntax",
+        "strict frontend-requests unit graph",
+        "devguide indexes",
+        "Git whitespace",
+        "31 affected Python files with Pytest Receptor and JUnit"
+      ],
+      "scope": "Directed regression, not the whole Python suite. Opt-in omissions are not passes; actual Jupyter and selected native browser entries have their separate executed receipts."
+    }
+  },
+  "profiles": {
+    "capture-569-diagnostic": {
+      "native_exit": 1,
+      "seconds": 57.826811564853415,
+      "selected_inputs": 9885,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3245.7,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 2216685568,
+      "invocation_sha256": "80b24fc853bd22e1de61511f5fa23f6372e03f0a5accaaa74579e5a4e4a1d065"
+    },
+    "capture-570-popup-diagnostic": {
+      "native_exit": 0,
+      "seconds": 41.14585769199766,
+      "selected_inputs": 9889,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2655.7,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 1663361024,
+      "invocation_sha256": "2ae044afbbe8cc9c32d98034c596d815dac253361fa4dadde87c02bb972d87a2"
+    },
+    "build-571-capture-presentation": {
+      "native_exit": 1,
+      "seconds": 14.953400732018054,
+      "selected_inputs": 9889,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 612.6,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 481677312,
+      "invocation_sha256": "f41fa7b06435754737e43bbf6ae97405a2fe01b2680935800794c83b5f48c905"
+    },
+    "build-572-capture-presentation": {
+      "native_exit": 0,
+      "seconds": 28.8703978380654,
+      "selected_inputs": 9889,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 641.6,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 634953728,
+      "invocation_sha256": "81bb349542c2655649cecd736e0865f8993559edb5df6dbbd7c3c30be11f364b"
+    },
+    "capture-573-presentation": {
+      "native_exit": 0,
+      "seconds": 98.46658536791801,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3452.2,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 2439503872,
+      "invocation_sha256": "68378135203f2efec5fd0cdc47bdc5c621527b1366c79935902cab69c63d5951"
+    },
+    "covering-574-jupyter-presentation": {
+      "native_exit": 1,
+      "seconds": 201.07590886717662,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3447.8,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 2424999936,
+      "invocation_sha256": "c26c7f7e4aa3590698aff2e75e3d75b77bcb3505f8496ec6c085d53c47aa42d5"
+    },
+    "capture-575-query-before": {
+      "native_exit": 1,
+      "seconds": 9.597667597001418,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 405.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 303771648,
+      "invocation_sha256": "3126adb47f33dd49c9962f2e83964c7fcda59433bad31a7f19aef357338e92d5"
+    },
+    "capture-576-query-after": {
+      "native_exit": 1,
+      "seconds": 24.230650756973773,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 537.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 453509120,
+      "invocation_sha256": "6054c98fc22698a6a4a9ad073add64f69f5319b82b36688f45f53c37d3c0c4dc"
+    },
+    "capture-577-query-after": {
+      "native_exit": 0,
+      "seconds": 8.856821413850412,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 399.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 300199936,
+      "invocation_sha256": "0aee87d36c3691e3ab49642c39e74787e4f8d0a8f298aee9455ea56ddd37be30"
+    },
+    "covering-578-jupyter-query-fix": {
+      "native_exit": 0,
+      "seconds": 175.40159995295107,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3504.6,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 2471653376,
+      "invocation_sha256": "56d486201ab7d291ab8686fbba46003f1f5927eb8fa86f76939079e9ea0bc697"
+    },
+    "covering-579-jupyter-genuine-replies": {
+      "native_exit": 0,
+      "seconds": 193.85938073601574,
+      "selected_inputs": 9891,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3524.9,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 2509361152,
+      "invocation_sha256": "14aac7336f140a6447056ae8e87cc72d4fe37cee372e72a498339772efed6489"
+    },
+    "covering-580-capture-and-movie": {
+      "native_exit": 0,
+      "seconds": 439.1067785930354,
+      "selected_inputs": 9892,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3397.9,
+      "cleanup": {
+        "tracked": 60,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 2386722816,
+      "invocation_sha256": "76f251093847db1ac48cba49ec522ed8a62950281af6f23da4a32dc7c917d065"
+    },
+    "capture-581-final-quality": {
+      "native_exit": 1,
+      "seconds": 11.34792217402719,
+      "selected_inputs": 9894,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 509.3,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 306802688,
+      "invocation_sha256": "45465c86b8e3e32315e4bc66a2afc06b1e94d7cd25a8cafa3bb067e60d5bcc03"
+    },
+    "capture-582-final-quality": {
+      "native_exit": 0,
+      "seconds": 204.32772632315755,
+      "selected_inputs": 9894,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 738.2,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "observed_cgroup_peak_bytes": 654467072,
+      "invocation_sha256": "d02dd05731eb07a7004190db5d4c9c6c533e6118386e4e88ac7003e92c7ad593"
+    }
+  },
+  "resource_policy": {
+    "maximum_used": "4 logical CPU / 4 GiB; smaller controls use 2 / 2",
+    "own_swap": 0,
+    "global_available_reserve_gib": 6.5,
+    "execution": "Sequential, scoped cgroups/affinity and runtime resource stops.",
+    "rss_notice": "Summed process RSS counts shared pages more than once; it is not physical RAM. Retain observed cgroup peaks separately."
+  },
+  "plan_counters": {
+    "source_delivered": "38/46",
+    "final_acceptance": "1/46",
+    "changed": false
+  },
+  "publications": "Tags, packages, candidates and both 1.0 publications remain paused.",
+  "evidence_custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "capture-presentation-20261112",
+    "file_count": 212,
+    "payload_bytes": 76700519,
+    "manifest_sha256": "ee53f13938249aee9e66deca56609e677f4f529aa5bfffb549b8a1a226100c23",
+    "permissions": "directories 0700; files 0600",
+    "originals_deleted": false,
+    "scope": "Final source and original profile artifacts; pre-seal receipt, not complete intermediate source snapshots. Prior scientific/support source custody remains jupyter-receiver-20261112."
+  }
+}

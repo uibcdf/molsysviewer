@@ -151029,6 +151029,40 @@ async function waitForCanvasDraw(canvas, timeoutMs = 3e4, signal) {
   await readCanvasDraw(canvas, () => void 0, timeoutMs, signal);
 }
 
+// src/managers/capture-presentation.ts
+var CapturePresentationFence = class {
+  constructor() {
+    this.pending = /* @__PURE__ */ new Set();
+    this.releases = /* @__PURE__ */ new Set();
+    this.closed = false;
+  }
+  retain(capture) {
+    if (this.closed) return () => {
+    };
+    let resolve;
+    const presented = new Promise((done) => {
+      resolve = done;
+    });
+    const release = () => {
+      this.pending.delete(presented);
+      this.releases.delete(release);
+      resolve();
+    };
+    this.pending.add(presented);
+    this.releases.add(release);
+    void capture.then(release, release);
+    return release;
+  }
+  async afterSceneMessage(isCoherent) {
+    if (this.pending.size === 0 || !isCoherent()) return;
+    await Promise.all([...this.pending]);
+  }
+  dispose() {
+    this.closed = true;
+    for (const release of [...this.releases]) release();
+  }
+};
+
 // src/ui/menu-navigation.ts
 var nextMenuId = 0;
 var unavailableItems = /* @__PURE__ */ new WeakSet();
@@ -169755,6 +169789,7 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   dispose() {
     this.disposed = true;
+    this.capturePresentation?.dispose();
     this.moviePreviewClock.release();
     this.trajectory?.dispose();
     this.boxDisplay?.dispose();
@@ -171289,6 +171324,7 @@ var MolSysViewerController = class _MolSysViewerController {
       else if (PANEL_REFRESH_BY_OPERATION[msg.op]?.includes("addons")) {
         this.updateWelcomeState();
       }
+      await this.capturePresentation?.afterSceneMessage(() => !this.disposed && this.trajectory.isFollower && this.areFrameProjectionsCurrent(this.trajectory.getTrajectoryState().currentFrame));
     }
   }
   async handleArrayNativeMolSysMessage(msg, buffers) {
@@ -172657,6 +172693,11 @@ var MolSysViewerController = class _MolSysViewerController {
     this.assertLiveCaptureCanvas();
     this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
   }
+  retainMovingCapturePresentation(capture) {
+    if (this.disposed || !this.trajectory.isFollower) return () => {
+    };
+    return (this.capturePresentation ??= new CapturePresentationFence()).retain(capture);
+  }
   assertLiveCaptureCanvas() {
     const element = this.plugin.canvas3dContext?.canvas;
     if (this.disposed || !element?.isConnected || !Array.from(element.getClientRects()).some((rect) => rect.width > 0 && rect.height > 0) || getComputedStyle(element).visibility === "hidden") {
@@ -172860,7 +172901,7 @@ async function handleFrontendRequest(controller, message, send, capture) {
           throw new Error("Movie preview is unavailable on this renderer.");
         }
         let sample;
-        const captured = await readCanvasDraw(
+        const pendingDraw = readCanvasDraw(
           canvas,
           () => ({
             ...sample,
@@ -172871,6 +172912,13 @@ async function handleFrontendRequest(controller, message, send, capture) {
           capture?.signal,
           () => !!(sample = controller.readMovingVisualState())
         );
+        const releasePresentation = controller.retainMovingCapturePresentation?.(pendingDraw);
+        let captured;
+        try {
+          captured = await pendingDraw;
+        } finally {
+          releasePresentation?.();
+        }
         let frame2;
         if (message.movie_frame !== void 0) {
           if (message.movie_preview !== void 0) throw new Error("Movie frame export cannot run a preview clock.");

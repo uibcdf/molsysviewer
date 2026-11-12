@@ -39,6 +39,7 @@ import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handl
 import { MovieHandlers } from "./handlers/movie-handlers";
 import { MoviePreviewClock } from "./movie-preview-clock";
 import { waitForCanvasDraw } from "./canvas-draw";
+import { CapturePresentationFence } from "./capture-presentation";
 import type { MovingVisualSnapshot } from "../messages/visual-state-snapshot";
 import type { CameraIntentApplication } from "./camera-sync";
 import { ContextMenuTarget, LastMeasurementSummary, RegionSummary, SavedSelectionSummary, ViewerContextMenu } from "../ui/context-menu";
@@ -658,6 +659,7 @@ export class MolSysViewerController {
     private dynamicRegionRequestId: number | null = null;
     private dynamicRegionRequests = new Map<number, number>();
     private disposed = false;
+    private capturePresentation?: CapturePresentationFence;
     private addonsScene: { styleTag?: string; preset?: string; figurePreset?: string; figureScale?: number; figureVariants?: string[]; figureBackground?: string } | null = null;
     private addonsList: AddonRuntimeSummary[] = [];
     private addonWorkspaces: WorkspaceRuntime[] = [];
@@ -1905,6 +1907,7 @@ export class MolSysViewerController {
 
     dispose(): void {
         this.disposed = true;
+        this.capturePresentation?.dispose();
         this.moviePreviewClock.release();
         this.trajectory?.dispose();
         this.boxDisplay?.dispose();
@@ -3425,6 +3428,12 @@ export class MolSysViewerController {
             else if (PANEL_REFRESH_BY_OPERATION[msg.op as KnownViewerMessage["op"]]?.includes("addons")) {
                 this.updateWelcomeState();
             }
+            // A follower has no playback clock of its own. Without this fence,
+            // its next queued projection can replace a coherent scene before
+            // the browser presents it. Never hold an incoherent prefix: queries
+            // queued after it are needed to complete the capture.
+            await this.capturePresentation?.afterSceneMessage(() => !this.disposed && this.trajectory.isFollower
+                && this.areFrameProjectionsCurrent(this.trajectory.getTrajectoryState().currentFrame));
         }
     }
 
@@ -5011,6 +5020,11 @@ export class MolSysViewerController {
     prepareMovingVisualCapture(): void {
         this.assertLiveCaptureCanvas();
         this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
+    }
+
+    retainMovingCapturePresentation(capture: Promise<unknown>): () => void {
+        if (this.disposed || !this.trajectory.isFollower) return () => {};
+        return (this.capturePresentation ??= new CapturePresentationFence()).retain(capture);
     }
 
     private assertLiveCaptureCanvas(): void {

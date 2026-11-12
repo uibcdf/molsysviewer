@@ -2116,6 +2116,25 @@ playback clock, supply geometry or pause/seek for capture. The idle-canvas
 control in `js/tests/unit/frontend-requests.test.ts` protects this liveness
 boundary; native moving-capture receiving retains actual geometry and deadlines.
 
+A follower's serial scene queue retains an already coherent prefix while a
+version-2 capture waits for its fresh native draw. Later projections must not
+replace that prefix before it is presented. Incoherent prefixes never wait:
+their scientific replies must remain runnable. This presentation fence owns
+no playback clock and changes neither camera motion nor the primary player's
+cadence. Completion, rejection, the existing capture deadline, cancellation
+and teardown release it. A later capture cannot prolong an earlier prefix.
+The draw reader still samples synchronously inside the native notification.
+
+Frame-dependent scientific queries also survive short cross-thread scene
+ownership. Preserve their correlation, endpoint and caller context until the
+outer molecular unlock, then re-enter through the connector's host loop and
+revalidate the destination. A retired canvas receives no reply. This admits
+neither concurrent molecular edits nor an unsynchronized system: ordinary
+scene commands retain their rejection rules. Dropping a contended query can
+strand an otherwise stopped, visible canvas indefinitely; replaying a new
+frame is not a recovery contract. The real-View cross-thread controls in
+`tests/test_inbound_edit_contention.py` protect this handoff.
+
 **Trajectory-shape refresh ownership — 2026-11-07 (#328).** Overlapping
 updates share one bounded owner and retain the latest requested frame. After
 an older clear/render finishes, that owner catches up to the latest target;
