@@ -4,6 +4,7 @@ from collections.abc import Callable, Mapping
 from concurrent.futures import Future
 from typing import Any
 
+from .._movie_studio import MovieStudioCancelled, movie_action
 from ..work_file_saves import WorkFileSaveCancelled
 from ._file_selection import HANDLERS as FILE_SELECTION_HANDLERS
 from .addons import HANDLERS as ADDON_HANDLERS
@@ -42,6 +43,23 @@ STUDIO_RESULT_DOMAINS = {
     "delete_interaction_analysis": "interactions",
 }
 
+MOVIE_ACTIONS = {
+    "movie_start",
+    "movie_set_duration",
+    "movie_clear",
+    "movie_set_key",
+    "movie_capture_key",
+    "movie_remove_track",
+    "movie_remove_key",
+    "movie_seek",
+    "movie_play",
+    "movie_pause",
+    "movie_reset",
+    "movie_export",
+    "movie_cancel",
+}
+STUDIO_RESULT_DOMAINS.update(dict.fromkeys(MOVIE_ACTIONS, "movie"))
+
 
 def _build_handlers() -> dict[str, PanelActionHandler]:
     handlers: dict[str, PanelActionHandler] = {}
@@ -61,6 +79,7 @@ def _build_handlers() -> dict[str, PanelActionHandler]:
         VIEWPORT_HANDLERS,
         TRAJECTORY_HANDLERS,
         PERSISTENCE_HANDLERS,
+        dict.fromkeys(MOVIE_ACTIONS | {"movie_inspect"}, movie_action),
     ):
         duplicates = handlers.keys() & domain.keys()
         if duplicates:
@@ -119,14 +138,14 @@ def _studio_result(view, content, domain, error=None):
     }
     if error is not None:
         message["error_message"] = str(error)
-        if isinstance(error, WorkFileSaveCancelled):
+        if isinstance(error, (WorkFileSaveCancelled, MovieStudioCancelled)):
             message["cancelled"] = True
     owner = content.get("_studio_owner_endpoint_id", content.get("_work_file_owner_endpoint_id"))
     if isinstance(owner, str) and owner:
         message["target_endpoint_id"] = f"widget-host:{view._binary_session_id}" if owner == "primary" else owner
     # A verdict releases requester controls; it must not wait for an unrelated
     # structure stream (or for the stream whose failure caused this verdict).
-    if view._ready:
+    if view._ready and not view.closed:
         view._transmit_widget_message(message)
 
 
@@ -158,7 +177,7 @@ def dispatch_panel_action(view: Any, content: Mapping[str, Any]):
                         if (
                             isinstance(error, Exception)
                             and action != "cancel_work_file"
-                            and not isinstance(error, WorkFileSaveCancelled)
+                            and not isinstance(error, (WorkFileSaveCancelled, MovieStudioCancelled))
                         ):
                             view._send_backend_error_ack(intent, error)
                     else:

@@ -133,7 +133,7 @@ export async function captureCanvasPopupControllers(page: Page, waitForControlle
                 const operation=C.prototype[method];
                 C.prototype[method]=function(...args:any[]) { w.__mirrorController=this; return operation.apply(this,args); };
             }
-        } else w.__mirrorController = w.__molsysviewerDocsController;
+        } else if (w.__molsysviewerDocsController) w.__mirrorController = w.__molsysviewerDocsController;
         const open=window.open.bind(window);
         window.open=((...args:any[])=>{
             const win:any=open(...args);

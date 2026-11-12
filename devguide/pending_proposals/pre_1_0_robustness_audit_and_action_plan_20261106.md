@@ -33,6 +33,13 @@ correction are no longer waiting for provider implementation; their received
 and still-pending consumer scopes are distinguished in the dashboard below.
 Covering hosted, installed and postponed human evidence remain separate.
 
+**Movie authoring tranche — 2026-11-12:** the
+[source receipt](../movie_studio_receiving_20261112.json) receives the first
+Studio editor, explicit kept-draft review after Python changes, per-canvas
+capture and detached preview/export. Full M2 host/accessibility receiving,
+portable web/composition and M5's integrated scientific story remain with
+#320. This additional stream changes neither original counter above.
+
 **E2 host-memory follow-up — 2026-11-12:** the
 [matched controls](../jupyter_memory_host_controls_receiving_20261112.json)
 isolate Jupyter active-cell-toolbar DOM/event growth without molecular imports.

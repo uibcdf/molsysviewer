@@ -25,8 +25,11 @@ PNG decoding. A missing renderer or encoder raises an error.
 
 This implementation exports camera, structure, visibility and the
 [admitted appearance tracks](timeline.md#animating-appearance).
-Keep untracked scene settings unchanged after authoring; complete baseline
-rebasing, richer style recipes and a Studio authoring panel remain in development.
+Keep untracked scene settings unchanged after authoring; explicit baseline
+reset and reviewed rebase routes are described in the timeline documentation.
+The [experimental Studio editor](index.md#authoring-in-studio-experimental-development-feature)
+uses the same export API. Richer style recipes and complete authoring
+acceptance remain in development.
 
 You can also export lossless images:
 

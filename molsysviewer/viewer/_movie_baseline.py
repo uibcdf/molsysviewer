@@ -6,6 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from numbers import Real
 
+from ._movie_endpoint import check_movie_revision, movie_endpoint
 from ._movie_environment import finish_environment_capture, require_environment_capture
 from ._movie_timeline import MOVIE_TIMELINE_VERSION, _duration, _MovieTimeline
 from .frontend_requests import FrontendRequestError
@@ -63,6 +64,7 @@ async def observe_movie_scene(movie, *, timeout, require_baseline=False):
     def begin():
         nonlocal request
         live_capture_version(view, required=2)
+        check_movie_revision(movie)
         require_environment_capture(view)
         check_idle(movie)
         if require_baseline:
@@ -71,7 +73,9 @@ async def observe_movie_scene(movie, *, timeout, require_baseline=False):
         if binding is None:
             raise ValueError("Load a molecular system before capturing a Movie baseline.")
         original = movie._timeline, movie._keyframes, deepcopy(movie._keyframes)
-        captured, request = prepare_live_capture(view, timeout=max(1e-9, deadline - time.monotonic()))
+        captured, request = prepare_live_capture(
+            view, timeout=max(1e-9, deadline - time.monotonic()), endpoint_id=movie_endpoint(view)
+        )
         movie._seek_request = request
         send_live_capture(view, request, protocol_version=2, movie_environment_capture=True)
         return captured, binding, original

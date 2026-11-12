@@ -175,6 +175,8 @@ class MolSysView(
         movie = getattr(self, "movie", None)
         if movie is not None:
             actions.insert(0, ("pending Movie review", movie._invalidate_observation))
+            if movie._studio is not None:
+                actions.insert(0, ("pending Studio Movie operations", movie._studio.close))
         presentations = getattr(self, "_presentations", None)
         if presentations is not None:
             # Capture child owners before a close callback can remove records.
@@ -1688,6 +1690,8 @@ class MolSysView(
                 # before a later reply can win while the scene lock is busy.
                 # Notifications still wait for the outer molecular unlock.
                 self._work_file_saves.cancel_endpoint(endpoint)
+                if self.movie._studio is not None:
+                    self.movie._studio.cancel_endpoint(endpoint)
                 self._frontend_requests.cancel_endpoint(endpoint)
         if content.get("event") == "visual_state_snapshot":
             # Publish outside the molecular lock: ipykernel can resume the
@@ -1809,6 +1813,8 @@ class MolSysView(
                 )
                 return
             self._work_file_saves.cancel_endpoint(endpoint_id)
+            if self.movie._studio is not None:
+                self.movie._studio.cancel_endpoint(endpoint_id)
             self._cancel_binary_structure_stream(
                 "popup endpoint closed",
                 target_endpoint_id=endpoint_id,

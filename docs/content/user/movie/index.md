@@ -39,6 +39,42 @@ The [experimental independent tracks](timeline.md#independent-tracks-experimenta
 support Python evaluation of camera, structure and typed scene visibility at
 arbitrary times. These recipes can travel with a saved session.
 
+## Authoring in Studio (experimental development feature)
+
+In a connected development view, open **Studio → Movie**. Its three tabs use
+the same `view.movie` plan as Python; changing a form alone does not change
+the accepted Movie or molecular system. This editor is not available in the
+public 0.24.0 package or a standalone HTML export.
+
+1. Prepare the regions, labels and interaction representations that the movie
+   will use. In **Timeline**, set the duration in seconds and choose
+   **Capture initial scene**.
+2. Give a track a name, choose its target and property, then save a key at the
+   desired time. For a camera move, capture one camera key, rotate or zoom the
+   canvas, and capture another at a later time. Molecular structures use
+   zero-based indices. Existing objects are addressed by their recorded names.
+3. In **Preview**, choose a time and **Go to time**, or use **Play** and
+   **Pause**. The slider prepares a time; it does not send repeated scene edits
+   while being dragged. Restoring the initial scene requires confirmation.
+4. In **Export**, enter a path in the Python session and choose MP4, WebM or
+   lossless PNG ZIP, rate and pixel dimensions. A remote session writes to
+   that remote filesystem. Progress and cancellation are available; the
+   [export contract](export.md) describes encoders and visible-overlay limits.
+
+Use **New track** to keep separate properties or targets independent. The
+editor preserves unfinished fields when switching tabs. If Python or another
+window changes the Movie meanwhile, the form is kept and applying it is
+disabled: review the updated plan before choosing **Use kept draft**. An
+outdated command already in transit is rejected. Replacing the plan requires
+confirmation and does not silently migrate a legacy recipe. Save your session
+through **Studio → Export** to preserve the plan with its molecular data.
+
+Live actions require a compatible renderer and a running integrated async
+host. Unsupported hosts show an explanation and disable those actions. The
+ordinary experimental Qt host still needs that loop integration; this editor's
+browser tests do not qualify live Qt or actual-notebook acceptance. Interactive
+portable Movie playback and visible plot/legend composition remain in development.
+
 ## Pages
 
 ```{toctree}

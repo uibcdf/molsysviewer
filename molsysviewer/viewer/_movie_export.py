@@ -19,6 +19,7 @@ from numbers import Real
 from pathlib import Path
 from uuid import uuid4
 
+from ._movie_endpoint import check_movie_revision
 from ._movie_playback import _revisions
 from ._movie_sampling import _MovieSampling
 from ._movie_seek import seek_movie
@@ -69,6 +70,7 @@ def _escape_metadata(value):
 class _MovieExport:
     def __init__(self, movie, sampling, width, height, include_overlays, sample_level):
         view = movie._view
+        check_movie_revision(movie)
         live_capture_version(view, required=2)
         if 1 not in view._frontend_capabilities.get("movie_frame_capture", []):
             raise FrontendRequestError(reason="movie_export_not_supported")

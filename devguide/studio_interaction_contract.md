@@ -104,6 +104,19 @@ selection controls; the structure field explains `current`, `all` and explicit
 indices. Optional representation identifiers and scientific metadata use
 disclosures; inspection retains participant identities, measurements and units.
 
+## Movie
+
+Connected Studio's experimental Movie section delegates Timeline, Preview and
+Export to the same `view.movie` model/API. The
+[Movie contract](movie_timeline_design.md#studio-authoring-first-m2-slice)
+owns revision-checked drafts, bounded editor pages, authenticated canvas
+selection, host-loop jobs and lifecycle cancellation. Live actions require
+the advertised renderer and integrated async host; the ordinary Qt host has
+not qualified that route. Static exports do not offer Python authoring.
+Movie export writes to the Python-session path and retains its explicit
+overwrite/overlay policy; it does not imply a browser download or a portable
+interactive presentation. The active #320 plan retains those remaining tasks.
+
 ## Export delivery
 
 PNG dimensions derive from the renderer drawing buffer and the requested scale,

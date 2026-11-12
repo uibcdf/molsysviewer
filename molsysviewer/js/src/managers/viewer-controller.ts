@@ -2645,6 +2645,7 @@ export class MolSysViewerController {
                 case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
                 case "system_file_browse_result": this.groupPanel.updateSystemFiles(msg); break;
                 case "studio_action_result": this.groupPanel.updateStudioAction(msg); this.addonsPanel.updateStudioAction(msg); break;
+                case "set_movie_state": this.groupPanel.setMovieState(msg); break;
                 case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
                 case "add_network_links":
                     if (msg.options?.tag === BOX_TAG && msg.options.box_display) {

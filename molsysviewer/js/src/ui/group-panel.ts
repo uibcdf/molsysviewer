@@ -15,6 +15,7 @@ import {
 import { PanelContext, StudioPanel } from "./panels/types";
 import { ViewportPanel } from "./panels/viewport-panel";
 import { ExportPanel } from "./panels/export-panel";
+import { MoviePanel, type MoviePanelState } from "./panels/movie-panel";
 import { LayersPanel, LayerObjectSummary, LayerSummary } from "./panels/layers-panel";
 import { RegionsPanel } from "./panels/regions-panel";
 import { SelectionPanel } from "./panels/selection-panel";
@@ -169,7 +170,7 @@ export type SelectionQueryPreview = {
     status?: "pending";
 };
 
-type TabKey = "load" | "system" | "whole" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes" | "layers" | "viewport" | "export" | "settings";
+type TabKey = "load" | "system" | "whole" | "selection" | "regions" | "measures" | "interactions" | "annotations" | "shapes" | "layers" | "viewport" | "movie" | "export" | "settings";
 
 export class GroupPanel {
 
@@ -199,6 +200,7 @@ export class GroupPanel {
     /** False in an exported page: the panels can show the scene but not change it. */
     private readonly hasAuthority: boolean = true;
     private readonly exportPanel: ExportPanel;
+    private readonly moviePanel?: MoviePanel;
     private readonly regionsPanel: RegionsPanel;
     private readonly selectionPanel: SelectionPanel;
     private readonly systemPanel: SystemPanel;
@@ -445,6 +447,8 @@ export class GroupPanel {
         this.layersPanel = new LayersPanel(this.makePanelContext("layers"));
         this.viewportSection = this.createSection("viewport");
         this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
+        const movieSection = this.hasAuthority ? this.createSection("movie") : undefined;
+        if (movieSection) this.moviePanel = new MoviePanel(this.makePanelContext("movie"));
         this.exportSection = this.createSection("export");
         this.exportPanel = new ExportPanel(this.makePanelContext("export"), this.hasAuthority,
             () => this.switchTab("export"));
@@ -493,6 +497,7 @@ export class GroupPanel {
         if (loadSection && this.loadPanel) {
             registryMap.set("load", ["Load", "Molecular systems", loadSection, this.loadPanel]);
         }
+        if (movieSection && this.moviePanel) registryMap.set("movie", ["Movie", "Empty", movieSection, this.moviePanel]);
 
         const defaultOrder: TabKey[] = [
             ...(this.hasAuthority ? ["load" as TabKey] : []),
@@ -506,6 +511,7 @@ export class GroupPanel {
             "shapes",
             "layers",
             "viewport",
+            ...(this.hasAuthority ? ["movie" as TabKey] : []),
             "export",
         ];
         let tabOrder = [...defaultOrder];
@@ -614,6 +620,7 @@ export class GroupPanel {
             shapes: "Manage custom 3D geometric shapes and objects in the scene.",
             layers: "Group scene objects in layers and control their visibility.",
             viewport: "Adjust background color, lighting, camera, and display parameters.",
+            movie: "Author, preview and export a Movie from the current scene (experimental).",
             export: "Download PNG images and HTML views; save or restore scene states and experimental sessions.",
         };
         const tooltip = tooltips[key];
@@ -1013,6 +1020,7 @@ export class GroupPanel {
         this.exportPanel.setImageDimensions(width, height);
     }
     setImageResult(pending: boolean, message: string): void { this.exportPanel.setImageResult(pending, message); }
+    setMovieState(state: MoviePanelState): void { this.moviePanel?.setState(state); }
 
     setSections(items: SectionSummary[], settings: SectionSettings): void {
         this.viewportPanel.setSections(items, settings);

@@ -7,6 +7,7 @@ from numbers import Real
 from uuid import uuid4
 
 from ._movie_appearance import appearance_commands
+from ._movie_endpoint import check_movie_revision, movie_endpoint
 from ._movie_timeline import _VISIBILITY_DOMAINS, _scene_visibility
 from .frontend_requests import FrontendRequestError
 from .visual_capture import (
@@ -127,6 +128,7 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
     def begin():
         nonlocal request
         version = live_capture_version(view, required=2)
+        check_movie_revision(movie)
         if (
             movie._seek_request is not None
             or movie._playback is not None
@@ -165,7 +167,10 @@ async def seek_movie(movie, time_ms, *, timeout, export_job=None, movie_frame=No
         if remaining <= 0:
             raise FrontendRequestError(reason="request_timeout")
         request = view._frontend_requests.begin(
-            endpoint_id="primary", reply_event="visual_state_snapshot", revision=uuid4().hex, timeout=remaining
+            endpoint_id=movie_endpoint(view),
+            reply_event="visual_state_snapshot",
+            revision=uuid4().hex,
+            timeout=remaining,
         )
         movie._seek_request = request
         if reset_baseline:

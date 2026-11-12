@@ -8,6 +8,7 @@ from functools import partial
 from numbers import Real
 from uuid import uuid4
 
+from ._movie_endpoint import check_movie_revision, movie_endpoint
 from ._movie_seek import _apply_sample, _confirm_sample, _matching_pose, _visibility_commands, _visibility_owners
 from .frontend_requests import FrontendRequestError
 from .visual_capture import _camera, _capture_owned_call, live_capture_version, send_live_capture
@@ -48,6 +49,7 @@ def _matching_appearance(actual, expected):
 class _MoviePlayback:
     def __init__(self, movie, *, loop, start_time_ms):
         view = movie._view
+        check_movie_revision(movie)
         live_capture_version(view, required=2)
         if 1 not in view._frontend_capabilities.get("movie_preview", []):
             raise FrontendRequestError(reason="movie_preview_not_supported")
@@ -67,6 +69,7 @@ class _MoviePlayback:
         self.owners = _visibility_owners(view, self.timeline.visibility_targets())
         self.sample = self.timeline.evaluate(start_time_ms, tracked_visibility=True)
         self.id = uuid4().hex
+        self.endpoint = movie_endpoint(view)
         self.loop = loop
         self.revisions = _revisions(view)
         self.done = asyncio.get_running_loop().create_future()
@@ -90,7 +93,7 @@ class _MoviePlayback:
         if remaining <= 0:
             raise FrontendRequestError(reason="request_timeout")
         self.request = view._frontend_requests.begin(
-            endpoint_id="primary", reply_event="visual_state_snapshot", revision=self.id, timeout=remaining
+            endpoint_id=self.endpoint, reply_event="visual_state_snapshot", revision=self.id, timeout=remaining
         )
         initial = self.last is None
         _apply_sample(

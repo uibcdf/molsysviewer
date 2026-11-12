@@ -1,0 +1,264 @@
+{
+  "schema": "molsysviewer.movie_studio_receiving@1",
+  "date": "2026-11-12",
+  "completed_utc": "2026-11-12T21:29:29.689859+00:00",
+  "issue": "uibcdf/molsysviewer#320",
+  "status": "partial_source_received",
+  "scope": "Experimental Studio Movie authoring over the existing Python model. Native Chromium/Mol* with a persistent real Python authority and adapted widget transport; not actual Jupyter, native Qt, installed, hosted or human qualification.",
+  "sources": {
+    "molsysviewer_base": "2d393608884e7ff2c069bbaa590cfe7c11acbf57",
+    "working_tree_sha256": {
+      "molsysviewer/js/package.json": "f64b886ab7bb5f272269b022a06cf8022e7a56a103ff1df4a201d6c37ba5a099",
+      "molsysviewer/js/src/index.ts": "cfc3f96fb8337bddd9047c1f4c39f0b81cd5611dcc64231bb82bc81661379566",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "5e1c944b59c8ae400bff46b47387c073e036447b83e4ee73432af0f2d18cf495",
+      "molsysviewer/js/src/messages/movie-studio-intent.ts": "749186681403395a92de86de05c40372a2e5f98ae7cb3c3f0de19196d27b02af",
+      "molsysviewer/js/src/messages/popup-replay-log.ts": "5f23d0dc75364f39ee4d9b43443125fb1266c054ce7fccc415f306d4b88130ba",
+      "molsysviewer/js/src/messages/viewer-messages.ts": "6d30d93a08ea21f87b5032a19353ad62ffad0fddce20961f26df9f7b885b3a77",
+      "molsysviewer/js/src/ui/group-panel.ts": "21ab0f957e1c2e9269b84a5bc9d2057a1e142562d708fe77cfdcada5a3849ad0",
+      "molsysviewer/js/src/ui/panels/movie-panel.ts": "73d0fa5f43fd64503222a4731e9ba0e19f86e50ee949b4a46abf1361315c289e",
+      "molsysviewer/js/src/ui/panels/types.ts": "711dbca80fabcf863f084ca50c24ec7cd2244b6c53d95809eb636e2020686b45",
+      "molsysviewer/js/tests/e2e/canvas-popup-fixture.ts": "436efec086b6629622bbeb023fe526f019335c4acfc48b6835391896e8f7722f",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "0ed3bb3effdd4682a3b29ae072a61204b45009ea53da1a2a3b463fe4df346aa0",
+      "molsysviewer/js/tests/e2e/movie-studio-bridge.py": "632a99d2bcee2bc31c579f77a34da9f55421851077eaaba2efa6d2ef92928062",
+      "molsysviewer/js/tests/e2e/movie-studio.e2e.ts": "ad054ccc7eb0fbb5e74f353d582146f95e4f37859863c1e34e5cf61ec2398934",
+      "molsysviewer/js/tests/unit/index.test.ts": "09008ad92fb0fd666eb9d2cc0c1b07e9d7d0b37269847803b3d2e32776b48a19",
+      "molsysviewer/js/tests/unit/movie-studio.test.ts": "a6982c79379f3ab75a1624b41d5592f9bf7e813d67cf31779bb987e0d3fc746c",
+      "molsysviewer/viewer.js": "a52230d5160e46ebdb07ad60601354e6656a1cac7cf158df55e07a274707e892",
+      "molsysviewer/viewer/_movie_baseline.py": "0fa5dd5ee41eb170e1c4b55315446d4c5941b91f851452a6e15c4b2db5dbb1e6",
+      "molsysviewer/viewer/_movie_endpoint.py": "b0f469aa6ef670d0bafe81871d82a04c5dabd290ae30b699b4af8614aeaa1e68",
+      "molsysviewer/viewer/_movie_export.py": "3d15db0121c4ce2ba906570791cc23f80502855621e2051feda72ca2ff5c7d42",
+      "molsysviewer/viewer/_movie_playback.py": "295c41d927308385991d0ba6aeb8b67ceca001c0b3208866518ac59ca579adae",
+      "molsysviewer/viewer/_movie_seek.py": "91d67b4cf5058f3d438fdaf1beacecaf4cf8b4d9339ed34ab39f72f6a5aef313",
+      "molsysviewer/viewer/_movie_studio.py": "068ce71b19830d2a1aface0609847058c8c241309b4c9f106a8bddeb5788556f",
+      "molsysviewer/viewer/core.py": "b0c156eafa93db867b417e0b41945485f595243d6b2345ba9cd0d536c444082f",
+      "molsysviewer/viewer/movie.py": "e50feb1d4178c840ee810d1631ad36dc2c13834ac8e44415d49785aef2bd4d01",
+      "molsysviewer/viewer/panel_actions/__init__.py": "b59a74002a588c30c4a7599e96f6823cc52e8bb8cfc5b0b2607cba1400ec7cd7",
+      "tests/test_movie_studio.py": "004ff671938d785cbaff78d768e85349fac34e5daf47b33bc1151fc9eb329437"
+    },
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "molsysmt_native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "pyunitwizard": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+    "route_notice": "Frozen owner/support sources in the explicit Python 3.14 environment; reported development versions do not identify public artifacts."
+  },
+  "results": {
+    "canonical_js": {
+      "passed": 466,
+      "skipped": 0
+    },
+    "strict_types_and_runtime_harness_build": true,
+    "python": {
+      "broad_regression": {
+        "profile": "591",
+        "passed": 496,
+        "skipped": 5,
+        "warnings": 555
+      },
+      "final_changed_adapter": {
+        "profile": "598",
+        "passed": 26,
+        "skipped": 0,
+        "warnings": 26
+      },
+      "warning_kind": "LegacyH5MSMWarning from retained 0.4 fixtures",
+      "scope_notice": "591 predates the final same-name target/property rejection; 598 receives that changed owner and its regressions. Counts overlap and are not summed."
+    },
+    "documentation": {
+      "profile": "595",
+      "passed": 450,
+      "index_check": "passed",
+      "full_sphinx_build": "not executed in this tranche"
+    },
+    "ruff_check_and_format": "passed",
+    "native_editor": "Baseline, typed keys, real Python concurrent edit with kept-draft review, seek, popup-owned camera, nested detached preview/pause and 320x180 PNG ZIP with recipe/2 frames; molecular source and coordinates unchanged.",
+    "native_regression": [
+      "movie-playback",
+      "movie-seek",
+      "movie-appearance",
+      "movie-export",
+      "movie-legacy"
+    ],
+    "regression_input_notice": "592 precedes the final UI draft/discrete-control refinement and private adapter target-collision rejection. All changed shared evaluator/core Python owners match final bytes; the final UI, adapter and rebuilt runtime are separately received in 596/597/598.",
+    "media_regression": "Actual 1280x720 MP4, independent frame-content checks, cancellation/late/invalid PNG preservation and restored sessions; original 15-second frame timeout retained."
+  },
+  "profiles": {
+    "build-596-movie-studio": {
+      "native_exit": 0,
+      "seconds": 25.237150978064165,
+      "selected_inputs": 9902,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 577.2,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 597159936,
+      "evidence_sha256": {
+        "invocation.json": "4c2d1c4017970be385ac0844b75eebff8917dd69ecd1b25b42597198591af3e2",
+        "inputs-before.json": "6e21cd9f7c172de133a0b00a1601ec46000eb4254a72b0f9d1f1a251774c4311",
+        "inputs-after.json": "6e21cd9f7c172de133a0b00a1601ec46000eb4254a72b0f9d1f1a251774c4311",
+        "stdout.log": "adb5de93279e02d025cb2cc9d622a1afa275ee135e35a87253ef0ac4bffb028c"
+      }
+    },
+    "movie-studio-597-native": {
+      "native_exit": 0,
+      "seconds": 44.61175067699514,
+      "selected_inputs": 9904,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2394.1,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1422589952,
+      "evidence_sha256": {
+        "invocation.json": "6ba2fef806aa8b0c8aa33a53a541c49548354a8e62407d16234d1f1313d889e2",
+        "inputs-before.json": "2049126525648a00dc6d4e474508050a6a46d880ff77132ac5e75ea508989867",
+        "inputs-after.json": "2049126525648a00dc6d4e474508050a6a46d880ff77132ac5e75ea508989867",
+        "stdout.log": "21129bfae67388f1e5a4b662a2d1e7e2eba855ef8c88daf451baa4bc1497c2c4"
+      }
+    },
+    "movie-studio-591-backend": {
+      "native_exit": 0,
+      "seconds": 134.76058432995342,
+      "selected_inputs": 9903,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 627.7,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 540983296,
+      "evidence_sha256": {
+        "invocation.json": "a992276323c867c4859de01ce6b8e59b45d211e263a1fe403b6c95c4452ba0be",
+        "inputs-before.json": "5a153750913fc633acbb94c752db9f1da3fc5a8b00608ce11224f380fcdadcf7",
+        "inputs-after.json": "5a153750913fc633acbb94c752db9f1da3fc5a8b00608ce11224f380fcdadcf7",
+        "stdout.log": "14e5d233b8578e32160732d015fb700ae9a319745650bbe183b05628bec1f939"
+      }
+    },
+    "movie-studio-592-browser-regression": {
+      "native_exit": 0,
+      "seconds": 230.9770113718696,
+      "selected_inputs": 9903,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2464.4,
+      "cleanup": {
+        "tracked": 73,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1469267968,
+      "evidence_sha256": {
+        "invocation.json": "177a18c28e484e3e34c4218f5020540a0db04f119fdd2cd89680ae24c1ad1484",
+        "inputs-before.json": "f4c452815f8df2c9602d74ac34c0975aeda47aae7274cd817c949073956d116b",
+        "inputs-after.json": "f4c452815f8df2c9602d74ac34c0975aeda47aae7274cd817c949073956d116b",
+        "stdout.log": "044ca0f17b70e15c8288c34e3e36596cdc39e8d2092fdee8e091e0b919db37a3"
+      }
+    },
+    "movie-studio-595-docs": {
+      "native_exit": 0,
+      "seconds": 9.49223665194586,
+      "selected_inputs": 9904,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 410.5,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 255422464,
+      "evidence_sha256": {
+        "invocation.json": "268434241efd295ec48e8eadd442e2e0a8ae955f3848360e3cd1686ebaa3145c",
+        "inputs-before.json": "30b9b81ce3b4413d64c428fac58953d5daa4474f9555350611e4d438f8ae61a1",
+        "inputs-after.json": "30b9b81ce3b4413d64c428fac58953d5daa4474f9555350611e4d438f8ae61a1",
+        "stdout.log": "225386daf91cfd2cb82ed2820122f5f3822a444492826737f34bad66d239babf"
+      }
+    },
+    "movie-studio-598-targeted": {
+      "native_exit": 0,
+      "seconds": 15.965348004130647,
+      "selected_inputs": 9904,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 524.3,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 410648576,
+      "evidence_sha256": {
+        "invocation.json": "2291c305d7ad2e82626269d4451419308d0cef841bf13b8516beec1d7ca21b69",
+        "inputs-before.json": "2049126525648a00dc6d4e474508050a6a46d880ff77132ac5e75ea508989867",
+        "inputs-after.json": "2049126525648a00dc6d4e474508050a6a46d880ff77132ac5e75ea508989867",
+        "stdout.log": "fae569716fdb2069d666777a41b75d219a472c0369703d33d3ff2cd2b0d97c9a"
+      }
+    }
+  },
+  "native_editor_artifact_sha256": {
+    "movie-studio-origin.json": "246a986e4c5d334de6f5ba139571cf6235793cccf7bcf5237ef2fe58394d58b1",
+    "movie-studio-editor.png": "69a46a707a846411ec110791b272e19f61f725e45f8a57d05e3cc33e536fcd55",
+    "movie-studio-export.png": "69797c0244d691278dbbf6a0fdd3ae2fe23a10af4c374628cd1690001f85efff"
+  },
+  "retained_failed_attempts": {
+    "movie-studio-586-native": "Missing explicit accessible name on select; corrected in the UI.",
+    "movie-studio-588-native": "Test observed only first-level popup controllers; nested controller observation corrected without substituting a renderer or verdict."
+  },
+  "remaining": [
+    "M2 actual Jupyter/Qt integration and full authoring/accessibility review",
+    "M4 portable interactive Movie and accepted overlay composition",
+    "M5 complete pocket/ligand/interactions/labels story and save/reopen/media/web agreement",
+    "Hosted, exact installed and postponed human acceptance"
+  ],
+  "human_files_unchanged": true,
+  "audit_counters": {
+    "source_delivered": 38,
+    "final_accepted": 1,
+    "original_total": 46
+  },
+  "publication": "Paused: no candidate, tag, package, release, promotion or 1.0 declaration.",
+  "private_evidence_root": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109"
+}

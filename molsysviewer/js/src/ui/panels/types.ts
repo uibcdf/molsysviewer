@@ -17,6 +17,9 @@
  * dispatcher and the Python `core.py` handlers.
  */
 export type PanelAction =
+    | "movie_inspect" | "movie_start" | "movie_set_duration" | "movie_clear" | "movie_set_key" | "movie_capture_key"
+    | "movie_remove_track" | "movie_remove_key" | "movie_seek" | "movie_play" | "movie_pause" | "movie_reset"
+    | "movie_export" | "movie_cancel"
     | "sync_system_edits"
     | "focus_annotation"
     | "save_work_file"

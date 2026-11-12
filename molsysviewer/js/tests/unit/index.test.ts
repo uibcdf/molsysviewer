@@ -52,3 +52,4 @@ import "./runtime-action-manifest.test";
 import "./coverage-dependencies.test";
 
 import "./local-ui-model.test";
+import "./movie-studio.test";

@@ -1,6 +1,7 @@
 import type { InteractionFrame, InteractionSeries, InteractionSummariesMessage, InteractionInspection } from "../managers/handlers/interaction-handlers";
 import type { BoxDisplayProjection } from "./box-display";
 import type { PlaybackSnapshot } from "./visual-state-snapshot";
+import type { MoviePanelState } from "../ui/panels/movie-panel";
 // src/messages/viewer-messages.ts
 
 import { PocketSurfaceOptions } from "../shapes/pocket-surface";
@@ -938,6 +939,7 @@ export type PartialCoordinatesUpdateMessage = {
 };
 
 export type KnownViewerMessage =
+    MoviePanelState |
     PartialCoordinatesUpdateMessage |
     SetAtomColorsMessage |
     SystemSyncStateMessage |

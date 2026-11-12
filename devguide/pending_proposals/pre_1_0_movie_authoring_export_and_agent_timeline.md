@@ -215,7 +215,9 @@ explicit scientific associations, region-definition checks, private-ticket
 acceptance and retained session/media provenance. The
 [timeline contract](../movie_timeline_design.md#reviewed-version-2-imports)
 owns those rules. The admitted legacy profile below is now source-received.
-Richer renderer channels, Studio authoring,
+Studio has its first experimental Timeline/Preview/Export editor over the
+same Python Movie owner, including canvas-owned popup capture and detached
+Studio preview/export. Richer renderer channels, complete authoring acceptance,
 portable web playback and the complete integrated story remain open. The
 receiving entries below retain their original source/date scope; earlier
 remapping/appearance gaps are not a claim about current implementation.
@@ -380,6 +382,30 @@ one private per-view ticket, stale/edited rejection, no late publication after
 cancellation and molecular/close disposal. #360 routes the screenshot through
 the native task manager's declared isolated-context API. Richer renderer
 catalogues, target mapping/migration and M2/M4/M5 work remain open.
+
+### Studio authoring tranche — 2026-11-12
+
+The [M2 design](../movie_timeline_design.md#studio-authoring-first-m2-slice)
+has its first [source receiving](../movie_studio_receiving_20261112.json).
+Local drafts, explicit typed keys,
+bounded editor pages, revision checks, per-canvas live jobs, pause/cancel and
+confirmed replacement/reset reuse the existing Movie API. The primary Python
+API remains headless and composable; ordinary live Python calls still address
+the primary canvas. The graphical adapter is private.
+
+Real Chromium/Mol* with the persistent Python authority receives baseline
+capture, typed structure/region keys, draft preservation, arbitrary-time seek,
+canvas-popup camera capture and nested detached-Studio preview/pause/PNG export.
+A genuine Python edit gates the kept draft until explicit review. The final
+UI build passes 466 JS cases; the broader Python run passes 496 controls with
+five explicit skips, followed by the final adapter's targeted regressions.
+Five existing native Movie suites pass, including decoded 720p MP4 and sessions;
+their unchanged Python owners and pre-final-UI byte scope remain in the receipt.
+That bridge adapts widget transport; it is not an actual Jupyter kernel or
+native Qt acceptance. Full authoring/accessibility review, the live Qt loop,
+portable web playback, overlay composition and integrated scientific story
+remain open. Do not mark M2 or
+#320 complete from this slice. Human review and publication remain paused.
 
 Post-1.0 agent planning translates instructions into this same inspectable,
 validated and editable plan, with preview and export through the same owner.

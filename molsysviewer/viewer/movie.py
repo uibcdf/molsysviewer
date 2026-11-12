@@ -55,6 +55,8 @@ class MovieManager:
         self._export_job = None
         self._rebase_capture = None
         self._import_review = None
+        self._studio_revision = 0
+        self._studio = None
 
     # ── Timeline construction ─────────────────────────────────────────────
 
@@ -110,6 +112,7 @@ class MovieManager:
         if layer_visibility is not None:
             kf["layer_visibility"] = {str(k): bool(v) for k, v in layer_visibility.items()}
         self._keyframes.append(kf)
+        self._invalidate_observation()
 
     @signal()
     @digest()
@@ -241,6 +244,7 @@ class MovieManager:
                 )
             kf: dict = {"time_ms": kf_time, "easing": easing, "camera": camera_kf}
             self._keyframes.append(kf)
+        self._invalidate_observation()
 
     @signal()
     @digest()
@@ -324,6 +328,7 @@ class MovieManager:
                 "structure_index": structure_index,
             }
             self._keyframes.append(kf)
+        self._invalidate_observation()
 
     @signal()
     @digest()
@@ -939,6 +944,16 @@ class MovieManager:
         """Release a stale live review, including its reference to molecular data."""
         self._rebase_capture = None
         self._import_review = None
+        self._studio_revision += 1
+        if self._studio is not None:
+            self._studio.publish()
+
+    def _studio_owner(self):
+        if self._studio is None:
+            from ._movie_studio import MovieStudio
+
+            self._studio = MovieStudio(self)
+        return self._studio
 
     def _session_recipe(self, state):
         if self._timeline is None:

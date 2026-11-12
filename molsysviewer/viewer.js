@@ -60346,7 +60346,7 @@ var Sequence;
           }
         }
       }
-      const labels = [];
+      const labels2 = [];
       for (let i = 0, il = idx; i < il; ++i) {
         const mh = microHet.get(seqIds[i]);
         if (mh) {
@@ -60354,16 +60354,16 @@ var Sequence;
             const c8 = codeFromName(id);
             return c8 === "X" ? id : c8;
           });
-          labels[i] = `(${l.join("|")})`;
+          labels2[i] = `(${l.join("|")})`;
         } else {
-          labels[i] = codes[i] === "X" ? compIds[i] : codes[i];
+          labels2[i] = codes[i] === "X" ? compIds[i] : codes[i];
         }
       }
       this.length = idx;
       this.code = Column.ofStringArray(codes);
       this.compId = Column.ofStringArray(compIds);
       this.seqId = Column.ofIntArray(seqIds);
-      this.label = Column.ofStringArray(labels);
+      this.label = Column.ofStringArray(labels2);
       this.microHet = microHet;
       this.indexMap = indexMap;
     }
@@ -60899,8 +60899,8 @@ var ArrayTrajectory = class {
 
 // node_modules/molstar/lib/mol-model-formats/structure/basic/parser.js
 async function createModels(data, format, ctx) {
-  const properties5 = getCommonProperties(data, format);
-  const models = data.ihm_model_list._rowCount > 0 ? await readIntegrative(ctx, data, properties5, format) : await readStandard(ctx, data, properties5, format);
+  const properties6 = getCommonProperties(data, format);
+  const models = data.ihm_model_list._rowCount > 0 ? await readIntegrative(ctx, data, properties6, format) : await readStandard(ctx, data, properties6, format);
   for (let i = 0; i < models.length; i++) {
     Model.TrajectoryInfo.set(models[i], { index: i, size: models.length });
   }
@@ -60913,8 +60913,8 @@ function getCommonProperties(data, format) {
     saccharideComponentMap: getSaccharideComponentMap(data)
   };
 }
-function createStandardModel(data, atom_site, sourceIndex, entities, properties5, format, previous) {
-  const atomic = getAtomicHierarchyAndConformation(atom_site, sourceIndex, entities, properties5.chemicalComponentMap, format, previous);
+function createStandardModel(data, atom_site, sourceIndex, entities, properties6, format, previous) {
+  const atomic = getAtomicHierarchyAndConformation(atom_site, sourceIndex, entities, properties6.chemicalComponentMap, format, previous);
   const modelNum = atom_site.pdbx_PDB_model_num.value(0);
   if (previous && atomic.sameAsPrevious) {
     return {
@@ -60952,7 +60952,7 @@ function createStandardModel(data, atom_site, sourceIndex, entities, properties5
     coarseHierarchy: coarse3.hierarchy,
     coarseConformation: coarse3.conformation,
     properties: {
-      ...properties5,
+      ...properties6,
       structAsymMap
     },
     customProperties: new CustomProperties(),
@@ -60960,9 +60960,9 @@ function createStandardModel(data, atom_site, sourceIndex, entities, properties5
     _dynamicPropertyData: /* @__PURE__ */ Object.create(null)
   };
 }
-function createIntegrativeModel(data, ihm, properties5, format) {
-  const atomic = getAtomicHierarchyAndConformation(ihm.atom_site, ihm.atom_site_sourceIndex, ihm.entities, properties5.chemicalComponentMap, format);
-  const coarse3 = getCoarse(ihm, properties5.chemicalComponentMap);
+function createIntegrativeModel(data, ihm, properties6, format) {
+  const atomic = getAtomicHierarchyAndConformation(ihm.atom_site, ihm.atom_site_sourceIndex, ihm.entities, properties6.chemicalComponentMap, format);
+  const coarse3 = getCoarse(ihm, properties6.chemicalComponentMap);
   const sequence = getSequence(data, ihm.entities, atomic.hierarchy, coarse3.hierarchy);
   const atomicRanges = getAtomicRanges(atomic.hierarchy, ihm.entities, atomic.conformation, sequence);
   const entry = data.entry.id.valueKind(0) === Column.ValueKinds.Present ? data.entry.id.value(0) : format.name;
@@ -60993,7 +60993,7 @@ function createIntegrativeModel(data, ihm, properties5, format) {
     coarseHierarchy: coarse3.hierarchy,
     coarseConformation: coarse3.conformation,
     properties: {
-      ...properties5,
+      ...properties6,
       structAsymMap
     },
     customProperties: new CustomProperties(),
@@ -61010,7 +61010,7 @@ function findModelEnd(num, startIndex) {
     endIndex++;
   return endIndex;
 }
-async function readStandard(ctx, data, properties5, format) {
+async function readStandard(ctx, data, properties6, format) {
   const models = [];
   if (data.atom_site) {
     const atomCount2 = data.atom_site.id.rowCount;
@@ -61019,7 +61019,7 @@ async function readStandard(ctx, data, properties5, format) {
     while (modelStart < atomCount2) {
       const modelEnd = findModelEnd(data.atom_site.pdbx_PDB_model_num, modelStart);
       const { atom_site, sourceIndex } = await sortAtomSite(ctx, data.atom_site, modelStart, modelEnd);
-      const model = createStandardModel(data, atom_site, sourceIndex, entities, properties5, format, models.length > 0 ? models[models.length - 1] : void 0);
+      const model = createStandardModel(data, atom_site, sourceIndex, entities, properties6, format, models.length > 0 ? models[models.length - 1] : void 0);
       models.push(model);
       modelStart = modelEnd;
     }
@@ -61042,7 +61042,7 @@ function splitTable(table, col) {
   }
   return ret;
 }
-async function readIntegrative(ctx, data, properties5, format) {
+async function readIntegrative(ctx, data, properties6, format) {
   const entities = getEntityData(data);
   const atom_sites_modelColumn = data.atom_site.ihm_model_id.isDefined ? data.atom_site.ihm_model_id : data.atom_site.pdbx_PDB_model_num;
   const atom_sites = splitTable(data.atom_site, atom_sites_modelColumn);
@@ -61073,7 +61073,7 @@ async function readIntegrative(ctx, data, properties5, format) {
         ihm_sphere_obj_site: sphere_sites.has(id) ? sphere_sites.get(id).table : Table.window(data.ihm_sphere_obj_site, data.ihm_sphere_obj_site._schema, 0, 0),
         ihm_gaussian_obj_site: gauss_sites.has(id) ? gauss_sites.get(id).table : Table.window(data.ihm_gaussian_obj_site, data.ihm_gaussian_obj_site._schema, 0, 0)
       };
-      const model = createIntegrativeModel(data, ihm, properties5, format);
+      const model = createIntegrativeModel(data, ihm, properties6, format);
       models.push(model);
     }
   }
@@ -75287,8 +75287,8 @@ function getColumnSchema(type3) {
 }
 function parseTableElement(state, spec) {
   const { elements, tokenizer } = state;
-  const { count: count4, properties: properties5 } = spec;
-  const propertyCount = properties5.length;
+  const { count: count4, properties: properties6 } = spec;
+  const propertyCount = properties6.length;
   const propertyNames = [];
   const propertyTypes = [];
   const propertyTokens = [];
@@ -75306,7 +75306,7 @@ function parseTableElement(state, spec) {
     }
   }
   for (let i = 0, il = propertyCount; i < il; ++i) {
-    const { type: type3, name } = properties5[i];
+    const { type: type3, name } = properties6[i];
     const column = TokenColumn(propertyTokens[i], getColumnSchema(type3));
     propertyNames.push(name);
     propertyTypes.push(type3);
@@ -80451,10 +80451,10 @@ function getNamesRegex(name, abbr) {
   const names = (abbr ? [name].concat(abbr) : [name]).sort(strLenSortFn).map(escapeRegExp).join("|");
   return RegExp(`${names}`, "i");
 }
-function getPropertyRules(properties5) {
+function getPropertyRules(properties6) {
   const propertiesDict2 = {};
-  Object.keys(properties5).sort(strLenSortFn).forEach((name) => {
-    const ps = properties5[name];
+  Object.keys(properties6).sort(strLenSortFn).forEach((name) => {
+    const ps = properties6[name];
     const errorFn = makeError(`property '${name}' not supported`);
     const rule = MonadicParser.regexp(ps.regex).map((x) => {
       if (ps.isUnsupported)
@@ -80467,10 +80467,10 @@ function getPropertyRules(properties5) {
   });
   return propertiesDict2;
 }
-function getNamedPropertyRules(properties5) {
+function getNamedPropertyRules(properties6) {
   const namedPropertiesList = [];
-  Object.keys(properties5).sort(strLenSortFn).forEach((name) => {
-    const ps = properties5[name];
+  Object.keys(properties6).sort(strLenSortFn).forEach((name) => {
+    const ps = properties6[name];
     const errorFn = makeError(`property '${name}' not supported`);
     const rule = MonadicParser.regexp(ps.regex).map((x) => {
       if (ps.isUnsupported)
@@ -80513,10 +80513,10 @@ function getFunctionRules(functions2, argRule) {
   });
   return functionsList;
 }
-function getPropertyNameRules(properties5, lookahead) {
+function getPropertyNameRules(properties6, lookahead) {
   const list3 = [];
-  Object.keys(properties5).sort(strLenSortFn).forEach((name) => {
-    const ps = properties5[name];
+  Object.keys(properties6).sort(strLenSortFn).forEach((name) => {
+    const ps = properties6[name];
     const errorFn = makeError(`property '${name}' not supported`);
     const rule = MonadicParser.regexp(getNamesRegex(name, ps.abbr)).lookahead(lookahead).map(() => {
       if (ps.isUnsupported)
@@ -80527,12 +80527,12 @@ function getPropertyNameRules(properties5, lookahead) {
   });
   return list3;
 }
-function getReservedWords(properties5, keywords4, operators4, functions2) {
+function getReservedWords(properties6, keywords4, operators4, functions2) {
   const w = [];
-  for (const name in properties5) {
+  for (const name in properties6) {
     w.push(name);
-    if (properties5[name].abbr)
-      w.push(...properties5[name].abbr);
+    if (properties6[name].abbr)
+      w.push(...properties6[name].abbr);
   }
   for (const name in keywords4) {
     w.push(name);
@@ -86743,10 +86743,10 @@ function handleMolFile(tokenizer) {
   };
   const atoms2 = molIsV3 ? handleAtomsV3(tokenizer, atomCount2) : handleAtoms4(tokenizer, atomCount2);
   const bonds = molIsV3 ? handleBondsV3(tokenizer, bondCount2) : handleBonds3(tokenizer, bondCount2);
-  const properties5 = molIsV3 ? { formalCharges: nullFormalCharges } : handlePropertiesBlock(tokenizer);
+  const properties6 = molIsV3 ? { formalCharges: nullFormalCharges } : handlePropertiesBlock(tokenizer);
   const dataItems = handleDataItems(tokenizer);
   return {
-    molFile: { title, program, comment, atoms: atoms2, bonds, ...properties5 },
+    molFile: { title, program, comment, atoms: atoms2, bonds, ...properties6 },
     dataItems
   };
 }
@@ -89141,10 +89141,10 @@ var CustomModelProperties = PluginStateTransform.BuiltIn({
 });
 async function attachModelProps(model, ctx, taskCtx, params) {
   const propertyCtx = { runtime: taskCtx, assetManager: ctx.managers.asset, errorContext: ctx.errorContext };
-  const { autoAttach, properties: properties5 } = params;
-  for (const name of Object.keys(properties5)) {
+  const { autoAttach, properties: properties6 } = params;
+  for (const name of Object.keys(properties6)) {
     const property2 = ctx.customModelProperties.get(name);
-    const props = properties5[name];
+    const props = properties6[name];
     if (autoAttach.includes(name) || property2.isHidden) {
       try {
         await property2.attach(propertyCtx, model, props, true);
@@ -89195,10 +89195,10 @@ var CustomStructureProperties = PluginStateTransform.BuiltIn({
 });
 async function attachStructureProps(structure, ctx, taskCtx, params) {
   const propertyCtx = { runtime: taskCtx, assetManager: ctx.managers.asset, errorContext: ctx.errorContext };
-  const { autoAttach, properties: properties5 } = params;
-  for (const name of Object.keys(properties5)) {
+  const { autoAttach, properties: properties6 } = params;
+  for (const name of Object.keys(properties6)) {
     const property2 = ctx.customStructureProperties.get(name);
-    const props = properties5[name];
+    const props = properties6[name];
     if (autoAttach.includes(name) || property2.isHidden) {
       try {
         await property2.attach(propertyCtx, structure, props, true);
@@ -93208,15 +93208,15 @@ function _bundleLabel(bundle, options) {
       const { unit: unit2, indices: indices3 } = l.elements[0];
       return element_exports.Location.create(l.structure, unit2, unit2.elements[OrderedSet2.start(indices3)]);
     });
-    const labels = locations.map((l) => _elementLabel(l, granularity, hidePrefix, reverse3 || condensed));
+    const labels2 = locations.map((l) => _elementLabel(l, granularity, hidePrefix, reverse3 || condensed));
     if (condensed) {
-      return labels.map((l) => l[0].replace(/\[.*\]/g, "").trim()).filter((l) => !!l).join(" \u2014 ");
+      return labels2.map((l) => l[0].replace(/\[.*\]/g, "").trim()).filter((l) => !!l).join(" \u2014 ");
     }
     let offset4 = 0;
-    for (let i = 0, il = Math.min(...labels.map((l) => l.length)) - 1; i < il; ++i) {
+    for (let i = 0, il = Math.min(...labels2.map((l) => l.length)) - 1; i < il; ++i) {
       let areIdentical = true;
-      for (let j = 1, jl = labels.length; j < jl; ++j) {
-        if (labels[0][i] !== labels[j][i]) {
+      for (let j = 1, jl = labels2.length; j < jl; ++j) {
+        if (labels2[0][i] !== labels2[j][i]) {
           areIdentical = false;
           break;
         }
@@ -93227,17 +93227,17 @@ function _bundleLabel(bundle, options) {
         break;
     }
     if (offset4 > 0) {
-      const offsetLabels = [labels[0].join(" | ")];
-      for (let j = 1, jl = labels.length; j < jl; ++j) {
-        offsetLabels.push(labels[j].slice(offset4).filter((l) => !!l).join(" | "));
+      const offsetLabels = [labels2[0].join(" | ")];
+      for (let j = 1, jl = labels2.length; j < jl; ++j) {
+        offsetLabels.push(labels2[j].slice(offset4).filter((l) => !!l).join(" | "));
       }
       return offsetLabels.join(" \u2014 ");
     } else {
-      return labels.map((l) => l.filter((l2) => !!l2).join(" | ")).filter((l) => !!l).join("</br>");
+      return labels2.map((l) => l.filter((l2) => !!l2).join(" | ")).filter((l) => !!l).join("</br>");
     }
   } else {
-    const labels = bundle.loci.map((l) => lociLabel(l, options));
-    return labels.filter((l) => !!l).join(condensed ? " \u2014 " : "</br>");
+    const labels2 = bundle.loci.map((l) => lociLabel(l, options));
+    return labels2.filter((l) => !!l).join(condensed ? " \u2014 " : "</br>");
   }
 }
 function elementLabel(location2, options = {}) {
@@ -109432,9 +109432,9 @@ var Canvas3D;
       commitQueueSize,
       reprCount,
       resized,
-      setProps: (properties5, doNotRequestDraw = false) => {
+      setProps: (properties6, doNotRequestDraw = false) => {
         var _a2, _b2, _c, _d, _e, _f, _g;
-        const props2 = typeof properties5 === "function" ? produce(getProps(), properties5) : properties5;
+        const props2 = typeof properties6 === "function" ? produce(getProps(), properties6) : properties6;
         if (props2.sceneRadiusFactor !== void 0) {
           p6.sceneRadiusFactor = props2.sceneRadiusFactor;
           camera2.setState({ radiusMax: getSceneRadius() }, 0);
@@ -118007,7 +118007,7 @@ var Interactions2 = PluginBehavior.create({
             case "element-loci":
               if (loci.elements.length === 0)
                 return void 0;
-              const labels = [];
+              const labels2 = [];
               const structures = this.getStructures(loci.structure);
               for (const s of structures) {
                 const interactions = this.provider.get(s).value;
@@ -118041,9 +118041,9 @@ var Interactions2 = PluginBehavior.create({
                 if (groupLabels.length)
                   label2.push(`<small>Groups</small> ${groupLabels.join(", ")}`);
                 if (label2.length)
-                  labels.push(`Interaction Feature: ${label2.join(" | ")}`);
+                  labels2.push(`Interaction Feature: ${label2.join(" | ")}`);
               }
-              return labels.length ? labels.join("<br/>") : void 0;
+              return labels2.length ? labels2.join("<br/>") : void 0;
             default:
               return void 0;
           }
@@ -118134,7 +118134,7 @@ var ValenceModel = PluginBehavior.create({
             case "element-loci":
               if (loci.elements.length === 0)
                 return void 0;
-              const labels = [];
+              const labels2 = [];
               const structures = this.getStructures(loci.structure);
               for (const s of structures) {
                 const valenceModel = this.provider.get(s).value;
@@ -118154,9 +118154,9 @@ var ValenceModel = PluginBehavior.create({
                 const idealGeometry = vm.idealGeometry[idx];
                 const implicitH = vm.implicitH[idx];
                 const totalH = vm.totalH[idx];
-                labels.push(`Valence Model: <small>Charge</small> ${charge} | <small>Ideal Geometry</small> ${geometryLabel(idealGeometry)} | <small>Implicit H</small> ${implicitH} | <small>Total H</small> ${totalH}`);
+                labels2.push(`Valence Model: <small>Charge</small> ${charge} | <small>Ideal Geometry</small> ${geometryLabel(idealGeometry)} | <small>Implicit H</small> ${implicitH} | <small>Total H</small> ${totalH}`);
               }
-              return labels.length ? labels.join("<br/>") : void 0;
+              return labels2.length ? labels2.join("<br/>") : void 0;
             default:
               return void 0;
           }
@@ -124270,14 +124270,14 @@ var StructureMeasurementManager = class extends StatefulPluginComponent {
     return ret;
   }
   sync() {
-    const labels = [];
+    const labels2 = [];
     for (const cell of this.getTransforms(StateTransforms.Representation.StructureSelectionsLabel3D)) {
       const tags = cell.obj["tags"];
       if (!tags || !tags.includes(MeasurementOrderLabelTag))
-        labels.push(cell);
+        labels2.push(cell);
     }
     const updated = this.updateState({
-      labels,
+      labels: labels2,
       distances: this.getTransforms(StateTransforms.Representation.StructureSelectionsDistance3D),
       angles: this.getTransforms(StateTransforms.Representation.StructureSelectionsAngle3D),
       dihedrals: this.getTransforms(StateTransforms.Representation.StructureSelectionsDihedral3D),
@@ -140491,9 +140491,9 @@ var HelpOverlay = class {
       zIndex: "40",
       pointerEvents: "auto"
     });
-    const card8 = document.createElement("div");
-    this.card = card8;
-    card8.className = "molsysviewer-help-card";
+    const card9 = document.createElement("div");
+    this.card = card9;
+    card9.className = "molsysviewer-help-card";
     const header2 = document.createElement("div");
     header2.className = "molsysviewer-help-header";
     const title = document.createElement("span");
@@ -140508,13 +140508,13 @@ var HelpOverlay = class {
     closeBtn.addEventListener("click", () => this.hide());
     header2.appendChild(title);
     header2.appendChild(closeBtn);
-    card8.appendChild(header2);
+    card9.appendChild(header2);
     const grid = document.createElement("div");
     this.grid = grid;
     grid.className = "molsysviewer-help-grid";
     grid.appendChild(makeSection("Mouse", sections.mouse));
     grid.appendChild(makeSection("Keyboard", sections.keyboard));
-    card8.appendChild(grid);
+    card9.appendChild(grid);
     this.hostShortcuts = document.createElement("div");
     this.hostShortcuts.setAttribute("data-molsysviewer-host-shortcuts", "true");
     this.hostShortcuts.hidden = true;
@@ -140522,7 +140522,7 @@ var HelpOverlay = class {
     this.root.addEventListener("pointerdown", (ev) => {
       if (ev.target === this.root) this.hide();
     });
-    this.root.appendChild(card8);
+    this.root.appendChild(card9);
     this.host.appendChild(this.root);
     if (typeof ResizeObserver !== "undefined") {
       this.resizeObserver = new ResizeObserver(this.resize);
@@ -145248,13 +145248,13 @@ function buildTrianglesFromVertices(options) {
   const count4 = normalized2.length;
   if (count4 === 0) return [];
   const colors = expandToList(options.colors, count4, Number, ColorNames.orange);
-  const labels = expandOptionalToList(options.labels, count4, String);
+  const labels2 = expandOptionalToList(options.labels, count4, String);
   const alphas = expandOptionalToList(options.alphas, count4, Number);
   return normalized2.map((verts, idx) => ({
     vertices: verts,
     color: colors[idx],
     alpha: alphas[idx],
-    label: labels[idx]
+    label: labels2[idx]
   }));
 }
 function buildTrianglesFromAtoms(structure, options) {
@@ -145265,7 +145265,7 @@ function buildTrianglesFromAtoms(structure, options) {
   const b8 = Vec3();
   const c8 = Vec3();
   const colors = expandToList(options.colors, triplets.length, Number, ColorNames.orange);
-  const labels = expandOptionalToList(options.labels, triplets.length, String);
+  const labels2 = expandOptionalToList(options.labels, triplets.length, String);
   const alphas = expandOptionalToList(options.alphas, triplets.length, Number);
   const triangles = [];
   for (let i = 0; i < triplets.length; i++) {
@@ -145292,7 +145292,7 @@ function buildTrianglesFromAtoms(structure, options) {
       ],
       color: colors[i],
       alpha: alphas[i],
-      label: labels[i]
+      label: labels2[i]
     });
   }
   return triangles;
@@ -145687,12 +145687,12 @@ function buildTetrahedraFromCoords(options) {
   if (count4 === 0) return [];
   const colors = expandToList(options.colors, count4, Number, ColorNames.orange);
   const alphas = expandToList(options.alphas, count4, (v4) => Math.max(0, Math.min(1, Number(v4))), 0.6);
-  const labels = expandOptionalToList(options.labels, count4, String);
+  const labels2 = expandOptionalToList(options.labels, count4, String);
   return normalized2.map((verts, idx) => ({
     vertices: verts,
     color: colors[idx],
     alpha: alphas[idx],
-    label: labels[idx]
+    label: labels2[idx]
   }));
 }
 function normalizeQuad(quad) {
@@ -145709,7 +145709,7 @@ function buildTetrahedraFromAtoms(structure, options) {
   const d5 = Vec3();
   const colors = expandToList(options.colors, quads.length, Number, ColorNames.orange);
   const alphas = expandToList(options.alphas, quads.length, (v4) => Math.max(0, Math.min(1, Number(v4))), 0.6);
-  const labels = expandOptionalToList(options.labels, quads.length, String);
+  const labels2 = expandOptionalToList(options.labels, quads.length, String);
   const tetrahedra = [];
   for (let i = 0; i < quads.length; i++) {
     const quad = quads[i];
@@ -145734,7 +145734,7 @@ function buildTetrahedraFromAtoms(structure, options) {
       ],
       color: colors[i],
       alpha: alphas[i],
-      label: labels[i],
+      label: labels2[i],
       atomIndices: [quad[0], quad[1], quad[2], quad[3]]
     });
   }
@@ -147979,10 +147979,10 @@ var SceneHandlers = class {
     const options = msg.options;
     const shapes = options?.shapes ?? true;
     const styles = options?.styles ?? true;
-    const labels = options?.labels ?? false;
+    const labels2 = options?.labels ?? false;
     if (shapes) await this.callbacks.clearShapes();
     if (styles) await this.resetStructureDecorations();
-    if (labels) await this.callbacks.clearLabels();
+    if (labels2) await this.callbacks.clearLabels();
   }
   async clearShapesByTag(msg) {
     await this.callbacks.clearShapesByTag(msg.tag);
@@ -153404,9 +153404,9 @@ var TrajectoryPlotOverlay = class {
   }
   set(options) {
     if (options?.cards) {
-      const retained = new Set(options.cards.map((card8) => card8.tag || "default"));
+      const retained = new Set(options.cards.map((card9) => card9.tag || "default"));
       for (const tag3 of this.entries.keys()) if (!retained.has(tag3)) this.clear(tag3);
-      for (const card8 of options.cards) this.set(card8);
+      for (const card9 of options.cards) this.set(card9);
       return;
     }
     if (!options || !options.series || options.series.length === 0) {
@@ -153425,7 +153425,7 @@ var TrajectoryPlotOverlay = class {
       const offset4 = this.entries.size % 4 * 24;
       const left = Math.max(10, (this.host.clientWidth || 800) / 2 - width / 2 + offset4);
       const top = Math.max(10, (this.host.clientHeight || 600) - height - 30 - offset4);
-      const card8 = new FloatingDataCard(this.host, {
+      const card9 = new FloatingDataCard(this.host, {
         tag: tag2,
         title: resolvedTitle,
         width,
@@ -153447,7 +153447,7 @@ var TrajectoryPlotOverlay = class {
       });
       entry = {
         tag: tag2,
-        card: card8,
+        card: card9,
         options,
         nFrames,
         width,
@@ -154722,8 +154722,8 @@ function makeRowElement(titleText, subtitleText, onActivate, onDelete, visibilit
   return row3;
 }
 function makeSettingsCard(titleText) {
-  const card8 = document.createElement("div");
-  Object.assign(card8.style, {
+  const card9 = document.createElement("div");
+  Object.assign(card9.style, {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
@@ -154743,8 +154743,8 @@ function makeSettingsCard(titleText) {
     marginBottom: "2px"
   });
   header2.textContent = titleText;
-  card8.appendChild(header2);
-  return card8;
+  card9.appendChild(header2);
+  return card9;
 }
 function makeStyledSelect(options, selectedValue, onChange) {
   const select2 = document.createElement("select");
@@ -155728,6 +155728,579 @@ var ExportPanel = class extends BasePanel {
   }
 };
 
+// src/ui/panels/movie-panel.ts
+var properties5 = {
+  camera: ["pose"],
+  structure: ["index"],
+  whole: ["visible", "representation", "color", "alpha"],
+  region: ["visible", "representation", "color", "alpha"],
+  shape: ["visible", "color", "alpha"],
+  annotation: ["visible", "text"],
+  measurement: ["visible"],
+  interaction: ["visible", "color", "alpha"],
+  layer: ["visible"],
+  scene: ["background", "lighting"]
+};
+var labels = {
+  pose: "Camera pose",
+  index: "Structure",
+  visible: "Visibility",
+  color: "Color",
+  alpha: "Opacity",
+  representation: "Representation",
+  text: "Text",
+  background: "Background",
+  lighting: "Lighting"
+};
+function note(text2) {
+  const el = document.createElement("p");
+  el.textContent = text2;
+  Object.assign(el.style, { fontSize: "11px", lineHeight: "1.5", margin: "4px 0", opacity: "0.8" });
+  return el;
+}
+function card3() {
+  const el = document.createElement("div");
+  Object.assign(el.style, {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    padding: "10px",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "8px",
+    marginBottom: "10px"
+  });
+  return el;
+}
+var MoviePanel = class extends BasePanel {
+  constructor(ctx, hasAuthority = true) {
+    super();
+    this.ctx = ctx;
+    this.hasAuthority = hasAuthority;
+    this.key = "movie";
+    this.tab = "timeline";
+    this.visible = false;
+    this.request = "";
+    this.pending = null;
+    this.pendingDuration = null;
+    this.pendingAction = null;
+    this.draftRevision = null;
+    this.message = "";
+    this.selected = "";
+    this.offset = 0;
+    this.keyOffset = 0;
+    this.tracks = [];
+    this.track = null;
+    this.duration = "10";
+    this.durationTouched = false;
+    this.tag = "";
+    this.domain = "camera";
+    this.target = "";
+    this.property = "pose";
+    this.at = "0";
+    this.easing = "linear";
+    this.value = "0";
+    this.secondValue = "0.6";
+    this.shown = true;
+    this.replace = false;
+    this.confirmation = "";
+    this.previewAt = "0";
+    this.loop = false;
+    this.path = "movie.mp4";
+    this.fps = "25";
+    this.width = "1280";
+    this.height = "720";
+    this.overwrite = false;
+    this.includeOverlays = true;
+    this.settingsOpen = false;
+    this.representations = [];
+    this.targets = [];
+  }
+  setVisible(visible) {
+    const opened = visible && !this.visible;
+    this.visible = visible;
+    super.setVisible(visible);
+    if (opened && this.hasAuthority) this.refresh();
+  }
+  refresh() {
+    this.request = studioRequestId("movie-inspect");
+    try {
+      this.ctx.onAction("movie_inspect", {
+        request_id: this.request,
+        offset: this.offset,
+        key_offset: this.keyOffset,
+        tag: this.selected || void 0
+      });
+    } catch (error2) {
+      this.message = error2 instanceof Error ? error2.message : String(error2);
+      this.scheduleRender();
+    }
+  }
+  setState(state) {
+    if (this.state && state.revision < this.state.revision) return;
+    if (state.editor && state.request_id !== this.request) return;
+    const changed = !this.state || state.revision !== this.state.revision;
+    const controlsChanged = !this.state || state.busy !== this.state.busy;
+    this.state = state;
+    this.ctx.setBadge(state.version === 2 ? `${state.n_tracks} tracks` : state.version === 1 ? "Legacy" : "Empty");
+    if (!this.durationTouched && state.duration_ms) this.duration = String(state.duration_ms / 1e3);
+    if (state.editor) {
+      this.tracks = state.editor.tracks;
+      this.track = state.editor.track;
+      this.representations = state.editor.representations ?? [];
+      this.targets = state.editor.targets ?? [];
+      if (this.selected && !this.track) {
+        this.selected = "";
+        this.replace = false;
+        this.message = "The selected track is no longer present. Your draft is kept.";
+      }
+    }
+    if (changed && !state.editor && this.visible) this.refresh();
+    if (changed || controlsChanged || state.editor) this.scheduleRender();
+    else this.updateProgress();
+  }
+  updateStudioAction(result2) {
+    if (result2.request_id !== this.pending) return;
+    this.pending = null;
+    this.message = result2.ok ? "Completed." : result2.error_message || "The Movie operation could not complete.";
+    if (result2.ok) {
+      if (this.pendingDuration === this.duration) this.durationTouched = false;
+      if (this.pendingAction && [
+        "movie_start",
+        "movie_set_duration",
+        "movie_clear",
+        "movie_set_key",
+        "movie_capture_key",
+        "movie_remove_track",
+        "movie_remove_key"
+      ].includes(this.pendingAction)) {
+        this.replace = false;
+        this.confirmation = "";
+        this.draftRevision = this.durationTouched ? this.state?.revision ?? null : null;
+      }
+    }
+    this.pendingDuration = null;
+    this.pendingAction = null;
+    if (this.visible) this.refresh();
+    this.scheduleRender();
+  }
+  submit(action, details = {}) {
+    const request_id = studioRequestId(action);
+    this.pending = request_id;
+    this.pendingAction = action;
+    this.message = "Working\u2026";
+    this.pendingDuration = ["movie_start", "movie_set_duration"].includes(action) ? this.duration : null;
+    try {
+      this.ctx.onAction(action, { revision: this.state?.revision, ...details, request_id });
+    } catch (error2) {
+      this.pending = null;
+      this.pendingDuration = null;
+      this.pendingAction = null;
+      this.message = error2 instanceof Error ? error2.message : String(error2);
+    }
+    this.scheduleRender();
+  }
+  markDraft() {
+    if (this.tab === "timeline" && this.draftRevision === null) this.draftRevision = this.state?.revision ?? null;
+  }
+  get staleDraft() {
+    return this.draftRevision !== null && this.draftRevision !== this.state?.revision;
+  }
+  useKeptDraft() {
+    this.draftRevision = this.state?.revision ?? null;
+    this.message = "Draft kept. Review its targets and timing before saving.";
+    this.refresh();
+    this.scheduleRender();
+  }
+  button(label2, action, enabled = true) {
+    const button2 = makeButton2(label2, action);
+    button2.disabled = !this.hasAuthority || !enabled;
+    return button2;
+  }
+  field(label2, key2, value, change, type3 = "text", disabled = false) {
+    const row3 = document.createElement("label");
+    row3.textContent = label2;
+    Object.assign(row3.style, { display: "flex", flexDirection: "column", gap: "4px", fontSize: "11px" });
+    const input = document.createElement("input");
+    input.type = type3;
+    input.value = value;
+    input.disabled = disabled;
+    input.setAttribute(`data-molsysviewer-movie-${key2}`, "true");
+    Object.assign(input.style, {
+      width: "100%",
+      minWidth: "0",
+      boxSizing: "border-box",
+      color: "#f4f4f5",
+      background: "rgba(0,0,0,0.28)",
+      border: "1px solid rgba(255,255,255,0.16)",
+      padding: "6px",
+      borderRadius: "5px"
+    });
+    if (type3 === "number") input.step = "any";
+    input.addEventListener("input", () => {
+      this.markDraft();
+      change(input.value);
+    });
+    row3.appendChild(input);
+    return row3;
+  }
+  check(label2, checked, change) {
+    const row3 = document.createElement("label"), input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = checked;
+    input.addEventListener("change", () => {
+      this.markDraft();
+      change(input.checked);
+    });
+    row3.append(input, document.createTextNode(label2));
+    row3.style.fontSize = "11px";
+    return row3;
+  }
+  select(label2, values2, current2, change, disabled = false) {
+    const row3 = document.createElement("label");
+    row3.textContent = label2;
+    Object.assign(row3.style, { display: "flex", flexDirection: "column", gap: "4px", fontSize: "11px" });
+    const select2 = makeStyledSelect(values2, current2, (value) => {
+      this.markDraft();
+      change(value);
+    });
+    select2.disabled = disabled;
+    select2.setAttribute("aria-label", label2);
+    row3.appendChild(select2);
+    return row3;
+  }
+  paint() {
+    if (!this.host) return;
+    this.host.replaceChildren();
+    this.host.appendChild(makeSectionHeader("Movie \xB7 experimental"));
+    this.host.appendChild(note("Prepare scene objects first, then record their camera, structure and visual changes. The Movie is included when you save work in Export."));
+    if (!this.hasAuthority) {
+      this.host.appendChild(note("Movie authoring requires a connected Python session. This exported view has no editing authority."));
+      return;
+    }
+    const tabs = document.createElement("div");
+    tabs.setAttribute("role", "tablist");
+    tabs.setAttribute("aria-label", "Movie workflow");
+    Object.assign(tabs.style, { display: "flex", gap: "5px", margin: "8px 0" });
+    for (const [value, label2] of [["timeline", "Timeline"], ["preview", "Preview"], ["export", "Export"]]) {
+      const button2 = this.button(label2, () => {
+        this.tab = value;
+        this.scheduleRender();
+      });
+      button2.setAttribute("role", "tab");
+      button2.setAttribute("aria-selected", String(this.tab === value));
+      button2.setAttribute("data-molsysviewer-movie-tab", value);
+      tabs.appendChild(button2);
+    }
+    this.host.appendChild(tabs);
+    const status = note(this.message || (this.state ? `${this.state.n_tracks} tracks \xB7 ${(this.state.duration_ms / 1e3).toFixed(2)} s` : "Reading Movie\u2026"));
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    this.host.appendChild(status);
+    if (this.staleDraft) {
+      this.host.appendChild(note("The Movie changed in Python or another window. Your draft is kept; review the updated plan before using it."));
+      this.host.appendChild(this.button("Use kept draft", () => this.useKeptDraft(), !this.state?.busy && this.pending === null));
+    }
+    if (this.state && !this.state.live_available) this.host.appendChild(note("Live Movie actions require a compatible renderer and an integrated async host. Timeline editing remains available; this host has not advertised that live route."));
+    if (this.state?.busy) {
+      const progress = note("");
+      progress.setAttribute("data-molsysviewer-movie-progress", "true");
+      this.host.appendChild(progress);
+      this.host.appendChild(this.button("Cancel operation", () => this.submit("movie_cancel", { job_id: this.state?.job_id })));
+    }
+    if (this.tab === "timeline") this.timeline();
+    else if (this.tab === "preview") this.preview();
+    else this.export();
+    this.updateProgress();
+  }
+  updateProgress() {
+    const el = this.host?.querySelector("[data-molsysviewer-movie-progress]");
+    if (el) el.textContent = this.state?.progress ? `Exporting frame ${this.state.progress.frames_written} of ${this.state.progress.total_frames}` : this.state?.busy === "movie_play" ? "Preview is running. Pause to inspect the last drawn moment." : "Waiting for the operation to finish\u2026";
+  }
+  get editable() {
+    return !!this.state && !this.state.busy && this.pending === null && !this.staleDraft;
+  }
+  timeline() {
+    const setup = card3();
+    setup.appendChild(this.field("Duration (seconds)", "duration", this.duration, (value) => {
+      this.duration = value;
+      this.durationTouched = true;
+    }, "number"));
+    if (this.state?.version !== 2 || this.confirmation === "new") {
+      if (this.state?.version === 1) setup.appendChild(note("A legacy Movie is loaded. Reviewed migration remains available in Python; starting here replaces that plan."));
+      const replacing = this.state?.version != null;
+      setup.appendChild(this.button(replacing ? "Confirm new Movie from this canvas" : "Capture initial scene", () => this.submit(
+        "movie_start",
+        { duration_ms: Number(this.duration) * 1e3, confirmed: replacing && this.confirmation === "new" }
+      ), this.editable && !!this.state?.system_loaded && !!this.state?.live_available && (!replacing || this.confirmation === "new")));
+      if (replacing && this.confirmation !== "new") setup.appendChild(this.button("Start a new Movie\u2026", () => {
+        this.confirmation = "new";
+        this.scheduleRender();
+      }, this.editable));
+      if (this.confirmation === "new") setup.appendChild(this.button("Keep current Movie", () => {
+        this.confirmation = "";
+        this.scheduleRender();
+      }));
+      this.host.appendChild(setup);
+      return;
+    }
+    setup.appendChild(this.button("Set duration", () => this.submit("movie_set_duration", { duration_ms: Number(this.duration) * 1e3 }), this.editable));
+    setup.appendChild(this.button("New Movie\u2026", () => {
+      this.confirmation = "new";
+      this.scheduleRender();
+    }, this.editable));
+    setup.appendChild(this.button(this.confirmation === "clear" ? "Confirm remove Movie plan" : "Remove Movie plan\u2026", () => {
+      if (this.confirmation === "clear") this.submit("movie_clear", { confirmed: true });
+      else {
+        this.confirmation = "clear";
+        this.scheduleRender();
+      }
+    }, this.editable));
+    const settings = document.createElement("details"), summary = document.createElement("summary");
+    settings.open = this.settingsOpen;
+    summary.textContent = `Movie settings \xB7 ${this.state.duration_ms / 1e3} s`;
+    settings.append(summary, setup);
+    settings.addEventListener("toggle", () => {
+      this.settingsOpen = settings.open;
+    });
+    this.host.appendChild(settings);
+    const list3 = card3();
+    list3.appendChild(makeSectionHeader("Tracks"));
+    list3.appendChild(this.button("New track", () => {
+      this.selected = "";
+      this.track = null;
+      this.tag = "";
+      this.domain = "camera";
+      this.property = "pose";
+      this.target = "";
+      this.at = "0";
+      this.replace = false;
+      this.draftRevision = this.state?.revision ?? null;
+      this.scheduleRender();
+    }, this.editable));
+    for (const track of this.tracks) {
+      const button2 = this.button(`${track.tag} \xB7 ${labels[track.property] ?? track.property} \xB7 ${track.n_keys} keys`, () => {
+        this.selected = track.tag;
+        this.tag = track.tag;
+        this.domain = track.target.domain;
+        this.target = track.target.tag ?? "";
+        this.property = track.property;
+        this.keyOffset = 0;
+        this.track = null;
+        this.defaultValue();
+        this.draftRevision = this.state?.revision ?? null;
+        this.replace = false;
+        this.refresh();
+      });
+      button2.setAttribute("data-molsysviewer-movie-track", track.tag);
+      list3.appendChild(button2);
+    }
+    if (this.offset > 0) list3.appendChild(this.button("Previous tracks", () => {
+      this.offset = Math.max(0, this.offset - 20);
+      this.refresh();
+    }));
+    if (this.offset + this.tracks.length < this.state.n_tracks) list3.appendChild(this.button("Next tracks", () => {
+      this.offset += 20;
+      this.refresh();
+    }));
+    if (this.state.n_tracks) this.host.appendChild(list3);
+    this.editor();
+  }
+  editor() {
+    const form = card3();
+    form.appendChild(makeSectionHeader(this.selected ? "Edit track" : "New track"));
+    form.appendChild(this.field("Track name", "track-name", this.tag, (value) => {
+      this.tag = value;
+    }, "text", !!this.selected));
+    form.appendChild(this.select("Target", Object.keys(properties5), this.domain, (value) => {
+      this.domain = value;
+      this.property = properties5[value][0];
+      this.defaultValue();
+      this.scheduleRender();
+    }, !!this.selected));
+    if (!["camera", "structure", "whole", "scene"].includes(this.domain)) {
+      const field2 = this.field("Object name in the initial scene", "target", this.target, (value) => {
+        this.target = value;
+      }, "text", !!this.selected);
+      const input = field2.querySelector("input"), choices = document.createElement("datalist");
+      choices.id = studioRequestId("movie-targets");
+      input.setAttribute("list", choices.id);
+      for (const target of this.targets.filter((target2) => target2.domain === this.domain)) {
+        const option = document.createElement("option");
+        option.value = target.tag ?? "";
+        choices.appendChild(option);
+      }
+      field2.appendChild(choices);
+      form.appendChild(field2);
+    }
+    form.appendChild(this.select(
+      "Property",
+      properties5[this.domain].map((value) => ({ value, label: labels[value] })),
+      this.property,
+      (value) => {
+        this.property = value;
+        this.defaultValue();
+        this.scheduleRender();
+      },
+      !!this.selected
+    ));
+    form.appendChild(this.field("Key time (seconds)", "key-time", this.at, (value) => {
+      this.at = value;
+    }, "number"));
+    if (["pose", "color", "alpha", "background", "lighting"].includes(this.property)) {
+      form.appendChild(this.select("Transition to next key", ["linear", "ease-in", "ease-out", "ease-in-out"], this.easing, (value) => {
+        this.easing = value;
+      }));
+    } else form.appendChild(note("This property changes at the saved key time; it is held between keys."));
+    if (this.property === "visible") form.appendChild(this.check("Visible", this.shown, (value) => {
+      this.shown = value;
+    }));
+    else if (this.property === "representation") form.appendChild(this.select("Representation", this.representations, this.value, (value) => {
+      this.value = value;
+    }));
+    else if (this.property !== "pose") {
+      form.appendChild(this.field(
+        this.property === "lighting" ? "Ambient intensity (0\u20131)" : labels[this.property],
+        "value",
+        this.value,
+        (value) => {
+          this.value = value;
+        },
+        ["index", "alpha", "lighting"].includes(this.property) ? "number" : ["color", "background"].includes(this.property) ? "color" : "text"
+      ));
+      if (this.property === "lighting") form.appendChild(this.field("Diffuse intensity (0\u20131)", "diffuse", this.secondValue, (value) => {
+        this.secondValue = value;
+      }, "number"));
+    }
+    if (this.domain === "shape" && this.property !== "visible") form.appendChild(note("Shape material tracks currently support spheres."));
+    form.appendChild(this.check("Replace a key at the same time", this.replace, (value) => {
+      this.replace = value;
+    }));
+    form.appendChild(this.button(this.property === "pose" ? "Capture this camera as key" : "Save key", () => {
+      const target = { domain: this.domain, ...!["camera", "structure", "whole", "scene"].includes(this.domain) ? { tag: this.target } : {} };
+      const value = this.property === "visible" ? this.shown : ["index", "alpha"].includes(this.property) ? Number(this.value) : ["color", "background"].includes(this.property) ? Number.parseInt(this.value.slice(1), 16) : this.property === "lighting" ? { ambient: Number(this.value), diffuse: Number(this.secondValue) } : this.value;
+      this.submit(this.property === "pose" ? "movie_capture_key" : "movie_set_key", {
+        tag: this.tag,
+        target,
+        property: this.property,
+        time_ms: Number(this.at) * 1e3,
+        easing: this.easing,
+        value,
+        replace: this.replace
+      });
+    }, this.editable && (this.property !== "pose" || !!this.state?.live_available)));
+    if (this.track) {
+      form.appendChild(makeSectionHeader("Saved keys"));
+      for (const key2 of this.track.keys) {
+        const row3 = document.createElement("div");
+        row3.appendChild(this.button(`Edit ${(key2.time_ms / 1e3).toFixed(3)} s`, () => {
+          this.markDraft();
+          this.at = String(key2.time_ms / 1e3);
+          this.easing = key2.easing ?? "linear";
+          this.replace = true;
+          this.shown = !!key2.value;
+          this.value = ["color", "background"].includes(this.property) ? `#${Number(key2.value).toString(16).padStart(6, "0")}` : this.property === "lighting" ? String(key2.value.ambient) : String(key2.value);
+          if (this.property === "lighting") this.secondValue = String(key2.value.diffuse);
+          this.scheduleRender();
+        }));
+        if (this.track.n_keys > 1) row3.appendChild(this.button("Remove key", () => this.submit("movie_remove_key", { tag: this.selected, time_ms: key2.time_ms }), this.editable));
+        form.appendChild(row3);
+      }
+      if (this.keyOffset > 0) form.appendChild(this.button("Previous keys", () => {
+        this.keyOffset = Math.max(0, this.keyOffset - 100);
+        this.refresh();
+      }));
+      if (this.keyOffset + this.track.keys.length < this.track.n_keys) form.appendChild(this.button("Next keys", () => {
+        this.keyOffset += 100;
+        this.refresh();
+      }));
+      form.appendChild(this.button(this.confirmation === "track" ? "Confirm remove track" : "Remove track\u2026", () => {
+        if (this.confirmation === "track") this.submit("movie_remove_track", { tag: this.selected, confirmed: true });
+        else {
+          this.confirmation = "track";
+          this.scheduleRender();
+        }
+      }, this.editable));
+    }
+    form.appendChild(workflowHelp("movie", [
+      "Prepare regions, interactions and labels before recording the initial scene.",
+      "For a camera move, add a key, rotate or zoom the canvas, then capture another camera key at a later time.",
+      "Time and duration are shown in seconds; the Python Movie API stores milliseconds. Edits do not move the scene until preview or seek."
+    ]));
+    this.host.appendChild(form);
+  }
+  preview() {
+    const root = card3(), enabled = this.state?.version === 2 && this.state.live_available;
+    root.appendChild(this.field("Movie time (seconds)", "preview-time", this.previewAt, (value) => {
+      this.previewAt = value;
+    }, "number"));
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = String((this.state?.duration_ms ?? 0) / 1e3);
+    slider.step = "0.01";
+    slider.value = this.previewAt;
+    slider.setAttribute("aria-label", "Movie time");
+    slider.addEventListener("input", () => {
+      this.previewAt = slider.value;
+      const input = this.host?.querySelector("[data-molsysviewer-movie-preview-time]");
+      if (input) input.value = this.previewAt;
+    });
+    root.appendChild(slider);
+    root.appendChild(this.button("Go to time", () => this.submit("movie_seek", { time_ms: Number(this.previewAt) * 1e3 }), enabled && this.editable));
+    root.appendChild(this.check("Loop preview", this.loop, (value) => {
+      this.loop = value;
+    }));
+    root.appendChild(this.button("Play", () => this.submit("movie_play", { time_ms: Number(this.previewAt) * 1e3, loop: this.loop }), enabled && this.editable));
+    root.appendChild(this.button("Pause", () => this.submit("movie_pause"), this.state?.busy === "movie_play"));
+    root.appendChild(this.button(this.confirmation === "reset" ? "Confirm restore initial scene" : "Restore initial scene\u2026", () => {
+      if (this.confirmation === "reset") this.submit("movie_reset", { confirmed: true });
+      else {
+        this.confirmation = "reset";
+        this.scheduleRender();
+      }
+    }, enabled && this.editable));
+    root.appendChild(note("Restoring the initial scene replaces current scene objects with the recorded baseline. The molecular system and scientific analyses are preserved."));
+    this.host.appendChild(root);
+  }
+  export() {
+    const root = card3();
+    root.appendChild(this.field("Output path in Python session (.mp4, .webm or .zip)", "path", this.path, (value) => {
+      this.path = value;
+    }));
+    root.appendChild(this.field("Frames per second", "fps", this.fps, (value) => {
+      this.fps = value;
+    }));
+    root.appendChild(this.field("Width (pixels)", "width", this.width, (value) => {
+      this.width = value;
+    }, "number"));
+    root.appendChild(this.field("Height (pixels)", "height", this.height, (value) => {
+      this.height = value;
+    }, "number"));
+    root.appendChild(this.check("Allow replacing an existing output file", this.overwrite, (value) => {
+      this.overwrite = value;
+    }));
+    root.appendChild(this.check("Include visible plots and legends; refuse unsupported composition", this.includeOverlays, (value) => {
+      this.includeOverlays = value;
+    }));
+    root.appendChild(note("Native labels are included. Visible plot/legend composition is not yet available: hide those overlays or explicitly exclude them. Output is written in the Python session, including when that session runs remotely."));
+    root.appendChild(this.button("Export Movie", () => this.submit("movie_export", {
+      path: this.path,
+      fps: this.fps,
+      width_px: Number(this.width),
+      height_px: Number(this.height),
+      overwrite: this.overwrite,
+      include_overlays: this.includeOverlays
+    }), this.editable && this.state?.version === 2 && !!this.state?.live_available));
+    if (this.state?.last_output) root.appendChild(note(`Saved ${this.state.last_output.path} \xB7 ${this.state.last_output.bytes} bytes`));
+    this.host.appendChild(root);
+  }
+  defaultValue() {
+    if (!["pose", "color", "alpha", "background", "lighting"].includes(this.property)) this.easing = "linear";
+    this.value = this.property === "representation" ? "ball-and-stick" : ["color", "background"].includes(this.property) ? "#34d399" : this.property === "text" ? "" : this.property === "alpha" ? "1" : this.property === "lighting" ? "0.4" : "0";
+    this.secondValue = "0.6";
+  }
+};
+
 // src/ui/list-search.ts
 var ListSearch = class {
   constructor() {
@@ -155875,10 +156448,10 @@ var SavedListTools = class {
       management.appendChild(confirm2);
     }
     if (this.message) {
-      const note3 = document.createElement("div");
-      note3.textContent = this.message;
-      note3.setAttribute("role", "status");
-      toolbar.appendChild(note3);
+      const note4 = document.createElement("div");
+      note4.textContent = this.message;
+      note4.setAttribute("role", "status");
+      toolbar.appendChild(note4);
     }
     for (const item2 of this.rows) {
       const label2 = document.createElement("label");
@@ -155962,7 +156535,7 @@ var CreationFeedback = class {
 };
 
 // src/ui/panels/layers-panel.ts
-function card3() {
+function card4() {
   const element = document.createElement("div");
   Object.assign(element.style, {
     display: "flex",
@@ -156150,7 +156723,7 @@ var LayersPanel = class extends BasePanel {
     return globalCard;
   }
   renderCreateCard() {
-    const createCard = card3();
+    const createCard = card4();
     Object.assign(createCard.style, { marginBottom: "10px" });
     const form = document.createElement("form");
     form.setAttribute("data-molsysviewer-layer-create-form", "true");
@@ -156238,7 +156811,7 @@ var LayersPanel = class extends BasePanel {
     return createCard;
   }
   renderLayerCard(layer) {
-    const row3 = card3();
+    const row3 = card4();
     row3.setAttribute("data-molsysviewer-layer-card", layer.tag);
     row3.setAttribute("data-molsysviewer-list-search-text", [layer.tag, layer.owner, ...layer.members.map((member) => `${member.title} ${member.kind} ${member.tag}`)].filter(Boolean).join(" "));
     row3.style.opacity = layer.hidden ? "0.48" : "1";
@@ -157139,13 +157712,13 @@ var RegionsPanel = class extends BasePanel {
     return Boolean(item2.representation || item2.preset);
   }
   renderRegionCard(item2) {
-    const card8 = document.createElement("div");
-    card8.setAttribute("data-molsysviewer-region-card", item2.tag);
-    card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.owner].filter(Boolean).join(" "));
-    card8.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
+    const card9 = document.createElement("div");
+    card9.setAttribute("data-molsysviewer-region-card", item2.tag);
+    card9.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.owner].filter(Boolean).join(" "));
+    card9.setAttribute("data-molsysviewer-region-hidden", String(item2.hidden));
     const enabled = item2.enabled !== false;
-    card8.setAttribute("data-molsysviewer-region-enabled", String(enabled));
-    Object.assign(card8.style, {
+    card9.setAttribute("data-molsysviewer-region-enabled", String(enabled));
+    Object.assign(card9.style, {
       display: "flex",
       flexDirection: "column",
       gap: "7px",
@@ -157157,11 +157730,11 @@ var RegionsPanel = class extends BasePanel {
       transition: "background 0.1s ease",
       cursor: "pointer"
     });
-    card8.addEventListener("mouseenter", () => {
-      card8.style.background = "rgba(255,255,255,0.06)";
+    card9.addEventListener("mouseenter", () => {
+      card9.style.background = "rgba(255,255,255,0.06)";
     });
-    card8.addEventListener("mouseleave", () => {
-      card8.style.background = "rgba(255,255,255,0.035)";
+    card9.addEventListener("mouseleave", () => {
+      card9.style.background = "rgba(255,255,255,0.035)";
     });
     const isVisible = enabled && !item2.hidden;
     const hasVisual = this.regionHasOwnVisual(item2);
@@ -157188,8 +157761,8 @@ var RegionsPanel = class extends BasePanel {
       e.stopPropagation();
       toggleVisibility();
     });
-    card8.addEventListener("click", (e) => {
-      if (e && e.target && e.target !== card8 && e.target !== topRow && e.target !== title && e.target !== dot) {
+    card9.addEventListener("click", (e) => {
+      if (e && e.target && e.target !== card9 && e.target !== topRow && e.target !== title && e.target !== dot) {
         return;
       }
       e?.preventDefault();
@@ -157235,7 +157808,7 @@ var RegionsPanel = class extends BasePanel {
     subtitle.textContent = `(${item2.atom_count} atoms \xB7 ${item2.preset ?? item2.representation ?? "base"}${item2.owner ? ` \xB7 from ${item2.owner}` : ""})`;
     title.appendChild(subtitle);
     topRow.appendChild(title);
-    card8.appendChild(topRow);
+    card9.appendChild(topRow);
     const btnRow = document.createElement("div");
     btnRow.setAttribute("data-molsysviewer-region-buttons-row", item2.tag);
     Object.assign(btnRow.style, {
@@ -157302,7 +157875,7 @@ var RegionsPanel = class extends BasePanel {
       btn.style.fontSize = "10px";
       btnRow.appendChild(btn);
     }
-    card8.appendChild(btnRow);
+    card9.appendChild(btnRow);
     if (this.regionRenameTag === item2.tag) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-region-rename-form", item2.tag);
@@ -157361,7 +157934,7 @@ var RegionsPanel = class extends BasePanel {
       form.appendChild(input);
       form.appendChild(submit);
       form.appendChild(cancel);
-      card8.appendChild(form);
+      card9.appendChild(form);
       if (this.regionRenameCollisionTag !== null) {
         const collisionTag = this.regionRenameCollisionTag;
         const collision = document.createElement("div");
@@ -157387,16 +157960,16 @@ var RegionsPanel = class extends BasePanel {
         collision.appendChild(chooseRename);
         collision.appendChild(overwrite);
         collision.appendChild(cancelCollision);
-        card8.appendChild(collision);
+        card9.appendChild(collision);
       }
     }
     if (this.activeStyleRegionTag === item2.tag) {
-      card8.appendChild(this.renderStyleComposer(item2));
+      card9.appendChild(this.renderStyleComposer(item2));
     }
     if (this.regionInspectOpen.has(item2.tag)) {
-      card8.appendChild(this.renderRegionInspect(item2.tag));
+      card9.appendChild(this.renderRegionInspect(item2.tag));
     }
-    return card8;
+    return card9;
   }
   requestRegionDetails(tag2) {
     this.regionDetails.delete(tag2);
@@ -158357,12 +158930,12 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     if (this.savedSelections.length > 0) {
       const sorted = [...this.savedSelections].sort((a8, b8) => a8.tag.localeCompare(b8.tag));
       for (const item2 of sorted) {
-        const card8 = document.createElement("div");
-        card8.setAttribute("data-molsysviewer-group-panel-row", "true");
-        card8.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
-        card8.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
-        card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag].filter(Boolean).join(" "));
-        Object.assign(card8.style, {
+        const card9 = document.createElement("div");
+        card9.setAttribute("data-molsysviewer-group-panel-row", "true");
+        card9.setAttribute("data-molsysviewer-group-panel-summary-item", "true");
+        card9.setAttribute("data-molsysviewer-saved-selection-card", item2.tag);
+        card9.setAttribute("data-molsysviewer-list-search-text", [item2.tag].filter(Boolean).join(" "));
+        Object.assign(card9.style, {
           display: "flex",
           flexDirection: "column",
           padding: "8px 10px",
@@ -158373,17 +158946,17 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           transition: "background 0.1s ease",
           cursor: "pointer"
         });
-        card8.addEventListener("mouseenter", () => {
-          card8.setAttribute("data-molsysviewer-selection-row-hover", "true");
-          card8.style.background = "rgba(255,255,255,0.09)";
+        card9.addEventListener("mouseenter", () => {
+          card9.setAttribute("data-molsysviewer-selection-row-hover", "true");
+          card9.style.background = "rgba(255,255,255,0.09)";
         });
-        card8.addEventListener("mouseleave", () => {
-          card8.setAttribute("data-molsysviewer-selection-row-hover", "false");
-          card8.style.background = "rgba(255,255,255,0.05)";
+        card9.addEventListener("mouseleave", () => {
+          card9.setAttribute("data-molsysviewer-selection-row-hover", "false");
+          card9.style.background = "rgba(255,255,255,0.05)";
         });
         const isActive = this.isSavedSelectionActive(item2);
-        card8.addEventListener("click", (e) => {
-          if (e && e.target && e.target !== card8) {
+        card9.addEventListener("click", (e) => {
+          if (e && e.target && e.target !== card9) {
             return;
           }
           e?.preventDefault();
@@ -158435,7 +159008,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
         subtitle.textContent = `(${item2.atom_count} atoms${levelText})`;
         title.appendChild(subtitle);
         topRow.appendChild(title);
-        card8.appendChild(topRow);
+        card9.appendChild(topRow);
         const btnRow = document.createElement("div");
         btnRow.setAttribute("data-molsysviewer-saved-selection-buttons-row", item2.tag);
         Object.assign(btnRow.style, {
@@ -158462,7 +159035,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           fontSize: "11px",
           outline: "none"
         });
-        card8.appendChild(inlineForm);
+        card9.appendChild(inlineForm);
         const showForm = (mode, focus = true) => {
           btnRow.style.display = "none";
           inlineForm.replaceChildren();
@@ -158593,8 +159166,8 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
           btn.style.fontSize = "10px";
           btnRow.appendChild(btn);
         }
-        card8.appendChild(btnRow);
-        savedList.appendChild(card8);
+        card9.appendChild(btnRow);
+        savedList.appendChild(card9);
         if (this.savedEditor?.tag === item2.tag) showForm(this.savedEditor.mode, false);
       }
     } else {
@@ -158609,9 +159182,9 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
     }
   }
   renderActiveSelectionCard() {
-    const card8 = document.createElement("div");
-    card8.setAttribute("data-molsysviewer-active-selection-card", "true");
-    Object.assign(card8.style, {
+    const card9 = document.createElement("div");
+    card9.setAttribute("data-molsysviewer-active-selection-card", "true");
+    Object.assign(card9.style, {
       display: "flex",
       flexDirection: "column",
       padding: "8px 10px",
@@ -158709,7 +159282,7 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       btnRow.appendChild(btn);
     }
     row1.appendChild(btnRow);
-    card8.appendChild(row1);
+    card9.appendChild(row1);
     if (this.showActiveSelectionSaveForm && hasActive) {
       const form = document.createElement("div");
       form.setAttribute("data-molsysviewer-active-selection-save-form", "true");
@@ -158782,9 +159355,9 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
       form.appendChild(input);
       form.appendChild(confirmBtn);
       this.creation.mount(form);
-      card8.appendChild(form);
+      card9.appendChild(form);
     }
-    return card8;
+    return card9;
   }
   renderSelectionQueryComposer() {
     const container = document.createElement("div");
@@ -160124,8 +160697,8 @@ var SystemLoadControls = class {
     this.summaries.clear();
     this.sourceInputs.clear();
     this.rows.forEach((row3, index) => {
-      const card8 = makeSettingsCard(`Source ${index + 1}`);
-      card8.setAttribute("data-molsysviewer-load-source", String(index));
+      const card9 = makeSettingsCard(`Source ${index + 1}`);
+      card9.setAttribute("data-molsysviewer-load-source", String(index));
       const field2 = (parent, key2, label2) => {
         const wrap = document.createElement("label");
         wrap.textContent = label2;
@@ -160155,7 +160728,7 @@ var SystemLoadControls = class {
       browse.style.flex = "0 0 auto";
       browse.setAttribute("data-molsysviewer-load-browse", String(index));
       sourceRow.appendChild(browse);
-      card8.appendChild(sourceRow);
+      card9.appendChild(sourceRow);
       if (this.input.value === "independent" || index === 0) {
         const options = document.createElement("details");
         options.open = this.advanced.get(row3) ?? false;
@@ -160168,7 +160741,7 @@ var SystemLoadControls = class {
         field2(options, "label", "Label (optional)");
         field2(options, "selection", "Atoms: MolSysMT selection or [0, 2, ...]");
         field2(options, "structures", "Structures: 0, 8, 3 or all (0-based)");
-        card8.appendChild(options);
+        card9.appendChild(options);
       }
       if (this.rows.length > 1) {
         const remove3 = makeButton2("Remove input", () => {
@@ -160177,9 +160750,9 @@ var SystemLoadControls = class {
         });
         remove3.title = "Remove this input row; loaded atoms are unchanged.";
         remove3.setAttribute("data-molsysviewer-load-remove-source", String(index));
-        card8.appendChild(remove3);
+        card9.appendChild(remove3);
       }
-      this.rowsHost.appendChild(card8);
+      this.rowsHost.appendChild(card9);
     });
     this.refreshState();
   }
@@ -160294,7 +160867,7 @@ function row(label2, control) {
   item2.appendChild(control);
   return item2;
 }
-function card4() {
+function card5() {
   const el = document.createElement("div");
   Object.assign(el.style, {
     display: "flex",
@@ -160307,7 +160880,7 @@ function card4() {
   });
   return el;
 }
-function note(text2, warning = false) {
+function note2(text2, warning = false) {
   const el = document.createElement("div");
   el.textContent = text2;
   Object.assign(el.style, {
@@ -160381,7 +160954,7 @@ var WholePanel = class {
   }
   renderPresenceHero() {
     const summary = this.summary;
-    const section = card4();
+    const section = card5();
     section.setAttribute("data-molsysviewer-whole-presence", "true");
     const header2 = document.createElement("div");
     Object.assign(header2.style, {
@@ -160500,14 +161073,14 @@ var WholePanel = class {
       }
     }
     if (summary.none_state_region_count > 0) {
-      section.appendChild(note(`${summary.none_state_region_count} region(s) have no representation of their own and will disappear.`, true));
+      section.appendChild(note2(`${summary.none_state_region_count} region(s) have no representation of their own and will disappear.`, true));
     }
     return section;
   }
   renderRepresentation() {
     const summary = this.summary;
     const params = summary.params ?? {};
-    const section = card4();
+    const section = card5();
     section.setAttribute("data-molsysviewer-whole-representation", "true");
     const cardTitle = document.createElement("div");
     cardTitle.textContent = "Representation";
@@ -160520,7 +161093,7 @@ var WholePanel = class {
     });
     section.appendChild(cardTitle);
     if (summary.scene_style_name) {
-      section.appendChild(note(`Scene style: ${summary.scene_style_name}. Editing below clears this name.`));
+      section.appendChild(note2(`Scene style: ${summary.scene_style_name}. Editing below clears this name.`));
     }
     const controls = createStyleDraftControls({
       id: "true",
@@ -160569,13 +161142,13 @@ var WholePanel = class {
     section.appendChild(controls.opacityRow);
     section.appendChild(controls.qualityRow);
     if (summary.inheriting_region_count > 0) {
-      section.appendChild(note(`${summary.inheriting_region_count} region(s) inherit this representation and will follow it.`));
+      section.appendChild(note2(`${summary.inheriting_region_count} region(s) inherit this representation and will follow it.`));
     }
     return section;
   }
   renderColour() {
     const summary = this.summary;
-    const section = card4();
+    const section = card5();
     section.setAttribute("data-molsysviewer-whole-colour", "true");
     const cardTitle = document.createElement("div");
     cardTitle.textContent = "Color Scheme";
@@ -160647,7 +161220,7 @@ var WholePanel = class {
     attrWrap.appendChild(range2);
     attrWrap.appendChild(commit);
     section.appendChild(row("Colour by", attrWrap));
-    section.appendChild(note(`Base layer \xB7 covered by ${summary.covering_layer_count} region layer(s).`));
+    section.appendChild(note2(`Base layer \xB7 covered by ${summary.covering_layer_count} region layer(s).`));
     return section;
   }
 };
@@ -160685,7 +161258,7 @@ var INPUT_STYLE = {
   fontSize: "11px",
   outline: "none"
 };
-function card5() {
+function card6() {
   const element = document.createElement("div");
   Object.assign(element.style, {
     display: "flex",
@@ -161352,7 +161925,7 @@ var MeasuresPanel = class extends BasePanel {
     return container;
   }
   renderMeasurement(item2) {
-    const row3 = card5();
+    const row3 = card6();
     row3.setAttribute("data-molsysviewer-measurement-tag", item2.tag);
     row3.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.kind, item2.owner, item2.layerTag, ...item2.endpointLabels].filter(Boolean).join(" "));
     row3.setAttribute("data-molsysviewer-measurement-broken", String(item2.broken));
@@ -161750,7 +162323,7 @@ var INPUT_STYLE2 = {
   fontSize: "11px",
   outline: "none"
 };
-function card6() {
+function card7() {
   const element = document.createElement("div");
   Object.assign(element.style, {
     display: "flex",
@@ -161928,7 +162501,7 @@ var AnnotationsPanel = class extends BasePanel {
     const activeCount = this.selection.atom_indices.length;
     const hasActive = activeCount > 0;
     const canCreate = this.canCreateAnnotation();
-    const createCard = card6();
+    const createCard = card7();
     createCard.setAttribute("data-molsysviewer-annotation-create-card", "true");
     Object.assign(createCard.style, {
       display: "flex",
@@ -162364,7 +162937,7 @@ var AnnotationsPanel = class extends BasePanel {
     this.creation.mount(parent);
   }
   renderAnnotation(item2) {
-    const row3 = card6();
+    const row3 = card7();
     row3.setAttribute("data-molsysviewer-annotation-tag", item2.tag);
     row3.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.text, item2.owner, item2.layerTag].filter(Boolean).join(" "));
     row3.setAttribute("data-molsysviewer-annotation-broken", String(item2.broken));
@@ -162623,8 +163196,8 @@ var AnnotationsPanel = class extends BasePanel {
     return editor;
   }
   renderGlobalActions() {
-    const card8 = document.createElement("div");
-    Object.assign(card8.style, {
+    const card9 = document.createElement("div");
+    Object.assign(card9.style, {
       display: "flex",
       flexDirection: "column",
       gap: "8px",
@@ -162686,11 +163259,11 @@ var AnnotationsPanel = class extends BasePanel {
       actions.appendChild(button2);
     }
     row3.appendChild(actions);
-    card8.appendChild(row3);
-    return card8;
+    card9.appendChild(row3);
+    return card9;
   }
   renderStyle() {
-    const section = card6();
+    const section = card7();
     section.setAttribute("data-molsysviewer-annotation-style", this.selectedTag ?? "default");
     section.appendChild(makeSectionHeader("Annotation style"));
     const selected = this.annotations.find((item2) => item2.tag === this.selectedTag);
@@ -163053,7 +163626,7 @@ var row2 = () => {
   Object.assign(el.style, { display: "flex", gap: "4px", flexWrap: "wrap" });
   return el;
 };
-var note2 = (text2) => {
+var note3 = (text2) => {
   const el = document.createElement("div");
   el.textContent = text2;
   Object.assign(el.style, { fontSize: "11px", color: "rgba(244,244,245,0.65)", overflowWrap: "anywhere" });
@@ -163061,7 +163634,7 @@ var note2 = (text2) => {
 };
 function field(parent, label2, value, key2, change, type3 = "text", identity3) {
   const wrap = document.createElement("label");
-  wrap.appendChild(note2(label2));
+  wrap.appendChild(note3(label2));
   const input = document.createElement("input");
   input.type = type3;
   input.value = value;
@@ -163189,7 +163762,7 @@ var InteractionsPanel = class extends BasePanel {
     const details = document.createElement("details"), summary = document.createElement("summary");
     summary.textContent = "Scientific metadata";
     details.appendChild(summary);
-    details.appendChild(note2(text2));
+    details.appendChild(note3(text2));
     parent.appendChild(details);
   }
   setSummary(message) {
@@ -163349,11 +163922,11 @@ var InteractionsPanel = class extends BasePanel {
   paintScientificControls(parent) {
     const criteria = calculationCriteria(this.kind), criterion = this.criterion();
     if (!criterion) {
-      parent.appendChild(note2("No Studio controls are available for this family."));
+      parent.appendChild(note3("No Studio controls are available for this family."));
       return;
     }
     const heading = document.createElement("label");
-    heading.appendChild(note2("Scientific criterion"));
+    heading.appendChild(note3("Scientific criterion"));
     parent.appendChild(heading);
     if (criteria.length > 1) {
       const chooser = select(
@@ -163366,16 +163939,16 @@ var InteractionsPanel = class extends BasePanel {
         }
       );
       chooser.setAttribute("data-molsysviewer-interaction-criterion", "true");
-    } else heading.appendChild(note2(criterion.label));
-    parent.appendChild(note2(criterion.help));
-    parent.appendChild(note2("Blank optional fields use the criterion's defaults. Scientific values are stored with the analysis."));
+    } else heading.appendChild(note3(criterion.label));
+    parent.appendChild(note3(criterion.help));
+    parent.appendChild(note3("Blank optional fields use the criterion's defaults. Scientific values are stored with the analysis."));
     const draft = this.scientificDraft();
     for (const control of criterion.controls) {
       const group = document.createElement("div");
       parent.appendChild(group);
       if (control.type === "choice") {
         const label2 = document.createElement("label");
-        label2.appendChild(note2(control.label));
+        label2.appendChild(note3(control.label));
         group.appendChild(label2);
         const chooser = select(label2, control.choices, draft[control.key] || "", (value) => draft[control.key] = value);
         chooser.setAttribute("data-molsysviewer-interaction-field", `parameter-${control.key}`);
@@ -163394,7 +163967,7 @@ var InteractionsPanel = class extends BasePanel {
         group.appendChild(inputRow);
         const unit2 = draft[`${control.key}-unit`] || (control.type === "length" ? "nm" : "degrees");
         const keys3 = control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key];
-        if (control.type === "angle-range") group.prepend(note2(control.label));
+        if (control.type === "angle-range") group.prepend(note3(control.label));
         keys3.forEach((key2, index) => {
           const cell = document.createElement("div");
           cell.style.flex = "1";
@@ -163442,7 +164015,7 @@ var InteractionsPanel = class extends BasePanel {
     this.host.replaceChildren();
     Object.assign(this.host.style, { display: "flex", flexDirection: "column", gap: "9px" });
     this.host.appendChild(makeSectionHeader("Interactions"));
-    const experimental = note2("Experimental \xB7 calculation and result contracts may evolve.");
+    const experimental = note3("Experimental \xB7 calculation and result contracts may evolve.");
     experimental.setAttribute("data-molsysviewer-interactions-experimental", "true");
     this.host.appendChild(experimental);
     this.host.appendChild(this.workflowGuide ??= workflowHelp("interactions", [
@@ -163450,13 +164023,13 @@ var InteractionsPanel = class extends BasePanel {
       "Atom filters: stage selections A and B and choose the explicit participant mode. Restrict all participants to A for internal interactions; include at least one in A to also see interactions with other atoms.",
       "An evaluated structure with zero observations is different from Not evaluated. Hydrogen-bond calculations need suitable hydrogen atoms and bonding. Criteria use explicit units; Interactions remains experimental."
     ]));
-    if (!this.backendAvailable) this.host.appendChild(note2("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
+    if (!this.backendAvailable) this.host.appendChild(note3("Interactions requires a compatible MolSysMT backend. Other viewer tools remain available."));
     const visible = this.items.filter((item2) => !item2.hidden && !item2.layer_hidden).length;
-    this.host.appendChild(note2(`${visible}/${this.items.length} sets visible \xB7 structure ${this.frame}`));
+    this.host.appendChild(note3(`${visible}/${this.items.length} sets visible \xB7 structure ${this.frame}`));
     const all3 = row2();
     append(all3, makeButton2("Show all", () => this.emit("show_all_interactions")), makeButton2("Hide all", () => this.emit("hide_all_interactions")));
     this.host.appendChild(all3);
-    if (this.error) this.host.appendChild(note2(this.error));
+    if (this.error) this.host.appendChild(note3(this.error));
     const creation = document.createElement("details");
     this.formDetails = creation;
     creation.setAttribute("data-molsysviewer-interaction-form", "true");
@@ -163481,19 +164054,19 @@ var InteractionsPanel = class extends BasePanel {
       form.appendChild(tabs);
       if (this.source === "stored") {
         const storedLabel = document.createElement("label");
-        storedLabel.appendChild(note2("Stored analysis"));
+        storedLabel.appendChild(note3("Stored analysis"));
         form.appendChild(storedLabel);
         select(storedLabel, this.analyses.map((item2) => [item2.name, `${item2.name} \xB7 ${item2.n_occurrences} observations`]), this.stored, (value) => {
           this.stored = value;
           this.scheduleRender();
         });
         const analysis = this.analyses.find((item2) => item2.name === this.stored);
-        if (analysis) form.appendChild(note2(`${analysis.method} \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures evaluated`));
+        if (analysis) form.appendChild(note3(`${analysis.method} \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures evaluated`));
       } else {
         field(form, "Store analysis as", this.name, "name", (value) => this.name = value);
         if (this.source === "calculate") {
           const familyLabel = document.createElement("label");
-          familyLabel.appendChild(note2("Interaction family"));
+          familyLabel.appendChild(note3("Interaction family"));
           form.appendChild(familyLabel);
           const chooser = select(familyLabel, this.families.map((family) => [family.kind, family.label]), this.kind, (value) => {
             this.kind = value;
@@ -163501,10 +164074,10 @@ var InteractionsPanel = class extends BasePanel {
           });
           chooser.setAttribute("data-molsysviewer-interaction-kind", "true");
           this.paintScientificControls(form);
-          if (["ionic_contact", "pi_pi", "cation_pi"].includes(this.kind)) form.appendChild(note2("Compound participants use centroid guides. Reported measurements keep the calculation's definition."));
-          if (["disulfide_candidate", "metal_coordination_candidate"].includes(this.kind)) form.appendChild(note2("Geometric candidates; covalent topology is unchanged."));
+          if (["ionic_contact", "pi_pi", "cation_pi"].includes(this.kind)) form.appendChild(note3("Compound participants use centroid guides. Reported measurements keep the calculation's definition."));
+          if (["disulfide_candidate", "metal_coordination_candidate"].includes(this.kind)) form.appendChild(note3("Geometric candidates; covalent topology is unchanged."));
           const scopeLabel = document.createElement("label");
-          scopeLabel.appendChild(note2("Calculate atoms"));
+          scopeLabel.appendChild(note3("Calculate atoms"));
           form.appendChild(scopeLabel);
           const scope = select(
             scopeLabel,
@@ -163518,13 +164091,13 @@ var InteractionsPanel = class extends BasePanel {
           );
           scope.setAttribute("data-molsysviewer-interaction-calc-scope", "true");
           scope.querySelector('option[value="between"]').disabled = this.kind === "disulfide_candidate";
-          form.appendChild(note2(this.calcAtomScope === "all" ? "Calculation covers all atoms. A/B below filter the display only." : `Calculation uses staged ${this.calcAtomScope === "a" ? "A" : "A and B"} below; atoms outside this scope are not evaluated.`));
+          form.appendChild(note3(this.calcAtomScope === "all" ? "Calculation covers all atoms. A/B below filter the display only." : `Calculation uses staged ${this.calcAtomScope === "a" ? "A" : "A and B"} below; atoms outside this scope are not evaluated.`));
           const structures = field(form, "Calculate structures: current, all, or indices", this.calcStructures, "calc-structures", (value) => {
             this.calcStructures = value;
             coverage.textContent = this.calculationScopeText();
           });
           structures.placeholder = "current, all, or 0,2,5";
-          const coverage = note2(this.calculationScopeText());
+          const coverage = note3(this.calculationScopeText());
           coverage.setAttribute("data-molsysviewer-interaction-calculation-coverage", "true");
           form.appendChild(coverage);
           const pbc = document.createElement("label");
@@ -163573,13 +164146,13 @@ var InteractionsPanel = class extends BasePanel {
     details.appendChild(title);
     form.appendChild(details);
     const modeLabel = document.createElement("label");
-    modeLabel.appendChild(note2("Display interactions"));
+    modeLabel.appendChild(note3("Display interactions"));
     details.appendChild(modeLabel);
     select(modeLabel, [["involving_selection", "All interactions involving the selection"], ["within_selection", "Only within the selection"], ["across_selection_boundary", "Between the selection and the rest"], ["between_selections", "Between selections A and B"]], this.mode, (value) => {
       this.mode = value;
       this.scheduleRender();
     });
-    details.appendChild(note2(`A: ${this.a ? `${this.a.length} atoms` : "all atoms"} \xB7 B: ${this.b ? `${this.b.length} atoms` : "unset"}`));
+    details.appendChild(note3(`A: ${this.a ? `${this.a.length} atoms` : "all atoms"} \xB7 B: ${this.b ? `${this.b.length} atoms` : "unset"}`));
     const slots = row2();
     append(slots, makeButton2("Stage A", () => {
       this.slot = "a";
@@ -163621,7 +164194,7 @@ var InteractionsPanel = class extends BasePanel {
       details.appendChild(label2);
     }
     if (this.editing) {
-      form.appendChild(note2("Calculation parameters are fixed. Calculate a new analysis to change cutoffs."));
+      form.appendChild(note3("Calculation parameters are fixed. Calculate a new analysis to change cutoffs."));
       field(form, "Color", this.color, "color", (value) => this.color = value, "color");
       field(form, "Radius (nm)", this.radius, "radius", (value) => this.radius = value, "number");
       field(form, "Opacity (0\u20131)", this.alpha, "alpha", (value) => this.alpha = value, "number");
@@ -163693,12 +164266,12 @@ var InteractionsPanel = class extends BasePanel {
       this.scheduleRender();
     }));
     this.host.appendChild(makeSectionHeader("Saved sets"));
-    if (!this.items.length) this.host.appendChild(note2("No interaction sets. Calculate an analysis or load one from H5MSM."));
+    if (!this.items.length) this.host.appendChild(note3("No interaction sets. Calculate an analysis or load one from H5MSM."));
     for (const item2 of this.items) {
-      const card8 = box4();
-      card8.setAttribute("data-molsysviewer-interaction-set", item2.tag);
-      card8.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.analysis_name, item2.layer_tag].filter(Boolean).join(" "));
-      append(card8, note2(`${item2.tag} \xB7 ${item2.analysis_name}`), note2(statusText(item2)), note2(`${item2.layer_hidden ? "Hidden by layer" : item2.hidden ? "Hidden" : "Visible"} \xB7 layer ${item2.layer_tag}`));
+      const card9 = box4();
+      card9.setAttribute("data-molsysviewer-interaction-set", item2.tag);
+      card9.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.analysis_name, item2.layer_tag].filter(Boolean).join(" "));
+      append(card9, note3(`${item2.tag} \xB7 ${item2.analysis_name}`), note3(statusText(item2)), note3(`${item2.layer_hidden ? "Hidden by layer" : item2.hidden ? "Hidden" : "Visible"} \xB7 layer ${item2.layer_tag}`));
       const actions = row2();
       for (const [text2, action] of [["Focus", "focus_interaction"], [item2.hidden ? "Show" : "Hide", "toggle_interaction_visibility"], ["Delete", "delete_interaction"]]) {
         const button2 = makeButton2(text2, () => this.emit(action, { tag: item2.tag }));
@@ -163707,19 +164280,19 @@ var InteractionsPanel = class extends BasePanel {
       }
       actions.appendChild(makeButton2("Edit", () => this.openObject(item2.tag)));
       actions.appendChild(makeButton2("Inspect", () => this.inspect(item2.tag)));
-      card8.appendChild(actions);
+      card9.appendChild(actions);
       if (this.inspecting === item2.tag) {
-        if (!this.inspection) card8.appendChild(note2("Requesting current structure observations\u2026"));
+        if (!this.inspection) card9.appendChild(note3("Requesting current structure observations\u2026"));
         else {
           const data = this.inspection;
-          card8.appendChild(note2(`${data.method} \xB7 ${data.total} observations`));
-          this.metadata(card8, JSON.stringify(data.parameters));
-          card8.appendChild(note2(`Calculation scope: ${JSON.stringify(data.evaluation_scope)}`));
-          if (data.limit_reason) card8.appendChild(note2(data.limit_reason));
+          card9.appendChild(note3(`${data.method} \xB7 ${data.total} observations`));
+          this.metadata(card9, JSON.stringify(data.parameters));
+          card9.appendChild(note3(`Calculation scope: ${JSON.stringify(data.evaluation_scope)}`));
+          if (data.limit_reason) card9.appendChild(note3(data.limit_reason));
           for (const observation of data.observations) {
             const detail = box4();
             detail.setAttribute("data-molsysviewer-interaction-observation", String(observation.occurrence_index));
-            detail.appendChild(note2(`#${observation.occurrence_index} ${observation.interaction_type} \xB7 ${observation.participants.map((p6) => `${p6.role} [${p6.atom_indices.join(",")}]`).join(" \u2192 ")} \xB7 ${Object.entries(observation.measurements).map(([name, value]) => `${name}: ${value ?? "unavailable"} ${data.measure_units[name] ?? ""}`).join("; ")} \xB7 evidence ${observation.evidence ?? ""}${observation.image_vectors ? ` \xB7 images ${JSON.stringify(observation.image_vectors)}` : ""}`));
+            detail.appendChild(note3(`#${observation.occurrence_index} ${observation.interaction_type} \xB7 ${observation.participants.map((p6) => `${p6.role} [${p6.atom_indices.join(",")}]`).join(" \u2192 ")} \xB7 ${Object.entries(observation.measurements).map(([name, value]) => `${name}: ${value ?? "unavailable"} ${data.measure_units[name] ?? ""}`).join("; ")} \xB7 evidence ${observation.evidence ?? ""}${observation.image_vectors ? ` \xB7 images ${JSON.stringify(observation.image_vectors)}` : ""}`));
             const actions2 = row2();
             const identity3 = {
               tag: item2.tag,
@@ -163734,15 +164307,15 @@ var InteractionsPanel = class extends BasePanel {
               actions2.appendChild(button2);
             }
             detail.appendChild(actions2);
-            card8.appendChild(detail);
+            card9.appendChild(detail);
           }
           const pagination = row2();
           if (data.offset) pagination.appendChild(makeButton2("Previous", () => this.inspect(item2.tag, Math.max(0, data.offset - 50))));
           if (data.status !== "inspection-limit" && data.next_offset != null) pagination.appendChild(makeButton2("Next", () => this.inspect(item2.tag, data.next_offset)));
-          card8.appendChild(pagination);
+          card9.appendChild(pagination);
         }
       }
-      this.host.appendChild(card8);
+      this.host.appendChild(card9);
     }
     const stored = document.createElement("details");
     this.analysesDetails = stored;
@@ -163755,7 +164328,7 @@ var InteractionsPanel = class extends BasePanel {
     summary.textContent = `Stored analyses (${this.analyses.length})`;
     stored.appendChild(summary);
     const entries3 = [];
-    const status = note2("");
+    const status = note3("");
     status.setAttribute("role", "status");
     const filter5 = () => {
       let matches = 0;
@@ -163769,12 +164342,12 @@ var InteractionsPanel = class extends BasePanel {
     stored.appendChild(this.analysisSearch.field("Search stored analyses", filter5));
     stored.appendChild(status);
     for (const analysis of this.analyses) {
-      const card8 = box4();
-      card8.appendChild(note2(`${analysis.name} \xB7 ${analysis.n_occurrences} observations \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures \xB7 ${analysis.n_references} visual references`));
-      card8.setAttribute("data-molsysviewer-stored-analysis", analysis.name);
-      entries3.push({ card: card8, text: `${analysis.name} ${analysis.method}` });
-      card8.appendChild(note2(analysis.method));
-      this.metadata(card8, `${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`);
+      const card9 = box4();
+      card9.appendChild(note3(`${analysis.name} \xB7 ${analysis.n_occurrences} observations \xB7 ${analysis.n_evaluated_structures}/${analysis.n_structures} structures \xB7 ${analysis.n_references} visual references`));
+      card9.setAttribute("data-molsysviewer-stored-analysis", analysis.name);
+      entries3.push({ card: card9, text: `${analysis.name} ${analysis.method}` });
+      card9.appendChild(note3(analysis.method));
+      this.metadata(card9, `${JSON.stringify(analysis.parameters)} \xB7 ${JSON.stringify(analysis.software)}`);
       const actions = row2();
       actions.appendChild(makeButton2("Use", () => {
         this.openForm();
@@ -163791,11 +164364,11 @@ var InteractionsPanel = class extends BasePanel {
       remove3.disabled = analysis.n_references > 0 || this.deletionPending !== null || !this.backendAvailable;
       remove3.title = analysis.n_references > 0 ? "Remove this analysis's visual sets first." : "Review scientific data deletion.";
       actions.appendChild(remove3);
-      card8.appendChild(actions);
+      card9.appendChild(actions);
       if (this.deletionTarget === analysis.name) {
         const confirmation = box4();
         confirmation.setAttribute("data-molsysviewer-analysis-delete-confirmation", analysis.name);
-        confirmation.appendChild(note2(`Delete scientific analysis \u201C${analysis.name}\u201D? This cannot be undone and clears all scene Undo/Redo history.`));
+        confirmation.appendChild(note3(`Delete scientific analysis \u201C${analysis.name}\u201D? This cannot be undone and clears all scene Undo/Redo history.`));
         const confirm2 = makeButton2(this.deletionPending ? "Deleting\u2026" : "Confirm deletion", () => {
           if (this.deletionPending) return;
           this.deletionPending = studioRequestId("delete-analysis");
@@ -163816,14 +164389,14 @@ var InteractionsPanel = class extends BasePanel {
         });
         cancel.disabled = this.deletionPending !== null;
         confirmation.append(confirm2, cancel);
-        card8.appendChild(confirmation);
+        card9.appendChild(confirmation);
       }
-      stored.appendChild(card8);
+      stored.appendChild(card9);
     }
     filter5();
     this.host.appendChild(stored);
     if (this.deletionMessage) {
-      const status2 = note2(this.deletionMessage);
+      const status2 = note3(this.deletionMessage);
       status2.setAttribute("role", "status");
       this.host.appendChild(status2);
     }
@@ -163936,7 +164509,7 @@ var INPUT_STYLE3 = {
   color: "#fff",
   fontSize: "11px"
 };
-function card7() {
+function card8() {
   const element = document.createElement("div");
   Object.assign(element.style, {
     display: "flex",
@@ -164121,7 +164694,7 @@ var ShapesPanel = class extends BasePanel {
     return globalCard;
   }
   renderNewShapeCard() {
-    const formCard = card7();
+    const formCard = card8();
     formCard.setAttribute("data-molsysviewer-shape-new-card", "true");
     Object.assign(formCard.style, {
       display: "flex",
@@ -164453,7 +165026,7 @@ var ShapesPanel = class extends BasePanel {
     return formCard;
   }
   renderShape(item2) {
-    const row3 = card7();
+    const row3 = card8();
     row3.setAttribute("data-molsysviewer-shape-tag", item2.tag);
     row3.setAttribute("data-molsysviewer-list-search-text", [item2.tag, item2.kind, item2.owner, item2.layerTag, item2.title, item2.subtitle].filter(Boolean).join(" "));
     row3.setAttribute("data-molsysviewer-shape-op", item2.op);
@@ -166352,6 +166925,8 @@ var GroupPanel = class {
     this.layersPanel = new LayersPanel(this.makePanelContext("layers"));
     this.viewportSection = this.createSection("viewport");
     this.viewportPanel = new ViewportPanel(this.makePanelContext("viewport"));
+    const movieSection = this.hasAuthority ? this.createSection("movie") : void 0;
+    if (movieSection) this.moviePanel = new MoviePanel(this.makePanelContext("movie"));
     this.exportSection = this.createSection("export");
     this.exportPanel = new ExportPanel(
       this.makePanelContext("export"),
@@ -166390,6 +166965,7 @@ var GroupPanel = class {
     if (loadSection && this.loadPanel) {
       registryMap.set("load", ["Load", "Molecular systems", loadSection, this.loadPanel]);
     }
+    if (movieSection && this.moviePanel) registryMap.set("movie", ["Movie", "Empty", movieSection, this.moviePanel]);
     const defaultOrder = [
       ...this.hasAuthority ? ["load"] : [],
       "system",
@@ -166402,6 +166978,7 @@ var GroupPanel = class {
       "shapes",
       "layers",
       "viewport",
+      ...this.hasAuthority ? ["movie"] : [],
       "export"
     ];
     let tabOrder = [...defaultOrder];
@@ -166508,6 +167085,7 @@ var GroupPanel = class {
       shapes: "Manage custom 3D geometric shapes and objects in the scene.",
       layers: "Group scene objects in layers and control their visibility.",
       viewport: "Adjust background color, lighting, camera, and display parameters.",
+      movie: "Author, preview and export a Movie from the current scene (experimental).",
       export: "Download PNG images and HTML views; save or restore scene states and experimental sessions."
     };
     const tooltip = tooltips[key2];
@@ -166854,6 +167432,9 @@ var GroupPanel = class {
   }
   setImageResult(pending, message) {
     this.exportPanel.setImageResult(pending, message);
+  }
+  setMovieState(state) {
+    this.moviePanel?.setState(state);
   }
   setSections(items, settings) {
     this.viewportPanel.setSections(items, settings);
@@ -167824,9 +168405,9 @@ var AddonsPanel = class {
         this.workspaceOverviewHost.appendChild(diagHeader);
         diagnosticsRendered = true;
       }
-      const card8 = document.createElement("div");
-      card8.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
-      Object.assign(card8.style, {
+      const card9 = document.createElement("div");
+      card9.setAttribute("data-molsysviewer-addons-addon-discovery-failure", failure.source);
+      Object.assign(card9.style, {
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -167857,11 +168438,11 @@ var AddonsPanel = class {
       badge.textContent = failure.kind === "lifecycle" ? "Lifecycle Error" : "Discovery Error";
       header3.appendChild(name);
       header3.appendChild(badge);
-      card8.appendChild(header3);
+      card9.appendChild(header3);
       const desc = document.createElement("div");
       Object.assign(desc.style, { fontSize: "10px", color: "rgba(252,165,165,0.72)" });
       desc.textContent = failure.reason || "Error loading entry point.";
-      card8.appendChild(desc);
+      card9.appendChild(desc);
       const traceBox = document.createElement("pre");
       Object.assign(traceBox.style, {
         display: "none",
@@ -167881,8 +168462,8 @@ var AddonsPanel = class {
       traceBox.style.display = "block";
       disclosure.appendChild(disclosureTitle);
       disclosure.appendChild(traceBox);
-      card8.appendChild(disclosure);
-      this.workspaceOverviewHost.appendChild(card8);
+      card9.appendChild(disclosure);
+      this.workspaceOverviewHost.appendChild(card9);
     }
   }
   // ── Left Column: Workspace Navigation (Mimicking Studio layout) ──
@@ -168181,8 +168762,8 @@ var HoverTooltip = class {
       });
     }
   }
-  setLabels(labels) {
-    const text2 = labels.filter((l) => !!l).join(" \xB7 ");
+  setLabels(labels2) {
+    const text2 = labels2.filter((l) => !!l).join(" \xB7 ");
     if (!text2) {
       this.el.style.display = "none";
       return;
@@ -170485,6 +171066,9 @@ var MolSysViewerController = class _MolSysViewerController {
           this.groupPanel.updateStudioAction(msg);
           this.addonsPanel.updateStudioAction(msg);
           break;
+        case "set_movie_state":
+          this.groupPanel.setMovieState(msg);
+          break;
         case "interaction_inspection":
           this.groupPanel.updateInteractionInspection(msg.request_id, msg.result);
           break;
@@ -172112,9 +172696,9 @@ var MolSysViewerController = class _MolSysViewerController {
             }`;
       document.head.appendChild(fontStyle);
     }
-    const card8 = document.createElement("div");
-    card8.setAttribute("data-molsysviewer-welcome-card", "true");
-    Object.assign(card8.style, {
+    const card9 = document.createElement("div");
+    card9.setAttribute("data-molsysviewer-welcome-card", "true");
+    Object.assign(card9.style, {
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -172160,7 +172744,7 @@ var MolSysViewerController = class _MolSysViewerController {
           <circle cx="80" cy="30" r="24" fill="url(#rad-yellow)" />
           <circle cx="115" cy="45" r="24" fill="url(#rad-blue)" />
         </svg>`;
-    card8.appendChild(svgContainer.firstElementChild);
+    card9.appendChild(svgContainer.firstElementChild);
     const titleEl = document.createElement("div");
     Object.assign(titleEl.style, {
       fontSize: "20px",
@@ -172173,7 +172757,7 @@ var MolSysViewerController = class _MolSysViewerController {
       fontFamily: "'Varela Round', system-ui, -apple-system, sans-serif"
     });
     titleEl.textContent = "MolSysViewer";
-    card8.appendChild(titleEl);
+    card9.appendChild(titleEl);
     const descEl = document.createElement("div");
     Object.assign(descEl.style, {
       fontSize: "12px",
@@ -172185,7 +172769,7 @@ var MolSysViewerController = class _MolSysViewerController {
       // Clean body text
     });
     descEl.textContent = "An interactive, high-performance molecular visualization workbench integrated directly into your notebook.";
-    card8.appendChild(descEl);
+    card9.appendChild(descEl);
     const codeBox = document.createElement("div");
     Object.assign(codeBox.style, {
       background: "rgba(0, 0, 0, 0.3)",
@@ -172250,7 +172834,7 @@ var MolSysViewerController = class _MolSysViewerController {
     const line3 = document.createElement("span");
     line3.textContent = "view.show()";
     codeBox.appendChild(line3);
-    card8.appendChild(codeBox);
+    card9.appendChild(codeBox);
     const btn = document.createElement("button");
     Object.assign(btn.style, {
       background: "linear-gradient(135deg, #ce5027 0%, #ffcc00 100%)",
@@ -172289,12 +172873,12 @@ var MolSysViewerController = class _MolSysViewerController {
       btn.textContent = "Loading Crambin...";
       void this.handleMessage({ op: "load_pdb_id", pdb_id: "1CRN" });
     };
-    card8.appendChild(btn);
+    card9.appendChild(btn);
     if (!this.host.style.position || this.host.style.position === "static") {
       this.host.style.position = "relative";
     }
-    this.host.appendChild(card8);
-    this.welcomeCard = card8;
+    this.host.appendChild(card9);
+    this.welcomeCard = card9;
   }
   hideWelcomeCard() {
     if (this.welcomeCard) {
@@ -175271,7 +175855,7 @@ var PopupReplayLog = class {
     if (!message || typeof message !== "object") return;
     const op4 = operation(message);
     if (!op4) return;
-    if (op4 === "html_export_ready" || op4 === "studio_action_result" || op4 === "system_file_browse_result" || op4 === "system_load_result") return;
+    if (op4 === "html_export_ready" || op4 === "studio_action_result" || op4 === "set_movie_state" || op4 === "system_file_browse_result" || op4 === "system_load_result") return;
     if (op4 === "mount_addon_panel" || op4 === "addon_panel_message") return;
     if (isAutomaticBoxClear(message)) return;
     const boxAdd = (value) => value?.op === "add_network_links" && value.options?.tag === BOX_TAG;
@@ -175409,6 +175993,11 @@ var WidgetEnvelopeAdapter = class {
     return { kind: "message", message: payload, envelope: env };
   }
 };
+
+// src/messages/movie-studio-intent.ts
+function ownMovieIntent(message, owner, canvas) {
+  return message?.event === "interaction_context_action" && typeof message.action === "string" && message.action.startsWith("movie_") ? { ...message, _studio_owner_endpoint_id: owner, _capture_endpoint_id: canvas } : message;
+}
 
 // ../remote_protocol.json
 var remote_protocol_default = {
@@ -178041,7 +178630,7 @@ async function bootDocsView(opts) {
   const missingAuthority = makeMissingAuthorityReporter(hostEl);
   const controllerPromise = MolSysViewerController.create(target, (message) => {
     if (hasAuthority) {
-      notifyHost(ownFrameQuery(message, primaryEndpoint));
+      notifyHost(ownMovieIntent(ownFrameQuery(message, primaryEndpoint), primaryEndpoint, primaryEndpoint));
       return;
     }
     const projection = frontendSceneProjection(message);
@@ -178184,7 +178773,11 @@ async function bootDocsView(opts) {
         case "molsysviewer-popup-interaction":
           {
             if (hasAuthority) {
-              notifyHost(ownFrameQuery(data, popupMessage.channel.popupEndpointId));
+              notifyHost(ownMovieIntent(
+                ownFrameQuery(data, popupMessage.channel.popupEndpointId),
+                popupMessage.channel.popupEndpointId,
+                popupMessage.channel.mode === "canvas" ? popupMessage.channel.popupEndpointId : primaryEndpoint
+              ));
               break;
             }
             const projection = frontendSceneProjection(data);
@@ -178447,6 +179040,7 @@ function render({ model, el, runtimeSource }) {
   const workFileKey = (owner, requestId) => JSON.stringify([owner, requestId]);
   const sendEndpointAction = (message, owner, canvas) => {
     message = ownFrameQuery(message, owner);
+    message = ownMovieIntent(message, owner, canvas);
     const correlated = message.event === "interaction_context_action" && typeof message.request_id === "string" && message.request_id.trim() !== "";
     const owned = correlated ? { ...message, _studio_owner_endpoint_id: owner } : message;
     if (message.event !== "interaction_context_action" || message.action !== "save_work_file" && message.action !== "cancel_work_file") {

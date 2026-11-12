@@ -24,11 +24,59 @@ rebasing are implemented. Supported live environment capture and asynchronous
 rebase reviews extend that route. Reviewed version-2 target/frame imports have
 their first [source receiving](movie_import_receiving_20261111.json), including
 headless correspondence, native popup/session and decoded-media checks.
-Legacy migration, richer renderer/style
-catalogues, Studio authoring and a portable interactive web player remain open.
+The admitted legacy migration profile is source-received. Studio now has an
+experimental editor over this same Python owner; its host and catalogue scope
+is specified below. Richer renderer/style catalogues, complete authoring
+acceptance and a portable interactive web player remain open.
 The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
 separate numerical, native-node, popup, session and media evidence.
 The sections below describe the broader M1–M6 design and its remaining work.
+
+## Studio authoring: first M2 slice
+
+Connected Studio offers **Movie**, with Timeline, Preview and Export tabs.
+Timeline captures an initial scene and edits typed targets, properties and
+keys. Object-name suggestions come from that recorded scene; representations
+come from the Python catalogue. Track headers are paged by 20 and selected
+keys by 100. Inspection never sends the molecular coordinates or scientific
+analysis arrays as editor state. Scene metadata can still scale with the
+number of recorded objects; this is not an out-of-memory query promise.
+
+The accepted plan remains `view.movie`. The panel sends intents to a private
+Python adapter; it owns no second recipe, evaluator, rendering clock or
+scientific calculation. Unfinished forms survive navigation and unrelated
+summaries. Replacing a plan, removing a track and restoring the recorded scene
+require explicit confirmation. Existing-key replacement requires a separate
+choice. Validation errors preserve the last accepted recipe and molecular data.
+
+Every edit carries the Movie revision. A concurrent Python/other-window edit
+keeps the form but disables applying it until the user reviews the updated
+plan and chooses **Use kept draft**. The server also rejects a stale command
+that was already in transit. An unrelated seek reply cannot clear this gate
+or discard unsaved duration/key values. The authenticated
+connector supplies both the intent owner and the actual canvas. Live capture,
+seek, preview and export use that canvas through private context variables;
+ordinary Python calls retain the primary-canvas default and unchanged
+signatures. Detached Studio opened from a canvas popup retains that canvas.
+Correlated editor pages and identifiers are never replayed into another popup.
+
+There is one owned long operation and a separate pause control. Jobs use the
+widget's existing callback host and its running asyncio loop. Closing their
+owner/canvas or the View retires queued/in-flight work; cancellation cannot
+publish a late recipe. The adapter never starts a worker thread, installs a
+global event-loop policy or calls `asyncio.run()` behind an interactive UI.
+Without the compatible renderer and integrated async host, live buttons are
+disabled and the reason is visible. The ordinary Qt host does not yet qualify
+this live route; an application-owned loop integration remains required.
+Static HTML has no Python editing authority and offers no Movie editor.
+
+Preview uses the existing arbitrary-time seek/play/pause/reset APIs. Export
+uses the existing bounded MP4, WebM and PNG/manifest ZIP writer, with progress,
+cancellation and explicit overwrite/overlay policy. The destination is a path
+in the Python session, including for a remote session. Browser download,
+portable web presentation, visible DOM-overlay composition and the complete
+integrated scientific story remain separate M4/M5 work. This slice does not
+complete #320 or qualify installed, hosted, actual-notebook, Qt or human use.
 
 ## One model, several consumers
 

@@ -915,6 +915,14 @@ asking the maintainer for the final documentary review. The existing ledger
 owns detailed IDs and evidence; no new percentage, publication authorization
 or resumption of postponed human tests follows from this objective.
 
+The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
+first Timeline/Preview/Export editor over the shared Python API: typed keys,
+explicit review of drafts after Python edits, popup-owned capture and nested
+detached-Studio preview/export. Its native bridge, source guards and retained
+failures have bounded scope. M2 host/accessibility receiving, M4 portable web
+and composition, and the integrated M5 story remain open; follow #320's
+active plan. No audit counter, manual pause or publication state changes.
+
 The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
 receives #344's source recurrence: followers retain coherent prefixes until a
 native draw; scientific frame queries survive foreign scene ownership and
