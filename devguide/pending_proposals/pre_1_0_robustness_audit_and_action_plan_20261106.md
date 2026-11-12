@@ -23,6 +23,16 @@ correction are no longer waiting for provider implementation; their received
 and still-pending consumer scopes are distinguished in the dashboard below.
 Covering hosted, installed and postponed human evidence remain separate.
 
+**E2 host-memory follow-up — 2026-11-12:** the
+[matched controls](../jupyter_memory_host_controls_receiving_20261112.json)
+isolate Jupyter active-cell-toolbar DOM/event growth without molecular imports.
+Retired molecular controllers and coordinate buffers collect; three complete
+scientific cycles with explicit isolated host ablation pass. Receive
+uibcdf/molsysmt#723's host controls and memory metrology before the next
+comparable long campaign. Original thirty functional passes remain; E2 and
+both counters above are unchanged. The 4.6.5 host comparison is diagnostic,
+not an environment upgrade or a received fix.
+
 **Previous source delivery — 2026-11-10, independent construction:**
 [The construction receipt](../molsysmt_construction_receiving_20261110.json)
 records **37/46 (80.4%) source-delivered**, adding original D6.5 through
@@ -669,8 +679,9 @@ plan plus #705 evidence.
 4. Retain the completed scale anchors and fifteen correct same-kernel cycles.
    Retain #356's corrected backing-buffer guard and #363's upstream monitoring.
    Receive MolSysMT #718 / PR #721's readiness correction and #364's actual-kernel
-   provenance. Retain the thirty passing functional cycles and attribute the
-   cross-block browser-memory growth with a smaller controlled run; keep the
+   provenance. Retain the thirty passing functional cycles and the matched
+   host-memory controls; receive uibcdf/molsysmt#723's sampling method, separate API/timing
+   effects and identify the qualification host before the next long campaign. Keep the
    original `513` failure and #354's observation separate. Retain
    source/installed/human scopes separately. Complete mandatory Movie #320;
    B3.6/E3 remain separate recommendations and E4 human review remains postponed.
@@ -1263,8 +1274,8 @@ one kernel/process for three blocks of ten load/edit/query/window/save/recover/
 close cycles, targeting a 20–30 minute observation window. Each block records
 actual elapsed time and cycle counts. Keep an independent witness View, exercise
 both popup types, close only owned resources and sample live resources/memory/
-latencies after each block and at completion. Reuse/instrument the existing
-actual-Jupyter receiver; it currently has no `--cycles`/`--duration` contract.
+latencies after each block and at completion. Reuse the existing
+actual-Jupyter receiver's explicit `--cycles`/`--active-seconds` contract.
 Restarting its kernel for every repetition does not test cumulative retention.
 The maintainer adopts this workload/runtime envelope on 2026-11-10, under the
 8 logical CPU / 6 GiB ceiling, zero swap and shared-resource stops; execution

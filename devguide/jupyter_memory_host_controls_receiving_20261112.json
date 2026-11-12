@@ -1,0 +1,1239 @@
+{
+  "schema": "molsysviewer.jupyter_memory_host_controls@1",
+  "date_utc": "2026-11-12",
+  "issue": "uibcdf/molsysviewer#356",
+  "plan_issue": "uibcdf/molsysviewer#315",
+  "viewer_source_checkpoint": "67618cb28a6bc6cb7143466b216cab1a6a68af36",
+  "viewer_runtime_source": "c5115dff7f94fe17b5724e4863465a803c76f60e",
+  "runtime_sha256": "c251e22e920c1d780bfbed755927c48a4888b353639d5341157915be2ea1e9ff",
+  "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+  "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+  "scope": "Private local source diagnostics; actual Jupyter/Mol* and explicitly separated plain notebooks. Not a clean solver installation, hosted gate, thirty-cycle replacement, external publication or human acceptance. No change to routine Conda or user Jupyter configuration.",
+  "controls": {
+    "522_payload_volume": {
+      "schedule_structures": [
+        1,
+        1,
+        5000,
+        5000,
+        5000,
+        1,
+        1
+      ],
+      "cycles": [
+        {
+          "cycle": 1,
+          "structures": 1,
+          "heap_after_clear_bytes": 99017568,
+          "dom": {
+            "documents": 75,
+            "nodes": 13509,
+            "jsEventListeners": 20929
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 1
+        },
+        {
+          "cycle": 2,
+          "structures": 1,
+          "heap_after_clear_bytes": 100872948,
+          "dom": {
+            "documents": 75,
+            "nodes": 14806,
+            "jsEventListeners": 24979
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 2
+        },
+        {
+          "cycle": 3,
+          "structures": 5000,
+          "heap_after_clear_bytes": 102187448,
+          "dom": {
+            "documents": 75,
+            "nodes": 16103,
+            "jsEventListeners": 29029
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 3
+        },
+        {
+          "cycle": 4,
+          "structures": 5000,
+          "heap_after_clear_bytes": 103600540,
+          "dom": {
+            "documents": 75,
+            "nodes": 17400,
+            "jsEventListeners": 33079
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 4
+        },
+        {
+          "cycle": 5,
+          "structures": 5000,
+          "heap_after_clear_bytes": 104665116,
+          "dom": {
+            "documents": 75,
+            "nodes": 18697,
+            "jsEventListeners": 37129
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 5
+        },
+        {
+          "cycle": 6,
+          "structures": 1,
+          "heap_after_clear_bytes": 105646388,
+          "dom": {
+            "documents": 75,
+            "nodes": 19994,
+            "jsEventListeners": 41179
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 6
+        },
+        {
+          "cycle": 7,
+          "structures": 1,
+          "heap_after_clear_bytes": 106773192,
+          "dom": {
+            "documents": 75,
+            "nodes": 21293,
+            "jsEventListeners": 45230
+          },
+          "living_controllers": 1,
+          "living_coordinate_buffers": 1,
+          "living_model_proxies": 1,
+          "retired_elements_alive": 7
+        }
+      ],
+      "seconds": 133.499,
+      "conclusion": "Every retired 744-byte/3,720,000-byte molecular coordinate buffer and controller collects; only the independent witness remains. Model proxies collect but retired host elements remain. Size alone does not explain UI growth."
+    },
+    "524_no_new_view_mixed": {
+      "schedule_structures": [
+        0,
+        0,
+        1,
+        5000,
+        0,
+        0,
+        5000,
+        1
+      ],
+      "cycles": [
+        {
+          "cycle": 1,
+          "structures": 0,
+          "heap_after_clear_bytes": 99069648,
+          "dom": {
+            "documents": 75,
+            "nodes": 13557,
+            "jsEventListeners": 20929
+          }
+        },
+        {
+          "cycle": 2,
+          "structures": 0,
+          "heap_after_clear_bytes": 100403792,
+          "dom": {
+            "documents": 75,
+            "nodes": 14848,
+            "jsEventListeners": 24979
+          }
+        },
+        {
+          "cycle": 3,
+          "structures": 1,
+          "heap_after_clear_bytes": 102607024,
+          "dom": {
+            "documents": 75,
+            "nodes": 16144,
+            "jsEventListeners": 29029
+          }
+        },
+        {
+          "cycle": 4,
+          "structures": 5000,
+          "heap_after_clear_bytes": 104561052,
+          "dom": {
+            "documents": 75,
+            "nodes": 17441,
+            "jsEventListeners": 33079
+          }
+        },
+        {
+          "cycle": 5,
+          "structures": 0,
+          "heap_after_clear_bytes": 105624840,
+          "dom": {
+            "documents": 75,
+            "nodes": 18731,
+            "jsEventListeners": 37129
+          }
+        },
+        {
+          "cycle": 6,
+          "structures": 0,
+          "heap_after_clear_bytes": 106662788,
+          "dom": {
+            "documents": 75,
+            "nodes": 20021,
+            "jsEventListeners": 41179
+          }
+        },
+        {
+          "cycle": 7,
+          "structures": 5000,
+          "heap_after_clear_bytes": 108007372,
+          "dom": {
+            "documents": 75,
+            "nodes": 21318,
+            "jsEventListeners": 45229
+          }
+        },
+        {
+          "cycle": 8,
+          "structures": 1,
+          "heap_after_clear_bytes": 109770968,
+          "dom": {
+            "documents": 75,
+            "nodes": 22615,
+            "jsEventListeners": 49279
+          }
+        }
+      ],
+      "global_listener_type_counts_unchanged": true,
+      "seconds": 58.995,
+      "conclusion": "The same approximately 1,300-node/4,050-event growth per three-cell cycle also occurs when no new molecular view is created."
+    },
+    "525_plain_toolbar_keyboard": {
+      "baseline": {
+        "heap_bytes": 56848760,
+        "dom": {
+          "documents": 73,
+          "nodes": 8783,
+          "jsEventListeners": 16467
+        }
+      },
+      "cycles": [
+        {
+          "cycle": 1,
+          "method": "toolbar",
+          "heap_bytes": 58642636,
+          "heap_delta_bytes": 1793876,
+          "dom": {
+            "documents": 74,
+            "nodes": 10338,
+            "jsEventListeners": 21460
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 1555,
+            "jsEventListeners": 4993
+          }
+        },
+        {
+          "cycle": 2,
+          "method": "toolbar",
+          "heap_bytes": 60023672,
+          "heap_delta_bytes": 3174912,
+          "dom": {
+            "documents": 74,
+            "nodes": 11889,
+            "jsEventListeners": 26320
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 3106,
+            "jsEventListeners": 9853
+          }
+        },
+        {
+          "cycle": 3,
+          "method": "toolbar",
+          "heap_bytes": 61384176,
+          "heap_delta_bytes": 4535416,
+          "dom": {
+            "documents": 74,
+            "nodes": 13434,
+            "jsEventListeners": 31180
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 4651,
+            "jsEventListeners": 14713
+          }
+        },
+        {
+          "cycle": 4,
+          "method": "keyboard",
+          "heap_bytes": 62624760,
+          "heap_delta_bytes": 5776000,
+          "dom": {
+            "documents": 74,
+            "nodes": 14985,
+            "jsEventListeners": 36040
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 6202,
+            "jsEventListeners": 19573
+          }
+        },
+        {
+          "cycle": 5,
+          "method": "keyboard",
+          "heap_bytes": 63843144,
+          "heap_delta_bytes": 6994384,
+          "dom": {
+            "documents": 74,
+            "nodes": 16529,
+            "jsEventListeners": 40900
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 7746,
+            "jsEventListeners": 24433
+          }
+        },
+        {
+          "cycle": 6,
+          "method": "keyboard",
+          "heap_bytes": 65051280,
+          "heap_delta_bytes": 8202520,
+          "dom": {
+            "documents": 74,
+            "nodes": 18081,
+            "jsEventListeners": 45760
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 9298,
+            "jsEventListeners": 29293
+          }
+        },
+        {
+          "cycle": 7,
+          "method": "toolbar",
+          "heap_bytes": 66211004,
+          "heap_delta_bytes": 9362244,
+          "dom": {
+            "documents": 74,
+            "nodes": 19625,
+            "jsEventListeners": 50620
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 10842,
+            "jsEventListeners": 34153
+          }
+        }
+      ],
+      "seconds": 25.276
+    },
+    "526_plain_detached_dom": {
+      "measurements": {
+        "baseline": {
+          "heap_bytes": 56914212,
+          "dom": {
+            "documents": 73,
+            "nodes": 8783,
+            "jsEventListeners": 16467
+          }
+        },
+        "cycles": [
+          {
+            "cycle": 1,
+            "method": "toolbar",
+            "heap_bytes": 58752012,
+            "heap_delta_bytes": 1837800,
+            "dom": {
+              "documents": 73,
+              "nodes": 10327,
+              "jsEventListeners": 21327
+            },
+            "dom_delta": {
+              "documents": 0,
+              "nodes": 1544,
+              "jsEventListeners": 4860
+            }
+          },
+          {
+            "cycle": 2,
+            "method": "keyboard",
+            "heap_bytes": 60075712,
+            "heap_delta_bytes": 3161500,
+            "dom": {
+              "documents": 74,
+              "nodes": 11885,
+              "jsEventListeners": 26320
+            },
+            "dom_delta": {
+              "documents": 1,
+              "nodes": 3102,
+              "jsEventListeners": 9853
+            }
+          }
+        ],
+        "seconds": 13.937
+      },
+      "detached_dom": {
+        "trees": 940,
+        "most_common_classes": [
+          [
+            "lm-Menu-item",
+            471
+          ],
+          [
+            "lm-Menu-itemIcon",
+            471
+          ],
+          [
+            "lm-Menu-itemLabel",
+            471
+          ],
+          [
+            "lm-Menu-itemShortcut",
+            471
+          ],
+          [
+            "lm-Menu-itemSubmenuIcon",
+            471
+          ],
+          [
+            "f1vya9e0",
+            378
+          ],
+          [
+            "lm-mod-disabled",
+            270
+          ],
+          [
+            "jp-icon3",
+            178
+          ],
+          [
+            "lm-Widget",
+            142
+          ],
+          [
+            "control",
+            80
+          ],
+          [
+            "content",
+            79
+          ],
+          [
+            "jp-CommandToolbarButton",
+            78
+          ],
+          [
+            "jp-Toolbar-item",
+            78
+          ],
+          [
+            "lm-mod-hidden",
+            78
+          ],
+          [
+            "jp-ToolbarButtonComponent",
+            78
+          ],
+          [
+            "lm-mod-collapsed",
+            49
+          ],
+          [
+            "lm-Menu",
+            32
+          ],
+          [
+            "lm-Menu-content",
+            32
+          ],
+          [
+            "jp-ThemedContainer",
+            28
+          ],
+          [
+            "jp-icon-selectable",
+            18
+          ]
+        ],
+        "scope": "Bounded class summary; complete original root/class observations retained privately."
+      },
+      "conclusion": "Plain kernel explicitly excludes MolSysViewer/MolSysMT/AnyWidget imports; detached trees include Jupyter cell toolbars and their buttons. This is not a complete retaining chain."
+    },
+    "528_toolbar_hidden_only": {
+      "baseline": {
+        "heap_bytes": 56901012,
+        "dom": {
+          "documents": 73,
+          "nodes": 8778,
+          "jsEventListeners": 16467
+        }
+      },
+      "cycles": [
+        {
+          "cycle": 1,
+          "method": "toolbar",
+          "heap_bytes": 58612588,
+          "heap_delta_bytes": 1711576,
+          "dom": {
+            "documents": 73,
+            "nodes": 10331,
+            "jsEventListeners": 21327
+          },
+          "dom_delta": {
+            "documents": 0,
+            "nodes": 1553,
+            "jsEventListeners": 4860
+          }
+        },
+        {
+          "cycle": 2,
+          "method": "keyboard",
+          "heap_bytes": 60081924,
+          "heap_delta_bytes": 3180912,
+          "dom": {
+            "documents": 74,
+            "nodes": 11886,
+            "jsEventListeners": 26320
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 3108,
+            "jsEventListeners": 9853
+          }
+        }
+      ],
+      "seconds": 14.1,
+      "conclusion": "showToolbar=false is received as zero visible cell toolbars but does not stop DOM/event growth. Hiding is not extension ablation."
+    },
+    "529_isolated_jupyterlab_465": {
+      "baseline": {
+        "heap_bytes": 53177308,
+        "dom": {
+          "documents": 73,
+          "nodes": 8834,
+          "jsEventListeners": 16482
+        }
+      },
+      "cycles": [
+        {
+          "cycle": 1,
+          "method": "toolbar",
+          "heap_bytes": 54435324,
+          "heap_delta_bytes": 1258016,
+          "dom": {
+            "documents": 73,
+            "nodes": 10382,
+            "jsEventListeners": 21342
+          },
+          "dom_delta": {
+            "documents": 0,
+            "nodes": 1548,
+            "jsEventListeners": 4860
+          }
+        },
+        {
+          "cycle": 2,
+          "method": "toolbar",
+          "heap_bytes": 55333680,
+          "heap_delta_bytes": 2156372,
+          "dom": {
+            "documents": 74,
+            "nodes": 11942,
+            "jsEventListeners": 26335
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 3108,
+            "jsEventListeners": 9853
+          }
+        },
+        {
+          "cycle": 3,
+          "method": "toolbar",
+          "heap_bytes": 56228864,
+          "heap_delta_bytes": 3051556,
+          "dom": {
+            "documents": 74,
+            "nodes": 13486,
+            "jsEventListeners": 31195
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 4652,
+            "jsEventListeners": 14713
+          }
+        },
+        {
+          "cycle": 4,
+          "method": "keyboard",
+          "heap_bytes": 56964964,
+          "heap_delta_bytes": 3787656,
+          "dom": {
+            "documents": 74,
+            "nodes": 15034,
+            "jsEventListeners": 36055
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 6200,
+            "jsEventListeners": 19573
+          }
+        },
+        {
+          "cycle": 5,
+          "method": "keyboard",
+          "heap_bytes": 57660636,
+          "heap_delta_bytes": 4483328,
+          "dom": {
+            "documents": 74,
+            "nodes": 16586,
+            "jsEventListeners": 40915
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 7752,
+            "jsEventListeners": 24433
+          }
+        },
+        {
+          "cycle": 6,
+          "method": "keyboard",
+          "heap_bytes": 58329928,
+          "heap_delta_bytes": 5152620,
+          "dom": {
+            "documents": 74,
+            "nodes": 18133,
+            "jsEventListeners": 45775
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 9299,
+            "jsEventListeners": 29293
+          }
+        },
+        {
+          "cycle": 7,
+          "method": "toolbar",
+          "heap_bytes": 59025388,
+          "heap_delta_bytes": 5848080,
+          "dom": {
+            "documents": 74,
+            "nodes": 19677,
+            "jsEventListeners": 50635
+          },
+          "dom_delta": {
+            "documents": 1,
+            "nodes": 10843,
+            "jsEventListeners": 34153
+          }
+        }
+      ],
+      "seconds": 23.381,
+      "wheel": {
+        "schema": "molsysviewer.isolated_host_wheel@1",
+        "version": "4.6.5",
+        "filename": "jupyterlab-4.6.5-py3-none-any.whl",
+        "url": "https://files.pythonhosted.org/packages/41/8f/58a539ef036aca50891a06b283f044da84a6544177fb6e49217c5c5206c9/jupyterlab-4.6.5-py3-none-any.whl",
+        "bytes": 17331695,
+        "sha256": "cb96fc3d59d20b6f17d0cc1afe6e0508a61d881ab39be89236c55b01fa0e2b99",
+        "source": "https://pypi.org/pypi/jupyterlab/4.6.5/json",
+        "scope": "Official pure wheel copied for isolated host comparison; routine Conda environment not changed; not a qualified MolSysViewer/MolSysMT artifact pair."
+      },
+      "host_files_unchanged": true,
+      "conclusion": "Actual new Python import is asserted in the plain kernel; server log confirms the isolated package and application directory. JS heap growth is smaller, but approximately 1,550 nodes and 4,860 events still accumulate per three executions. Not a received fix or a justified development-environment upgrade."
+    },
+    "530_cell_toolbar_extension_ablation": {
+      "baseline": {
+        "heap_bytes": 56118116,
+        "dom": {
+          "documents": 67,
+          "nodes": 8233,
+          "jsEventListeners": 14791
+        }
+      },
+      "cycles": [
+        {
+          "cycle": 1,
+          "method": "toolbar",
+          "heap_bytes": 56653140,
+          "heap_delta_bytes": 535024,
+          "dom": {
+            "documents": 67,
+            "nodes": 8233,
+            "jsEventListeners": 14791
+          },
+          "dom_delta": {
+            "documents": 0,
+            "nodes": 0,
+            "jsEventListeners": 0
+          }
+        },
+        {
+          "cycle": 2,
+          "method": "keyboard",
+          "heap_bytes": 56875328,
+          "heap_delta_bytes": 757212,
+          "dom": {
+            "documents": 67,
+            "nodes": 8232,
+            "jsEventListeners": 14791
+          },
+          "dom_delta": {
+            "documents": 0,
+            "nodes": -1,
+            "jsEventListeners": 0
+          }
+        }
+      ],
+      "seconds": 13.239,
+      "conclusion": "The served page explicitly declares @jupyterlab/cell-toolbar-extension disabled and creates no cell toolbar. Across toolbar and keyboard execution cycles, event counts remain exactly constant; node count changes by 0 and -1. Jupyter configuration is isolated to this diagnostic server."
+    }
+  },
+  "source_delivered_counter": "38/46; unchanged",
+  "final_applicable_acceptance": "1/46; unchanged",
+  "metric_exclusion": {
+    "ArrayBuffer_prototype_enumeration": "522 Runtime.queryObjects returned zero even with a weakly observed live 264-byte witness buffer. Those totals fail a known-live control and are excluded. Molecular buffer lifetime claims use weak references, not zero prototype totals.",
+    "whole_heap_capture": "Not used; previous failed captures and their resource costs remain outside this method.",
+    "cross_host_attribution": "These controls establish a host-only DOM/event contribution; they do not numerically account for every byte in the earlier full thirty-cycle campaign."
+  },
+  "upstream_context": {
+    "sources": [
+      "https://github.com/jupyterlab/jupyterlab/pull/19370",
+      "https://github.com/jupyterlab/jupyterlab/releases/tag/v4.6.5",
+      "https://github.com/jupyterlab/jupyterlab/releases/tag/v4.6.6"
+    ],
+    "observation": "Upstream documents related lifecycle/toolkit fixes; local 4.6.5 still reproduces this activation-related growth. No claim of a new upstream retaining chain, complete published fix, or full 4.6.6 test. No upstream issue or comment published."
+  },
+  "retained_nonpasses": {
+    "521": "Sandbox could not connect to user systemd bus; no browser work occurred.",
+    "523": "Diagnostic fixture appended an extra stdout line to its exact-match marker output; unchanged 30-second marker wait failed. Only diagnostic output was corrected, not a product timeout.",
+    "527": "Diagnostic incorrectly required hidden toolbar elements to be absent. The subsequent guard requires zero visible toolbars and receives the hidden-only control separately."
+  },
+  "profiles": [
+    "volume-521-payload-comparison",
+    "volume-522-payload-comparison",
+    "volume-523-host-control",
+    "volume-524-host-control",
+    "volume-525-plain-jupyter",
+    "volume-526-plain-detached-dom",
+    "volume-527-cell-toolbar-control",
+    "volume-528-cell-toolbar-control",
+    "volume-529-jupyterlab465",
+    "volume-530-cell-toolbar-ablation",
+    "volume-531-scientific-ablation"
+  ],
+  "scientific_ablation_control": {
+    "profile": 531,
+    "cycles": 3,
+    "seconds": 206.826,
+    "unchanged_python_workload_sha256": "eed4e644e216499cd75d495e5ac252d68e54384af685e32ce7a5f86516081a4f",
+    "host": "Routine JupyterLab 4.6.4; active-cell-toolbar extension explicitly disabled in the isolated server",
+    "baseline": {
+      "heap": {
+        "usedSize": 100595764,
+        "totalSize": 102322176,
+        "embedderHeapUsedSize": 18526800,
+        "backingStorageSize": 30237344
+      },
+      "dom": {
+        "documents": 70,
+        "nodes": 18443,
+        "jsEventListeners": 21293
+      },
+      "weak": {
+        "controllers": [
+          {
+            "disposed": false,
+            "connected": true,
+            "atoms": 3983
+          }
+        ],
+        "payloads": [
+          {
+            "structures": 1,
+            "bytes": 47796,
+            "alive": true
+          }
+        ]
+      }
+    },
+    "cycles_observed": [
+      {
+        "cycle": 1,
+        "seconds": 69.274,
+        "actual_playback": {
+          "seconds": 12.258699999809265,
+          "draws": 5,
+          "distinct_frames": 5
+        },
+        "raw_performance_memory_bytes": 171410872,
+        "post_task_cdp_heap": {
+          "usedSize": 92062864,
+          "totalSize": 94011392,
+          "embedderHeapUsedSize": 20288176,
+          "backingStorageSize": 37166125
+        },
+        "post_task_dom": {
+          "documents": 71,
+          "nodes": 18598,
+          "jsEventListeners": 21320
+        },
+        "post_task_weak_lifetimes": {
+          "controllers": [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 3983
+            },
+            null
+          ],
+          "payloads": [
+            {
+              "structures": 1,
+              "bytes": 47796,
+              "alive": true
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            }
+          ]
+        }
+      },
+      {
+        "cycle": 2,
+        "seconds": 58.306,
+        "actual_playback": {
+          "seconds": 11.84510000014305,
+          "draws": 7,
+          "distinct_frames": 7
+        },
+        "raw_performance_memory_bytes": 167439420,
+        "post_task_cdp_heap": {
+          "usedSize": 93734756,
+          "totalSize": 95846400,
+          "embedderHeapUsedSize": 20567496,
+          "backingStorageSize": 37180351
+        },
+        "post_task_dom": {
+          "documents": 71,
+          "nodes": 18612,
+          "jsEventListeners": 21321
+        },
+        "post_task_weak_lifetimes": {
+          "controllers": [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 3983
+            },
+            null
+          ],
+          "payloads": [
+            {
+              "structures": 1,
+              "bytes": 47796,
+              "alive": true
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            }
+          ]
+        }
+      },
+      {
+        "cycle": 3,
+        "seconds": 55.905,
+        "actual_playback": {
+          "seconds": 11.88589999985695,
+          "draws": 7,
+          "distinct_frames": 7
+        },
+        "raw_performance_memory_bytes": 150413473,
+        "post_task_cdp_heap": {
+          "usedSize": 94610940,
+          "totalSize": 97157120,
+          "embedderHeapUsedSize": 20629312,
+          "backingStorageSize": 37194506
+        },
+        "post_task_dom": {
+          "documents": 71,
+          "nodes": 18626,
+          "jsEventListeners": 21321
+        },
+        "post_task_weak_lifetimes": {
+          "controllers": [
+            {
+              "disposed": false,
+              "connected": true,
+              "atoms": 3983
+            }
+          ],
+          "payloads": [
+            {
+              "structures": 1,
+              "bytes": 47796,
+              "alive": true
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            },
+            {
+              "structures": 5000,
+              "bytes": 3720000,
+              "alive": false
+            }
+          ]
+        }
+      }
+    ],
+    "kernel_imports_sha256": "4ce7bece00ffb39019b620ae35f239f5d74822dd1a9930b09b2a6498f5d1b2a3",
+    "checks": "Unmodified Python coordinate, native interaction/query, actual playback, camera/witness invariance, stale-edit rejection, coherent save/recovery and both-popup assertions pass. Actual kernel imports and hidden-HUD focus are received. All retired main-page controllers and coordinate buffers collect; the sole surviving buffer is the 47,796-byte independent witness.",
+    "interpretation": "Small post-task heap increases remain in this three-cycle diagnostic; timing and API both differ from the raw sample. This neither proves every retained byte intentional nor replaces thirty-cycle/default-host acceptance."
+  },
+  "owner_receiving_issue": "uibcdf/molsysmt#723",
+  "profile_outcomes": {
+    "volume-521-payload-comparison": {
+      "native_exit": 1,
+      "seconds": 1.8141086010728031,
+      "selected_inputs": 10184,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 0.8,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-522-payload-comparison": {
+      "native_exit": 0,
+      "seconds": 140.95719539700076,
+      "selected_inputs": 10184,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2354.3,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-523-host-control": {
+      "native_exit": 1,
+      "seconds": 52.763244923902676,
+      "selected_inputs": 10186,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2220.2,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-524-host-control": {
+      "native_exit": 0,
+      "seconds": 66.262332823826,
+      "selected_inputs": 10186,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2339.4,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-525-plain-jupyter": {
+      "native_exit": 0,
+      "seconds": 32.27828793996014,
+      "selected_inputs": 10188,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1599.3,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-526-plain-detached-dom": {
+      "native_exit": 0,
+      "seconds": 19.82633446692489,
+      "selected_inputs": 10190,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1595.8,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-527-cell-toolbar-control": {
+      "native_exit": 1,
+      "seconds": 16.130712260026485,
+      "selected_inputs": 10192,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1593.7,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-528-cell-toolbar-control": {
+      "native_exit": 0,
+      "seconds": 20.07372346497141,
+      "selected_inputs": 10192,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1591.5,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-529-jupyterlab465": {
+      "native_exit": 0,
+      "seconds": 30.627403870923445,
+      "selected_inputs": 10828,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1626.5,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-530-cell-toolbar-ablation": {
+      "native_exit": 0,
+      "seconds": 20.07845631078817,
+      "selected_inputs": 10195,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1586.8,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    },
+    "volume-531-scientific-ablation": {
+      "native_exit": 0,
+      "seconds": 214.58914572908543,
+      "selected_inputs": 10197,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2959.5,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      }
+    }
+  },
+  "interpretation": {
+    "established": "A host-only DOM/event growth contribution is causally isolated to the active-cell-toolbar extension under these tests. Closing the molecular views releases their observed controllers and coordinate buffers. Raw and settled memory samples differ substantially.",
+    "not_established": "No complete upstream retaining chain, full resolution in a published host, universal memory bound, global attribution of all earlier thirty-cycle growth, or final E2 acceptance.",
+    "next": "Receive MolSysMT #723 sampling and matched-host controls through its owner PR workflow; compare APIs at the same observation point, choose and record the qualification host, then repeat the adopted long campaign when its inputs/method are comparable. Preserve the original thirty functional passes."
+  },
+  "custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "jupyter-memory-controls-20261112",
+    "file_count": 1658,
+    "payload_bytes": 126638233,
+    "manifest_sha256": "39e2e56677c23f65fdf6f78434b0e28ede20a81fc579831bdfd77ec24282f0ce",
+    "permissions": "directories 0700; files 0600",
+    "runtime_and_ephemeral_configuration_files_excluded": true,
+    "raw_logs_remain_private_and_may_contain_historical_ephemeral_urls": true,
+    "originals_deleted": false,
+    "prior_scientific_source_custody": "jupyter-receiver-20261112"
+  },
+  "validation": {
+    "schema": "molsysviewer.documentation_receiving@1",
+    "invocations": [
+      {
+        "junit": "volume-532-reporting.junit.xml",
+        "sha256": "578a6b51930aa35b2cfabdf8962d0ffd4cd230a22c4d929fdb745a72e5031185",
+        "cases": 431,
+        "nonpasses": [
+          {
+            "case": "tests.test_devguide_links::test_relative_links_resolve_in_a_clean_checkout",
+            "status": "failed"
+          }
+        ]
+      },
+      {
+        "junit": "volume-533-links.junit.xml",
+        "sha256": "c2ef8a0baaa3ae07479fe24a34b918eaa85fea3f812ee94c77df1663d577b576",
+        "cases": 4,
+        "nonpasses": []
+      }
+    ],
+    "retained_native_failure": "532: new receipt existed but was not in Git index; clean-checkout link guard correctly failed. Staging only reviewed documents fixes that input. No guard or test expectation changed.",
+    "recovery": "533: affected four-case link file passes. Other 427 distinct previously passing cases retain their applicable results. The combined 431 latest per-test outcomes are all passed; this is explicitly two invocations, not one complete-green run.",
+    "distinct_latest_cases": 431,
+    "latest_status_counts": {
+      "passed": 431
+    },
+    "checks": {
+      "index": {
+        "exit": 0,
+        "output": "generated indexes are up to date\n"
+      },
+      "diff": {
+        "exit": 0,
+        "output": ""
+      }
+    }
+  },
+  "validation_custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "jupyter-memory-quality-20261112",
+    "file_count": 16,
+    "payload_bytes": 8109762,
+    "manifest_sha256": "c2a6ab493ebe83ce3b3f1b5c0ad3abbe77e0dffec66a9894dd0e20969827ec70",
+    "permissions": "directories 0700; files 0600",
+    "originals_deleted": false
+  }
+}

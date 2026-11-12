@@ -907,6 +907,17 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [Jupyter memory control](jupyter_memory_host_controls_receiving_20261112.json)
+isolates a host-only DOM/event contribution to the active-cell-toolbar extension:
+plain notebooks reproduce it without molecular imports. Seven molecular-volume
+cycles release retired controllers/coordinate buffers; three complete scientific
+cycles with explicit isolated host ablation pass with nearly constant DOM/event
+counts. Raw and post-task/CDP heap readings differ; timing and API effects remain
+unseparated. JupyterLab 4.6.5 does not remove the observed host growth. Receive
+[MolSysMT #723](https://github.com/uibcdf/molsysmt/issues/723)'s metrology/host
+controls before the next comparable long campaign. E2/#356 remain partial;
+38/46 source delivery and 1/46 final acceptance are unchanged.
+
 The [Jupyter receiver receipt](jupyter_popup_controls_receiving_20261112.json)
 reproduces the hidden-controls focus race and receives its correction through
 [MolSysMT PR #721](https://github.com/uibcdf/molsysmt/pull/721). Two current-support
@@ -915,9 +926,12 @@ corrects the outer/inner provider attribution of nested attempts `513`/`515`;
 their original outcomes remain. Actual in-kernel origins and frozen inner
 scientific/addon/support bytes now identify the corrected thirty-cycle attempt:
 all thirty functional cycles pass in 1,749.912 s, with unchanged inputs and full
-owned-process retirement. Browser heap/charged memory still grows across blocks;
-attribute that with a smaller control before complete E2 memory acceptance.
+owned-process retirement. The original browser heap/charged-memory growth is
+retained under its original sampling method; the matched-host follow-up above
+does not globally requalify its memory acceptance.
 Owner integration and final qualification remain separate.
+
+**Earlier receipt scopes below retain their original outcomes:**
 
 The working [component-cache receiving](molstar_component_cache_receiving_20261112.json)
 identifies Mol*'s strong BasicData-keyed cache and receives the narrow local

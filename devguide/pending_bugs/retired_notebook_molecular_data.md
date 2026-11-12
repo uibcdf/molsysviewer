@@ -13,7 +13,7 @@ blocked_by: []
 supersedes: []
 ---
 
-# Retired notebook molecular data — cache correction; prolonged receiving pending
+# Retired notebook molecular data — host memory qualification pending
 
 After 15 complete E2 cycles in one actual Jupyter kernel, the independent
 1TCD witness is the only connected controller. Thirty other controllers remain
@@ -244,3 +244,34 @@ from 1,902.945 to 2,197.049 to 2,429.283 MiB. That is not by itself a retaining
 path, a leak diagnosis or evidence of a new Mol* defect. Attribute it with a
 small controlled comparison, retaining the original scientific and ownership
 checks; do not repeat full heaps or another thirty-cycle run blindly.
+
+## Host-only contribution received — 2026-11-12
+
+The [matched-host receipt](../jupyter_memory_host_controls_receiving_20261112.json)
+receives seven small/5,000-structure create–close cycles and a mixed control
+without new molecular views. Retired controllers, coordinate buffers and
+model proxies collect; detached host elements remain. A separate plain kernel
+explicitly imports neither MolSysViewer nor MolSysMT nor AnyWidget and still
+accumulates 10,842 DOM nodes and 34,153 event listeners over 21 executions.
+Both Run and Shift+Enter reproduce it. Removing the active-cell-toolbar
+extension only from the isolated server leaves event counts constant and node
+deltas at 0 and -1 in the matched control. Merely hiding its toolbar does not.
+The verified official JupyterLab 4.6.5 wheel still reproduces DOM/event growth;
+related upstream fixes do not constitute a received repair for this case.
+
+Three additional full scientific cycles with that explicit host ablation pass
+the unchanged Python workload, both popups, actual playback, independent
+1TCD witness and session recovery. Only the witness controller and its
+47,796-byte coordinate buffer survive. Post-task/CDP heap is 87.798, 89.392
+and 90.228 MiB; DOM nodes 18,598, 18,612 and 18,626; events 21,320, 21,321
+and 21,321. The original sampler reads 163.470, 159.683 and 143.445 MiB.
+Collection timing and metric API both change, so their individual contributions
+are not separated. Three diagnostic cycles are not prolonged acceptance or
+a complete attribution of every byte in the earlier campaign.
+
+[MolSysMT #723](https://github.com/uibcdf/molsysmt/issues/723) owns the receiver
+metrology follow-up: retain raw observations, compare APIs at the same sampling
+point, receive host-only controls and identify the qualification host before
+the next comparable long campaign. Keep #356/E2 partial. Routine Conda and
+user Jupyter settings are unchanged; no upstream publication or new dependency
+floor is inferred. Original failed diagnostic controls are retained separately.
