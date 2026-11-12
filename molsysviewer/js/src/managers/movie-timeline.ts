@@ -4,6 +4,7 @@ import { appearanceBaseline, appearanceValue, colorInterpolation, continuousAppe
     type Appearance, type AppearanceValue } from "./movie-appearance";
 
 const halfTurnTolerance = 1e-12;
+const cartesianCamera = "cartesian-constant-up@1";
 
 const collections = {
     annotation: "annotations",
@@ -17,7 +18,7 @@ const collections = {
 type VisibilityDomain = keyof typeof collections | "whole";
 type Visibility = { domain: VisibilityDomain; tag: string | null; visible: boolean };
 type CameraPose = { position: Vec3; target: Vec3; up: Vec3 };
-type CameraKey = { pose: CameraPose; distance: number; orientation: Quat };
+type CameraKey = { pose: CameraPose; distance: number; orientation: Quat; inputUp: Vec3 };
 type Easing = "linear" | "ease-in" | "ease-out" | "ease-in-out";
 type Key<T> = { time: number; value: T; easing: Easing };
 type MovieSample = {
@@ -79,6 +80,7 @@ function camera(value: unknown): CameraKey {
     const position = vector(pose.position);
     const target = vector(pose.target);
     const up = vector(pose.up);
+    const inputUp = Vec3.clone(up);
     const backward = Vec3.sub(Vec3(), position, target);
     const distance = Math.hypot(...backward);
     const upLength = Math.hypot(...up);
@@ -94,7 +96,50 @@ function camera(value: unknown): CameraKey {
     Vec3.scale(right, right, 1 / rightLength);
     Vec3.cross(up, backward, right);
     const orientation = Quat.fromMat3(Quat(), Mat3.fromColumns(Mat3(), right, up, backward));
-    return { pose: { position, target, up }, distance, orientation };
+    return { pose: { position, target, up }, distance, orientation, inputUp };
+}
+
+function checkCartesianSegments(baseline: CameraKey, keys: Key<CameraKey>[]): void {
+    let previous = baseline;
+    for (const key of keys) {
+        const current = key.value;
+        if (key.time === 0) { previous = current; continue; }
+        if (!previous.inputUp.every((value, i) => value === current.inputUp[i])) {
+            throw new Error("Cartesian Movie camera segments require a constant up vector.");
+        }
+        const upLength = Math.hypot(...previous.inputUp);
+        const up = previous.inputUp.map(value => value / upLength);
+        const directions = [previous, current].map(value => Vec3.sub(Vec3(), value.pose.position, value.pose.target));
+        for (const field of ["position", "target"] as const) {
+            if (!previous.pose[field].every((value, i) => Number.isFinite(current.pose[field][i] - value))) {
+                throw new Error("Cartesian Movie camera segment exceeds the finite coordinate range.");
+            }
+        }
+        const scale = Math.max(...directions.map(value => Math.hypot(...value)));
+        const perpendicular = directions.map(direction => {
+            const [x, y, z] = direction.map(value => value / scale);
+            return [up[1] * z - up[2] * y, up[2] * x - up[0] * z, up[0] * y - up[1] * x];
+        });
+        const [start, end] = perpendicular;
+        const delta = start.map((value, i) => end[i] - value);
+        const denominator = delta.reduce((sum, value) => sum + value * value, 0);
+        const fraction = denominator
+            ? Math.min(1, Math.max(0, -start.reduce((sum, value, i) => sum + value * delta[i], 0) / denominator)) : 0;
+        if (Math.hypot(...start.map((value, i) => value + fraction * delta[i])) <= 1e-12) {
+            throw new Error("Cartesian Movie camera segment crosses an unsafe viewing direction.");
+        }
+        previous = current;
+    }
+}
+
+function interpolateCartesianCamera(left: CameraKey, right: CameraKey, fraction: number): CameraPose {
+    const pose = {} as CameraPose;
+    for (const field of ["position", "target"] as const) {
+        const a = left.pose[field], b = right.pose[field];
+        pose[field] = Vec3.create(a[0] + (b[0] - a[0]) * fraction,
+            a[1] + (b[1] - a[1]) * fraction, a[2] + (b[2] - a[2]) * fraction);
+    }
+    return camera({ ...pose, up: left.inputUp }).pose;
 }
 
 function ease(fraction: number, easing: Easing): number {
@@ -198,10 +243,14 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
     { duration_ms: number; evaluate(time_ms: number): MovieSample } {
     const fields = ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"];
     if (value && typeof value === "object" && owns(value, "color_interpolation")) fields.push("color_interpolation");
+    if (value && typeof value === "object" && owns(value, "camera_interpolation")) fields.push("camera_interpolation");
     if (value && typeof value === "object" && owns(value, "provenance")) fields.push("provenance");
     const recipe = record(value, "Movie recipe", fields);
     if (owns(recipe, "color_interpolation") && recipe.color_interpolation !== colorInterpolation) {
         throw new Error("Unsupported Movie colour interpolation contract.");
+    }
+    if (owns(recipe, "camera_interpolation") && recipe.camera_interpolation !== cartesianCamera) {
+        throw new Error("Unsupported Movie camera interpolation contract.");
     }
     if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
     const duration = time(recipe.duration_ms);
@@ -286,6 +335,8 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
         }
     }
 
+    if (owns(recipe, "camera_interpolation")) checkCartesianSegments(baseCamera.value, poseTrack);
+    const interpolatePose = owns(recipe, "camera_interpolation") ? interpolateCartesianCamera : interpolateCamera;
     const visibilityRows = trackedVisibility ? Array.from(rows).filter(([id]) => visTracks.has(id)) : Array.from(rows);
     if (appearanceTracks.some(track => track.property === "color" || track.property === "background")
         && recipe.color_interpolation !== colorInterpolation) throw new Error("Movie colour interpolation must be explicit.");
@@ -299,7 +350,7 @@ export function compileMovieTimeline(value: unknown, { trackedVisibility = false
             const pose = !end || start.time === at
                 ? { position: Vec3.clone(start.value.pose.position), target: Vec3.clone(start.value.pose.target),
                     up: Vec3.clone(start.value.pose.up) }
-                : interpolateCamera(start.value, end.value, ease((at - start.time) / (end.time - start.time), start.easing));
+                : interpolatePose(start.value, end.value, ease((at - start.time) / (end.time - start.time), start.easing));
             return {
                 time_ms: at,
                 camera: pose,

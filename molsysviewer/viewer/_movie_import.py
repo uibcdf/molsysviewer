@@ -256,8 +256,9 @@ def _propose(movie, source, options, review_id):
             "tracks": tracks,
             "provenance": provenance,
         }
-        if version == 2 and "color_interpolation" in source:
-            data["color_interpolation"] = source["color_interpolation"]
+        for field in ("color_interpolation", "camera_interpolation"):
+            if field in source:
+                data[field] = source[field]
         try:
             view._preflight_state_import(scene, clear_first=True, on_conflict="raise")
             candidate = _MovieTimeline(data).to_dict()

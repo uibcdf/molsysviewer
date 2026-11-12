@@ -1,0 +1,464 @@
+{
+  "schema": "molsysviewer.movie_cartesian_receiving@1",
+  "date_utc": "2026-11-12",
+  "issue": "uibcdf/molsysviewer#320",
+  "audit_issue": "uibcdf/molsysviewer#315",
+  "source": {
+    "base": "d4c073aed2e69fc90cb311cc9e7d575f7c2f8cdb",
+    "kind": "Reviewed working-source tranche over this base; file hashes identify the executed implementation, not a published candidate.",
+    "files": {
+      "molsysviewer/viewer/_movie_timeline.py": "ad4e3ba2a740cc42155ffbd985f4425463ab25677242823cb7d5899b9bb3e5f6",
+      "molsysviewer/viewer/_movie_import.py": "ccf1dc0aeab0617fd8d58dd7cdd7df57386207e77c0d0309858dc77cd041422e",
+      "molsysviewer/js/src/managers/movie-timeline.ts": "ba5c4cfa1d1cddc3464f49627ea69aab63377bdafb3f5e36c5fd19aa733f69ca",
+      "molsysviewer/js/tests/unit/movie-timeline.test.ts": "76066dba913f0c9a0ff52736b0ddad34e2966e926d789ca1ddb32a6107250bd5",
+      "molsysviewer/js/tests/fixtures/movie-cartesian-oracle.json": "83e72cbd0bf234abe659e93936cb1353634bbc385636562e20263ff9a52f57e3",
+      "molsysviewer/js/tests/e2e/movie-seek-bridge.py": "15039d6c3ce2ce2eb368db825404ac2c619bcf0ceab8545a371e48f131386550",
+      "molsysviewer/js/tests/e2e/movie-seek.e2e.ts": "f861998e2100f9b26c77f8a2acbaa691ddda3b0e380a5bb4fcd1e4fb7a53c4e2",
+      "tests/test_movie_cartesian.py": "1f52db2ceb69cbccd29cab1a02b0d8f6b24ce750a3ef518668dcac31bc12b204",
+      "docs/content/user/movie/timeline.md": "3a881d83af48b1741c7761ae0c55116b4d03ab15de3877558f1f86680a44eb38",
+      "devguide/movie_timeline_design.md": "e1735fbe9689f836f2b014e591c68f3aa67f07f8620db4b8d2d2d2b48e9ebe54"
+    },
+    "runtime_sha256": "256fac7888179be099f99957cde58618f3eae57cc761bc86b9064fa1f451b5b2",
+    "scientific_python_basis": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "pyunitwizard": "copied editable 0.29.4+2.g9bb4f5f; controlled source support, not clean installed-pair qualification"
+  },
+  "contract": {
+    "version": 2,
+    "field": "camera_interpolation",
+    "value": "cartesian-constant-up@1",
+    "default": "Existing shortest-arc quaternion path, unchanged when the marker is absent.",
+    "admission": "Constant submitted up, finite position/target increments, conservative full-segment perpendicular-distance bound above 1e-12 after endpoint-distance scaling. Zero-time keys replace the baseline without a fictitious segment.",
+    "preservation": "Detached recipes, edits, reviewed version-2 import, rebase, sessions and compact preview recipes retain the marker. Version-1 reviewed import remains refused.",
+    "ownership": "Existing core visualization model and owners; no new public callable/signature, molecular calculation, preparation, dependency or scientific result modification."
+  },
+  "results": {
+    "directed_python": {
+      "profile": 535,
+      "cases": 18,
+      "passed": 18,
+      "failed": 0,
+      "error": 0,
+      "skipped": 0,
+      "skips": [],
+      "junit_sha256": "e1e3ddc66251af11ed3eea8de21e6390fb2e566c1689ef8f1d953d325b35fca4"
+    },
+    "covering_python": {
+      "profile": 539,
+      "cases": 792,
+      "passed": 788,
+      "failed": 0,
+      "error": 0,
+      "skipped": 4,
+      "skips": [
+        {
+          "case": "tests.test_movie::test_export_requires_imageio",
+          "reason": "imageio is installed; cannot test ImportError path"
+        },
+        {
+          "case": "tests.test_movie_cartesian::test_native_cartesian_camera_seek_and_preview",
+          "reason": "Explicit real Mol*/Chromium Cartesian Movie receiving is required."
+        },
+        {
+          "case": "tests.test_movie_baseline::test_native_baseline_reset_and_capture",
+          "reason": "Explicit real Mol*/Chromium Movie receiving is required."
+        },
+        {
+          "case": "tests.test_movie_baseline::test_movie_frontend_type_contract",
+          "reason": "Explicit frontend TypeScript compiler receiving is required."
+        }
+      ],
+      "junit_sha256": "f0abf6f77f7de2121f877b0037a914ba274687574c5af3fba05049aac2b14ee4",
+      "scope": "Twenty directed Movie/session/state/API/reporting/reference files, not the complete repository suite. Native/type opt-ins and unavailable imageio ImportError path retain their reasons.",
+      "ruff": "Full ruff check . and ruff format --check . pass (1,044 Python files)."
+    },
+    "javascript": {
+      "profile": 545,
+      "passed": 446,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Canonical shared Mol*-adapter builder and complete native Node unit entry. Forty-two independent affine position/target controls cover outgoing easing, moving targets and reverse/repeated times. Earlier 536 retains its initial thirty-six-control input."
+    },
+    "strict_types": {
+      "profile": 546,
+      "exit": 0,
+      "scope": "Actual frontend request graph plus Movie unit source and JSON oracle under strict TypeScript checking; 537 separately checks the production graph."
+    },
+    "native_browser": {
+      "profile": 544,
+      "cases": 1,
+      "passed": 1,
+      "failed": 0,
+      "error": 0,
+      "skipped": 0,
+      "skips": [],
+      "junit_sha256": "5beaf900b4bb0bc2c98475f4b70448e868527047087f6717f3b6c88a492e97d4",
+      "guard": "tests/test_movie_cartesian.py::test_native_cartesian_camera_seek_and_preview",
+      "browser_entry": "molsysviewer/js/tests/e2e/movie-seek.e2e.ts",
+      "scope": "Real Python authority and Mol* with adapted widget transport; default and Cartesian seek/preview, actual primary and popup poses, fresh popup draws, correlated session recovery, unchanged errors assertion. Cartesian source camera [0,0,30] to [30,0,0] angstrom; native samples at 500,100,900 ms agree with independent affine positions."
+    },
+    "reporting": {
+      "profile": 547,
+      "passed": 431,
+      "failed": 0,
+      "error": 0,
+      "skipped": 0,
+      "junit_sha256": "565208896a2dc3cc456a90e6331c703dbeb23f17317d9979dd1f0e9ef578956c"
+    },
+    "final_checks": {
+      "index": {
+        "exit": 0,
+        "output": "generated indexes are up to date\n"
+      },
+      "diff": {
+        "exit": 0,
+        "output": ""
+      },
+      "package_metadata": {
+        "exit": 0,
+        "output": ""
+      }
+    }
+  },
+  "profiles": {
+    "cartesian-534-python": {
+      "native_exit": 1,
+      "seconds": 9.22379749501124,
+      "selected_inputs": 10202,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 398.8,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "38c9965cd97df30521ae505827a54ac4726ea37c7ca82b1eb118067ab90ba565",
+      "inputs_before_sha256": "a3bdf8746af0f22ada4d6df18fb4f764ae9e542a37b91c6f8aa55fb24c659d6a",
+      "stdout_sha256": "22bee9eeb9a83463e4c294dcea82fc611cd4d0bb4bbf40c91142b3d562c22312"
+    },
+    "cartesian-535-python": {
+      "native_exit": 0,
+      "seconds": 8.850870607886463,
+      "selected_inputs": 10202,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 397.6,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "9e6c23127442f89422bd0c13706c920fa85cfefa4dcb4349ca271fa92f08cc7d",
+      "inputs_before_sha256": "cb2e4c94e1e38e249e91e2e4371caeeff5c5443e3c6a3601e015765ae818872f",
+      "stdout_sha256": "81d8b2aefa5c0431d857874b63f3d854f5993b775bcf594bc98f5af9a7e0fd1b"
+    },
+    "build-536-cartesian-js": {
+      "native_exit": 0,
+      "seconds": 19.451810498023406,
+      "selected_inputs": 10200,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 496.7,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "068f46c08ea0ff6f0f87a5680932cf4a88c2f5c954c3e4906ab6e8f520fb5414",
+      "inputs_before_sha256": "6927667d625ef383a5f6e3fb2b8eddf860de529e1f83b014f9bc7a910f96b698",
+      "stdout_sha256": "5942c6de87abf2a505f3ce0c238ea496e437408fe7e9f07b8dd8fb824ae14edf"
+    },
+    "cartesian-537-types": {
+      "native_exit": 0,
+      "seconds": 13.94865518109873,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 504.9,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "570ed16c38157f898d7e6a48f4ca6758f1e4a62b40ccd8ed4db6bee3b4f566ec",
+      "inputs_before_sha256": "095011824f2bdea4abf4221c49c0cffab342e20b05f9d174e639c2ea1edbc044",
+      "stdout_sha256": "2c0ef7a54643f8218a94f399642832fc2bd8c92080bcc6258838c607216e7c35"
+    },
+    "build-538-cartesian-runtime": {
+      "native_exit": 0,
+      "seconds": 7.79100730502978,
+      "selected_inputs": 10201,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 439.2,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "b7503e9f86eb345e8a57b106536d499933745e466c8c1c0133fe7e9d3cc852a3",
+      "inputs_before_sha256": "921e64784cc76682a330a906a3cbf6335f41ef93e927a8b92e836951a5056eaa",
+      "stdout_sha256": "a94e7fa3d6d3a43fb827ba28474b03ffc8ab76974b928268346a406600705f0e"
+    },
+    "cartesian-539-regression": {
+      "native_exit": 0,
+      "seconds": 91.98096367716789,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 649.0,
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 1,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "cfce8504090d47868798954138ab1158bf5069a92d988eb23bc3903db01c6c7b",
+      "inputs_before_sha256": "dfa54bfdf44c13e6e74eb11ad3e912fb821662072763b80d7d3c03f2ab056d00",
+      "stdout_sha256": "2288c7626828699aec612c1cf261e87847235d957cfb2b7168cb143ba6421d66"
+    },
+    "cartesian-540-native": {
+      "native_exit": 1,
+      "seconds": 54.67906492808834,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2219.4,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "1afd95259cb07bea14479defec9b5a56cee04a63448e6e78ad1ae816d0884b4e",
+      "inputs_before_sha256": "dfa54bfdf44c13e6e74eb11ad3e912fb821662072763b80d7d3c03f2ab056d00",
+      "stdout_sha256": "e10efc52676c35d2a5e99b67e1023cd849fcb634184193a77cde4ce5e139197b"
+    },
+    "build-541-preview-diagnostic": {
+      "native_exit": 0,
+      "seconds": 1.768038938054815,
+      "selected_inputs": 10201,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 48.2,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "4b9ac6f1ad36a5a52651a1c7282b2c42e36da70e8c7d738ba714a439797deef9",
+      "inputs_before_sha256": "97149c3322f32964657a8ded3a251ee6c8ecf1df4121e9485c98799b601043d2",
+      "stdout_sha256": "09874f71f5d5d74ef35e0a64dd5613207a5281d82abeae2a0890403fbbdfc27c"
+    },
+    "cartesian-542-native-diagnostic": {
+      "native_exit": 1,
+      "seconds": 54.48226297902875,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2240.7,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "2bf832715cd3f9b4b0e495c0daa05aacf0d96b99cb5e4049b149393522dabdff",
+      "inputs_before_sha256": "0dac94bdc7bdf76ec42a05967a98446c41ccc5eb2bdeca28e037c65f4aa3e01c",
+      "stdout_sha256": "a3ed6f395332c54b65cebaf6fba1742599ec90b64f99273b7b40d3cf19f2a522"
+    },
+    "build-543-cartesian-draw-guard": {
+      "native_exit": 0,
+      "seconds": 1.745633637998253,
+      "selected_inputs": 10201,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 47.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "18009cbd6e3a5888f95809b53d44a6b712badf97e23edfb60f9618eff759f431",
+      "inputs_before_sha256": "dbb705b4bc4c759eae608a71ad28b9f86dc9aa58c8267871f73f80d628525842",
+      "stdout_sha256": "4b2a85ad6997f6314473f3f94b1df3e6466ef6b4e900ab855dfce2b9be43f726"
+    },
+    "cartesian-544-native": {
+      "native_exit": 0,
+      "seconds": 56.94080631597899,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2240.9,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "bf3a31dccbba6247792549b71c26125822c89bbdf74e77c265116de79b5461f4",
+      "inputs_before_sha256": "5e890e0bd25d130ade978f2a74ce59deec802a5e17ff63c2f97e17834c26918a",
+      "stdout_sha256": "342b20fbcecd8379b2e9fc4b3dbe92bf647de4a4d5100416c0bd75f4545ddfaf"
+    },
+    "build-545-cartesian-js-final": {
+      "native_exit": 0,
+      "seconds": 13.641304973047227,
+      "selected_inputs": 10201,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 507.6,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "8551f4498e538e0932c4bc8649d21a58ff610fdc9b63506be1b15fc999372261",
+      "inputs_before_sha256": "4128e6c1d59428e09627e5bcf0787d9f97c1dd4cdb59aae62956c6962821da7c",
+      "stdout_sha256": "e4a8e750f63913739f44334d8f8efc3c47a4fae5c2e0e30f099f1e431192226b"
+    },
+    "cartesian-546-types-final": {
+      "native_exit": 0,
+      "seconds": 9.881815360859036,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 473.7,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "resources": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "invocation_sha256": "134b4fc417bc470221596f88973c05d69ff146aa7c87147a99a88de61badcd66",
+      "inputs_before_sha256": "493175ce69772e8255e56119673d0a6bfbd7dcc2810d02d41a598ccf2e1cc5fc",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "cartesian-547-reporting": {
+      "native_exit": 0,
+      "seconds": 5.536354060983285,
+      "selected_inputs": 10203,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 170.5,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
+  },
+  "retained_failures": {
+    "534": "Four new assertions incorrectly required exact arithmetic after orthonormal-basis normalization (up 1 +/- a few ULP). Their independent 4-epsilon dimensionless bound now matches that operation; geometric assertions remain. Original failed run retained.",
+    "540": "Original unchanged 30-second wait for at least three default-preview samples expires before the new mode. It has no native state snapshot and its cause remains unknown. Later passing attempts do not explain or close it; integrated #320 acceptance retains this observation.",
+    "542": "The diagnostic passes the original-preview phase and completes the new workflow, but the newly added popup didDraw observer reads its subscription during BehaviorSubject synchronous initial emission. Three page errors fail the guard. Only that observer changes: it ignores the initial emission and receives a newly requested draw in 544."
+  },
+  "limits": [
+    "This receives the explicit version-2 Cartesian mechanism, not complete version-1 migration, arbitrary changing-up paths, Studio authoring, portable Movie web playback or the full pocket/ligand/interactions story.",
+    "Tiny/huge numerical controls validate model behavior only. Mol* 5.4.1 source camera/Mat4.lookAt retains its own EPSILON/squared-norm rendering limits; native rendering is qualified only for the ordinary molecular-scale cases exercised.",
+    "No new encoded-video, actual Jupyter, native Qt, installed-package, platform-matrix or human acceptance is inferred from the adapted-browser guard.",
+    "The original native-preview wait remains unexplained under #320. It is distinct from the repaired test observer, MolSysMT #615/#723 and the prior #344/#354 observations.",
+    "Original robustness counters stay 38/46 source-delivered and 1/46 final applicable acceptance; Movie is an additional adopted stream."
+  ],
+  "coordination": {
+    "molsysmt_721": "Owner integrated, confirmed merge commit 687220ac938412bc9708f7a48e0a71c6ab601007. This does not requalify current native owner main with the archived scientific basis used here.",
+    "molsysmt_723": "Owner admitted and asks for a bounded proposal/GUI regression. Principal maintainer flags simultaneous owner work; coordinate the handoff before implementing, and continue this independent Movie tranche. No MolSysMT worktree/source/branch was modified for this tranche."
+  },
+  "custody": {
+    "state": "verified_copy",
+    "custodian": "Diego Prada Gracia",
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "leaf": "movie-cartesian-20261112",
+    "file_count": 99,
+    "payload_bytes": 63635655,
+    "manifest_sha256": "cb0eb0413560bb75e65d646a9b36ade4566b41c3ad8e13b66d2bbb035c2bd9bb",
+    "permissions": "directories 0700; files 0600",
+    "originals_deleted": false,
+    "prior_scientific_source_custody": "jupyter-receiver-20261112"
+  },
+  "retained_source_recovery": {
+    "cartesian-540-native": {
+      "source": "molsysviewer/js/tests/e2e/movie-seek.e2e.ts",
+      "sha256": "b447ae80f5101d07e0fb25e185a80c154af4154167947f70384c79d2c8041dfa",
+      "method": "Post-attempt reconstruction by reversing documented observer-only edits, verified byte-for-byte against the original unchanged input manifest. This was not a pre-attempt archived file."
+    },
+    "cartesian-542-native-diagnostic": {
+      "source": "molsysviewer/js/tests/e2e/movie-seek.e2e.ts",
+      "sha256": "bf1ed15f54d250adfe14e587c0a6318a05559a1ed960ce36d0e259047b8c55bf",
+      "method": "Post-attempt reconstruction by reversing documented observer-only edits, verified byte-for-byte against the original unchanged input manifest. This was not a pre-attempt archived file."
+    }
+  }
+}

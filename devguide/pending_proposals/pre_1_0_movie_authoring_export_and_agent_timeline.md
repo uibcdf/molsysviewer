@@ -219,6 +219,20 @@ portable web playback and the complete integrated story remain open. The
 receiving entries below retain their original source/date scope; earlier
 remapping/appearance gaps are not a claim about current implementation.
 
+The [Cartesian camera receiving](../movie_cartesian_receiving_20261112.json)
+adds the explicit `cartesian-constant-up@1` profile to version-2 recipes,
+without changing default quaternion motion. Both evaluators admit complete
+safe segments before publication. Forty-two independent affine position/target
+samples, transactional edit/import checks and native primary/popup seek,
+preview and session recovery are received. This supplies a prerequisite for
+legacy migration; it does not migrate a version-1 recipe or complete #320.
+The original native run `540` times out waiting for three default-preview
+samples before reaching the new mode. Its state/cause was not captured and
+it remains an unresolved receiving observation here. Diagnostic `542` proceeds
+beyond that phase but exposes a synchronous-initial-emission bug in the newly
+added draw observer. The corrected observer receives `544`; neither later
+result retroactively explains `540`.
+
 The first M1 tranche is source-delivered. `tests/test_movie_timeline.py` exercises
 arbitrary seeks and independent channels on a bundled trajectory, detached
 inspection, rejection of incompatible inputs and exact session recovery.

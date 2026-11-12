@@ -150601,6 +150601,7 @@ function validateMovieImportProvenance(value, destinationCount) {
 
 // src/managers/movie-timeline.ts
 var halfTurnTolerance = 1e-12;
+var cartesianCamera = "cartesian-constant-up@1";
 var collections = {
   annotation: "annotations",
   interaction: "interactions",
@@ -150652,6 +150653,7 @@ function camera(value) {
   const position = vector(pose.position);
   const target = vector(pose.target);
   const up3 = vector(pose.up);
+  const inputUp = Vec3.clone(up3);
   const backward = Vec3.sub(Vec3(), position, target);
   const distance2 = Math.hypot(...backward);
   const upLength = Math.hypot(...up3);
@@ -150666,7 +150668,53 @@ function camera(value) {
   Vec3.scale(right, right, 1 / rightLength);
   Vec3.cross(up3, backward, right);
   const orientation = Quat.fromMat3(Quat(), Mat3.fromColumns(Mat3(), right, up3, backward));
-  return { pose: { position, target, up: up3 }, distance: distance2, orientation };
+  return { pose: { position, target, up: up3 }, distance: distance2, orientation, inputUp };
+}
+function checkCartesianSegments(baseline, keys3) {
+  let previous = baseline;
+  for (const key2 of keys3) {
+    const current2 = key2.value;
+    if (key2.time === 0) {
+      previous = current2;
+      continue;
+    }
+    if (!previous.inputUp.every((value, i) => value === current2.inputUp[i])) {
+      throw new Error("Cartesian Movie camera segments require a constant up vector.");
+    }
+    const upLength = Math.hypot(...previous.inputUp);
+    const up3 = previous.inputUp.map((value) => value / upLength);
+    const directions = [previous, current2].map((value) => Vec3.sub(Vec3(), value.pose.position, value.pose.target));
+    for (const field2 of ["position", "target"]) {
+      if (!previous.pose[field2].every((value, i) => Number.isFinite(current2.pose[field2][i] - value))) {
+        throw new Error("Cartesian Movie camera segment exceeds the finite coordinate range.");
+      }
+    }
+    const scale = Math.max(...directions.map((value) => Math.hypot(...value)));
+    const perpendicular = directions.map((direction) => {
+      const [x, y, z] = direction.map((value) => value / scale);
+      return [up3[1] * z - up3[2] * y, up3[2] * x - up3[0] * z, up3[0] * y - up3[1] * x];
+    });
+    const [start4, end4] = perpendicular;
+    const delta2 = start4.map((value, i) => end4[i] - value);
+    const denominator = delta2.reduce((sum, value) => sum + value * value, 0);
+    const fraction = denominator ? Math.min(1, Math.max(0, -start4.reduce((sum, value, i) => sum + value * delta2[i], 0) / denominator)) : 0;
+    if (Math.hypot(...start4.map((value, i) => value + fraction * delta2[i])) <= 1e-12) {
+      throw new Error("Cartesian Movie camera segment crosses an unsafe viewing direction.");
+    }
+    previous = current2;
+  }
+}
+function interpolateCartesianCamera(left, right, fraction) {
+  const pose = {};
+  for (const field2 of ["position", "target"]) {
+    const a8 = left.pose[field2], b8 = right.pose[field2];
+    pose[field2] = Vec3.create(
+      a8[0] + (b8[0] - a8[0]) * fraction,
+      a8[1] + (b8[1] - a8[1]) * fraction,
+      a8[2] + (b8[2] - a8[2]) * fraction
+    );
+  }
+  return camera({ ...pose, up: left.inputUp }).pose;
 }
 function ease(fraction, easing) {
   switch (easing) {
@@ -150759,10 +150807,14 @@ function sceneVisibility(scene) {
 function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
   const fields = ["molsysmovie_version", "duration_ms", "units", "baseline", "tracks"];
   if (value && typeof value === "object" && owns(value, "color_interpolation")) fields.push("color_interpolation");
+  if (value && typeof value === "object" && owns(value, "camera_interpolation")) fields.push("camera_interpolation");
   if (value && typeof value === "object" && owns(value, "provenance")) fields.push("provenance");
   const recipe = record4(value, "Movie recipe", fields);
   if (owns(recipe, "color_interpolation") && recipe.color_interpolation !== colorInterpolation) {
     throw new Error("Unsupported Movie colour interpolation contract.");
+  }
+  if (owns(recipe, "camera_interpolation") && recipe.camera_interpolation !== cartesianCamera) {
+    throw new Error("Unsupported Movie camera interpolation contract.");
   }
   if (recipe.molsysmovie_version !== 2) throw new Error("Unsupported Movie recipe version.");
   const duration = time(recipe.duration_ms);
@@ -150846,6 +150898,8 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
       appearanceTracks.push({ domain, tag: targetTag, property: property2, baseline: initial, keys: values2 });
     }
   }
+  if (owns(recipe, "camera_interpolation")) checkCartesianSegments(baseCamera.value, poseTrack);
+  const interpolatePose = owns(recipe, "camera_interpolation") ? interpolateCartesianCamera : interpolateCamera;
   const visibilityRows = trackedVisibility ? Array.from(rows).filter(([id]) => visTracks.has(id)) : Array.from(rows);
   if (appearanceTracks.some((track) => track.property === "color" || track.property === "background") && recipe.color_interpolation !== colorInterpolation) throw new Error("Movie colour interpolation must be explicit.");
   return {
@@ -150859,7 +150913,7 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
         position: Vec3.clone(start4.value.pose.position),
         target: Vec3.clone(start4.value.pose.target),
         up: Vec3.clone(start4.value.pose.up)
-      } : interpolateCamera(start4.value, end4.value, ease((at - start4.time) / (end4.time - start4.time), start4.easing));
+      } : interpolatePose(start4.value, end4.value, ease((at - start4.time) / (end4.time - start4.time), start4.easing));
       return {
         time_ms: at,
         camera: pose,

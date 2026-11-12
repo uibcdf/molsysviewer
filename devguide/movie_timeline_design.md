@@ -161,6 +161,33 @@ make the first quaternion component above that tolerance positive, in XYZW
 order, and interpolate as if the dot product were zero. This selects one of the
 equally short arcs consistently when roundoff changes the sign of the dot.
 
+### Explicit Cartesian camera segments
+
+A version-2 recipe may explicitly set
+`camera_interpolation="cartesian-constant-up@1"`. The default remains the
+quaternion rule above. This profile interpolates camera position and target
+component-wise as `a + (b-a) * f`, with the outgoing easing. It admits only
+constant submitted up vectors and finite coordinate increments. The final
+sample derives its orthonormal up as usual. An explicit pose at time zero
+replaces the baseline without creating a fictitious zero-duration segment.
+
+Before accepting a recipe or edit, check every continuous segment. With
+`d = position - target`, normalized constant up `u`, and endpoint scale
+`s = max(norm(d0), norm(d1))`, minimize the length of
+`cross(u, d0/s) + f * (cross(u, d1/s) - cross(u, d0/s))` for `f` in `[0,1]`.
+Reject a minimum at or below `1e-12`. This conservative bound protects
+unsampled focus/parallel crossings; it may also reject ill-conditioned
+otherwise nonsingular paths. Numerical extreme-scale model controls do not
+qualify Mol* rendering at those scales: the installed renderer retains its
+own look-at thresholds and squared-norm limits.
+
+The marker survives detached inspection, track edits, rebase, reviewed
+version-2 import, session recovery and compact preview recipes. Python and
+TypeScript use the same admission rule, while independent affine position/
+target controls and the native browser guard receive ordinary molecular-scale
+seeks, preview, popup convergence and session recovery. This is a prerequisite
+for legacy migration, not a delivered version-1 conversion route.
+
 ### Received appearance catalogue
 
 | Target | Property | Initial contract |
@@ -367,13 +394,15 @@ motion or held structure endpoints. The first admitted migration profile
 requires complete camera/structure channels across the global keys, whenever
 those channels occur. It retains Cartesian movement with an explicit camera
 interpolation marker and compiles rounded sweeps into bounded discrete events.
-Constant-up, nonsingular Cartesian segments are admitted; unsupported/unsafe
+The explicit Cartesian profile above supplies its camera prerequisite.
+Constant-up, nonsingular Cartesian segments are planned for migration; unsupported/unsafe
 paths and partial global channels are named conflicts, leaving legacy reading
 and playback available. Legacy visibility tags require explicit domain/tag
 mapping. A camera-free legacy recipe requires an explicit baseline camera.
 This bounded profile is not a claim that every historical artifact can migrate.
-It still needs implementation, cross-language boundary oracles and native
-receiving before being offered. `tests/test_movie_import.py` protects the
+The migration still needs rounded-structure compilation, source/target
+correspondences and complete boundary/native receiving before being offered.
+`tests/test_movie_import.py` protects the
 current refusal rather than allowing a silent change of interpolation.
 
 The export job has a correlated identity, synchronous progress callbacks,

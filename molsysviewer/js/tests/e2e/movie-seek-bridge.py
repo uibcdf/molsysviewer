@@ -77,12 +77,18 @@ def main():
                         "camera": restored.camera.get_snapshot(),
                         "visible": restored.regions["site"].visible,
                         "same_recipe": restored.movie.to_dict() == view.movie.to_dict(),
+                        "camera_interpolation": restored.movie.to_dict().get("camera_interpolation"),
                     }
             except Exception as error:
                 preview["save"] = {"ok": False, "error": str(error)}
 
         def action(owner, event):
             nonlocal result
+            if event.get("movie_use_cartesian"):
+                recipe = owner.movie.to_dict()
+                recipe["camera_interpolation"] = "cartesian-constant-up@1"
+                owner.movie.from_dict(recipe)
+                return True
             if event.get("movie_start_motion"):
                 owner.player.play(fps=8)
                 owner.scene.spin(True)
@@ -102,6 +108,7 @@ def main():
                 asyncio.create_task(pause())
                 return True
             if "movie_preview_save" in event:
+                preview.pop("save", None)
                 asyncio.create_task(save(event["movie_preview_save"]))
                 return True
             if event.get("movie_preview_status"):

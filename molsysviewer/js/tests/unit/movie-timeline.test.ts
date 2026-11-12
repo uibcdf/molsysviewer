@@ -3,6 +3,7 @@ import test from "node:test";
 import { compileMovieTimeline } from "../../src/managers/movie-timeline";
 import { MoviePreviewClock } from "../../src/managers/movie-preview-clock";
 import oracle from "../fixtures/movie-timeline-oracle.json";
+import cartesian from "../fixtures/movie-cartesian-oracle.json";
 
 function checkSamples(recipe: unknown, samples: typeof oracle.samples) {
     const timeline = compileMovieTimeline(recipe);
@@ -32,6 +33,62 @@ test("a generic half turn chooses the same arc as Python", () => {
         baseline: { ...oracle.recipe.baseline, camera: begin },
         tracks: [{ tag: "half-turn", target: { domain: "camera" }, property: "pose", keys: [{ time_ms: 1000, value: end }] }],
     }, [sample]);
+});
+
+test("explicit Cartesian camera chords match independent affine controls and Python", () => {
+    for (const entry of cartesian.valid) {
+        const recipe = { ...oracle.recipe, camera_interpolation: "cartesian-constant-up@1",
+            baseline: { ...oracle.recipe.baseline, camera: entry.begin },
+            tracks: [{ tag: "camera", target: { domain: "camera" }, property: "pose", keys: entry.keys }] };
+        const compiled = compileMovieTimeline(recipe);
+        for (const expected of entry.samples) {
+            const observed = compiled.evaluate(expected.time_ms);
+            observed.camera.position.forEach((value, i) =>
+                assert.ok(Math.abs(value - expected.position[i]) <= 1e-12));
+            const expectedTarget = ("target" in expected ? expected.target : undefined) ?? entry.begin.target;
+            observed.camera.target.forEach((value, i) =>
+                assert.ok(Math.abs(value - expectedTarget[i]) <= 1e-12));
+            observed.camera.up.forEach((value, i) =>
+                assert.ok(Math.abs(value - [0, 1, 0][i]) <= 4 * Number.EPSILON));
+        }
+        const before = compiled.evaluate(500);
+        recipe.tracks.length = 0;
+        before.camera.position[0] = 999;
+        assert.notEqual(compiled.evaluate(500).camera.position[0], 999);
+    }
+});
+
+test("Cartesian admission checks the entire segment, including unsampled degeneracy", () => {
+    const begin = cartesian.valid[0].begin;
+    const recipe = { ...oracle.recipe, camera_interpolation: "cartesian-constant-up@1",
+        baseline: { ...oracle.recipe.baseline, camera: begin }, tracks: [] as unknown[] };
+    for (const [end, message] of [
+        [{ ...begin, position: [0, 0, -22] }, /unsafe viewing direction/],
+        [{ ...begin, position: [0, 4, -22] }, /unsafe viewing direction/],
+        [{ ...begin, position: [10, 0, 0], up: [0, 0, 1] }, /constant up vector/],
+    ] as const) {
+        recipe.tracks = [{ tag: "camera", target: { domain: "camera" }, property: "pose",
+            keys: [{ time_ms: 1000, value: end }] }];
+        assert.throws(() => compileMovieTimeline(recipe), message);
+    }
+    for (const mode of [null, true, 1, "cartesian", "unknown", {}]) {
+        assert.throws(() => compileMovieTimeline({ ...recipe, camera_interpolation: mode }), /camera interpolation/);
+    }
+});
+
+test("Cartesian zero keys override the baseline and subnormal chords remain finite", () => {
+    const begin = cartesian.valid[0].begin;
+    const end = { ...begin, position: [10, 0, 0] };
+    const recipe = { ...oracle.recipe, camera_interpolation: "cartesian-constant-up@1",
+        baseline: { ...oracle.recipe.baseline, camera: { ...begin, up: [1, 0, 0] } },
+        tracks: [{ tag: "camera", target: { domain: "camera" }, property: "pose",
+            keys: [{ time_ms: 0, value: begin }, { time_ms: 1000, value: end }] }] };
+    assert.deepEqual(compileMovieTimeline(recipe).evaluate(500).camera.position, [5, 0, 5]);
+    recipe.tracks[0].keys = [{ time_ms: 1000, value: end }];
+    assert.throws(() => compileMovieTimeline(recipe), /constant up vector/);
+    recipe.baseline.camera = { ...begin, position: [0, 0, 1e-320] };
+    recipe.tracks[0].keys = [{ time_ms: 1000, value: { ...begin, position: [1e-320, 0, 0] } }];
+    assert.deepEqual(compileMovieTimeline(recipe).evaluate(500).camera.position, [5e-321, 0, 5e-321]);
 });
 
 test("compiled Movie owns its inputs and returns detached samples", () => {

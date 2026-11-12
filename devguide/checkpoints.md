@@ -907,6 +907,17 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+The [Cartesian Movie profile](movie_cartesian_receiving_20261112.json) adds
+explicit straight position/target motion with whole-segment admission, while
+preserving the default quaternion rule. Source controls and real Mol* primary/
+popup preview/session checks pass; version-1 migration and the rest of #320
+remain open. Retain the unexplained first default-preview timeout separately
+from the corrected test-observer error and later positive native receiving.
+MolSysMT has integrated PR #721 and admitted #723; its last response requests
+a bounded metrology proposal for owner review. Avoid parallel implementation
+until that handoff is coordinated. The following diagnostics retain their
+actual archived scientific-source scope, not current-owner-main qualification.
+
 The [Jupyter memory control](jupyter_memory_host_controls_receiving_20261112.json)
 isolates a host-only DOM/event contribution to the active-cell-toolbar extension:
 plain notebooks reproduce it without molecular imports. Seven molecular-volume

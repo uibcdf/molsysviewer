@@ -33,6 +33,14 @@ comparable long campaign. Original thirty functional passes remain; E2 and
 both counters above are unchanged. The 4.6.5 host comparison is diagnostic,
 not an environment upgrade or a received fix.
 
+**Movie camera prerequisite — 2026-11-12:** the
+[Cartesian profile](../movie_cartesian_receiving_20261112.json) is received
+through headless/JavaScript controls and native primary/popup preview/session
+checks. Default motion remains unchanged. Complete legacy migration, Studio,
+portable web and integrated #320 acceptance remain; the original default-preview
+wait in run `540` is retained without a causal closure. This additional stream
+does not change the 46-outcome counter.
+
 **Previous source delivery — 2026-11-10, independent construction:**
 [The construction receipt](../molsysmt_construction_receiving_20261110.json)
 records **37/46 (80.4%) source-delivered**, adding original D6.5 through

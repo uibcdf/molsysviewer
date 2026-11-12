@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
+import { mkdir, writeFile } from "node:fs/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas-popup-fixture";
@@ -99,7 +100,29 @@ async function run() {
             const previewResult = (kind: string) => movieResult(page, { movie_preview_status: true },
                 reply => reply.movie_preview_result[kind]);
             await command(page, { movie_preview_play: { loop: true, start: 400 } });
-            await page.waitForFunction(() => (window as any).__moviePreviewTimes.length >= 3);
+            try {
+                await page.waitForFunction(() => (window as any).__moviePreviewTimes.length >= 3);
+            } catch (error) {
+                const status = await command(page, { movie_preview_status: true });
+                const observation = await page.evaluate(() => {
+                    const w = window as any, c = w.__mirrorController;
+                    const rect = c.canvasHost.getBoundingClientRect();
+                    return { samples: w.__moviePreviewTimes, errors: w.__popupFixtureErrors,
+                        visibility: document.visibilityState, connected: c.canvasHost.isConnected,
+                        canvas: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+                        viewport: { width: innerWidth, height: innerHeight },
+                        camera: c.getCameraSnapshot(), trajectory: c.trajectory.getTrajectoryState(),
+                        clock: c.moviePreviewClock.current };
+                });
+                const diagnostic = { stage: "original-preview", status, observation, page_errors: errors };
+                if (process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR) {
+                    await mkdir(process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR, { recursive: true });
+                    await writeFile(resolve(process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR, "preview-failure.json"),
+                        JSON.stringify(diagnostic, null, 2));
+                }
+                console.error("[Movie original preview failure] " + JSON.stringify(diagnostic));
+                throw error;
+            }
             await command(page, { movie_preview_pause: true });
             const paused = (await previewResult("pause")).sample;
             assert.deepEqual((await previewResult("play")).sample, paused);
@@ -141,9 +164,46 @@ async function run() {
             assert.equal(finished.time_ms, 1000);
             assert.equal(finished.structure_index, 2);
             assert.deepEqual(finished.camera.position, [30, 0, 0]);
+
+            // The same scene and authority now declare a different camera path.
+            // Receive actual native chords rather than accepting the old arc.
+            await command(page, { movie_use_cartesian: true });
+            for (const at of [500, 100, 900]) {
+                await command(page, { movie_seek: at });
+                const received = await movieResult(page, { movie_seek_status: true }, reply => reply.movie_seek_result);
+                const expected = [30 * at / 1000, 0, 30 * (1 - at / 1000)];
+                assert.ok(received.sample.camera.position.every((value: number, i: number) =>
+                    Math.abs(value - expected[i]) <= 1e-12));
+                const native = await page.evaluate(() => (window as any).__mirrorController.getCameraSnapshot().position);
+                assert.ok(native.every((value: number, i: number) => Math.abs(value - expected[i]) <= 1e-6));
+                await popup.waitForFunction(position => (window as any).__mirrorController.getCameraSnapshot().position
+                    .every((value: number, i: number) => Math.abs(value - position[i]) <= 1e-6), expected);
+                const mirrored = await popup.evaluate(async () => {
+                    const c = (window as any).__mirrorController;
+                    await new Promise<void>(resolve => {
+                        let requested = false;
+                        const subscription = c.plugin.canvas3d.didDraw.subscribe(() => {
+                            if (!requested) return;
+                            subscription.unsubscribe(); resolve();
+                        });
+                        requested = true;
+                        c.plugin.canvas3d.requestDraw();
+                    });
+                    return c.getCameraSnapshot().position;
+                });
+                assert.ok(mirrored.every((value: number, i: number) => Math.abs(value - expected[i]) <= 1e-6));
+            }
+            await command(page, { movie_preview_save: resolve(workspace, "cartesian.msv") });
+            const cartesianRestored = await previewResult("save");
+            assert.ok(cartesianRestored.same_recipe);
+            assert.equal(cartesianRestored.camera_interpolation, "cartesian-constant-up@1");
+            await command(page, { movie_preview_play: { loop: false, start: 200 } });
+            const cartesianFinished = (await previewResult("play")).sample;
+            assert.equal(cartesianFinished.time_ms, 1000);
+            assert.deepEqual(cartesianFinished.camera.position, [30, 0, 0]);
             assert.deepEqual(await page.evaluate(() => (window as any).__popupFixtureErrors), []);
             assert.deepEqual(errors, []);
-            console.log("[E2E Movie] Seek, preview pause, popup mirror, restored session and terminal draw agree.");
+            console.log("[E2E Movie] Default and Cartesian seek/preview, popup mirror, restored session and terminal draw agree.");
         } finally {
             await popup?.close();
             await release?.();

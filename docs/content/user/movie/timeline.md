@@ -441,6 +441,42 @@ as visible when its Movie gate opens. Give a member an explicit visibility
 track to keep it hidden. Ordinary Python and Studio layer show/hide operations
 continue to affect every member.
 
+### Choosing a straight camera path
+
+Independent tracks normally interpolate the target, distance and orientation
+with a shortest-arc rotation. To move the camera position and target along
+straight lines, set the experimental recipe field
+`camera_interpolation="cartesian-constant-up@1"` explicitly. Camera coordinates
+are in Å and key times are in milliseconds. Each segment requires the same
+up vector and a safe viewing direction throughout its path; a segment that
+passes through the target or becomes parallel to up is rejected before the
+plan changes. The check is conservative; very ill-conditioned paths can also
+be refused.
+
+This example replaces the current Movie with a one-second camera plan on an
+already loaded `view`:
+
+<!-- cartesian-camera-example -->
+```python
+view.movie.set_baseline(1000, camera={
+    "position": [0, 0, 10], "target": [0, 0, 0], "up": [0, 1, 0]
+})
+view.movie.add_track({
+    "tag": "camera", "target": {"domain": "camera"}, "property": "pose",
+    "keys": [{"time_ms": 1000, "value": {
+        "position": [10, 0, 0], "target": [0, 0, 0], "up": [0, 1, 0]
+    }}]
+})
+recipe = view.movie.to_dict()
+recipe["camera_interpolation"] = "cartesian-constant-up@1"
+view.movie.from_dict(recipe)
+sample = view.movie.evaluate(500)  # position [5, 0, 5] Å
+```
+
+The field travels with the recipe, session, preview and export. Omitting it
+keeps the default rotation. This option does not convert legacy keyframes;
+reviewed version-1 migration remains pending.
+
 ### Preview an instant
 
 Display the view and run this from a later notebook cell:

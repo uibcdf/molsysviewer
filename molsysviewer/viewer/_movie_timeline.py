@@ -23,6 +23,7 @@ from ._movie_appearance import (
 MOVIE_TIMELINE_VERSION = 2
 _MAX_SAFE_INTEGER = 2**53 - 1
 _HALF_TURN_TOLERANCE = 1e-12
+_CARTESIAN_CAMERA = "cartesian-constant-up@1"
 _EASING = {"linear", "ease-in", "ease-out", "ease-in-out"}
 _VISIBILITY_DOMAINS = {
     "annotation": "annotations",
@@ -163,6 +164,53 @@ def _interpolate_camera(left, right, fraction):
     if not np.all(np.isfinite(position)):
         raise ValueError("Interpolated camera position exceeds the finite coordinate range.")
     return {"position": position.tolist(), "target": target.tolist(), "up": _rotate(orientation, (0, 1, 0)).tolist()}
+
+
+def _cartesian_segments(baseline, tracks):
+    """Reject an unsafe straight segment before admitting a Cartesian plan."""
+    keys = next((track["keys"] for track in tracks if track["property"] == "pose"), [])
+    previous = baseline
+    for key in keys:
+        current = key["value"]
+        if key["time_ms"] == 0:
+            previous = current
+            continue
+        if previous["up"] != current["up"]:
+            raise ValueError("Cartesian Movie camera segments require a constant up vector.")
+        up_length = math.hypot(*previous["up"])
+        up = [value / up_length for value in previous["up"]]
+        directions = []
+        for pose in (previous, current):
+            directions.append([a - b for a, b in zip(pose["position"], pose["target"], strict=True)])
+        for field in ("position", "target"):
+            if any(not math.isfinite(b - a) for a, b in zip(previous[field], current[field], strict=True)):
+                raise ValueError("Cartesian Movie camera segment exceeds the finite coordinate range.")
+        scale = max(math.hypot(*value) for value in directions)
+        perpendicular = []
+        for direction in directions:
+            x, y, z = (value / scale for value in direction)
+            perpendicular.append([up[1] * z - up[2] * y, up[2] * x - up[0] * z, up[0] * y - up[1] * x])
+        start, end = perpendicular
+        delta = [b - a for a, b in zip(start, end, strict=True)]
+        denominator = sum(value * value for value in delta)
+        fraction = (
+            min(1.0, max(0.0, -sum(a * b for a, b in zip(start, delta, strict=True)) / denominator))
+            if denominator
+            else 0.0
+        )
+        closest = math.hypot(*(a + fraction * b for a, b in zip(start, delta, strict=True)))
+        # |direction(t)| is at most the endpoint scale. This conservative
+        # bound protects every point, including unsampled focus crossings.
+        if closest <= 1e-12:
+            raise ValueError("Cartesian Movie camera segment crosses an unsafe viewing direction.")
+        previous = current
+
+
+def _interpolate_cartesian_camera(left, right, fraction):
+    return {
+        field: [a + (b - a) * fraction for a, b in zip(left[field], right[field], strict=True)]
+        for field in ("position", "target", "up")
+    }
 
 
 def _ease(fraction, easing):
@@ -323,11 +371,15 @@ class _MovieTimeline:
         fields = ("molsysmovie_version", "duration_ms", "units", "baseline", "tracks")
         if isinstance(data, Mapping) and "color_interpolation" in data:
             fields += ("color_interpolation",)
+        if isinstance(data, Mapping) and "camera_interpolation" in data:
+            fields += ("camera_interpolation",)
         if isinstance(data, Mapping) and "provenance" in data:
             fields += ("provenance",)
         data = _record(data, fields, "Movie recipe")
         if "color_interpolation" in data and data["color_interpolation"] != COLOR_INTERPOLATION:
             raise ValueError("Unsupported Movie colour interpolation contract.")
+        if "camera_interpolation" in data and data["camera_interpolation"] != _CARTESIAN_CAMERA:
+            raise ValueError("Unsupported Movie camera interpolation contract.")
         if type(data["molsysmovie_version"]) is not int or data["molsysmovie_version"] != MOVIE_TIMELINE_VERSION:
             raise ValueError("Unsupported Movie recipe version.")
         if data["units"] != {"time": "ms", "camera_length": "angstrom"}:
@@ -361,6 +413,8 @@ class _MovieTimeline:
         visibility = _scene_visibility(scene)
         camera = _camera(baseline["camera"])[0]
         tracks = _tracks(data["tracks"], visibility, binding["n_structures"], duration, scene)
+        if "camera_interpolation" in data:
+            _cartesian_segments(camera, tracks)
         has_color = any(track["property"] in {"color", "background"} for track in tracks)
         if has_color and data.get("color_interpolation") != COLOR_INTERPOLATION:
             raise ValueError("Movie colour tracks require their explicit interpolation contract.")
@@ -376,6 +430,7 @@ class _MovieTimeline:
             },
             "tracks": tracks,
             **({"color_interpolation": COLOR_INTERPOLATION} if has_color else {}),
+            **({"camera_interpolation": _CARTESIAN_CAMERA} if "camera_interpolation" in data else {}),
         }
         if "provenance" in data:
             from ._movie_import import validate_provenance
@@ -444,6 +499,8 @@ class _MovieTimeline:
             duration,
             self._data["baseline"]["scene"],
         )
+        if "camera_interpolation" in self._data:
+            _cartesian_segments(self._data["baseline"]["camera"], tracks)
         revised = copy(self)
         revised._data = {**self._data, "duration_ms": duration, "tracks": tracks}
         if any(track["property"] in {"color", "background"} for track in tracks):
@@ -525,7 +582,10 @@ class _MovieTimeline:
                 else:
                     end = keys[right]
                     fraction = (time - left["time_ms"]) / (end["time_ms"] - left["time_ms"])
-                    camera = _interpolate_camera(left["value"], end["value"], _ease(fraction, left["easing"]))
+                    interpolate = (
+                        _interpolate_cartesian_camera if "camera_interpolation" in self._data else _interpolate_camera
+                    )
+                    camera = interpolate(left["value"], end["value"], _ease(fraction, left["easing"]))
             elif prop not in {"index", "visible"}:
                 initial = appearance_baseline(self._data["baseline"]["scene"], domain, tag, prop)
                 left = keys[right - 1] if right else {"time_ms": 0, "value": initial, "easing": "linear"}
