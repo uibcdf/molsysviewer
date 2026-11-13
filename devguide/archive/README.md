@@ -539,3 +539,4 @@ Completed work, kept for the reasoning:
 - [Terminal E2E failure exits](e2e_terminal_failure_exit.md) — #375 restores fail-fast catches after existing awaited cleanup in eight entries.
 - [Bounded Studio receiving](studio_browser_receiving_partition.md) — #377 retains complete historical coverage through mandatory layout and persistent-capture core entries, received in real Mol*/Python.
 - [Pending popup captures](popup_pending_capture_close.md) — #378 retires actual closed popup owners promptly, preserving cancellation, late-reply refusal and the originating canvas.
+- [Moving Jupyter fixture budget](jupyter_moving_fixture_deadline_budget.md) — #381 receives two unchanged-default Python captures and all six explicitly delayed scientific captures, with shared contract validation.

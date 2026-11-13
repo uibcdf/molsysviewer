@@ -51,7 +51,7 @@ published native replacement or a separately reviewed dependency update.
 | Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 475 units pass, including the later popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
 | Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Partial: completed context-menu motion, controls/popup mirroring and Studio layout/trajectory controls pass; remaining core receiving is pending. |
-| Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Partial: current persistent Studio passes in 729; native physical teardown, real Qt/GPU capture and actual-Jupyter lifecycle pass in 730/731/732. Actual-Jupyter full receiving fails a moving Python save's original five-second deadline in 733; retain and diagnose it before repeating. Movie, prolonged and covering exits remain separate. |
+| Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Partial: current persistent Studio passes in 729; native physical teardown, real Qt/GPU capture and actual-Jupyter lifecycle pass in 730/731/732. #381 separates healthy public defaults from deliberately delayed science; complete eight-case actual-Jupyter receiving passes in 739, with prior failed scopes retained. Movie, prolonged and covering exits remain separate. |
 | Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Pending; no public candidate or publication authorized. |
 
 Use sequential bounded executions: build/type/backend checks at 2 CPU/2 GiB,
@@ -231,11 +231,17 @@ strong restore controls, four Studio cases and one moving capture, then fails
 at the unchanged public five-second deadline. The kernel heartbeat progresses,
 its comm remains open and molecular transfers are inactive; browser diagnostics
 show moving-frame dependencies that do not converge before expiry. This does
-not yet establish the cause or an upstream regression. The closed #344 history
-and exact native event ordering need comparison before changing code, reopening
-a report or repeating the guard. No resource stop occurs, selected inputs are
+not establish a broken product deadline or an upstream regression. `736`
+completes the original scope without a product fix; timed `737` then shows the
+fixture withholding real queries for 3.82 of the five available seconds.
+The [focused #381 correction](../archive/jupyter_moving_fixture_deadline_budget.md)
+separates two healthy unchanged-default captures from all six delayed-query
+controls at an explicit ten-second budget. Complete actual-Jupyter `739`
+passes all eight, plus stopped/strong restores and cancellation/expiry, in
+232 seconds. Its exact original inputs precede the new 300-second full-profile
+aggregate bound; no individual product default is raised. No resource stop occurs, selected inputs are
 unchanged, and process cleanup leaves no survivor or error. Preserve the failed
-gate rather than counting its completed subcases as complete receiving.
+earlier gates rather than relabelling their successful subcases as completion.
 
 The independent [#380 PNG routing defect](../pending_bugs/detached_studio_png_uses_empty_canvas.md)
 also remains pre-1.0 work. Main-canvas PNG receiving does not cover a detached

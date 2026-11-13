@@ -953,11 +953,14 @@ must be corrected before 1.0.
 Complete current-runtime browser/host/platform/installed gates remain open;
 earlier completed entries retain their recorded runtime identities.
 Current real Wayland/NVIDIA Qt receiving and actual-Jupyter controller/buffer
-lifecycle pass in `731`/`732`. Full Jupyter `733` fails a moving Python save's
-unchanged five-second deadline after its stopped cases; diagnosis remains in
-#372. Current scoped source checks pass 519 cases in `735`, with the original
+lifecycle pass in `731`/`732`. #381 separates healthy public-default captures
+from the fixture's deliberate query delays; complete actual-Jupyter `739`
+receives all eight moving cases, with the original `733`/`737` failures retained.
+Current scoped source checks pass 519 cases in `735`, with the original
 `734` temporary-quota failure retained. The receiving record names verified
-private custody for all 56 controlled profiles and the preflight rejection.
+private custody for the original 56 profiles/preflight rejection and the six
+supplementary owner/diagnostic controls, including hash-matched original test
+sources and actual kernel/extension origins.
 
 The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
 first Timeline/Preview/Export editor over the shared Python API: typed keys,

@@ -576,6 +576,16 @@ is not live-notebook qualification; its explicit CLI receiving route is
 `python tests/_jupyter_live_capture.py` (optional `--output` must be a new path).
 This profile retains private raw logs, cleans its own processes/credentials and
 checks autonomous timeout as well as cancellation without late writes.
+Its moving receiving separates two healthy Python state/session captures at
+the unchanged public five-second default from all six delayed-query captures.
+The latter retain two real post-request structure changes and declare a
+ten-second caller/UI budget. Actual requested deadlines, native draw/file
+equivalence, source preservation and private hold times are checked; #381
+records why artificial withholding cannot qualify the healthy default. The
+expanded full browser scope has a 300-second aggregate bound after observed
+232-second receiving; other host profiles and every product deadline retain
+their existing bounds. The owner CLI and selected pytest guard share the same
+eight-case contract validator, with offline omission/deadline fault controls.
 The same owner also exposes `--profile lifecycle` and the explicit pytest
 guard `tests/test_jupyter_live_capture.py::test_live_jupyter_controller_release`.
 With `MOLSYSVIEWER_JUPYTER_TEST=1`, two real bundled single-structure Views

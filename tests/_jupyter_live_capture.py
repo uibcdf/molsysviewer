@@ -75,6 +75,7 @@ def _safe_browser_summary(path: Path) -> dict:
                 for origin in ("notebook", "popup")
                 for kind in ("state", "session")
             }
+            | {f"Moving default Python notebook {kind}" for kind in ("state", "session")}
         )
         error_types = {
             "Error",
@@ -161,6 +162,43 @@ def _stop_owned_processes(owned):
     except psutil.Error as error:
         errors.append(f"wait_kill:{type(error).__name__}")
     return {"tracked": len(owned), "survivors": [process.pid for process in pending if live(process)], "errors": errors}
+
+
+def _check_moving_capture_contract(observed: dict) -> None:
+    """Require distinct healthy defaults and all delayed scientific controls."""
+    cases = observed["moving_cases"]
+    assert observed["moving_capture_cases"] == len(cases) == 8
+    assert len({case["request_id"] for case in cases}) == 8
+
+    def identity(case):
+        return case["origin"], case["method"], case["kind"]
+
+    default = [case for case in cases if case["scenario"] == "default"]
+    delayed = [case for case in cases if case["scenario"] == "delayed"]
+    assert len(default) == 2 and {identity(case) for case in default} == {
+        ("notebook", "Python", kind) for kind in ("state", "session")
+    }
+    assert len(delayed) == 6 and {identity(case) for case in delayed} == {
+        (origin, method, kind)
+        for origin, methods in (("notebook", ("Python", "Studio")), ("popup", ("Studio",)))
+        for method in methods
+        for kind in ("state", "session")
+    }
+    for case in cases:
+        assert case["independent_file_restore"] is True
+        assert case["source_identity_and_coordinates_unchanged"] is True
+        timeout = case["requested_timeout_ms"]
+        assert type(timeout) in (int, float) and 0 < timeout <= 10_000
+    for case in default:
+        assert case["uses_public_default"] is True
+        assert case["requested_timeout_ms"] <= 5_000
+        assert case["held_real_queries"] == 0
+    for case in delayed:
+        assert case["uses_public_default"] is False
+        assert case["requested_timeout_ms"] > 5_000
+        assert case["held_real_queries"] > 0
+        frames = case["frame_changes_after_request"]
+        assert len(frames) == 2 and frames[0] != frames[1]
 
 
 def run(output: Path, *, profile: str = "full") -> int:
@@ -386,13 +424,20 @@ def run(output: Path, *, profile: str = "full") -> int:
             browser = subprocess.Popen([str(node), str(entry)], env=env, stdout=log, stderr=log)
             process = psutil.Process(browser.pid)
             owned[(process.pid, process.create_time())] = process
-            deadline = time.monotonic() + 240
+            # Eight full-profile moving cases now take 232 seconds on the
+            # qualified shared host. Bound the aggregate independently of
+            # the unchanged five-second defaults and explicit delayed calls.
+            result["browser_timeout_seconds"] = 300 if profile == "full" else 240
+            deadline = time.monotonic() + result["browser_timeout_seconds"]
             while browser.poll() is None:
                 if _track_owned_processes(owned):
                     raise RuntimeError("Could not track the isolated browser process tree.")
                 if time.monotonic() >= deadline:
                     raise TimeoutError("The isolated Jupyter browser guard exceeded its deadline.")
                 time.sleep(0.1)
+        result["browser_exit_code"] = browser.returncode
+        if profile == "full" and browser.returncode == 0:
+            _check_moving_capture_contract(json.loads((output / "observations.json").read_text()))
         result.update(state="completed", exit_code=browser.returncode)
     except BaseException as error:
         result.update(state="failed", exit_code=1, error_type=type(error).__name__)

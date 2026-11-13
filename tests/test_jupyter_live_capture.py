@@ -6,9 +6,94 @@ import runpy
 import subprocess
 import sys
 import time
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
+
+
+def _moving_capture_contract_control():
+    cases = []
+    for scenario, owners in (
+        ("default", (("notebook", ("Python",)),)),
+        ("delayed", (("notebook", ("Python", "Studio")), ("popup", ("Studio",)))),
+    ):
+        for origin, methods in owners:
+            for method in methods:
+                for kind in ("state", "session"):
+                    cases.append(
+                        {
+                            "scenario": scenario,
+                            "origin": origin,
+                            "method": method,
+                            "kind": kind,
+                            "request_id": f"{scenario}-{origin}-{method}-{kind}",
+                            "uses_public_default": scenario == "default",
+                            "requested_timeout_ms": 4999 if scenario == "default" else 9999,
+                            "held_real_queries": 0 if scenario == "default" else 2,
+                            "frame_changes_after_request": [] if scenario == "default" else [2, 1],
+                            "independent_file_restore": True,
+                            "source_identity_and_coordinates_unchanged": True,
+                        }
+                    )
+    return {"moving_capture_cases": 8, "moving_cases": cases}
+
+
+def test_moving_capture_contract_accepts_both_deadline_scopes():
+    check = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))["_check_moving_capture_contract"]
+    observed = _moving_capture_contract_control()
+    original = deepcopy(observed)
+    check(observed)
+    assert observed == original
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "default_scope",
+        "delayed_scope",
+        "default_deadline",
+        "delayed_deadline",
+        "frames",
+        "restore",
+        "source",
+        "owner",
+        "request",
+    ],
+)
+def test_moving_capture_contract_rejects_missing_scope_or_deadline_drift(fault):
+    check = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))["_check_moving_capture_contract"]
+    report = _moving_capture_contract_control()
+    default, delayed = report["moving_cases"][0], report["moving_cases"][2]
+    if fault == "default_scope":
+        default["scenario"] = "delayed"
+    elif fault == "delayed_scope":
+        delayed["scenario"] = "default"
+    elif fault == "default_deadline":
+        default["requested_timeout_ms"] = 6000
+    elif fault == "delayed_deadline":
+        delayed["requested_timeout_ms"] = 5000
+    elif fault == "frames":
+        delayed["frame_changes_after_request"] = [1, 1]
+    elif fault == "restore":
+        delayed["independent_file_restore"] = False
+    elif fault == "source":
+        delayed["source_identity_and_coordinates_unchanged"] = False
+    elif fault == "owner":
+        delayed["origin"] = "another-view"
+    else:
+        delayed["request_id"] = default["request_id"]
+    with pytest.raises(AssertionError):
+        check(report)
+
+
+@pytest.mark.parametrize("kind", ["state", "session"])
+def test_safe_browser_summary_names_default_moving_capture(tmp_path, kind):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    phase = f"Moving default Python notebook {kind}"
+    report.write_text(json.dumps({"outcome": "failed", "stage": phase, "error_type": "Error"}))
+    assert owner["_safe_browser_summary"](report)["phase"] == phase
 
 
 def test_safe_browser_summary_retains_phase_and_counts_without_raw_diagnostics(tmp_path):
@@ -290,19 +375,8 @@ def test_live_jupyter_work_files(tmp_path):
         case["ok"] and case["capture_version"] == 2 and case["fresh_native_draw"] and case["playing"] is False
         for case in observed["delayed_captures"]
     )
-    assert observed["moving_capture_cases"] == 6
-    assert {(case["origin"], case["method"], case["kind"]) for case in observed["moving_cases"]} == {
-        (origin, method, kind)
-        for origin, methods in (("notebook", ("Python", "Studio")), ("popup", ("Studio",)))
-        for method in methods
-        for kind in ("state", "session")
-    }
-    assert all(
-        case["held_real_queries"] > 0
-        and len(case["frame_changes_after_request"]) >= 2
-        and case["independent_file_restore"]
-        and case["source_identity_and_coordinates_unchanged"]
-        for case in observed["moving_cases"]
+    runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))["_check_moving_capture_contract"](
+        observed
     )
     assert not (output / "settings.json").exists()
     assert not (output / "config/jupyter_server_config.py").exists()

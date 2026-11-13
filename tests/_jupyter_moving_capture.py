@@ -3,6 +3,7 @@
 
 def configure(view, output, root):
     import asyncio
+    import hashlib
     import importlib.util
     import json
     import time
@@ -13,6 +14,19 @@ def configure(view, output, root):
     import numpy as np
 
     import molsysviewer as msv
+
+    # The notebook kernel can have a different module route from its launcher.
+    # Record actual imported bytes before starting the timed capture controls.
+    origins = {}
+    for name in ("molsysviewer", "molsysmt", "pyunitwizard", "molsysmt._rust"):
+        provider = importlib.import_module(name)
+        source = Path(provider.__file__).resolve()
+        origins[name] = {
+            "path": str(source),
+            "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            "version": getattr(provider, "__version__", None),
+        }
+    (output / "moving-kernel-origins.json").write_text(json.dumps(origins, indent=2) + "\n")
 
     fixture = Path(root) / "molsysviewer/js/tests/e2e/moving-capture-bridge.py"
     spec = importlib.util.spec_from_file_location("jupyter_moving_science", fixture)
@@ -53,9 +67,12 @@ def configure(view, output, root):
         view.scene.spin(True, speed=0.05)
         return {"heartbeat": beats["count"], "playing": view.player.is_playing}
 
-    async def save(name, kind):
+    async def save(name, kind, timeout=None):
         operation = view.save_session_async if kind == "session" else view.save_state_async
-        await operation(output / name)  # Preserve the real public five-second default.
+        # Healthy receiving omits the argument; deliberately delayed science
+        # declares its larger budget without changing the public default.
+        options = {} if timeout is None else {"timeout": timeout}
+        await operation(output / name, **options)
         return {"heartbeat": beats["count"]}
 
     def inspect(name, kind, draw):

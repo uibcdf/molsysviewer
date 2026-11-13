@@ -27,7 +27,7 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
   wire.releaseObserved=target=>{
    const active=target.__jupMoving?.active;
    if(!wire.holding||wire.target!==target||!active||active.changes.length<2)return;
-   active.released={held_real_queries:wire.held.length,
+   active.released={held_real_queries:wire.held.length,released_after_ms:performance.now()-active.received_at_ms,
     held_owners:[...new Set(wire.held.map(([event])=>(event?.payload??event)._query_endpoint_id))],
     requests:wire.requests.slice(wire.mark.requests),early_reply:wire.replies.length!==wire.mark.replies,
     frame_changes_after_request:[...active.changes]};
@@ -50,7 +50,8 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
    if(body?.op!=='request_visual_state'||body.capture_version!==2)return;
    wire.requests.push(JSON.parse(JSON.stringify(body)));
    const target=wire.target?.__jupMoving;
-   if(target)target.active={request_id:body.request_id,lastFrame:wire.target.__captureControllers[0].trajectory.getTrajectoryState().currentFrame,changes:[]};
+   if(target)target.active={request_id:body.request_id,received_at_ms:performance.now(),
+    lastFrame:wire.target.__captureControllers[0].trajectory.getTrajectoryState().currentFrame,changes:[],frame_times:[]};
   };
   model.on('msg:custom',incoming);
   wire.dispose=()=>{wire.release();model.send=send;model.off('msg:custom',incoming);};
@@ -66,6 +67,7 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
     if(p.frames.length>64)p.frames.shift();
     if(p.active&&p.active.lastFrame!==state.currentFrame){
      p.active.lastFrame=state.currentFrame;p.active.changes.push(state.currentFrame);
+     p.active.frame_times.push({frame:state.currentFrame,epoch_ms:performance.timeOrigin+performance.now()});
      const authority=window.__jupMovingWire?window:window.opener;
      authority.__jupMovingWire.releaseObserved(window);
     }
@@ -86,27 +88,27 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
    p.dispose=()=>{p.releaseFrames();p.subscription.unsubscribe();c.prepareMovingVisualCapture=prepare;};
   });
  }
- async function capture(target,kind,origin,method){
-  setStage(`Moving ${method} ${origin} ${kind}`);
-  const name=`moving-${method.toLowerCase()}-${origin}.${kind==='state'?'json':'msv'}`;
+ async function capture(target,kind,origin,method,scenario='delayed'){
+  setStage(`Moving ${scenario==='default'?'default ':''}${method} ${origin} ${kind}`);
+  const name=`moving-${scenario}-${method.toLowerCase()}-${origin}.${kind==='state'?'json':'msv'}`;
   const work=await openWork(target);
   await work.getByLabel('Work file format',{exact:true}).selectOption(kind);
   await work.getByLabel('Path in Python session',{exact:true}).fill(config.output+'/notebooks/'+name);
   const before=await kernel(json("_moving['status']()"));assert.equal(before.playing,true);
   const owner=await target.evaluate(()=>window.molsysviewer_popup_channel?.popupEndpointId??`widget-host:${window.__captureControllers[0].model.get('runtime_session_id')}`);
-  const mark=await page.evaluate(({origin,owner})=>{
+  const mark=await page.evaluate(({origin,owner,scenario})=>{
    const wire=window.__jupMovingWire;
    wire.target=origin==='notebook'?window:window.__capturePopups.at(-1);
    wire.target.__jupMoving.active=null;
-   wire.holding=true;
+   wire.holding=scenario==='delayed';
    wire.holdingOwner=owner;
    wire.mark={replies:wire.replies.length,requests:wire.requests.length};return wire.mark;
-  },{origin,owner});
-  await page.waitForFunction(()=>window.__jupMovingWire.held.length>0);
+  },{origin,owner,scenario});
+  if(scenario==='delayed')await page.waitForFunction(()=>window.__jupMovingWire.held.length>0);
   let pending;
   if(method==='Studio')await work.getByRole('button',{name:'Save file',exact:true}).click();
   else{
-   pending=kernel(json(`await _moving['save'](${JSON.stringify(name)},${JSON.stringify(kind)})`));
+   pending=kernel(json(`await _moving['save'](${JSON.stringify(name)},${JSON.stringify(kind)}${scenario==='delayed'?',10':''})`));
    void pending.catch(()=>{}); // Observe early rejection; the original is awaited below.
   }
   // Do not submit another kernel execute while the real async save is awaiting
@@ -118,13 +120,19 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
     assert.match(await work.locator('[data-molsysviewer-work-file-status]').innerText(),/Saved/);
    }
    const held=await target.evaluate(()=>window.__jupMoving.active?.released);
-   assert.ok(held&&held.held_real_queries>0);assert.equal(held.early_reply,false);
-   assert.equal(held.requests.length,1);assert.equal(held.frame_changes_after_request.length,2);
-   assert.deepEqual(held.held_owners,[owner]);
-   assert.equal(held.requests[0].target_endpoint_id,origin==='notebook'?undefined:owner);
+   if(scenario==='delayed'){
+    assert.ok(held&&held.held_real_queries>0);assert.equal(held.early_reply,false);
+    assert.equal(held.frame_changes_after_request.length,2);assert.deepEqual(held.held_owners,[owner]);
+   }else assert.equal(held,undefined,'default receiving must not withhold scientific requests');
+   const requests=await page.evaluate(mark=>window.__jupMovingWire.requests.slice(mark.requests),mark);
+   assert.equal(requests.length,1);
+   assert.equal(requests[0].target_endpoint_id,origin==='notebook'?undefined:owner);
+   const requestedTimeout=requests[0].capture_timeout_ms;
+   assert.ok(requestedTimeout>0&&requestedTimeout<=(scenario==='default'?5000:10000));
+   if(scenario==='delayed')assert.ok(requestedTimeout>5000,'adversarial delay must have an explicit budget');
    const replies=await page.evaluate(mark=>window.__jupMovingWire.replies.slice(mark.replies),mark);
    assert.equal(replies.length,1);const reply=replies[0];assert.equal(reply.ok,true);assert.equal(reply.capture_version,2);
-   assert.equal(reply.request_id,held.requests[0].request_id);
+   assert.equal(reply.request_id,requests[0].request_id);
    const actual=await target.evaluate(reply=>{
     const p=window.__jupMoving;
     const draw=p.draws.findLast(d=>JSON.stringify(d.snapshot)===JSON.stringify(reply.snapshot)&&d.structure_index===reply.structure_index);
@@ -133,8 +141,10 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
    assert.ok(actual.draw,'The saved snapshot must match a real completed native draw.');
    const verified=await kernel(json(`_moving['inspect'](${JSON.stringify(name)},${JSON.stringify(kind)},json.loads(${JSON.stringify(JSON.stringify(actual.draw))}))`));
    assert.ok(verified.heartbeat>before.heartbeat);assert.equal(verified.pending_saves,0);assert.equal(verified.pending_captures,0);
-   report.moving_cases.push({origin,method,kind,request_id:reply.request_id,...verified,
-    held_real_queries:held.held_real_queries,held_query_owners:held.held_owners,frame_changes_after_request:held.frame_changes_after_request,native_draw:actual.draw});
+   report.moving_cases.push({origin,method,kind,scenario,request_id:reply.request_id,...verified,
+    uses_public_default:scenario==='default',requested_timeout_ms:requestedTimeout,
+    held_real_queries:held?.held_real_queries??0,held_query_owners:held?.held_owners??[],
+    held_release_after_ms:held?.released_after_ms??0,frame_changes_after_request:held?.frame_changes_after_request??actual.changes,native_draw:actual.draw});
    report.moving_capture_cases=report.moving_cases.length;
   }finally{
    await page.evaluate(()=>window.__jupMovingWire.release());
@@ -145,6 +155,7 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
   await observe(page);
   await kernel(json("_moving['start']()"));
   await page.waitForFunction(()=>window.__jupMoving.frames.length>=3);
+  for(const kind of ['state','session'])await capture(page,kind,'notebook','Python','default');
   for(const kind of ['state','session'])for(const method of ['Studio','Python'])await capture(page,kind,'notebook',method);
   setStage('moving popup');popup=await openCanvas();await observe(popup);
   await popup.waitForFunction(()=>window.__jupMoving.frames.length>=3);

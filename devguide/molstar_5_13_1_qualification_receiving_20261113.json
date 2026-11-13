@@ -4,7 +4,7 @@
   "started": "2026-11-12",
   "parent": "uibcdf/molsysviewer#372",
   "review": "uibcdf/molsysviewer#369",
-  "status": "source_controls_received; covering_browser_host_candidate_qualification_pending",
+  "status": "selected_source_and_actual_host_controls_received; covering_qualification_pending",
   "decision": "The principal maintainer advances public Mol* 5.13.1 qualification before 1.0; future v6/evolution remains post-1.0. No public tag/package/promotion authorization.",
   "source": {
     "base_commit": "185b0ed7fdfc75dd20306edf8c989a7c87ac9f2b",
@@ -49,7 +49,11 @@
       "molsysviewer/js/tests/e2e/movie-web.e2e.ts": "8e76add85108f86781a6511611b14583bc4cac2d6aaa8a2411b9acb60aff18c5",
       "molsysviewer/js/src/managers/viewer-controller.ts": "6d9a0f349e870e2924d5243837fa6db0be5fdf69afd0503c8e42c18d4f0e90ab",
       "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts": "09dfa8811fdaf45f385b1954c681ce532525692f1191e237ec5b0a2cc5fbd5c8",
-      "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "338b8b3fd28b9584b62e60ee250f2ebac1a7b3ebeca856505b4cd9db6f64421f"
+      "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "338b8b3fd28b9584b62e60ee250f2ebac1a7b3ebeca856505b4cd9db6f64421f",
+      "tests/_jupyter_live_capture.py": "566309f2f695481b9b4554583afc72de850ccf07b220b2ba3854010c1f45e864",
+      "tests/_jupyter_moving_capture.py": "91a1b94c2cc2f53fa5a50770aae00da0557cf5f7886757798be2d2806aace196",
+      "tests/_jupyter_moving_capture.mjs": "d534935136d56ebd659ff06a6d23832cb8f769e2eb15f8465b3a7c47e3121100",
+      "tests/test_jupyter_live_capture.py": "685ab8737ce4f82f86a3740734926eafb65355d07dcaacd20c318b0d81b1a308"
     },
     "scientific_provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
     "pyunitwizard_source": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
@@ -329,22 +333,136 @@
       "notice": "Actual notebook/widget/runtime retirement and independent witness receiving. The outer frozen provider route is recorded; no separate actual-kernel Rust/source commit assertion or full scientific-pair qualification is inferred from this lifecycle profile."
     },
     "actual_jupyter_full": {
-      "profile": "733",
-      "native_exit": 1,
-      "outcome": "failed",
-      "phase": "Moving Python notebook state",
-      "reason": "FrontendRequestError(request_timeout) at unchanged public five-second deadline",
-      "completed_subcases": {
-        "capture_restore": 6,
-        "strong_restore": 6,
-        "studio": 4,
-        "moving": 1
+      "profile": "739",
+      "native_exit": 0,
+      "browser_exit": 0,
+      "outcome": "passed",
+      "seconds": 231.88257350213826,
+      "stopped_roundtrips": 6,
+      "strong_restores": 6,
+      "studio_cases": 4,
+      "moving_cases": [
+        {
+          "scenario": "default",
+          "origin": "notebook",
+          "method": "Python",
+          "kind": "state",
+          "uses_public_default": true,
+          "requested_timeout_ms": 4999.943346250802,
+          "held_real_queries": 0,
+          "held_release_after_ms": 0
+        },
+        {
+          "scenario": "default",
+          "origin": "notebook",
+          "method": "Python",
+          "kind": "session",
+          "uses_public_default": true,
+          "requested_timeout_ms": 4999.951199162751,
+          "held_real_queries": 0,
+          "held_release_after_ms": 0
+        },
+        {
+          "scenario": "delayed",
+          "origin": "notebook",
+          "method": "Studio",
+          "kind": "state",
+          "uses_public_default": false,
+          "requested_timeout_ms": 9999.915485270321,
+          "held_real_queries": 2,
+          "held_release_after_ms": 2224.0999999046326
+        },
+        {
+          "scenario": "delayed",
+          "origin": "notebook",
+          "method": "Python",
+          "kind": "state",
+          "uses_public_default": false,
+          "requested_timeout_ms": 9999.950118362904,
+          "held_real_queries": 2,
+          "held_release_after_ms": 2273.2000002861023
+        },
+        {
+          "scenario": "delayed",
+          "origin": "notebook",
+          "method": "Studio",
+          "kind": "session",
+          "uses_public_default": false,
+          "requested_timeout_ms": 9999.837703071535,
+          "held_real_queries": 2,
+          "held_release_after_ms": 2036.4000000953674
+        },
+        {
+          "scenario": "delayed",
+          "origin": "notebook",
+          "method": "Python",
+          "kind": "session",
+          "uses_public_default": false,
+          "requested_timeout_ms": 9999.952297657728,
+          "held_real_queries": 2,
+          "held_release_after_ms": 2299.5999999046326
+        },
+        {
+          "scenario": "delayed",
+          "origin": "popup",
+          "method": "Studio",
+          "kind": "state",
+          "uses_public_default": false,
+          "requested_timeout_ms": 9999.91000071168,
+          "held_real_queries": 2,
+          "held_release_after_ms": 428.90000009536743
+        },
+        {
+          "scenario": "delayed",
+          "origin": "popup",
+          "method": "Studio",
+          "kind": "session",
+          "uses_public_default": false,
+          "requested_timeout_ms": 9999.818853102624,
+          "held_real_queries": 2,
+          "held_release_after_ms": 640.2999997138977
+        }
+      ],
+      "other_received": [
+        "exact completed native draw and independent file restore",
+        "unchanged source identity and coordinates",
+        "late-reply cancellation and autonomous expiry without writes"
+      ],
+      "actual_kernel_origins": {
+        "molsysviewer": {
+          "path": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+          "sha256": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+          "version": "0.24.0+97.gdf4bf477.dirty"
+        },
+        "molsysmt": {
+          "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/__init__.py",
+          "sha256": "c3a838c2e858b86ed2ac484faa9632eb6a4d2ba314914d6e321c0dec9e935304",
+          "version": "0+unknown"
+        },
+        "pyunitwizard": {
+          "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+          "sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+          "version": "0.29.4+2.g9bb4f5f"
+        },
+        "molsysmt._rust": {
+          "path": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/_rust.abi3.so",
+          "sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+          "version": null
+        }
       },
+      "provenance_notice": "Actual kernel paths/hashes match frozen source/support routes and canonical Rust bytes. Development version labels, including stale Viewer metadata and MolSysMT 0+unknown, are not Git identities or installed-artifact qualification.",
       "inputs_unchanged": true,
       "resource_stop": null,
       "cleanup_survivors": [],
       "cleanup_errors": [],
-      "notice": "Kernel heartbeat progresses and comm remains open; native moving dependencies have not converged before expiry. Cause/upstream relation remain unestablished. Preserve failed whole receiving; do not count successful subcases as a complete gate."
+      "original_profile_aggregate_seconds": 240,
+      "current_full_profile_aggregate_seconds": 300,
+      "aggregate_notice": "739 completed inside 240 seconds before the aggregate-only expansion. All per-operation defaults remain; recovered original owner sources match every captured hash.",
+      "preserved_other_outcomes": {
+        "733": "Original six-case full guard fails the moving Python state default deadline.",
+        "736": "Complete six-case guard passes with test-only observation; no product fix.",
+        "737": "Original guard fails after genuine queries are withheld for 3817.6 ms of 4999.93 ms."
+      }
     },
     "temporary_quota_failure": {
       "profile": "734",
@@ -361,6 +479,24 @@
       "unique_module_paths": 77,
       "sha256": "c6eaf9c8dd6b6f7c720649728d1289ba6aef252149ac5b7de6356716e8016d76",
       "notice": "Complete direct literal import/export scan, not a complete transitive or nonliteral-loader inventory."
+    },
+    "receiving_contract_checks": {
+      "profile": "740",
+      "passed": 472,
+      "skipped": 1,
+      "deselected": 2,
+      "native_exit": 0,
+      "ruff_check": "passed",
+      "ruff_format": "passed",
+      "node_syntax": "passed",
+      "queue_indexes": "passed",
+      "scope": "Current owner/reporting controls reject nine scope/deadline/identity/science mutations. Unselected/deselected native tests do not receive hosts; 739 receives the registered CLI owner."
+    },
+    "public_pyunitwizard_code_equivalence": {
+      "public_tag": "0.29.4",
+      "copied_source_commit": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+      "runtime_directory_diff": "empty",
+      "scope": "Read-only comparison of pyunitwizard/; intervening commits change documentation only. No installed/public closure claim."
     }
   },
   "controlled_profiles": [
@@ -1667,15 +1803,140 @@
       },
       "raw_receipt_sha256": "3a1360007d7a05db1fe8171a589bf1f4498ca0399fab38b6c489e15559814299",
       "terminal_core_claims": []
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 210.62559776892886,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-736-jupyter-timing",
+      "peak_summed_owned_rss_mib": 4464.3,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "22e1975753af6f2deb06aa4bdbbdc53ecb8f7e360cbddc6b42327e2b940738e3"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 146.13439104286954,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-737-jupyter-repeat",
+      "peak_summed_owned_rss_mib": 3189.8,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "62e8721357d16e4dfec876f642c9fde980c97eb00b5d356a1dc4a70679809e76"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 6.488216537050903,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "molstar-513-738-moving-fixture-contract",
+      "peak_summed_owned_rss_mib": 219.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "789aa08f94dabf620534881038eb3f5a25668b9ed03f0325ffa6a17f38caced6"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 233.7077424111776,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-739-jupyter-eight",
+      "peak_summed_owned_rss_mib": 4455.9,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "212290bdf5d1699644275ae13b6a99be1acd428085179fc901504fbabaefa2ed"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 5.952742712106556,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "molstar-513-740-moving-fixture-final",
+      "peak_summed_owned_rss_mib": 189.5,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "0645c772fb9558426cfa47ff92d04d10735ba865d84e716ef68e16b6e62c85a4"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 5.173672894015908,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "docs-molstar-final-reconciliation",
+      "peak_summed_owned_rss_mib": 187.7,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "164341dc9eb5b63142149a96fd40068d2a4f35eb756b2492fb38be1915c11612"
     }
   ],
   "remaining": [
     "Complete current core browser receiving and retain interruptions/partial coverage honestly.",
-    "Receive actual Jupyter/native Qt and relevant lifecycle/output routes.",
+    "Receive remaining Movie/output/prolonged-host scopes; preserve selected Qt/full Jupyter/lifecycle source outcomes independently.",
     "Consolidate source/platform CI, installed candidate and compatibility documentation at the agreed freeze.",
     "Preserve postponed human observations separately; do not count them as passing.",
     "Resolve uibcdf/molsysviewer#380: detached Studio PNG must use its associated molecular canvas; the reproduced empty local export is not an upstream defect claim.",
-    "Diagnose actual-Jupyter moving-capture failure 733 without weakening the public five-second deadline; compare #344 history before refiling or rerunning.",
     "Keep #379 partial until the corrected #380 path preserves the stopped panel loop after image export."
   ],
   "counter_notice": "The original 38/46 source-delivered and 1/46 finally accepted audit counters are unchanged; this is a separate adopted stream.",
@@ -1691,7 +1952,25 @@
     "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
     "custodian": "Diego Prada Gracia",
     "scope": "539 owner-private files covering all 56 controlled profiles, one preflight rejection, original provider artifacts, drivers and current build. Copies and originals are independently hash-checked; no original is removed.",
-    "initial_copy_notice": "An earlier 34-file drivers/build-only preparation copy is retained unchanged; it is not the complete execution-record custody. The manifest named here covers the complete declared tranche."
+    "initial_copy_notice": "An earlier 34-file drivers/build-only preparation copy is retained unchanged; it is not the complete execution-record custody. The manifest named here covers the complete declared tranche.",
+    "additional_tranches": [
+      {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-jupyter-deadlines-20261113",
+        "profiles": [
+          "covering-molstar-513-736-jupyter-timing",
+          "covering-molstar-513-737-jupyter-repeat",
+          "molstar-513-738-moving-fixture-contract",
+          "covering-molstar-513-739-jupyter-eight",
+          "molstar-513-740-moving-fixture-final",
+          "docs-molstar-final-reconciliation"
+        ],
+        "files": 69,
+        "bytes": 30598140,
+        "manifest_sha256": "b428ee655268016df6c318f27dfd5bc682494f1e23c58722a562b5601db6280a",
+        "originals_retained": true
+      }
+    ]
   },
   "preflight_rejections": [
     {
