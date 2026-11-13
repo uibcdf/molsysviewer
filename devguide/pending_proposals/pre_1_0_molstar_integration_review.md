@@ -4,7 +4,7 @@ issue: uibcdf/molsysviewer#369
 status: active
 opened: 2026-11-12
 closed:
-verification: inspected
+verification: measured
 area: [architecture, frontend, dependencies, rendering]
 guard:
 normative:
@@ -14,8 +14,10 @@ supersedes: []
 
 # Mol* integration and capability review before 1.0
 
-**Required before the final documentation-review handoff. Baselines and direct
-imports are inventoried; the capability review and acceptance remain open.**
+**Technical assessment delivered; dependency decision and qualification remain
+open before the documentation-review handoff.** The
+[dated review](../molstar_integration_review_20261112.md) contains the eight-area
+matrix, measured comparisons, dispositions and a concrete migration proposal.
 The principal maintainer adopted this requirement on 2026-11-12:
 the original implementation review is old enough to warrant a comprehensive
 reassessment of how MolSysViewer uses Mol*. Recent focused source investigations
@@ -76,13 +78,26 @@ The first source reading identifies these consequential comparisons to make:
   `StateTransforms` facade. The current default-plugin/deep-import integration
   therefore needs a migration assessment beyond renaming one dependency.
 
-These are review hypotheses and migration boundaries, not newly demonstrated
-MolSysViewer defects or accepted new features. The eight-area capability matrix,
-bounded behavioral comparisons and explicit dependency decision remain next.
-#369 stays open; #115 retains its existing deferral and the original 46-outcome
+These were the baseline-stage hypotheses and migration boundaries. The dated
+assessment below now addresses them, including the demonstrated #370 build
+defect and its source correction. #369 stays open for the dependency disposition
+and adopted work; #115 retains its existing deferral and the original 46-outcome
 counter is unchanged.
 
 ## Execution plan
+
+The assessment and [receiving](../molstar_integration_review_receiving_20261112.json)
+now receive steps 1–5 in their stated scope. They identify and correct #370's
+implicit build-source override, reproduce a 5.13.1 renderer signature change,
+compare native State disposal and actual font allocation, and distinguish
+physical WebGL teardown from stale counters. Source build regression passes
+13 cases in its original receiving; the final gate adds #371's ordinary
+project type check and library-declaration correction. A new runtime or
+installed qualification has not been claimed.
+The recommendation is controlled 5.13.1 qualification before freeze. That
+requires an explicit revision of #115's accepted timing; until the maintainer
+decides, the dependency remains 5.4.1 and #115's deferral still applies.
+Step 6 and parent closure remain pending that disposition and adopted work.
 
 1. Freeze the exact MolSysViewer source and resolved Mol* dependency/artifact.
    Refresh `~/repos@others/molstar` while preserving local work. Independently

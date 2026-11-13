@@ -929,8 +929,15 @@ Its [baseline inventory](molstar_integration_review_baselines_20261112.json)
 now freezes the received Movie head, original installed 5.4.1, freshly verified
 npm 5.13.1 and refreshed upstream v6 development. The compiler-based inventory
 finds 220 declarations across 30 importing files and 77 module paths; byte
-comparisons are not compatibility receiving. Complete the capability matrix,
-consequential behavioral comparisons and disposition under #369 next.
+comparisons are not compatibility receiving. The
+[technical assessment](molstar_integration_review_20261112.md) now supplies the
+eight-area matrix and measured type, lifecycle, font-allocation and physical
+WebGL controls. #370 corrects the implicit build-source override with a
+three-route regression; #371 aligns the real project's standard-library
+declarations without changing emitted syntax. The recommended next step is controlled 5.13.1
+qualification before freeze; #115's existing deferral remains until the
+maintainer explicitly decides. #369 stays open for that disposition and
+adopted qualification. No dependency or runtime bundle has changed.
 
 The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
 first Timeline/Preview/Export editor over the shared Python API: typed keys,

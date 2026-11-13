@@ -32,6 +32,10 @@ development, assess native capabilities and obsolete assumptions, and resolve
 or explicitly dispose of adopted pre-1.0 findings. This is additional to the
 original 46 outcomes and does not increase their delivery percentage. The
 general dependency upgrade under #115 retains its separate scope decision.
+The [technical assessment](../molstar_integration_review_20261112.md) now
+receives the matrix and bounded comparisons, with #370/#371's build-resolution
+and project-library corrections. The 5.13.1 pre-freeze qualification recommendation awaits an explicit
+revision of #115's timing; #369 and all adopted migration gates remain open.
 
 **Current consolidation — 2026-11-11:** the original counter remains
 **38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance.

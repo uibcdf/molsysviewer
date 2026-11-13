@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [#371: The standard TypeScript project check declares the libraries used by Movie, preserving the emission target.](typescript_project_standard_libraries.md)
+
+- [#370: Runtime, unit and harness builds keep the installed Mol* source even when a stale inspection checkout exists.](molstar_implicit_source_override.md)
+
 - [#367: Complete Python Movie recipes admit empty colour layers in the offline TypeScript player.](movie_complete_recipe_empty_colour_layer.md)
 
 - [#366: Python and Studio share loop-independent Movie completion and actual runtime control.](movie_python_studio_completion.md)

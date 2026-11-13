@@ -196,7 +196,13 @@ Follow these rules to ensure the viewer remains stable and maintainable.
 
 ## Mol* Source Context
 
-When working on MolSysViewer, you MUST assume that the full Mol* (molstar) source tree is available locally under: `src_molstar`
+The full Mol* (molstar) source checkout is available for inspection at
+`~/repos@others/molstar`. Record its branch/commit and distinguish it from the
+installed dependency. Inspect the installed npm package for the current runtime
+and the corresponding upstream tag when comparing implementations. Ordinary
+builds and type checks must resolve the declared installed package; never add an
+implicit `src_molstar` path override. #370 guards all three build routes against
+a leftover source checkout changing their native input.
 This means:
 
 - You should NOT treat Mol* as a black box.

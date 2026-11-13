@@ -36,6 +36,12 @@ adopted pre-1.0 findings. This requirement does not by itself upgrade Mol*.
 | 5. Complete earlier human acceptance | E4 and the already agreed manual scenarios | Prepare one short, concrete review round and resume it when the maintainer chooses. Receive required observations before the documentation handoff, or obtain an explicit scoped disposition. Postponed observations are not passes. |
 | 6. Deliver the documentation for final review | This milestone, under #315 | All technical exits below are evidenced; provide a bounded reading route and the prepared publication procedure. Only the maintainer's documentary review, paper and subsequent publication decision remain. |
 
+The [Mol* technical assessment](molstar_integration_review_20261112.md) now
+delivers #369's matrix and bounded comparisons; #370/#371's build-source and
+project-library corrections have scoped source receiving. Its recommendation to qualify public 5.13.1 before
+freeze awaits an explicit change to #115's existing timing. The current
+dependency remains 5.4.1; this is not installed or covering CI qualification.
+
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
 once the relevant functionality is settled. Do not leave its first technical

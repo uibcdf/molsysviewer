@@ -1,0 +1,652 @@
+{
+  "schema": "molsysviewer.molstar_integration_review_receiving@1",
+  "date": "2026-11-12",
+  "parent": "uibcdf/molsysviewer#369",
+  "status": "source_assessment_and_repairs_received; dependency_decision_pending",
+  "scope": "Eight-area source/capability assessment, original-package type/State/font comparisons, current native GPU teardown, actual build-resolution repair and real project check. Not a new Molstar/installed/hosted/human qualification.",
+  "source": {
+    "molsysviewer_base": "56b39d045bb773a252fbc93a44c5393bc99d5cc2",
+    "baseline_record": "molstar_integration_review_baselines_20261112.json",
+    "baseline_sha256": "6875ce9658ece05407134c4172f26bf45c10647274ac751820de174c7c617baa",
+    "installed": {
+      "version": "5.4.1",
+      "source_commit": "74ff283e00a1254a45b9cd8ac80365b979e0e782",
+      "source_tag": "v5.4.1",
+      "registry_url": "https://registry.npmjs.org/molstar/5.4.1",
+      "registry_response_sha256": "f24400c35173acfce19e9a101a8c7ac9c6c788c1896d7ecd5ecc7f8bb64d351a",
+      "tarball_url": "https://registry.npmjs.org/molstar/-/molstar-5.4.1.tgz",
+      "integrity": "sha512-Dto3iZv/YbB7kDO7dJTDppOhx/8H2z4r8vJmC0b90EW00Zw1qdpveQyDO8/Ce64cIw9jLEn6XUYi4N0E9lFzDA==",
+      "tarball_sha256": "73065c9cd8d14a59ff7e3f0b494cf805c7f656c28817daeb2eece0d6e0f0dbc5",
+      "tarball_bytes": 15719526,
+      "engines": {
+        "node": ">=20.0.0"
+      },
+      "artifact_notice": "Previously preserved original tarball revalidated independently against this review's fresh registry integrity; no install or package execution."
+    },
+    "published": {
+      "version": "5.13.1",
+      "source_commit": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+      "source_tag": "v5.13.1",
+      "registry_url": "https://registry.npmjs.org/molstar/latest",
+      "registry_response_sha256": "16243050250042e5c961a308bfc3ae94179b5d0ed036b22479dea8ff7fdc4e71",
+      "tarball_url": "https://registry.npmjs.org/molstar/-/molstar-5.13.1.tgz",
+      "integrity": "sha512-iExD98bJN2P4JK6+pVMwdJlPePldBH8oNT0pZhs8ucxOp086NU2b/gThKwYMC3SWkdmv++a1g4fGwKfu4Glx1w==",
+      "tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+      "tarball_bytes": 17782753,
+      "engines": {
+        "node": ">=22.0.0"
+      },
+      "artifact_notice": "Previously preserved original tarball revalidated independently against this review's fresh registry integrity; no install or package execution."
+    },
+    "development": {
+      "remote": "https://github.com/molstar/molstar",
+      "branch": "master",
+      "commit": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+      "commit_time": "2026-11-09T00:37:07-08:00",
+      "clean": true,
+      "refresh": "git pull --ff-only: Already up to date; fetched origin/master equals HEAD",
+      "package_name": "@molstar/workspace",
+      "package_version": null,
+      "node": {
+        "node": ">=22.13.0"
+      },
+      "source_notice": "Development v6 pnpm/ESM workspace; neither the installed 5.4.1 nor npm latest 5.13.1."
+    },
+    "working_source_sha256": {
+      "AGENTS.md": "89caebdf9af8bf969340a8f9ae4b6d367febac8e628acc9eda24ad7c11f15fa6",
+      "molsysviewer/js/tsconfig.json": "adf224d89de6742c01e05c70416c6ee878aac06553cbb87d0030c76b687c5ea3",
+      "tests/test_js_build_version_resolution.py": "ee2bcfe936a8287e016cd1c00a065a528b28c9af4d5891b73f2c2d635020e7b1"
+    },
+    "documentation_sha256": {
+      "devguide/archive/README.md": "4e2d21e35fb9e17467c5390f24d768b76a1e9ad9b6b24269334ee9c6127a9519",
+      "devguide/archive/molstar_implicit_source_override.md": "bd85e3875ad81d92d4ad6489554e4fecf5a2f7ab61cfad028043dd6baa8f40ea",
+      "devguide/archive/typescript_project_standard_libraries.md": "dbd7fb9f9b6b9f8e2d8181e1ff8e11dbbacb3b888adea59053bb2ef607c83696",
+      "devguide/checkpoints.md": "a3df301f53cc196547e2df49f5a60d5889f96e19d315e1795d06503d4fe2d009",
+      "devguide/molstar_integration_review_20261112.md": "34044cee51511b8110981b3d5cc8b3d2e33bee6f460b25b7f23c46dff6cd350f",
+      "devguide/path_to_1_0.md": "a907bacdb883ee5dbb7a2785e5feda1e63b20a3e09db9c39c2b3f0531b3dbb58",
+      "devguide/pending_proposals/README.md": "a43944038b765f98988fcc21ebf79b5ec531985cb067ae7efb4d08c8464d9425",
+      "devguide/pending_proposals/post_1.0/README.md": "412ef347e82d729bfe4f182c8167ad562e8defed71f87bdaf9820fa065577c82",
+      "devguide/pending_proposals/pre_1_0_molstar_integration_review.md": "dddad3f93f08b3f609092acd75fc7080acf92ea7306c1ebaf2073a9c822d2d8f",
+      "devguide/pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md": "111e5ec6cf2a1d8629076e167d7489092748a8dcb3c1f8777c78fc79890e513f"
+    },
+    "runtime_bundle_sha256": "9d1892b4a92fe36e9daabdc9d8a2c823666ad144fbcb6c075b06313ef2606c89",
+    "runtime_and_installed_dependency_changed": false,
+    "frozen_production_import_sources_match": true,
+    "seven_human_sandbox_inputs_preserved": true,
+    "python_notice": "Explicit molsyssuite@uibcdf_3.14 with the qualified frozen owner/support routes; no environment installation or native rebuild."
+  },
+  "review": {
+    "report": "molstar_integration_review_20261112.md",
+    "areas": [
+      "molecular inputs/identity",
+      "representations/appearance",
+      "exploration",
+      "scientific visual content",
+      "structures/motion",
+      "preservation/output",
+      "lifetimes/resources",
+      "hosts/Python integration"
+    ],
+    "conclusion": "Native rendering/model/geometry/state reuse is appropriate; Python/scientific/scene ownership adapters are justified. Two bounded build/type-check defects are corrected. A wholesale UI/API/Movie rewrite is not supported.",
+    "recommendation": "Qualify public 5.13.1 before 1.0 freeze, only after explicit revision of #115 timing. Keep v6 separate.",
+    "current_decision": "No dependency upgrade authorized or made by this receiving; #115 existing post-1.0 scope still applies.",
+    "issues": {
+      "370": {
+        "guard": "tests/test_js_build_version_resolution.py::test_build_routes_keep_installed_molstar_when_a_source_checkout_exists",
+        "before": "671: three real-builder cases fail; 670 independently records all six origin/fault cases",
+        "fix": "Remove implicit src_molstar path override; update source-inspection instruction.",
+        "receiving": "672: complete 13-case build/version module passes; final gate includes all three cases."
+      },
+      "371": {
+        "guard": "tests/test_js_build_version_resolution.py::test_the_typescript_project_checks_without_library_overrides",
+        "before": "677: ordinary compiler child exit 2, TS2550 Object.hasOwn; earlier explicit ES2022 profile passes.",
+        "fix": "Declare ES2022/DOM/DOM.Iterable types, preserve ES2019 syntax target. No polyfill or browser-baseline claim.",
+        "receiving": "678: actual compiler checks the real project without target/lib overrides inside the 14-case build/version module."
+      }
+    },
+    "followups": [
+      "#369 dependency disposition/adopted gates",
+      "#115 renderer/frame, native cleanup, font quality and broader migration",
+      "#363 published cache correction and repair retirement",
+      "#44 advanced table-driven MVS annotations",
+      "#315/E2 and MolSysMT #723 broader host/prolonged metrology",
+      "#320 complete Movie/host qualification"
+    ]
+  },
+  "comparisons": {
+    "types": {
+      "profile": "669",
+      "typescript": "5.9.3",
+      "production_files": 117,
+      "installed_diagnostics": [],
+      "latest_diagnostics": [
+        {
+          "code": 2554,
+          "category": "Error",
+          "file": "molsysviewer/js/src/plugin/render-presentation.ts",
+          "line": 21,
+          "message": "Expected 4 arguments, but got 3."
+        }
+      ],
+      "child_native_exits": {
+        "installed": 0,
+        "latest": 2
+      },
+      "notice": "Comparison driver exit 0 means observations completed, not latest compatibility. Existing external dependency closure and canonical skipLibCheck are retained; private/dynamic runtime assumptions remain unqualified."
+    },
+    "native_state": {
+      "scope": "Real native State and StateTransformer callbacks; not a Viewer/plugin leak or GPU lifetime qualification. Original published code, no native source patch.",
+      "cases": [
+        {
+          "native_state_controls": [
+            {
+              "remove_first": false,
+              "created": 2,
+              "callbacks": []
+            },
+            {
+              "remove_first": true,
+              "created": 2,
+              "callbacks": [
+                1,
+                2
+              ]
+            }
+          ],
+          "label": "installed"
+        },
+        {
+          "native_state_controls": [
+            {
+              "remove_first": false,
+              "created": 2,
+              "callbacks": [
+                1,
+                2
+              ]
+            },
+            {
+              "remove_first": true,
+              "created": 2,
+              "callbacks": [
+                1,
+                2
+              ]
+            }
+          ],
+          "label": "latest"
+        }
+      ]
+    },
+    "current_physical_teardown": {
+      "scope": "Actual pentalanine controller/representations with observed real WebGL handles and isBuffer/isTexture/etc on completed draw and disposal. Native counters are retained but not treated as physical liveness after global destruction. Not universal CPU/GPU lifetime, actual Jupyter/Qt or installed qualification.",
+      "before": {
+        "attribute": 83,
+        "elements": 7,
+        "pixelPack": 9,
+        "framebuffer": 75,
+        "program": 65,
+        "renderbuffer": 10,
+        "shader": 117,
+        "texture": 154,
+        "cubeTexture": 0,
+        "vertexArray": 85
+      },
+      "after": {
+        "attribute": 41,
+        "elements": 1,
+        "pixelPack": 0,
+        "framebuffer": 59,
+        "program": 33,
+        "renderbuffer": 9,
+        "shader": 0,
+        "texture": 75,
+        "cubeTexture": 0,
+        "vertexArray": 42
+      },
+      "physical_before": [
+        {
+          "context_lost": false,
+          "created": 608,
+          "alive": 527
+        }
+      ],
+      "physical_after": [
+        {
+          "context_lost": true,
+          "created": 609,
+          "alive": 0
+        }
+      ],
+      "representations": 5,
+      "atoms": 62,
+      "disposed": true,
+      "errors": []
+    },
+    "native_font": {
+      "scope": "Actual native default FontAtlas, real Chromium Canvas2D and original published modules. Measures one allocated pixel array per version, not whole-process/browser/GPU peak or image-quality equivalence.",
+      "cases": [
+        {
+          "label": "installed",
+          "font_quality": 3,
+          "width": 3287,
+          "height": 3286,
+          "array_bytes": 10801082,
+          "glyph_mapped": true
+        },
+        {
+          "label": "latest",
+          "font_quality": 3,
+          "width": 6565,
+          "height": 6564,
+          "array_bytes": 43092660,
+          "glyph_mapped": true
+        }
+      ],
+      "errors": []
+    }
+  },
+  "validation": {
+    "profile": "molstar-review-678-final-records",
+    "pytest": {
+      "passed": 470,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "selection": "Full JS build/version module (14 cases, including actual project compilation), reporting protocol and static documentation controls.",
+    "ruff": "check and format passed; 1062 files formatted",
+    "index": "passed",
+    "typescript": "Actual project compiler invoked by named pytest guard, no target/lib override.",
+    "scope": "Scoped local source and tool/build controls. No new hosted dispatch, full Sphinx build, alternate-engine full browser suite, native Qt/human or installed-candidate gate."
+  },
+  "retained_failures": [
+    {
+      "profile": "668",
+      "cause": "Exploratory script relative TypeScript import path is wrong. Corrected before 669; not a product defect."
+    },
+    {
+      "profile": "671",
+      "cause": "Expected original product/source-resolution regression: all three builders silently select the stale source. Resolved in #370."
+    },
+    {
+      "profile": "674",
+      "cause": "New probe incorrectly equates native post-destruction counters with live objects. Native global destroy calls raw resources, bypassing count decrements. 675 receives physical handles; no leak claim or counter normalization was made."
+    },
+    {
+      "profile": "677",
+      "cause": "Real project library mismatch, TS2550. Ruff passes first; subsequent record checks were not reached. Resolved in #371; not mislabeled as a record-gate pass."
+    }
+  ],
+  "runs": [
+    {
+      "native_exit": 1,
+      "seconds": 3.098010001005605,
+      "peak_owned_rss_mib": 91.2,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-668-types",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "artifact-files.json": "e0b112462c21f03c6e9ec1f4c52827d5f0b4401a26bb632d550069b5133639a4",
+        "inputs-after.json": "c8d4808f8cf72a1094c8274618a45abab8ab8ab6a8afdaf3f4e85c7cb94526fa",
+        "inputs-before.json": "c8d4808f8cf72a1094c8274618a45abab8ab8ab6a8afdaf3f4e85c7cb94526fa",
+        "invocation.json": "990d83cd79513c7bdb0bd244f9f9fbe9097ef88cf62bf580b1cb1c0c6d2aad68",
+        "resources-before.json": "c303d3e2980f8f0b91ba2e86a41313ccd5f12e50e257ecf4564dbe5125794fb4",
+        "stdout.log": "f2a2ee0f9db438e6bce27965357e66437bd7c030a017e12e93606a2ed4826bda"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 20.574154369998723,
+      "peak_owned_rss_mib": 598.5,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-669-types",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "artifact-files.json": "e0b112462c21f03c6e9ec1f4c52827d5f0b4401a26bb632d550069b5133639a4",
+        "comparison.json": "4cdd36b25eb9c4c2a8a966f3fd24ee7b5db1697403ead9a1d2ca1ed966bed86a",
+        "inputs-after.json": "53e54264a58038173058942a0b1f6cf8290dd3208a8f11e5bdea8ca22824de50",
+        "inputs-before.json": "53e54264a58038173058942a0b1f6cf8290dd3208a8f11e5bdea8ca22824de50",
+        "installed-types.json": "55c01a90508c95806d031273a39cf7070ff7c72e47329db3465f0e2ffd9b3f79",
+        "installed-types.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "invocation.json": "8bd3274eb5b43b68ac322e3b9f304b9d4dd1ed12ad9c5438f8d5bfecc39b6db0",
+        "latest-types.json": "8b03e2437785ece423c256037132f4891d7cadb34a82b11f7fb2af26c25c70d6",
+        "latest-types.txt": "340b9bf168b7c679ab25d71284d47202bc8802946f782e5ef6ad2ef5257f8822",
+        "resources-before.json": "fe7b851efb7a89eae30906b6ff8834eeb4ffd5dc3f7b458e15ea044f94686fc4",
+        "stdout.log": "05d216dbd1b7e55488a3a888e0343847f5cb931fcbba72028fd9733a39aa162e"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 3.2647009131032974,
+      "peak_owned_rss_mib": 111.0,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-670-resolution",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "harness-no-shadow.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "harness-no-shadow.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "harness-shadow.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "harness-shadow.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inputs-after.json": "850ee47bc8c83ea5e73a4837ef6d7b03ddce34137598936e63d73d762f9f5857",
+        "inputs-before.json": "850ee47bc8c83ea5e73a4837ef6d7b03ddce34137598936e63d73d762f9f5857",
+        "invocation.json": "838a460774b77d3c07628f82910934c1f612f2ab5e6bce86b28dea4657ab040a",
+        "resolution.json": "2b115c7c81543eac83e67778c57f33353ed91f4bf0e5cb44272f70bca105137c",
+        "resources-before.json": "d184d1795599ba9b7f87fbfc40368e980a44b1c69deca976d20801fdd0677778",
+        "runtime-no-shadow.stderr.txt": "edcdcd51389907c9b45d1a1a3c5e8ea1932344edec95cd1ff9e8e23839e8da0c",
+        "runtime-no-shadow.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "runtime-shadow.stderr.txt": "edcdcd51389907c9b45d1a1a3c5e8ea1932344edec95cd1ff9e8e23839e8da0c",
+        "runtime-shadow.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout.log": "a354480a87dd727db26ce510a03eba4fd794efa077fc6a390a36a5e7c7bc4d69",
+        "unit-no-shadow.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unit-no-shadow.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unit-shadow.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "unit-shadow.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 4.596286652842537,
+      "peak_owned_rss_mib": 228.7,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-671-shadow-regression",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "inputs-after.json": "8eb9b7016b0d94c77ec20a36fb1e4177485ec82c8d14500f43a177cd9e41cd5a",
+        "inputs-before.json": "8eb9b7016b0d94c77ec20a36fb1e4177485ec82c8d14500f43a177cd9e41cd5a",
+        "invocation.json": "39a76578c5d682d39fb8ee9d1cf69328d34e246cc149ad966e2685ac1e55d34d",
+        "junit.xml": "5b6d98e3ced78e11d233987dbb51b6620cf99f4c910502d2b83cbfe0af3e8543",
+        "resources-before.json": "1db5ebbbedcfc62916cfbb9a511fffe7dede66e7e34e9dfafb64d291cd544236",
+        "stdout.log": "6cdc860154c5c7e1b14902f9f88529d816e21377fe7c5eb0f6dcc067600ad26a"
+      },
+      "pytest": {
+        "passed": 0,
+        "failed": 3,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 6.231511018006131,
+      "peak_owned_rss_mib": 244.2,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-672-build-regression",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "inputs-after.json": "8eb9b7016b0d94c77ec20a36fb1e4177485ec82c8d14500f43a177cd9e41cd5a",
+        "inputs-before.json": "8eb9b7016b0d94c77ec20a36fb1e4177485ec82c8d14500f43a177cd9e41cd5a",
+        "invocation.json": "799a22da3dabee1dd6fca51808dcf7c0b3051dbe5e0e75577068e4c04292980b",
+        "junit.xml": "4bbe716b1524dd89723ca3c72265adfc374ecd5b6fb541f9eb070f33929c4e97",
+        "resources-before.json": "113a15db12a9ef1d081762b17ac2bd4b9a7867ecaf10d17e7502dd7d757f3344",
+        "stdout.log": "c71379e0640caa95dd4f92f9d003e4ee0fa0a9d3003893e0ac9f92784dc80b4a"
+      },
+      "pytest": {
+        "passed": 13,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 4.788682498969138,
+      "peak_owned_rss_mib": 120.1,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-673-native-state",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "inputs-after.json": "1adb863e9fa39702edf5ede106cf680a44183888dd25266579252ae7835cfea6",
+        "inputs-before.json": "1adb863e9fa39702edf5ede106cf680a44183888dd25266579252ae7835cfea6",
+        "installed-state-inputs.json": "ccf18240562f3d273b08da716f4932066f3fc3ff81119a3314b491d4857eda5e",
+        "installed-state.cjs": "2ddd52311fe2f987b3e5ed42013ce58737afe1c2f31299b446ac070530acec9e",
+        "installed-state.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "installed-state.stdout.txt": "da59d25a9d23fd9e7f9a1df4899bb46a2524ca3fbdeaed7936445cc2995cfb21",
+        "invocation.json": "ff86b9b0db824c1ba272d4d26ebbe82cc1056f942f1763f47ad309dd0eb6301d",
+        "latest-state-inputs.json": "e1cedf6f11f9d633d77696c8cd5a3387c713d3f1a81582b5d91ee30aadae6f12",
+        "latest-state.cjs": "901cc92bada5eb7e415502c494453e6a9361717b3e0adfef49a0e3cd78f4ef98",
+        "latest-state.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "latest-state.stdout.txt": "51541d40a0c84e4ba02c02277b47bda090f074f42dbfb8122a9fb4950f9062c4",
+        "resources-before.json": "3a4bf8043434db624a8d3c0b7bdc6df4e074731296b8ac3f0e6be2cbd0a79574",
+        "state-comparison.json": "01d7ced5b67567667c55497ea52b726846a4df4ec05a65717b459eaafbc43f55",
+        "stdout.log": "6043bc33e2a185f7a2bcd3f156c1b086b790a37050bf78fa8ea4ad3fdc7fac13"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 29.936676184879616,
+      "peak_owned_rss_mib": 3197.0,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-674-native-teardown",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "inputs-after.json": "0dd3e890101cdac714467d3126073fe3e9e563b2bff616d908f6e4fcfbd58bb0",
+        "inputs-before.json": "0dd3e890101cdac714467d3126073fe3e9e563b2bff616d908f6e4fcfbd58bb0",
+        "invocation.json": "27dd073edd9ef975df3ffaba8513e2bc296acf06050f0cd0705809982f0a112d",
+        "molecular-scene.json": "acc037928bacaf3cbf954083656f985ff6b261b4b028d2cb30a8e39e20e21a13",
+        "resources-before.json": "a425ef76900e3b954e32cbf6605a29823995dfcb471566d881330bc4c9ef569a",
+        "runtime-origin.json": "721fbad92bde81c83cf340969e79290f2f487a855d134d1dfa6b09873091828f",
+        "stdout.log": "dbc8f1fd1832fbf13ecb84da71da754437f967de23c064174db207dc652fc349",
+        "teardown.cjs": "6ef8a0030c3c6228f226c367b6ed8190772978911eff4d65a5f0754bf70776cc"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 30.606881834799424,
+      "peak_owned_rss_mib": 3203.0,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-675-physical-teardown",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "inputs-after.json": "3c4c78ea34e3a11c20520893044cd635ee43d0818891460937c6ca5d37de21f2",
+        "inputs-before.json": "3c4c78ea34e3a11c20520893044cd635ee43d0818891460937c6ca5d37de21f2",
+        "invocation.json": "ec21fb27062b5671610ee1d5c27b3eaf149de5f13de2dc73e28b6cdd7aa4dc07",
+        "molecular-scene.json": "acc037928bacaf3cbf954083656f985ff6b261b4b028d2cb30a8e39e20e21a13",
+        "native-teardown.json": "eb7544e3d67bc3fb8183a196c796431ec5df82636e7fec84cfedb1fbd210b7f5",
+        "resources-before.json": "84262c3d8269060e2160942594504903757689ac0c78f9593aea0dab6777c1c6",
+        "runtime-origin.json": "721fbad92bde81c83cf340969e79290f2f487a855d134d1dfa6b09873091828f",
+        "stdout.log": "cbf4f32af2a728c3f47e66e3bf11eb12c1c306b0bda83fd4a65c4151b7a8fc9b",
+        "teardown.cjs": "a568341a66861c67425d32513c7a48008b2d84ff6568e01e0d762823000f91cc"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 5.609682389069349,
+      "peak_owned_rss_mib": 1084.2,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-676-native-font",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "font-probe.cjs": "bca29e3af22f70271680ba799be402847a7d548a3d5bfc283d4d94b45abbc48e",
+        "inputs-after.json": "6e47382a1f5487bbc9ee384566dc70b800f5baca31cf18fe67e4becdf05578c5",
+        "inputs-before.json": "6e47382a1f5487bbc9ee384566dc70b800f5baca31cf18fe67e4becdf05578c5",
+        "installed-font-inputs.json": "f594602e69bec701c4caf1e560243ecf5c4f74dded71f2663ac5a72a0222b970",
+        "installed-font.js": "4d37cedaa81282419664d3ff8d52a7e92b76ae229041b3f956f2f57d1ef41374",
+        "invocation.json": "16e62d59729515c44c708197606bfd56b643e5db22839bc3abf622da3687645f",
+        "latest-font-inputs.json": "e11024403a2cdf8d2675db849d12334115631eb74c4ad027db7dc93fb56afa0f",
+        "latest-font.js": "f7d45fcb66a03ba9432d32ff59886b00975bd29f9c24cdf097de3bdfe2b0fa42",
+        "native-font-allocation.json": "2dfcc8ef37ff7e93d2a2008852e4a4e21f643e295c54cd6fc1708110e64f5f8b",
+        "resources-before.json": "c5befbee05983d6b9151e6fa7dcbbc9b74a78002f021bb6c967481f9fc7a32eb",
+        "stdout.log": "8f3fe18085b540b52060453c7b09b23bac7fffa12911872f15e30a749552392c"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 14.374759864993393,
+      "peak_owned_rss_mib": 529.1,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-677-records",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "config-inputs-before.json": "fc83932e00ea68aa3292cdda1a027030966743d743457682384e7745019b82ac",
+        "inputs-after.json": "feaa4061fbe9406c2f6a144bb53a91b06ff2c2d5fbbcc66ed7dbd2ca90c22b3d",
+        "inputs-before.json": "feaa4061fbe9406c2f6a144bb53a91b06ff2c2d5fbbcc66ed7dbd2ca90c22b3d",
+        "invocation.json": "7f59f5c20fa65f91d7f919239291bcb7423d43b8db0cb82f4073a563443ad44c",
+        "resources-before.json": "ac87e2043cd3a1116e7861c9ec601addc58e72c93f72e0a4931c46f7a1bfc85a",
+        "stdout.log": "05ea3895071d3de9db155363e3a1b2c3cab3d0ab6bd752002e9efeef303b606e"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 19.306419570930302,
+      "peak_owned_rss_mib": 687.4,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "molstar-review-678-final-records",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "evidence": {
+        "config-inputs-after.json": "85da16db1c65a39a1bc45a58c8cffd65db32de98e93e0dc8a498387e500d7955",
+        "config-inputs-before.json": "85da16db1c65a39a1bc45a58c8cffd65db32de98e93e0dc8a498387e500d7955",
+        "inputs-after.json": "9c16b8f16ff2a73b2d2131667df35f3abe03e75337d519bb5af32c475727bf86",
+        "inputs-before.json": "9c16b8f16ff2a73b2d2131667df35f3abe03e75337d519bb5af32c475727bf86",
+        "invocation.json": "4a51de19eacb0842b5b0c9ee7f21d2de1addb08fe11ee3120b4d0d9a7047aff3",
+        "junit.xml": "70c97e3383d4bbb9721b82d7ec42c39d0973227934f1c59aaeedb4a1d0a0ec14",
+        "resources-before.json": "8b6ce9c1f4b2d36b7116ab20853be4782b4464a1210b0ceccbbfd3cc952b2c61",
+        "stdout.log": "efe93b49bd35241f7f88a25ddbf30f77913a4444a27c2931fb945cb9febc3a21"
+      },
+      "pytest": {
+        "passed": 470,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "audit_counters": {
+    "source": 38,
+    "final": 1,
+    "denominator": 46,
+    "changed": false
+  },
+  "publication": "paused; no candidate/tag/package/Release/promotion or either 1.0 authorization",
+  "completed_utc": "2026-11-13T04:39:24.867125+00:00",
+  "custody": {
+    "state": "verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-review-assessment-20261112",
+    "custodian": "Diego Prada Gracia",
+    "files": 140,
+    "bytes": 124789656,
+    "manifest_sha256": "62fc0d37c5ab8ba5e9747c3e78f8852ae669cea648a0405b6afb11e0e67308ae",
+    "originals_retained": true
+  }
+}

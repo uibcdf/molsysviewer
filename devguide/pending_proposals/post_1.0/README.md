@@ -55,7 +55,7 @@ archived after D4; it is not a second transport specification.
 |---|---|
 | Performance architecture | the Phase 8 representative baseline is accepted; each optimization sets its A/B gate before implementation |
 | Advanced Interactions | the pre-1.0 slice is certified and the additional MolSysMT calculation vocabulary is confirmed |
-| Canvas picking | desired levels and Mol* granularity behavior are verified against local `src_molstar` |
+| Canvas picking | desired levels and Mol* granularity behavior are verified against the versioned Mol* source, separately from the installed build input |
 | Structure windowing | MolSysMT vocabulary, `view.molsys` semantics, add-on behavior, edits, and materialization are specified |
 | Multiview | view/session identity and command routing are stable |
 | Chemical metadata | MolSysMT publishes the canonical SDF/MOL2 metadata contract |

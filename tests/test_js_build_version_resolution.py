@@ -105,6 +105,41 @@ def test_build_routes_refuse_unreviewed_molstar_cache_inputs(tmp_path, target, u
     assert not (js / "tests/e2e/harness.bundle.js").exists()
 
 
+@pytest.mark.parametrize("target", ["runtime", "unit", "harness"])
+def test_build_routes_keep_installed_molstar_when_a_source_checkout_exists(tmp_path, target):
+    """A leftover inspection checkout cannot override the locked native source."""
+    assert NODE is not None
+    js = _miniature_checkout(tmp_path)
+    shutil.copyfile(JS / "tsconfig.json", js / "tsconfig.json")
+    entry = {
+        "runtime": "src/index.ts",
+        "unit": "tests/unit/index.test.ts",
+        "harness": "tests/e2e/harness.ts",
+    }[target]
+    (js / entry).parent.mkdir(parents=True, exist_ok=True)
+    (js / entry).write_text(
+        'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n'
+    )
+    # Deliberate source-origin fault input. The real installed Mol* and its
+    # byte-reviewed repair remain untouched, rather than replacing their code.
+    shadow = js.parent / "src_molstar/src/mol-model-formats/structure/basic/properties.ts"
+    shadow.parent.mkdir(parents=True)
+    shadow.write_text('export const getChemicalComponentMap = "UNQUALIFIED_SIBLING_SOURCE_SELECTED";\n')
+    command = [NODE, str(js / "scripts" / "build-runtime.mjs")]
+    if target != "runtime":
+        command = [NODE, str(js / "scripts" / "build-test-bundles.mjs"), target]
+    result = subprocess.run(command, cwd=js, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    output = {
+        "runtime": js.parent / "viewer.js",
+        "unit": js / "tests/unit/dist-index.js",
+        "harness": js / "tests/e2e/harness.bundle.js",
+    }[target]
+    bundle = output.read_text()
+    assert "UNQUALIFIED_SIBLING_SOURCE_SELECTED" not in bundle
+    assert "uniqueComponentNamesCache" in bundle, "the native cache repair was bypassed"
+
+
 def test_the_version_file_outranks_the_environment(tmp_path):
     """A development build reports what it was built from, whatever the environment says.
 
@@ -118,6 +153,21 @@ def test_the_version_file_outranks_the_environment(tmp_path):
 
     assert '"1.2.3+4.gabcdef"' in bundle
     assert "9.8.7" not in bundle
+
+
+def test_the_typescript_project_checks_without_library_overrides():
+    """The actual project config must admit the standard APIs its source uses."""
+    assert NODE is not None
+    compiler = JS / "node_modules/typescript/bin/tsc"
+    assert compiler.is_file(), "the declared TypeScript development dependency is required"
+    result = subprocess.run(
+        [NODE, str(compiler), "--noEmit", "--project", str(JS / "tsconfig.json")],
+        cwd=JS,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_the_npm_manifest_takes_the_release_version_too(tmp_path):
