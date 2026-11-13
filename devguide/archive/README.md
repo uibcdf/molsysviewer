@@ -539,4 +539,3 @@ Completed work, kept for the reasoning:
 - [Terminal E2E failure exits](e2e_terminal_failure_exit.md) — #375 restores fail-fast catches after existing awaited cleanup in eight entries.
 - [Bounded Studio receiving](studio_browser_receiving_partition.md) — #377 retains complete historical coverage through mandatory layout and persistent-capture core entries, received in real Mol*/Python.
 - [Pending popup captures](popup_pending_capture_close.md) — #378 retires actual closed popup owners promptly, preserving cancellation, late-reply refusal and the originating canvas.
-- [Panel-only native loop](panel_only_native_loop.md) — #379 stops unused native panel rendering while preserving real UI state and associated-canvas state/session workflows.

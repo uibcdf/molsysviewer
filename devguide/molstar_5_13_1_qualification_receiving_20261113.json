@@ -222,7 +222,8 @@
         "both popup modes and subsequent molecular loading"
       ],
       "persistent_current_studio": "729 completes the entire persistent scope with native exit 0, unchanged inputs, no resource stop and clean own-process cleanup.",
-      "notice": "Real native parameter state is retained; no renderer-free architecture or complete resource release is claimed."
+      "notice": "Real native parameter state is retained; no renderer-free architecture or complete resource release is claimed.",
+      "status": "partial: initialization and persistent UI received; panel-local PNG restarts the loop under #380"
     },
     "studio_current_layout": {
       "profile": "726",
@@ -262,7 +263,8 @@
         "height": 2,
         "nonzero_alpha_pixels": 0
       },
-      "notice": "Reproduction succeeds; PNG acceptance fails. Main-canvas export is separately received. No Mol* regression/version causality is asserted."
+      "notice": "Reproduction succeeds; PNG acceptance fails. Main-canvas export is separately received. No Mol* regression/version causality is asserted.",
+      "panel_after_export_animating": true
     },
     "physical_native_teardown": {
       "profile": "730",
@@ -1673,7 +1675,8 @@
     "Consolidate source/platform CI, installed candidate and compatibility documentation at the agreed freeze.",
     "Preserve postponed human observations separately; do not count them as passing.",
     "Resolve uibcdf/molsysviewer#380: detached Studio PNG must use its associated molecular canvas; the reproduced empty local export is not an upstream defect claim.",
-    "Diagnose actual-Jupyter moving-capture failure 733 without weakening the public five-second deadline; compare #344 history before refiling or rerunning."
+    "Diagnose actual-Jupyter moving-capture failure 733 without weakening the public five-second deadline; compare #344 history before refiling or rerunning.",
+    "Keep #379 partial until the corrected #380 path preserves the stopped panel loop after image export."
   ],
   "counter_notice": "The original 38/46 source-delivered and 1/46 finally accepted audit counters are unchanged; this is a separate adopted stream.",
   "custody": {
@@ -1696,5 +1699,17 @@
       "reason": "Shared CPU preflight: 45.1 percent already used plus the requested 8/20 logical CPU ceiling exceeds the unchanged 75 percent start criterion. No command launched.",
       "resources_before_sha256": "53833086dba31bfa0d82a04e1cb9b4f8ba81396569d0e3d5ebe5d84c5f53f9d8"
     }
-  ]
+  ],
+  "post_receiving_reconciliation": {
+    "code_commit": "17df0ddeaccebbb91445e689e844bc97985a3158",
+    "remote_closed_issues": [
+      373,
+      374,
+      375,
+      377,
+      378
+    ],
+    "issue_379": "Remains open/partial: original 728 result.json also records panelAfter.animating=True; initial-loop and work-file controls alone do not receive image export.",
+    "custody_scope": "The immutable named manifest preserves the 56 controlled profiles through 735 and their original sources; later documentary reconciliation does not rewrite it."
+  }
 }

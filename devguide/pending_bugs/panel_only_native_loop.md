@@ -1,23 +1,24 @@
 ---
 summary: Stop unused native rendering in panel-only Studio windows.
 issue: uibcdf/molsysviewer#379
-status: resolved
+status: partial
 opened: 2026-11-13
-closed: 2026-11-13
+closed:
 severity: medium
 verification: inspected
 area: [studio, rendering, lifecycle]
 guard: molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts
 normative:
-blocked_by: []
+blocked_by: [uibcdf/molsysviewer#380]
 supersedes: []
 ---
 
-# Resolved: unused panel-only native animation loop
+# Partially received: unused panel-only native animation loop
 
-Resolved in source and actual-browser receiving: panel-only initialization
+Received in source and actual-browser controls: panel-only initialization
 stops its native animation loop with `noDraw`, retaining real parameter/UI
-state and the active associated molecular canvas.
+state and the active associated molecular canvas. Closure still requires #380:
+the erroneous panel-local PNG helper restarts that loop after export.
 
 `MolSysViewerController.create` initializes Mol*'s viewer and starts its native
 animation loop for every controller. A panel-only controller then hides its
@@ -42,7 +43,7 @@ count diagnostic ablation as canonical full receiving. A complete renderer-free
 UI architecture is outside this correction. The reviewed inventory has four
 pages/349 issues before this report.
 
-## Resolution
+## Received initialization correction and remaining exit
 
 The bounded correction passes native project types, runtime/harness/entry
 builds and all 475 units in `723`. Canonical `724` receives stopped panel and
@@ -62,4 +63,8 @@ handle. Its failed entry remains preserved; observing the actual nested
 state or replies. Registration/build controls pass in `727`. No diagnostic
 ablation is counted as canonical acceptance. Full-core, actual-host, installed
 and human gates remain under #372. The independently reproduced panel PNG
-routing defect is tracked separately in #380.
+routing defect is tracked separately in #380. Its original `728` observation
+also records `panelAfter.animating=True`, despite the initial stopped loop.
+Keep this issue partial until PNG delegates to its associated canvas without
+restarting the panel renderer. The earlier archived preparation is retained
+in Git history; it did not close the remote issue.

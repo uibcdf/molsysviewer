@@ -30,6 +30,10 @@ buffer. Clicking the actual Download PNG Image button with transparent
 background downloads a **2 × 2 PNG with no nonzero-alpha pixels**, while the
 panel reports `PNG download started.` Its source handles `download_image`
 through its local `downloadViewportImage()` and `getImageDataUri()`.
+The same observation records `panelAfter.animating=True`: the local native
+screenshot helper also restarts the initially stopped panel render loop.
+Delegation must preserve that panel's stopped loop, not only fix image pixels;
+#379 remains partial until this path is received.
 
 Native exit is 0, selected inputs are unchanged, the owner records 2,162.2 MiB
 peak summed RSS, and there is no resource stop, cleanup error or surviving

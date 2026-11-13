@@ -943,9 +943,10 @@ The [current migration receipt](molstar_5_13_1_qualification_receiving_20261113.
 records exact 5.13.1 working sources, 475 units and separately scoped native
 receiving. [#378](archive/popup_pending_capture_close.md) receives exact owner
 retirement and the complete pending-capture lifecycle in canonical native run
-`725`. [#379](archive/panel_only_native_loop.md) stops the unused panel-only
+`725`. [#379](pending_bugs/panel_only_native_loop.md) stops the initial panel-only
 render loop; hierarchy/addon/shape-only controls pass in `724` and the current
-complete persistent Studio scope passes in `729`.
+complete persistent Studio scope passes in `729`. It remains partial until
+#380 stops the erroneous panel-local PNG helper from restarting that loop.
 [#380](pending_bugs/detached_studio_png_uses_empty_canvas.md) separately records
 the reproduced blank PNG from detached Studio; its associated-canvas routing
 must be corrected before 1.0.
