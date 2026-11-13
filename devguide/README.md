@@ -53,6 +53,10 @@ Follow the [agreed closure route](path_to_1_0.md#closure-route) toward a
 technically qualified tool whose documentation is ready for the maintainer's
 final review. New design
 recommendations remain distinguishable from previously approved task families.
+The adopted [pre-1.0 Mol* integration review](pending_proposals/pre_1_0_molstar_integration_review.md)
+under #369 is an additional required architectural review before that handoff,
+with latest-release/development comparisons and explicit implementation and
+dependency decisions.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

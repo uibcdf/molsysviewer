@@ -915,6 +915,16 @@ asking the maintainer for the final documentary review. The existing ledger
 owns detailed IDs and evidence; no new percentage, publication authorization
 or resumption of postponed human tests follows from this objective.
 
+**Additional pre-1.0 requirement — 2026-11-12:**
+[#369's Mol* integration review](pending_proposals/pre_1_0_molstar_integration_review.md)
+must compare the resolved dependency, latest published release and upstream
+development, assess whether native capabilities are used appropriately and
+record concrete adoption/defer/reject decisions. It can proceed alongside
+Movie/scientific work, before architecture/candidate freeze and the final
+documentation handoff. Opening it does not upgrade the dependency or change
+the original 46-outcome counter; #115's timing needs an explicit decision if
+the review recommends changing it.
+
 The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
 first Timeline/Preview/Export editor over the shared Python API: typed keys,
 explicit review of drafts after Python edits, popup-owned capture and nested

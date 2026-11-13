@@ -18,10 +18,17 @@ owns #320's accepted functional scope. This is one programme, not a new
 backlog or progress denominator. The audit's source-delivery percentage is
 not a percentage of release readiness or an estimate of remaining time.
 
+The [Mol* integration review](pending_proposals/pre_1_0_molstar_integration_review.md)
+under #369 is also required before this handoff. Review the current integration
+against the latest published release and upstream development, assess unused
+capabilities and outdated assumptions, and resolve or explicitly dispose of
+adopted pre-1.0 findings. This requirement does not by itself upgrade Mol*.
+
 ### Closure route
 
 | Order | Existing work | Required exit |
 | --- | --- | --- |
+| Architectural review, alongside implementation | #369; related #115/#363/#344/#44 | Compare exact installed, latest-published and development baselines; deliver a capability/ownership matrix and evidence-based decisions. Close adopted pre-1.0 corrections/improvements before architecture/candidate freeze and the documentary handoff; record the dependency decision separately. |
 | 1. Finish Movie | #320, M2/M4/M5, retaining the received model/evaluator/export foundations | Author the agreed pocket/ligand/interactions/labels story through Python and Studio; preview, seek, save/reopen, video and portable web playback agree. Complete the accepted renderer/overlay scope and document its limits. Future natural-language planning remains post-1.0. |
 | 2. Close scientific integration | #264; C4, D5.4 and D6.7 in #315; linked provider issues | Receive remaining contact-family/panel work and the current addon/provider pair. Give initialization and popup failures a causal correction or an explicitly accepted, bounded evidenced disposition. Preserve scientific ownership and the Python-first API. |
 | 3. Receive integrated and prolonged use | E2, #354/#356/#364 and MolSysMT #723 | Complete the adopted scale and same-kernel protocol with qualified host-only/settled memory measurements, actual kernel provenance and save/recover/continue assertions. Keep original failures and diagnostic host ablations distinct from default-host acceptance. |
@@ -46,6 +53,10 @@ evidence for all of the following:
 - Required defects and integration outcomes have verified fixes or explicit
   accepted dispositions. A closed provider issue, successful subset or old
   source campaign does not qualify changed consumer code.
+- The pre-1.0 Mol* review under #369 is complete, and its adopted required
+  findings are qualified or explicitly disposed of. Current integration,
+  available upstream capabilities, version-sensitive assumptions and the
+  dependency decision have source-bound evidence.
 - Applicable complete source/platform/browser/scientific gates and exact
   installed-pair qualification are received on their declared inputs. Retain
   failures, skips and exclusions; qualify replacements instead of combining
@@ -67,8 +78,10 @@ Do not silently drop mandatory Movie or accepted addon families to reach this
 milestone. B3.6/E3 retain their explicit scope decisions rather than becoming
 automatic implementation requirements. Experimental Qt keeps its own stated
 qualification; this goal does not require promoting it to a supported core
-host. Already deferred remotes, Mol* upgrades and agent-language integration
-retain their post-1.0 scope.
+host. The comprehensive Mol* review is pre-1.0 under #369; the general
+dependency upgrade retains #115's post-1.0 scope unless that review leads to
+an explicitly accepted change of plan. Deferred remotes and agent-language
+integration retain their post-1.0 scope.
 
 ### After the handoff
 

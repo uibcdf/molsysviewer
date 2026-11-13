@@ -24,6 +24,15 @@ human observations and exact installed qualification must not remain hidden
 work after that handoff. Their current pauses require their established
 authorization/resumption route; this objective does not lift them.
 
+**Additional requirement adopted — 2026-11-12:**
+[#369's Mol* review](pre_1_0_molstar_integration_review.md) is required before
+the architecture/candidate freeze and final documentation-review handoff.
+Compare the resolved dependency with the latest published release and upstream
+development, assess native capabilities and obsolete assumptions, and resolve
+or explicitly dispose of adopted pre-1.0 findings. This is additional to the
+original 46 outcomes and does not increase their delivery percentage. The
+general dependency upgrade under #115 retains its separate scope decision.
+
 **Current consolidation — 2026-11-11:** the original counter remains
 **38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance.
 The [C3 receipt](../host_integration_closeout_20261110.json) receives host
@@ -484,6 +493,12 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Required architectural review — #369, open:** complete the
+[current-release/development Mol* reassessment](pre_1_0_molstar_integration_review.md)
+and its adopted pre-1.0 follow-ups before architecture/candidate freeze and the
+documentary handoff. This is an additional adopted requirement, not one of the
+38 source-delivered original outcomes.
+
 **Receiver qualification — 2026-11-12:** the
 [source receipt](../jupyter_popup_controls_receiving_20261112.json) receives
 the hidden-controls focus correction and actual kernel imports through
@@ -719,7 +734,8 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 ### Current next actions
 
 Use the [adopted closure route](../path_to_1_0.md#closure-route) for programme
-order: finish Movie, close scientific integration and prolonged/reliability
+order: finish Movie, complete the adopted #369 Mol* review alongside
+implementation and before architecture/candidate freeze, close scientific integration and prolonged/reliability
 receiving, then deliver internally checked documentation and the applicable
 source/installed/manual qualification. The items below retain the technical
 dependencies and existing stable IDs; they are not another priority order.
@@ -984,6 +1000,7 @@ values to the reporting protocol.
 | B3.1–B3.5 | P2 robustness; applicable candidate/1.0 scope | Viewer; #345 under #315 | Source correction and native guards delivered; retain later consolidated/installed/human scope |
 | B3.6, E3 | Scope/design decision; not an automatic release gate | Principal maintainer decides scope; relevant owner implements | Record accept/reject/defer and contract before implementation |
 | B4, F1 | Adopted 2026-11-10; B4/F1 source-delivered | Viewer and scientific producer; #315 | Preserve figure provenance and review public-contract signatures; maintain explicit guards and separate completion outside the original denominator |
+| Mol* review | Required pre-1.0 architecture/readiness; adopted 2026-11-12 | Viewer; #369 and its dedicated review record | Compare installed/released/development baselines, native capabilities and version-sensitive assumptions; classify all findings and qualify adopted pre-1.0 changes. No automatic upgrade or change to the original denominator. |
 | C1–C3, C5 | P1 integration of selected source pair | Viewer host and MolSysMT owner; #264 and uibcdf/molsysmt#421 / PR #543 | B1 for the new host pin; publish reviewed sources, receive relevant full/hosted results and owner acceptance |
 | C4 | P1 qualification disposition | Viewer; #305 | Explain the original failure or a bounded evidenced disposition; a later isolated pass is not closure |
 | D1–D5 | P1 for claimed scientific modes; owner handoffs now | MolSysMT owns fixes/definitions; Viewer receives them through uibcdf/molsysmt#421 | Supported owner correction/contract followed by exact consumer evidence; unavailable modes remain explicitly unqualified |
