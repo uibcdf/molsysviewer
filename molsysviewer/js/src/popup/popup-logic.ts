@@ -20,6 +20,7 @@ import { CameraSync, CameraSyncState } from "../managers/camera-sync";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
 import { handleFrontendRequest, isFrontendControl, isFrontendRequest, isStudioWorkFileResult,
     VisualStateCaptureRequests, captureAtScenePrefix, type VisualStateCaptureReservation } from "../messages/frontend-requests";
+import { isStudioImageRequest } from "../managers/studio-image-exports";
 
 /** Boot the popup through the same imported runtime module as its host. */
 export const bootPopup = async (loadedModule?: any) => {
@@ -454,9 +455,14 @@ export const bootPopup = async (loadedModule?: any) => {
                         // The inbound queue is the canvas barrier. A detached
                         // Studio has no visible canvas and must never sample its
                         // hidden controller in place of its originating viewer.
-                        if ((initOptions.isPanelOnly || !sceneReady) && data.op === "request_visual_state") {
+                        if ((initOptions.isPanelOnly || !sceneReady)
+                            && (data.op === "request_visual_state" || isStudioImageRequest(data))) {
                             capture?.release();
-                            sendToHost("molsysviewer-popup-interaction", {
+                            sendToHost("molsysviewer-popup-interaction", isStudioImageRequest(data) ? {
+                                event: "image_export", request_id: data.request_id,
+                                capture_revision: data.capture_revision, studio_image_request_id: data.studio_image_request_id,
+                                success: false, error_type: "NoLiveCanvas", message: "The originating canvas is unavailable.",
+                            } : {
                                 event: "visual_state_snapshot", request_id: data.request_id,
                                 capture_revision: data.capture_revision, ok: false, error_type: "NoLiveCanvas",
                             });
@@ -517,7 +523,7 @@ export const bootPopup = async (loadedModule?: any) => {
                 .catch(error => console.error("Popout file verdict delivery failed", error));
             return;
         }
-        const capture = type === "molsysviewer-sync-op" && data?.op === "request_visual_state"
+        const capture = type === "molsysviewer-sync-op" && (data?.op === "request_visual_state" || isStudioImageRequest(data))
             ? visualStateCaptures.reserve(data) : undefined;
         if (capture === null) return;
         popupInboundQueue = popupInboundQueue

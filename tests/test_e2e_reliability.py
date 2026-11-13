@@ -98,7 +98,8 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 54-62: Movie playback, seek, legacy input, media export, appearance,
     # Studio authoring, offline web, overlay composition and the molecular story.
     # 63: persistent Studio capture remains mandatory in its bounded entry.
-    assert len(expected) == 63
+    # 64: detached Studio PNG retains its originating molecular canvas.
+    assert len(expected) == 64
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))
@@ -136,6 +137,7 @@ def test_studio_core_scopes_preserve_the_complete_direct_guard():
     assert "await checkTrajectoryShapeRefresh(page, dir)" in original
     assert 'name === "studio-usability" ? ["--layout-only"] : []' in runner
     assert '"studio-live-capture": 600_000' in runner
+    assert '"studio-image-export": 240_000' in runner
     assert 'from "./studio-live-capture-scenarios"' in live
     assert "await checkStudioLiveCapture(page, dir, workspace)" in live
     assert "await browser.close()" in live

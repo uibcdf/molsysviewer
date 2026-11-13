@@ -597,6 +597,25 @@ unselected skips are not actual-host receiving.
 Keyboard Settings and shared control fade assertions additionally belong to the
 existing `controls-visibility.e2e.ts` profile.
 
+### Detached Studio PNG browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/studio-image-export.e2e.ts`, with no suffixes,
+globs or commands. From the JS package, build with `npm run build:e2e:all`
+and run `node tests/e2e/studio-image-export.e2e.js`. The same entry is
+mandatory in `test:e2e:core`; browser/WebGL failure fails the guard.
+
+The real persistent Python/widget fixture receives PNG downloads from Studio
+detached from either the notebook canvas or its canvas popup. It compares
+decoded RGBA SHA-256, size, transparency and native scene state against the
+associated canvas`s independent export, retains normal sampling quality and
+checks the stopped panel loop. It receives owner-only downloads, cancellation
+of a genuinely rendered held reply, recovery and origin closure without
+fallback to another View. Unit controls separately cover correlation, timeout,
+transport retirement and independently owned requests. The whole integrated workflow has a 240-second bound after observed
+172-second receiving; individual operation deadlines are unchanged. Registration
+establishes addressability; actual Jupyter, Qt and covering qualification remain separate.
+
 ### Native simulation-box browser guard profile
 
 The bounded selector is exactly

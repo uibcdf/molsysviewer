@@ -99,3 +99,11 @@ upgrade to be useful.
 
 Future v6/evolution work remains deferred until after 1.0. The maintainer
 explicitly advanced 5.13.1 qualification under #372 on 2026-11-12.
+
+### Native screenshot readiness
+
+The resolved #382 keeps a byte-qualified, read-only private seam for SMAA
+lookup upload readiness. During a future dependency review, inspect whether
+a public native readiness API is available and receive first/repeated PNG,
+Movie, cancellation and timeout before replacing the seam. Never remove it
+on a version-number assumption or silently reduce antialiasing quality.

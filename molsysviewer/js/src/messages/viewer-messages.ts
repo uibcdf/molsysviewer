@@ -840,6 +840,9 @@ export type RequestCameraSnapshotMessage = {
 
 export type RequestImageExportMessage = {
     op: "request_image_export";
+    request_id?: string;
+    capture_revision?: string;
+    studio_image_request_id?: string;
     width?: number;
     height?: number;
     scale?: number;
@@ -960,7 +963,7 @@ export type KnownViewerMessage =
     { op: "interaction_action_result"; request_id: number; ok: boolean; analysis_name?: string; error_message?: string } |
     { op: "system_load_result"; request_id: string; ok: boolean; n_atoms?: number; n_structures?: number; n_sources?: number; error_message?: string } |
     SystemFileBrowseResult |
-    { op: "studio_action_result"; action: string; request_id: string; domain: string; ok: boolean; error_message?: string } |
+    { op: "studio_action_result"; action: string; request_id: string; domain: string; ok: boolean; error_message?: string; image_data_uri?: string } |
     InteractionFrame | InteractionSeries | InteractionSummariesMessage |
     { op: "interaction_inspection"; request_id: number; result: InteractionInspection } |
     { op: "interaction_frame_complete"; request_id: number } |

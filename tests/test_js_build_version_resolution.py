@@ -78,6 +78,13 @@ def test_build_routes_refuse_unreviewed_molstar_cache_inputs(tmp_path, target, u
     if unreviewed == "version":
         metadata["version"] = "99.0.0"
     (provider / "package.json").write_text(json.dumps(metadata))
+    # Keep the independent image-readiness boundary qualified so this fault
+    # still reaches the component-cache bytes it is meant to exercise.
+    assets = json.loads((JS / "scripts/reviewed-image-assets.json").read_text())
+    for name in assets["files"]:
+        target_file = provider / name
+        target_file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(JS / "node_modules/molstar" / name, target_file)
     relative = Path("lib/mol-model-formats/structure/basic/properties.js")
     source = provider / relative
     source.parent.mkdir(parents=True)

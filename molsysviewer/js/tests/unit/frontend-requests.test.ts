@@ -6,6 +6,56 @@ import { readCanvasDraw, waitForCanvasDraw } from "../../src/managers/canvas-dra
 import { CapturePresentationFence } from "../../src/managers/capture-presentation";
 import { captureAtScenePrefix, handleFrontendRequest, VisualStateCaptureRequests } from "../../src/messages/frontend-requests";
 
+test("Studio PNG carries its cancellation signal, native viewport and private correlation", async () => {
+    const requests = new VisualStateCaptureRequests(), replies: any[] = [];
+    const message = { op: "request_image_export", request_id: "png", capture_revision: "scene",
+        studio_image_request_id: "png", scale: 2, transparent: true, preset: "publication-dark" };
+    const capture = requests.reserve(message)!;
+    let received: any;
+    const controller: any = { getImageDataUri: async (options: any) => {
+        received = options; return "data:image/png;base64,iVBORw0KGgo";
+    } };
+    try {
+        await handleFrontendRequest(controller, message, reply => replies.push(reply), capture);
+        assert.equal(received.signal, capture.signal); assert.equal(received.nativeViewport, true);
+        assert.equal(received.scale, 2); assert.equal(received.transparent, true); assert.equal(received.preset, "publication-dark");
+        assert.equal(replies[0].request_id, "png"); assert.equal(replies[0].capture_revision, "scene");
+        assert.equal(replies[0].studio_image_request_id, "png");
+        await handleFrontendRequest(controller, { op: "request_image_export", scale: 1 }, reply => replies.push(reply));
+        assert.equal("signal" in received, false); assert.equal("nativeViewport" in received, false);
+        assert.equal("request_id" in replies[1], false, "legacy Python PNG contract is unchanged");
+    } finally { requests.dispose(); }
+});
+
+test("cancelled Studio PNG suppresses a real pending reply and missing reservations refuse rendering", async () => {
+    const requests = new VisualStateCaptureRequests(), replies: any[] = [];
+    const message = { op: "request_image_export", request_id: "png", capture_revision: "scene", studio_image_request_id: "png" };
+    let finish!: (value: string) => void, renders = 0;
+    const controller: any = { getImageDataUri: () => { renders++; return new Promise<string>(resolve => { finish = resolve; }); } };
+    try {
+        const pending = handleFrontendRequest(controller, message, reply => replies.push(reply), requests.reserve(message)!);
+        requests.cancel(message); finish("data:image/png;base64,iVBORw0KGgo"); await pending;
+        assert.equal(replies.length, 0); assert.equal(renders, 1);
+        await handleFrontendRequest(controller, message, reply => replies.push(reply));
+        assert.equal(renders, 1); assert.equal(replies[0].success, false);
+        assert.equal(replies[0].studio_image_request_id, "png");
+    } finally { requests.dispose(); }
+});
+
+test("Studio PNG rendering failures retain their correlation and release the reservation", async () => {
+    for (const output of [undefined, { success: false, message: "GPU limit" }, new Error("Native rendering failed")]) {
+        const requests = new VisualStateCaptureRequests(), replies: any[] = [];
+        const message = { op: "request_image_export", request_id: "png", capture_revision: "scene", studio_image_request_id: "png" };
+        const controller: any = { getImageDataUri: async () => { if (output instanceof Error) throw output; return output; } };
+        try {
+            await handleFrontendRequest(controller, message, reply => replies.push(reply), requests.reserve(message)!);
+            assert.equal(replies.length, 1); assert.equal(replies[0].success, false);
+            assert.equal(replies[0].capture_revision, "scene"); assert.equal(replies[0].studio_image_request_id, "png");
+            assert.equal(requests.reserve(message), null, "finished correlations cannot be replayed");
+        } finally { requests.dispose(); }
+    }
+});
+
 test("a coherent follower prefix is drawn before the next queued projection without blocking scientific replies", async () => {
     const didDraw = new BehaviorSubject(0), camera = new Camera(), captures = new VisualStateCaptureRequests();
     const fence = new CapturePresentationFence(), replies: any[] = [], delivered: number[] = [];

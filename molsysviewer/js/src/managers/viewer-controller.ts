@@ -2,6 +2,8 @@ import { sourceAtomIndex, sourceGroupIndex } from "../plugin/atom-indices";
 import { getFloatingPanelSize } from "../ui/floating-panel-layout";
 import { PluginContext } from "molstar/lib/mol-plugin/context";
 import { createSecureRuntimeId } from "../messages/popup-channel";
+import { isPngDataUri, type StudioImageResult } from "./studio-image-exports";
+import { waitForImageAssets } from "../plugin/image-assets";
 import { trajectorySyncToAuthority } from "../messages/trajectory-intent";
 import { dynamicRegionReplyAction } from "../messages/frame-query";
 import { DefaultPluginSpec } from "molstar/lib/mol-plugin/spec";
@@ -772,7 +774,7 @@ export class MolSysViewerController {
         target.appendChild(overlay);
     }
 
-    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean, hasInitialStructures?: boolean, hasAuthority?: boolean }): Promise<MolSysViewerController> {
+    static async create(target: HTMLElement, notify?: (msg: any) => void, existingCanvas?: HTMLCanvasElement, options?: { panelModeStyle?: string, model?: any, onPanelPopClick?: () => void, isPanelOnly?: boolean, supportsStudioImages?: boolean, hasInitialStructures?: boolean, hasAuthority?: boolean }): Promise<MolSysViewerController> {
         // Wrap the Mol* canvas in a host div so panels can shift it without
         // resizing the outer target element.  No CSS transition here — inset
         // animation is driven frame-by-frame via rAF so Mol*'s ResizeObserver
@@ -1075,7 +1077,7 @@ export class MolSysViewerController {
         return `measurement_${this.measurementTagCounter}`;
     }
 
-    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean, hasAuthority?: boolean }) {
+    private constructor(public readonly plugin: PluginContext, private readonly host: HTMLElement, private readonly notify?: (msg: any) => void, canvasHost?: HTMLDivElement, private readonly initOptions?: { panelModeStyle?: string, viewerMode?: string, controlsMode?: string, isAmbient?: boolean, isSplit?: boolean, model?: any, isPanelOnly?: boolean, supportsStudioImages?: boolean, onPanelPopClick?: () => void, hasInitialStructures?: boolean, hasAuthority?: boolean }) {
         if (plugin.canvas3d) this.releaseFontAtlasUploads = installFontAtlasUploads(plugin.canvas3d.webgl);
         this.model = initOptions?.model;
         this.isPanelOnly = !!initOptions?.isPanelOnly;
@@ -1280,6 +1282,7 @@ export class MolSysViewerController {
                 this.downloadViewportImage();
                 return;
             }
+            if (action === "cancel_image_download") { this.cancelImageDownload(); return; }
             if (action === "reset_view") {
                 void this.resetView();
                 return;
@@ -1335,6 +1338,7 @@ export class MolSysViewerController {
         this.addonsPanel.setVisible(true);
         if (this.isPanelOnly) {
             this.groupPanel.setExpanded(true);
+            this.groupPanel.setImageSource(this.initOptions?.supportsStudioImages ? "associated" : "unavailable");
         }
         this.refreshPanelWorkspaceChrome();
         this.groupPanel.setOnExpandedChange((expanded) => {
@@ -1911,6 +1915,8 @@ export class MolSysViewerController {
     }
 
     dispose(): void {
+        this.cancelImageDownload();
+        this.imageExportLifetime.abort();
         this.disposed = true;
         this.capturePresentation?.dispose();
         this.moviePreviewClock.release();
@@ -2649,7 +2655,10 @@ export class MolSysViewerController {
                 case "interaction_action_result": this.groupPanel.updateInteractionCreation(msg.request_id, msg.ok, msg.analysis_name, msg.error_message); break;
                 case "system_load_result": this.groupPanel.updateSystemLoading(msg.request_id, msg.ok, msg.n_atoms, msg.n_structures, msg.n_sources, msg.error_message); break;
                 case "system_file_browse_result": this.groupPanel.updateSystemFiles(msg); break;
-                case "studio_action_result": this.groupPanel.updateStudioAction(msg); this.addonsPanel.updateStudioAction(msg); break;
+                case "studio_action_result":
+                    if (msg.action === "download_image") this.receiveImageDownload(msg);
+                    else { this.groupPanel.updateStudioAction(msg); this.addonsPanel.updateStudioAction(msg); }
+                    break;
                 case "set_movie_state": this.groupPanel.setMovieState(msg); break;
                 case "interaction_inspection": this.groupPanel.updateInteractionInspection(msg.request_id, msg.result); break;
                 case "add_network_links":
@@ -4724,6 +4733,9 @@ export class MolSysViewerController {
     }
 
     private imageExportPending = false;
+    private readonly imageExportLifetime = new AbortController();
+    private pendingImageDownload: string | null = null;
+    private imageDownloadTimer?: ReturnType<typeof setTimeout>;
 
     async getImageDataUri(options?: {
         width?: number;
@@ -4735,6 +4747,7 @@ export class MolSysViewerController {
         sampleLevel?: number;
         signal?: AbortSignal;
         movieOverlays?: MovieOverlaySnapshot;
+        nativeViewport?: boolean;
     }): Promise<string | { success: false; error_type: string; message: string; requested_width: number; requested_height: number; max_renderbuffer_size?: number; max_viewport_width?: number; max_viewport_height?: number } | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
         if (!helper) return void 0;
@@ -4750,6 +4763,10 @@ export class MolSysViewerController {
         const targetHeight = useCustomResolution ? height : viewportHeight;
         const scaledWidth = Math.max(1, Math.round(targetWidth * validScale));
         const scaledHeight = Math.max(1, Math.round(targetHeight * validScale));
+        if (this.isPanelOnly || this.disposed) return {
+            success: false, error_type: "NoLiveCanvas", message: "PNG export needs its originating molecular canvas.",
+            requested_width: scaledWidth, requested_height: scaledHeight,
+        };
         if (this.imageExportPending) return {
             success: false, error_type: "IMAGE_EXPORT_BUSY", message: "A canvas image export is already running.",
             requested_width: scaledWidth, requested_height: scaledHeight,
@@ -4812,18 +4829,22 @@ export class MolSysViewerController {
                 format: { name: "png", params: {} },
                 resolution: { name: "custom", params: { width: scaledWidth, height: scaledHeight } },
             });
+            const imagePass = helper.imagePass;
+            await waitForImageAssets(imagePass, [this.imageExportLifetime.signal, ...(options?.signal ? [options.signal] : [])]);
             if (options?.signal) {
                 const signal = options.signal;
                 if (signal.aborted) throw new DOMException("Movie frame cancelled.", "AbortError");
                 // Use Mol*'s public image pass in an independently owned task.
-                // Cancelling a Movie must never abort an unrelated plugin task.
-                const task = Task.create("Render Movie frame", async ctx => {
+                // Cancelling an image must never abort an unrelated plugin task.
+                const task = Task.create(options.nativeViewport ? "Render PNG image" : "Render Movie frame", async ctx => {
                     this.plugin.animationLoop.stop({ noDraw: true });
                     try {
                         await ctx.update("Rendering Movie frame");
-                        const pass = helper.imagePass;
+                        const pass = imagePass;
                         await pass.updateBackground();
-                        const data = await pass.getImageData(ctx, scaledWidth, scaledHeight);
+                        const size = options.nativeViewport ? helper.getSizeAndViewport()
+                            : { width: scaledWidth, height: scaledHeight, viewport: undefined };
+                        const data = await pass.getImageData(ctx, size.width, size.height, size.viewport);
                         const canvas = document.createElement("canvas");
                         canvas.width = data.width;
                         canvas.height = data.height;
@@ -4836,7 +4857,9 @@ export class MolSysViewerController {
                         }
                         await ctx.update("Encoding Movie PNG");
                         return canvas.toDataURL("image/png");
-                    } finally { this.plugin.animationLoop.start({ immediate: true }); }
+                    } finally {
+                        if (!this.disposed) this.plugin.animationLoop.start({ immediate: true });
+                    }
                 });
                 const abort = () => this.plugin.managers.task.requestAbort(task.id, "Movie frame cancelled");
                 signal.addEventListener("abort", abort, { once: true });
@@ -4846,14 +4869,17 @@ export class MolSysViewerController {
             return await helper.getImageDataUri();
         } finally {
             try {
-                if (previousMultiSample) helper.imagePass.setProps({ multiSample: previousMultiSample });
-                if (options?.cameraSnapshot && currentSnapshot) await this.setCameraSnapshot(currentSnapshot, 0);
-                if (targetBackgroundMode && shouldRestoreBackground) await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
+                if (!this.disposed) {
+                    if (previousMultiSample) helper.imagePass.setProps({ multiSample: previousMultiSample });
+                    if (options?.cameraSnapshot && currentSnapshot) await this.setCameraSnapshot(currentSnapshot, 0);
+                    if (targetBackgroundMode && shouldRestoreBackground) await this.scene.toggleBackground(this.scene.isDarkMode ? "light" : "dark");
+                }
             } finally { this.imageExportPending = false; }
         }
     }
 
     async downloadViewportImage() {
+        if (this.disposed || this.pendingImageDownload) return;
         this.groupPanel.setImageResult(true, "Rendering PNG…");
         try {
             const preset = this.addonsScene?.figurePreset || "publication-light";
@@ -4862,6 +4888,15 @@ export class MolSysViewerController {
             const transparent = this.addonsScene?.figureBackground !== undefined
                 ? this.addonsScene.figureBackground === "transparent" : variants.includes("transparent");
 
+            if (this.isPanelOnly) {
+                if (!this.initOptions?.supportsStudioImages || !this.notify) throw new Error("Use a canvas to export PNG images.");
+                const request = this.pendingImageDownload = createSecureRuntimeId("png-download");
+                this.imageDownloadTimer = setTimeout(() => this.cancelImageDownload("PNG export timed out. Please try again."), 180_000);
+                this.notify({ event: "interaction_context_action", action: "download_image", request_id: request,
+                    scale, transparent, preset });
+                return;
+            }
+
             const dataUri = await this.getImageDataUri({
                 scale,
                 transparent,
@@ -4869,12 +4904,7 @@ export class MolSysViewerController {
             });
 
             if (typeof dataUri === "string") {
-                const link = document.createElement("a");
-                link.href = dataUri;
-                link.download = "molsysviewer.png";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                this.downloadImageUri(dataUri);
             } else if (typeof dataUri === "object" && dataUri.success === false) {
                 throw new Error(dataUri.message);
             } else {
@@ -4882,10 +4912,41 @@ export class MolSysViewerController {
             }
             this.groupPanel.setImageResult(false, "PNG download started.");
         } catch (error) {
+            if (this.pendingImageDownload) this.cancelImageDownload();
             const message = error instanceof Error ? error.message : String(error);
             console.error("[MolSysViewer] PNG export failed", error);
             this.groupPanel.setImageResult(false, message);
         }
+    }
+
+    private downloadImageUri(uri: string) {
+        if (this.disposed) return;
+        if (!isPngDataUri(uri)) throw new Error("PNG rendering returned no valid image.");
+        const doc = this.host.ownerDocument, link = doc.createElement("a");
+        link.href = uri; link.download = "molsysviewer.png";
+        doc.body.appendChild(link);
+        try { link.click(); } finally { link.remove(); }
+    }
+
+    private cancelImageDownload(message = "PNG export cancelled.") {
+        const request = this.pendingImageDownload;
+        if (!request) return;
+        this.pendingImageDownload = null;
+        clearTimeout(this.imageDownloadTimer); this.imageDownloadTimer = undefined;
+        if (!this.disposed) this.groupPanel.setImageResult(false, message);
+        try { this.notify?.({ event: "interaction_context_action", action: "cancel_image_download", request_id: request }); }
+        catch { /* A retiring popup may already have lost its transport. */ }
+    }
+
+    private receiveImageDownload(result: Pick<StudioImageResult, "request_id" | "ok" | "image_data_uri" | "error_message">) {
+        if (this.disposed || result.request_id !== this.pendingImageDownload) return;
+        this.pendingImageDownload = null;
+        clearTimeout(this.imageDownloadTimer); this.imageDownloadTimer = undefined;
+        try {
+            if (!result.ok || !result.image_data_uri) throw new Error(result.error_message || "PNG export failed.");
+            this.downloadImageUri(result.image_data_uri);
+            this.groupPanel.setImageResult(false, "PNG download started.");
+        } catch (error) { this.groupPanel.setImageResult(false, error instanceof Error ? error.message : "PNG export failed."); }
     }
 
     setCameraNavigationHandler(factory: () => CameraIntentApplication | undefined): () => void {

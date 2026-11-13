@@ -1,21 +1,24 @@
 ---
 summary: Stop unused native rendering in panel-only Studio windows.
 issue: uibcdf/molsysviewer#379
-status: partial
+status: resolved
 opened: 2026-11-13
-closed:
+closed: 2026-11-13
 severity: medium
-verification: inspected
+verification: measured
 area: [studio, rendering, lifecycle]
-guard: molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts
+guard: molsysviewer/js/tests/e2e/studio-image-export.e2e.ts
 normative:
-blocked_by: [uibcdf/molsysviewer#380]
+blocked_by: []
 supersedes: []
 ---
 
-# Partially received: unused panel-only native animation loop
+# Resolved: unused panel-only native animation loop
 
-Received in source and actual-browser controls: panel-only initialization
+**Resolved 2026-11-13.** The initial investigation below retains its original
+scope; the Resolution section names the current correction and receiving.
+
+Initial receiving in source and actual-browser controls: panel-only initialization
 stops its native animation loop with `noDraw`, retaining real parameter/UI
 state and the active associated molecular canvas. Closure still requires #380:
 the erroneous panel-local PNG helper restarts that loop after export.
@@ -68,3 +71,18 @@ also records `panelAfter.animating=True`, despite the initial stopped loop.
 Keep this issue partial until PNG delegates to its associated canvas without
 restarting the panel renderer. The earlier archived preparation is retained
 in Git history; it did not close the remote issue.
+
+## Resolution
+
+Source initialization stops the real panel loop; the #380 delegation prevents
+PNG from restarting it. Current native guard 762 receives transparent and opaque
+PNG from primary/nested-canvas origins, exact decoded reference pixels,
+requester-only delivery, cancellation/late replies, recovery and origin closure.
+Every panel remains without molecular geometry and with its loop stopped; the
+associated molecular loop remains active. Current regression 763 receives
+the complete panel/real-addon shape-only/remount/later-load scope and Movie
+media/cancellation. Both profiles exit 0 with unchanged selected inputs and
+clean owned-process cleanup. The initial and persistent Studio evidence
+724/729 retains its earlier source identity. This resolves the bounded unused
+loop defect; covering core, actual-host, installed and human qualification
+remain under #372.

@@ -25,6 +25,7 @@ type PopupHostOptions = {
     sourceProvider?: PopupSourceProvider;
     viewerId?: string;
     sessionId?: string;
+    supportsStudioImages?: boolean;
     /** Fired when a popup endpoint goes away, so the host can cancel work it
      *  owns (pending requests, retained buffers) instead of leaking it. */
     onEndpointClosed?: (mode: PopupMode, endpointId: string) => void;
@@ -54,6 +55,7 @@ export class PopupHostManager {
     private readonly channels = new Map<PopupMode, PopupChannelIdentity>();
     private readonly onEndpointClosed?: (mode: PopupMode, endpointId: string) => void;
     private readonly onContractRejection?: PopupHostOptions["onContractRejection"];
+    private readonly supportsStudioImages: boolean = false;
     private readonly bootstrapping = new Set<PopupMode>();
     private readonly failedBootstraps = new Set<PopupMode>();
     private readonly bootstrapQueues = new Map<PopupMode, Array<{ type: string; data: any }>>();
@@ -62,6 +64,15 @@ export class PopupHostManager {
     /** Endpoint id of the live popup for `mode`, or null when none is open. */
     popupEndpointId(mode: PopupMode): string | null {
         return this.channels.get(mode)?.popupEndpointId ?? null;
+    }
+
+    isEndpointReady(endpoint: string): boolean {
+        for (const [mode, channel] of this.channels) if (channel.popupEndpointId === endpoint) {
+            const win = mode === "canvas" ? this.popoutWin : this.panelWin;
+            return !!win && !win.closed && (mode === "canvas" ? this.isReady : this.isPanelReady)
+                && !this.bootstrapping.has(mode) && !this.failedBootstraps.has(mode);
+        }
+        return false;
     }
 
     beginBootstrap(mode: PopupMode): void {
@@ -103,6 +114,7 @@ export class PopupHostManager {
         this.hostEndpointId = `widget-host:${this.sessionId}`;
         this.onEndpointClosed = viewer.onEndpointClosed;
         this.onContractRejection = viewer.onContractRejection;
+        this.supportsStudioImages = viewer.supportsStudioImages === true;
         this.router = this.createRouter();
     }
 
@@ -207,6 +219,7 @@ export class PopupHostManager {
                 isAmbient: this.controller.sharedShell?.isAmbient,
                 isSplit: this.controller.sharedShell?.isSplit,
                 isPanelOnly: mode === "panel",
+                supportsStudioImages: this.supportsStudioImages,
                 activePanel: panelOptions.panel ?? this.controller.getActivePanel() ?? "navigate",
                 enablePanelPopout: this.controller.canPopoutPanel?.() ?? false,
                 hasAuthority: this.controller.hasPythonAuthority?.() ?? true,
@@ -423,7 +436,7 @@ export class PopupHostManager {
             // Remove that exact ticket before sending its lifecycle control.
             const queued = this.bootstrapQueues.get(mode);
             if (queued) this.bootstrapQueues.set(mode, queued.filter(entry => !(entry.type === "molsysviewer-sync-op"
-                && entry.data?.op === "request_visual_state" && entry.data.request_id === data.request_id
+                && ["request_visual_state", "request_image_export"].includes(entry.data?.op) && entry.data.request_id === data.request_id
                 && entry.data.capture_revision === data.capture_revision)));
         }
         if (

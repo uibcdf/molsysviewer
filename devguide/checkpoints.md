@@ -940,27 +940,34 @@ freeze under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md).
 qualification. The timing decision is not runtime or installed acceptance.
 
 The [current migration receipt](molstar_5_13_1_qualification_receiving_20261113.json)
-records exact 5.13.1 working sources, 475 units and separately scoped native
+records exact 5.13.1 working sources, 490 units and separately scoped native
 receiving. [#378](archive/popup_pending_capture_close.md) receives exact owner
 retirement and the complete pending-capture lifecycle in canonical native run
-`725`. [#379](pending_bugs/panel_only_native_loop.md) stops the initial panel-only
-render loop; hierarchy/addon/shape-only controls pass in `724` and the current
-complete persistent Studio scope passes in `729`. It remains partial until
-#380 stops the erroneous panel-local PNG helper from restarting that loop.
-[#380](pending_bugs/detached_studio_png_uses_empty_canvas.md) separately records
-the reproduced blank PNG from detached Studio; its associated-canvas routing
-must be corrected before 1.0.
+`725`. [#379](archive/panel_only_native_loop.md) now also preserves the stopped
+panel loop through PNG export. [#380](archive/detached_studio_png_uses_empty_canvas.md)
+routes detached PNG to its associated primary/canvas-popup renderer with
+requester-only delivery, cancel/late-reply recovery and closed-origin refusal.
+[#382](archive/native_image_asset_readiness.md) receives actual SMAA lookup
+uploads before PNG/Movie rendering, including rejection of 1 x 1 placeholders.
+Current native `762` passes all PNG/owner controls with exact decoded reference
+pixels; `763` passes the complete panel/addon and Movie export/cancellation
+regressions. `761` receives project/builds and all 490 units. Original failures,
+the independent native first-use control and private evidence remain preserved.
 Complete current-runtime browser/host/platform/installed gates remain open;
 earlier completed entries retain their recorded runtime identities.
 Current real Wayland/NVIDIA Qt receiving and actual-Jupyter controller/buffer
 lifecycle pass in `731`/`732`. #381 separates healthy public-default captures
 from the fixture's deliberate query delays; complete actual-Jupyter `739`
 receives all eight moving cases, with the original `733`/`737` failures retained.
-Current scoped source checks pass 519 cases in `735`, with the original
+Earlier scoped source checks pass 519 cases in `735`, with the original
 `734` temporary-quota failure retained. The receiving record names verified
 private custody for the original 56 profiles/preflight rejection and the six
 supplementary owner/diagnostic controls, including hash-matched original test
-sources and actual kernel/extension origins.
+sources and actual kernel/extension origins. Current `766` passes 521 scoped
+Python cases, Ruff, indexes and a zero-vulnerability registry audit; `764` is
+retained as the old incomplete build-fault fixture. The additional private
+PNG tranche preserves all 26 controls, current source/builds and original PNGs
+under its independently verified manifest.
 
 The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
 first Timeline/Preview/Export editor over the shared Python API: typed keys,

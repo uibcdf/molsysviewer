@@ -141,6 +141,7 @@ export type PanelAction =
     | "set_figure_spec"
     | "reset_view"
     | "download_image"
+    | "cancel_image_download"
     | "export_html";
 
 export interface PanelContext {

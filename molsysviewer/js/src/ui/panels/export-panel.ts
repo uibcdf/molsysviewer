@@ -24,6 +24,7 @@ export class ExportPanel extends BasePanel {
     private state: SceneState = {};
     private imagePending = false;
     private imageMessage = "";
+    private imageSource: "local" | "associated" | "unavailable" = "local";
     private workFiles: WorkFileControls;
 
     setSystemLoaded(loaded: boolean): void { this.workFiles.setSystemLoaded(loaded); }
@@ -35,9 +36,17 @@ export class ExportPanel extends BasePanel {
     setImageResult(pending: boolean, message: string): void {
         this.imagePending = pending; this.imageMessage = message;
         const button = this.host?.querySelector<HTMLButtonElement>('[data-molsysviewer-export-image]');
-        if (button) button.disabled = pending;
+        if (button) button.disabled = pending || this.imageSource === "unavailable";
+        const cancel = this.host?.querySelector<HTMLButtonElement>('[data-molsysviewer-cancel-image]');
+        if (cancel) cancel.style.display = pending ? "" : "none";
         const status = this.host?.querySelector('[data-molsysviewer-export-image-status]');
         if (status) status.textContent = message;
+    }
+
+    setImageSource(source: "local" | "associated" | "unavailable"): void {
+        this.imageSource = source;
+        if (source === "unavailable") this.imageMessage = "Use a canvas to export PNG images.";
+        this.scheduleRender();
     }
 
     constructor(private readonly ctx: PanelContext, private readonly hasAuthority = true,
@@ -63,7 +72,9 @@ export class ExportPanel extends BasePanel {
     private figureReadout(): string {
         const scale = this.state.figureScale ?? 2.0;
         const width = this.state.imageWidth ?? 0, height = this.state.imageHeight ?? 0;
-        const dimensions = width > 0 && height > 0 ? `${Math.max(1, Math.round(width * scale))} × ${Math.max(1, Math.round(height * scale))} px` : "Dimensions available in the canvas";
+        const dimensions = this.imageSource === "associated" ? "Size follows the originating canvas"
+            : this.imageSource === "unavailable" ? "Use a canvas to export"
+            : width > 0 && height > 0 ? `${Math.max(1, Math.round(width * scale))} × ${Math.max(1, Math.round(height * scale))} px` : "Dimensions available in the canvas";
         return `${scale}× Scale · ${dimensions} · ${(this.state.figurePreset || "publication-light").includes("dark") ? "Dark Preset" : "Light Preset"}`;
     }
 
@@ -194,7 +205,7 @@ export class ExportPanel extends BasePanel {
             this.ctx.onAction("download_image");
         });
         downloadButton.setAttribute("data-molsysviewer-export-image", "true");
-        downloadButton.disabled = this.imagePending;
+        downloadButton.disabled = this.imagePending || this.imageSource === "unavailable";
         downloadButton.style.padding = "6px 10px";
         downloadButton.style.fontSize = "11px";
         downloadButton.style.fontWeight = "600";
@@ -203,6 +214,12 @@ export class ExportPanel extends BasePanel {
         downloadRow.appendChild(imageStatus);
 
         downloadRow.appendChild(downloadButton);
+        if (this.imageSource === "associated") {
+            const cancel = makeButton("Cancel PNG", () => this.ctx.onAction?.("cancel_image_download", {}));
+            cancel.setAttribute("data-molsysviewer-cancel-image", "true");
+            cancel.style.display = this.imagePending ? "" : "none";
+            downloadRow.appendChild(cancel);
+        }
         figureCard.appendChild(downloadRow);
 
         return figureCard;

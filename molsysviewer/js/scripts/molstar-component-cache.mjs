@@ -25,6 +25,16 @@ export function molstarComponentCachePlugin() {
       if (metadata.version !== reviewedVersion) {
         throw new Error(`Review Mol* ${metadata.version} component-cache compatibility before building (#356).`);
       }
+      // #382 reads a narrowly qualified private SMAA readiness boundary.
+      // Refuse changed native inputs before emitting any runtime/test bundle.
+      const imageAssets = JSON.parse(await readFile(new URL("./reviewed-image-assets.json", import.meta.url), "utf8"));
+      if (metadata.version !== imageAssets.version) throw new Error("Review Mol* image-asset readiness compatibility (#382).");
+      for (const [relative, digest] of Object.entries(imageAssets.files)) {
+        const source = await readFile(path.join(path.dirname(packagePath), relative));
+        if (createHash("sha256").update(source).digest("hex") !== digest) {
+          throw new Error("Mol* image-asset source differs from reviewed bytes (#382): " + relative);
+        }
+      }
       const sourcePath = path.join(path.dirname(packagePath), "lib/mol-model-formats/structure/basic/properties.js");
       build.onLoad({ filter: /structure[\\/]basic[\\/]properties\.js$/ }, async args => {
         if (path.resolve(args.path) !== sourcePath) return;

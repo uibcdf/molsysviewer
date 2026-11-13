@@ -42,9 +42,11 @@ project-library corrections have scoped source receiving. The maintainer has exp
 freeze under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md).
 #115 retains later v6/evolution scope. The timing decision is not installed
 or covering CI qualification; adopted migration gates remain open.
-The independently reproduced [detached Studio PNG defect #380](pending_bugs/detached_studio_png_uses_empty_canvas.md)
-must also close before the handoff; a successful main-canvas image test does
-not cover the associated-canvas routing of a detached panel.
+The [detached Studio PNG correction #380](archive/detached_studio_png_uses_empty_canvas.md),
+[stopped panel loop #379](archive/panel_only_native_loop.md) and
+[native image readiness #382](archive/native_image_asset_readiness.md) now have
+current scoped source/native receiving. Their completion does not substitute
+for the remaining integrated and platform exits under #372.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

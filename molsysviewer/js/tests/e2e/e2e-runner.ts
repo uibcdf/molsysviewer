@@ -12,6 +12,7 @@ const SUITES = [
     "controls-visibility",
     "studio-usability",
     "studio-live-capture",
+    "studio-image-export",
     "box-trajectory",
     "moving-state-capture",
     "moving-capture-lifecycle",
@@ -100,6 +101,10 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
         // 4 GiB, before its final camera/cancellation controls. Bound that whole
         // workflow separately from PNG/layout; retain every operation deadline.
         "studio-live-capture": 600_000,
+        // Eight native high-quality image passes plus two live Python Views
+        // take 172s at 8 CPU/4 GiB. Bound the complete workflow separately;
+        // each individual PNG still has its original operation deadline.
+        "studio-image-export": 240_000,
         // Ten calculated families, original/recovered scenes and periodic
         // controls create 22 real controllers. Mol* 5.13.1/SwiftShader takes
         // 236s at 8 CPU/4 GiB; the prior 5.4.1 control already took 179s.

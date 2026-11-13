@@ -469,7 +469,7 @@ test("popup lifecycle bypasses bootstrap and removes only its exact queued captu
         await manager.open("canvas");
         manager.isReady = true;
         manager.beginBootstrap("canvas");
-        const capture = { op: "request_visual_state", request_id: "broker", capture_revision: "revision" };
+        const capture = { op: "request_image_export", request_id: "broker", capture_revision: "revision", studio_image_request_id: "broker" };
         const other = { ...capture, capture_revision: "other-revision" };
         const restore = { op: "studio_action_result", action: "restore_work_file", request_id: "restore", ok: true };
         manager.sendTo("canvas", "molsysviewer-sync-op", capture);
@@ -487,6 +487,30 @@ test("popup lifecycle bypasses bootstrap and removes only its exact queued captu
         manager.dispose();
         (globalThis as any).window = previousWindow;
     }
+});
+
+test("image renderer readiness excludes incomplete, failed, closed and unrelated popup endpoints", async () => {
+    const previousWindow = (globalThis as any).window, { popup } = makePopupWindow();
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popup, setInterval: () => 1, clearInterval() {},
+    };
+    const manager = new PopupHostManager({ source: "viewer-source", supportsStudioImages: true });
+    manager.setController({ getViewerMode: () => "standard", getControlsMode: () => "compact",
+        getPanelModeStyle: () => "floating-unified", getActivePanel: () => "navigate" });
+    try {
+        await manager.open("canvas"); const endpoint = manager.popupEndpointId("canvas")!;
+        assert.equal(manager.isEndpointReady(endpoint), false);
+        assert.equal(popup.molsysviewer_init_options.supportsStudioImages, true);
+        manager.isReady = true; assert.equal(manager.isEndpointReady(endpoint), true);
+        assert.equal(manager.isEndpointReady("unrelated"), false);
+        manager.beginBootstrap("canvas"); assert.equal(manager.isEndpointReady(endpoint), false);
+        manager.completeBootstrap("canvas"); assert.equal(manager.isEndpointReady(endpoint), true);
+        manager.failBootstrap("canvas"); assert.equal(manager.isEndpointReady(endpoint), false);
+        manager.beginBootstrap("canvas"); manager.completeBootstrap("canvas");
+        assert.equal(manager.isEndpointReady(endpoint), true);
+        popup.close(); assert.equal(manager.isEndpointReady(endpoint), false);
+    } finally { manager.dispose(); (globalThis as any).window = previousWindow; }
 });
 
 for (const close of ["host", "pagehide"]) test(`closing a popup via ${close} reports its exact endpoint once`, async () => {

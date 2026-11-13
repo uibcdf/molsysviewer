@@ -1,0 +1,11 @@
+{
+  "issue": "uibcdf/molsysviewer#382",
+  "version": "5.13.1",
+  "files": {
+    "lib/mol-canvas3d/passes/image.js": "c825d20f26c609ff53069b3129775adbf4688ce9e220fd7acce04619e77a1d40",
+    "lib/mol-canvas3d/passes/draw.js": "6f980aa4e2771a7ce21deb4987b9d789c4e0c5ae29e7f0d2c178ff2dc2acaff2",
+    "lib/mol-canvas3d/passes/postprocessing.js": "3cc993d9d98bde9dd5d9048ea4ab97d5b13ebdbfc9054a6c706a05a92411784e",
+    "lib/mol-canvas3d/passes/smaa.js": "6f05261278c84464d50193fa8d26f45f8a8a6b345d555c4c4233f19778d9a738",
+    "lib/mol-gl/webgl/texture.js": "d1e0c6ac7063b563b0a156e26d47865beb79b7149062ec217826bd0f09075c03"
+  }
+}

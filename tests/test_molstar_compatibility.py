@@ -14,6 +14,60 @@ ROOT = Path(__file__).resolve().parents[1]
 JS = ROOT / "molsysviewer/js"
 
 
+@pytest.mark.parametrize("fault", ["none", "digest", "missing"])
+def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
+    """The private readiness reader cannot silently consume changed native code."""
+    node = shutil.which("node")
+    assert node is not None
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    native = tmp_path / "node_modules/molstar"
+    native.mkdir(parents=True)
+    qualified = JS / "scripts/reviewed-image-assets.json"
+    manifest = json.loads(qualified.read_text())
+    assert manifest["version"] == json.loads((JS / "node_modules/molstar/package.json").read_text())["version"]
+    assert set(manifest["files"]) == {
+        "lib/mol-canvas3d/passes/image.js",
+        "lib/mol-canvas3d/passes/draw.js",
+        "lib/mol-canvas3d/passes/postprocessing.js",
+        "lib/mol-canvas3d/passes/smaa.js",
+        "lib/mol-gl/webgl/texture.js",
+    }
+    for name, digest in manifest["files"].items():
+        source = JS / "node_modules/molstar" / name
+        assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
+        target = native / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    shutil.copy2(JS / "node_modules/molstar/package.json", native / "package.json")
+    shutil.copy2(JS / "scripts/molstar-component-cache.mjs", scripts)
+    shutil.copy2(qualified, scripts)
+    victim = native / "lib/mol-canvas3d/passes/smaa.js"
+    if fault == "digest":
+        victim.write_text(victim.read_text() + "\n// Unreviewed native modification.\n")
+    elif fault == "missing":
+        victim.unlink()
+    entry = tmp_path / "entry.js"
+    entry.write_text("export const control = 1;\n")
+    output = tmp_path / "output.js"
+    builder = tmp_path / "build.mjs"
+    builder.write_text(
+        f"import {{ build }} from {json.dumps((JS / 'node_modules/esbuild/lib/main.js').as_uri())};\n"
+        f"import {{ molstarComponentCachePlugin }} from {json.dumps((scripts / 'molstar-component-cache.mjs').as_uri())};\n"
+        f"await build({{ entryPoints: [{json.dumps(str(entry))}], outfile: {json.dumps(str(output))}, "
+        "bundle: true, plugins: [molstarComponentCachePlugin()] });\n"
+    )
+    result = subprocess.run([node, str(builder)], capture_output=True, text=True, timeout=30)
+    if fault == "none":
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert output.is_file()
+    else:
+        assert result.returncode != 0
+        assert not output.exists(), "An unqualified readiness seam must emit no bundle."
+        if fault == "digest":
+            assert "image-asset source differs" in result.stderr
+
+
 def test_component_cache_repair_preserves_native_chemistry_and_releases_inputs(tmp_path):
     """Only the weak cache releases tables/buffers; both native readers agree."""
     node = shutil.which("node")

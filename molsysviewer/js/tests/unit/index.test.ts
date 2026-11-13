@@ -55,3 +55,5 @@ import "./local-ui-model.test";
 import "./movie-studio.test";
 import "./movie-web.test";
 import "./movie-composition.test";
+import "./studio-image-exports.test";
+import "./image-assets.test";

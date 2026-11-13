@@ -132,6 +132,19 @@ requires live Python authority; standalone Qt remains experimental.
 
 ## Guards and boundaries
 
+A detached Studio panel is a UI owner, not a molecular image renderer. The
+widget host binds PNG export to the canvas from which that panel was opened,
+including a canvas popup. The requester receives the result; a missing or
+closed origin fails explicitly rather than substituting another canvas.
+Cancellation, endpoint closure and deadlines retire the corresponding request,
+and late replies cannot start a download. The hidden panel loop stays stopped.
+Static HTML and Qt retain ordinary canvas PNG export; they do not advertise
+this Python-widget panel-detachment capability. The Python image API retains
+its existing contract. The resolved routing and native-image readiness boundaries are tracked in
+#380 and #382, separately from covering qualification. PNG/Movie rendering
+waits for the actual SMAA lookup uploads; 1 x 1 placeholders do not establish
+readiness. A bounded, cancelable failure preserves the requested quality.
+
 `molsysviewer/js/tests/e2e/studio-usability.e2e.ts` uses real pentalanine,
 all-structure native hbonds, Python action replies and Chromium/Mol*. It checks
 downloaded PNG bytes/alpha, actual browser HTML delivery, compact navigation,

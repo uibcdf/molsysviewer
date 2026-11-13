@@ -1019,6 +1019,7 @@ export class GroupPanel {
     setImageDimensions(width: number, height: number): void {
         this.exportPanel.setImageDimensions(width, height);
     }
+    setImageSource(source: "local" | "associated" | "unavailable"): void { this.exportPanel.setImageSource(source); }
     setImageResult(pending: boolean, message: string): void { this.exportPanel.setImageResult(pending, message); }
     setMovieState(state: MoviePanelState): void { this.moviePanel?.setState(state); }
 

@@ -8,6 +8,7 @@ import { trajectorySyncToAuthority } from "./messages/trajectory-intent";
 import { frontendSceneProjection, FRONTEND_CONTEXT_ACTIONS } from "./messages/frontend-scene-projection";
 import { bootPopup } from "./popup/popup-logic";
 import { PopupHostManager } from "./managers/popup-host";
+import { StudioImageExports, isStudioImageRequest } from "./managers/studio-image-exports";
 import { PopupSceneSnapshots } from "./messages/popup-scene-snapshots";
 import { presentResult } from "./ui/presentation-surface";
 export { presentationSurface } from "./ui/presentation-surface";
@@ -972,8 +973,10 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
         // The transport owns endpoint identity. Studio payloads cannot choose
         // another canvas or another window as the owner of a pending save.
         const pendingWorkFileSaves = new Map<string, { requestId: string; owner: string; canvas: string }>();
+        let studioImages: StudioImageExports | undefined;
         const workFileKey = (owner: string, requestId: string) => JSON.stringify([owner, requestId]);
         const sendEndpointAction = (message: Record<string, unknown>, owner: string, canvas: string) => {
+            if (studioImages?.handle(owner, canvas, message)) return null;
             message = ownFrameQuery(message, owner);
             message = ownMovieIntent(message, owner, canvas);
             const correlated = message.event === "interaction_context_action"
@@ -1122,7 +1125,9 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             sourceProvider: requestPopupSource,
             viewerId: model.get("runtime_viewer_id"),
             sessionId: model.get("runtime_session_id"),
+            supportsStudioImages: true,
             onEndpointClosed: (mode, endpointId) => {
+                studioImages?.closeEndpoint(endpointId);
                 cancelSceneSnapshotsFor(mode);
                 panelCanvasEndpoints.delete(endpointId);
                 if (mode === "canvas") (el as any).molsysviewerOnPopupClosed?.();
@@ -1205,6 +1210,47 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             model,
             hasInitialStructures: trajInfo.hasStructures || model.get("has_molecular_system") === true,
             onPanelPopClick: enablePopout ? () => openPanelPopup() : undefined
+        });
+        // Local image requests share the same scene barrier and cancellation
+        // owner as Python captures, without forging a Python inbound envelope.
+        const queueFrontendRequest = (msg: any, send: (event: any) => void) => {
+            if (msg.op === "request_visual_state" || isStudioImageRequest(msg)) {
+                const capture = visualStateCaptures.reserve(msg);
+                if (!capture) return;
+                messageQueue = messageQueue.then(async () => {
+                    try {
+                        const c = await controllerPromise;
+                        await captureAtScenePrefix(c, msg, send, capture);
+                    } catch (error) { capture.release(); throw error; }
+                }).catch(error => console.error("[MolSysViewer] Frontend capture failed:", error));
+            } else {
+                controllerPromise.then(c => handleFrontendRequest(c, msg, send))
+                    .catch(error => console.error("[MolSysViewer] Frontend request failed:", error));
+            }
+        };
+        const sendFrontendReply = (event: any) => {
+            if (!studioImages?.receive(envelopeAdapter.widgetHostEndpoint, event)) sendToPython(event);
+        };
+        studioImages = new StudioImageExports({
+            ownerIsLive: owner => !disposed && !!popupMgr.isPanelOpen && popupMgr.popupEndpointId("panel") === owner,
+            rendererIsLive: renderer => !disposed && (renderer === envelopeAdapter.widgetHostEndpoint
+                || (renderer === popupMgr.popupEndpointId("canvas") && popupMgr.isEndpointReady(renderer))),
+            dispatch: (renderer, request) => {
+                if (disposed) return false;
+                if (renderer === envelopeAdapter.widgetHostEndpoint) {
+                    if (isFrontendControl(request)) visualStateCaptures.cancel(request);
+                    else queueFrontendRequest(request, sendFrontendReply);
+                    return true;
+                }
+                if (renderer !== popupMgr.popupEndpointId("canvas") || !popupMgr.isEndpointReady(renderer)) return false;
+                popupMgr.sendTo("canvas", "molsysviewer-sync-op", request);
+                return true;
+            },
+            deliver: (owner, result) => {
+                if (!disposed && popupMgr.isPanelOpen && popupMgr.popupEndpointId("panel") === owner) {
+                    popupMgr.sendTo("panel", "molsysviewer-sync-op", result);
+                }
+            },
         });
         const arrayNativeStream = new ArrayNativeStreamReceiver(
             event => sendToPython(event),
@@ -1504,8 +1550,10 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         break;
 
                     case "molsysviewer-popup-interaction":
-                        // 1. Forward to Python so it is recorded.
                         if (data) {
+                            // Correlate with the authenticated sending endpoint;
+                            // a PNG payload cannot name another renderer/owner.
+                            if (studioImages?.receive(popupMessage.channel.popupEndpointId, data)) break;
                             const panelEvent = ["panel_navigate", "panel_unmount", "addon_panel_action"].includes(data.event);
                             const endpointId = popupMessage.channel.popupEndpointId;
                             sendEndpointAction(panelEvent
@@ -1734,20 +1782,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                 return;
             }
             if (isFrontendRequest(msg)) {
-                if ((msg as any).op === "request_visual_state") {
-                    // A capture is a barrier, not a shortcut around pending
-                    // scene/frame work. Keep legacy best-effort requests apart.
-                    const capture = visualStateCaptures.reserve(msg);
-                    if (!capture) return;
-                    messageQueue = messageQueue.then(async () => {
-                        try {
-                            const c = await controllerPromise;
-                            await captureAtScenePrefix(c, msg, sendToPython, capture);
-                        } catch (error) { capture.release(); throw error; }
-                    });
-                } else {
-                    controllerPromise.then(c => handleFrontendRequest(c, msg, sendToPython));
-                }
+                queueFrontendRequest(msg, sendFrontendReply);
                 return;
             }
             const panelLocal = msg.op === "mount_addon_panel" || msg.op === "addon_panel_message"
@@ -1778,6 +1813,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
             }
             pendingWorkFileSaves.clear();
             pendingSceneSnapshots.dispose();
+            studioImages?.dispose();
             visualStateCaptures.dispose();
             popupMgr.dispose();
             arrayNativeStream.dispose();

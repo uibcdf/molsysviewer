@@ -14,29 +14,29 @@
     "lock_sha256": "50c7479234a994bf7aefb31ce264ac5f4f323a6c3b6666a538279844a619e476",
     "working_sha256": {
       "AGENTS.md": "8cd7d1fd8964216fa03a788cff95b30fd4a5aab8505b12c8c8f8b0eec19260d2",
-      "molsysviewer/js/package.json": "7afb7852890a10542d1e4bd1f06170766fb29b854941783b93fb7c82a8589358",
+      "molsysviewer/js/package.json": "4d08e6f2a49c820c2255d64869d81a5b79d7275927a2a90dd673d058f00da821",
       "molsysviewer/js/package-lock.json": "50c7479234a994bf7aefb31ce264ac5f4f323a6c3b6666a538279844a619e476",
-      "molsysviewer/js/scripts/molstar-component-cache.mjs": "ae8558fde56050456c99c212562e363e601e7aa253f3f3474e258959c32a76cb",
+      "molsysviewer/js/scripts/molstar-component-cache.mjs": "eca9ffbafe8ee0bd124286f78c90961f4d807b283ff4eb640b4042ee6b5bf0ad",
       "molsysviewer/js/scripts/build-molstar-probe.mjs": "8fa02034d88f5456514dff964604ab9ef2d6cdf050fbec1c43718a1341dc200a",
       "molsysviewer/js/src/plugin/render-presentation.ts": "1cd9b6a97fd6fa8ea53cd422b897f4c3691b32eca395a517eaeee1e25ae06e14",
       "molsysviewer/js/src/plugin/font-atlas-uploads.ts": "5dbaf9b6f4ee93a0b3984555f910be9839faea0ee444ef9b8f4234dece183f99",
       "molsysviewer/js/src/managers/handlers/scene-handlers.ts": "a1aed947247a37d15eabb091b8fc102634feedd136c9e576dbb08b0cabcc594a",
-      "molsysviewer/js/tests/e2e/e2e-runner.ts": "8c02c7ff388ccc84ab69f3abc66578f51df56d5d51f7a5fbaaa0ffd9abf793e3",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "cead36443154648725a50c9cf947ce29ad69722c067b471b3b98d7979c3e37e3",
       "molsysviewer/js/tests/e2e/context-menu.e2e.ts": "d4b5dd38d5fa10c16b616bbf81e964e331534087b2f8da109b4697c73c1b6584",
       "molsysviewer/js/tests/fixtures/molstar-font-probe.ts": "e81c3f018ae8181ec46359d1d9c262929d5e99300c256ef34348535880bb09c2",
       "molsysviewer/js/tests/fixtures/molstar-component-cache.mjs": "041811c188fb961d81ec75060cd100aa7a0f1b7cafbbc57858a0218f2e773f28",
-      "tests/test_molstar_compatibility.py": "2837357e671145390f0f1055d12693df4a2760975a17b3d03b2fd6b515239044",
-      "tests/test_e2e_reliability.py": "17415f6dd76be0e94440993ebbf022ba60d680e2831215101b9cfa71fafe221a",
+      "tests/test_molstar_compatibility.py": "972b3aa0cd994a62a8bb9ffe0597aa4529529de6f5806f8bc78da131d3aa44ba",
+      "tests/test_e2e_reliability.py": "df39dc823dc0ea1aecc84f0db822531d13a258d7ac2205b373937367a5dc0395",
       "devtools/conda-envs/build_env.yaml": "7acf9013b68f739205d264c2311e3daa1074cc90c3aa704ff276c9c4e6408f28",
       "devtools/conda-build/meta.yaml": "371781bcc62fe36977a45be3d34092372b4e72f504a7aa6c378009d34e29fc21",
-      "molsysviewer/viewer.js": "26a905820bb4834599cd67e6d2e363dd195b6fbc7808b72fe29e94028c8a1a78",
-      "molsysviewer/js/tests/e2e/harness.bundle.js": "9288527c85d8264fcd36c53769d462658dd290a339f133f8ddcbabb72da103e3",
+      "molsysviewer/viewer.js": "c007fe172352bdaab4f7afdf68bed441357f23a0674d7c764f949dad749805e4",
+      "molsysviewer/js/tests/e2e/harness.bundle.js": "9e37887dbbb2b096766dec4970aacb0093ad57cb35681682210f9f70437dc2af",
       "molsysviewer/js/tests/e2e/studio-usability.e2e.ts": "27b771fc79ad37a0ac436cc3751124599f33f968d3c98cfa307ff6aa5bd981d5",
       "molsysviewer/js/tests/e2e/studio-live-capture.e2e.ts": "f0fb11587c79543b57e0f69ecf13779dfc583baaa67f9b6fb63605306b6776d6",
       "molsysviewer/js/tests/unit/render-presentation.test.ts": "4b5e538fbc065298712988b7b1d29c31c1286f590bd92c791f6d7f5cd1a87c22",
       "molsysviewer/js/tests/unit/scene-handler.test.ts": "dcb25e804dfdb387a45a0874ac2399d3ebd13744b4827851e33cc80a1485f2be",
-      "molsysviewer/js/src/managers/popup-host.ts": "7c308f9a97fd14ade9b46f3b7dab4d6866d6edace80baea214c93adf89aae50a",
-      "molsysviewer/js/tests/unit/popup-host.test.ts": "3434fe271aa80524f0e24f7d0911cf2480f7c8dd5360ff96781b2964baa227d9",
+      "molsysviewer/js/src/managers/popup-host.ts": "7b23c48c10f2df16f9266e33263b89c50d8d3e2a5e2e21e8d9ec598f74f61c51",
+      "molsysviewer/js/tests/unit/popup-host.test.ts": "061d54e4a22b841d4d3710f43c2931e876d6010a1172afa83fbfd256e3aded74",
       "molsysviewer/js/tests/e2e/moving-capture-bridge.py": "b33773ee261cc0990a5a5723fca2e79910f58c3b697e82acaf2ea8688d1f39b1",
       "molsysviewer/js/tests/e2e/moving-capture-lifecycle-scenarios.ts": "7c09a4edcde2563df082efd4ab96530207351fbd55d012a2fc4d6a57632c8b4e",
       "molsysviewer/js/tests/e2e/source-atom-indices.e2e.ts": "4a2734987fc5aa434badbcad2bd05ba27f62cd2cff1a9f05a469b3b32560a76c",
@@ -47,26 +47,45 @@
       "molsysviewer/js/tests/e2e/movie-seek.e2e.ts": "1ddea8c03058aee88e2cec561a18477cf2bd6451d16eccf7fded580e84f1023b",
       "molsysviewer/js/tests/e2e/movie-story.e2e.ts": "8665be98a59f613e592a65e76954b67c2af807991e4e535d95f75f665a7b6e7a",
       "molsysviewer/js/tests/e2e/movie-web.e2e.ts": "8e76add85108f86781a6511611b14583bc4cac2d6aaa8a2411b9acb60aff18c5",
-      "molsysviewer/js/src/managers/viewer-controller.ts": "6d9a0f349e870e2924d5243837fa6db0be5fdf69afd0503c8e42c18d4f0e90ab",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "8234fc5762fb3c5bf9f5963613897009077290259944acbf77c5a417ef4d8872",
       "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts": "09dfa8811fdaf45f385b1954c681ce532525692f1191e237ec5b0a2cc5fbd5c8",
       "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "338b8b3fd28b9584b62e60ee250f2ebac1a7b3ebeca856505b4cd9db6f64421f",
       "tests/_jupyter_live_capture.py": "566309f2f695481b9b4554583afc72de850ccf07b220b2ba3854010c1f45e864",
       "tests/_jupyter_moving_capture.py": "91a1b94c2cc2f53fa5a50770aae00da0557cf5f7886757798be2d2806aace196",
       "tests/_jupyter_moving_capture.mjs": "d534935136d56ebd659ff06a6d23832cb8f769e2eb15f8465b3a7c47e3121100",
-      "tests/test_jupyter_live_capture.py": "685ab8737ce4f82f86a3740734926eafb65355d07dcaacd20c318b0d81b1a308"
+      "tests/test_jupyter_live_capture.py": "685ab8737ce4f82f86a3740734926eafb65355d07dcaacd20c318b0d81b1a308",
+      "molsysviewer/js/src/index.ts": "f175a368e49825c5a576cca717d79c0afd3551d53ea4ee7b76c1ab289abd5d81",
+      "molsysviewer/js/src/messages/frontend-requests.ts": "cf727cc9fe81c910d68d5bd3fc63f03b728986ad2348adeb132fa7519ab9d7ec",
+      "molsysviewer/js/src/messages/viewer-messages.ts": "4d09b2202dc3156e8ceaa8c37e3a37073392d6fe6385b7e12ad28233907f84e0",
+      "molsysviewer/js/src/popup/popup-logic.ts": "570aca05bb905b14d77b1251a13e73dddcd15825f3a1d71fe11fa99f2cd8acf3",
+      "molsysviewer/js/src/ui/group-panel.ts": "86a66b4ae1f1e6ac4d9c3bb82f2a4037eb757d18785a9b6b2c262aab858fc166",
+      "molsysviewer/js/src/ui/panels/export-panel.ts": "4227c32aac53a757af518f0a541b17acbf87b0882aa2c560f23dfbbea29db380",
+      "molsysviewer/js/src/ui/panels/types.ts": "c547d1c519acd2bcc4f0a9777cc4a6263a052e45b7d4e9063ac941afb160a38b",
+      "molsysviewer/js/tests/unit/frontend-requests.test.ts": "6e25a1d1299993132bfba5e2b284309a592b733b7853c50e7827a7638e182526",
+      "molsysviewer/js/tests/unit/index.test.ts": "ce59c2c218ebb2df28c3418fdb13aa69b6c862a1dde3a0ccc5a25e21723f1569",
+      "tests/test_js_build_version_resolution.py": "f66b0274c63302ffcf2340bc31b3f9e35eeeef0db1b45351322866db1def0509",
+      "tests/test_reporting_protocol.py": "f07c3b56bcc57b5888ed313ef90476dc5109729165f0f44d81a78ffdaadbe2e5",
+      "molsysviewer/js/scripts/reviewed-image-assets.json": "03ff0eaafed1f0cae678bb00b8012033856299332062d9ae743ce1eae6003746",
+      "molsysviewer/js/src/managers/studio-image-exports.ts": "6a0c82aa25d8b559bd4663bb4b90254f523108c5bbfab396e5c08ca18dc8499a",
+      "molsysviewer/js/src/plugin/image-assets.ts": "e3c1b6bedd1aea001d21d89c15ddbd61d71f4272b033d8074acc3e7ca30d859d",
+      "molsysviewer/js/tests/e2e/studio-image-export.e2e.ts": "cb2b42e3ffec489c5831ff728f5f92252e20d3d54e3f6af62279158a5d129e32",
+      "molsysviewer/js/tests/unit/image-assets.test.ts": "7bf80a824932194501c29354cc2a3d96cb4dde34d9a9c0a3e4967d8e6b7c2e13",
+      "molsysviewer/js/tests/unit/studio-image-exports.test.ts": "a14d976e9ab4da67c2c5ebbba4348161253eafcf47361e2f4057fc67fd6a22be"
     },
     "scientific_provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
     "pyunitwizard_source": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
-    "scientific_route_notice": "Frozen source receiving with cached published support, not clean installed/public artifact qualification."
+    "scientific_route_notice": "Frozen source receiving with cached published support, not clean installed/public artifact qualification.",
+    "image_receiving_source_base": "22cc782dd57dcde496a490352fc4a662526d4f34",
+    "working_hash_notice": "Current source/build bytes. Every earlier controlled profile retains its own original input manifest; current hashes do not reattribute earlier receiving."
   },
   "received": {
     "canonical_units": {
-      "profile": "723",
-      "passed": 475,
+      "profile": "761",
+      "passed": 490,
       "skipped": 0,
       "node": "22.23.4",
       "project_types": "native tsc --noEmit --project tsconfig.json passes",
-      "includes": "Complete renderer tuple, independent native motion defaults, exactly-once popup retirement and late-source refusal; current panel-loop production correction is built."
+      "includes": "Complete current canonical units, native project types and runtime/harness/entry builds; includes private owner-bound PNG routing and exact native asset readiness/cancellation."
     },
     "native_cache": {
       "profile": "683",
@@ -227,7 +246,9 @@
       ],
       "persistent_current_studio": "729 completes the entire persistent scope with native exit 0, unchanged inputs, no resource stop and clean own-process cleanup.",
       "notice": "Real native parameter state is retained; no renderer-free architecture or complete resource release is claimed.",
-      "status": "partial: initialization and persistent UI received; panel-local PNG restarts the loop under #380"
+      "status": "source_resolved: actual PNG preserves the stopped panel loop",
+      "png_resolution_profile": "762",
+      "current_panel_regression": "763"
     },
     "studio_current_layout": {
       "profile": "726",
@@ -268,7 +289,10 @@
         "nonzero_alpha_pixels": 0
       },
       "notice": "Reproduction succeeds; PNG acceptance fails. Main-canvas export is separately received. No Mol* regression/version causality is asserted.",
-      "panel_after_export_animating": true
+      "panel_after_export_animating": true,
+      "status": "source_resolved",
+      "resolution_profile": "762",
+      "original_reproduction_preserved": true
     },
     "physical_native_teardown": {
       "profile": "730",
@@ -497,6 +521,178 @@
       "copied_source_commit": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
       "runtime_directory_diff": "empty",
       "scope": "Read-only comparison of pyunitwizard/; intervening commits change documentation only. No installed/public closure claim."
+    },
+    "detached_png_resolution": {
+      "issue": "uibcdf/molsysviewer#380",
+      "profile": "762",
+      "native_exit": 0,
+      "images": [
+        {
+          "name": "primary-transparent",
+          "decoded_png": {
+            "width": 850,
+            "height": 600,
+            "visible": 49809,
+            "transparent": 460191,
+            "sha256": "ef03238e34c604a22d12480bcbbfb7ca1db550b6ad39d37b0c90490ba2e6f9f7"
+          },
+          "native_assets_before_first_get": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "native_assets_before_render": [
+            [
+              160,
+              560
+            ],
+            [
+              66,
+              33
+            ]
+          ]
+        },
+        {
+          "name": "primary-after-cancel",
+          "decoded_png": {
+            "width": 850,
+            "height": 600,
+            "visible": 49809,
+            "transparent": 460191,
+            "sha256": "ef03238e34c604a22d12480bcbbfb7ca1db550b6ad39d37b0c90490ba2e6f9f7"
+          },
+          "native_assets_before_first_get": [
+            [
+              160,
+              560
+            ],
+            [
+              66,
+              33
+            ]
+          ],
+          "native_assets_before_render": [
+            [
+              160,
+              560
+            ],
+            [
+              66,
+              33
+            ]
+          ]
+        },
+        {
+          "name": "popup-opaque",
+          "decoded_png": {
+            "width": 680,
+            "height": 510,
+            "visible": 346800,
+            "transparent": 0,
+            "sha256": "762cf39f2e2b8100a9f7a608115cbf4196a0e5224a1aa6bb4adda10dbc7a2ffb"
+          },
+          "native_assets_before_first_get": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "native_assets_before_render": [
+            [
+              160,
+              560
+            ],
+            [
+              66,
+              33
+            ]
+          ]
+        }
+      ],
+      "requester_only": true,
+      "independent_view_unchanged": true,
+      "cancel_late_reply_recovery": true,
+      "closed_origin_refuses_fallback": true,
+      "panel_loop_stopped": true,
+      "associated_loop_active": true,
+      "scope": "Actual persistent Python/widget/Mol*/Chromium source receiving, not actual Jupyter/native Qt, full core, installed or human qualification."
+    },
+    "image_asset_readiness": {
+      "issue": "uibcdf/molsysviewer#382",
+      "status": "source_resolved",
+      "independent_native_reproduction": "757",
+      "first_native_png_sha256": "0c02595b9a87ee382c0eb02bd27b20b7c5cb5db3a249f8aae2463c8165605617",
+      "repeated_native_and_signalled_png_sha256": "71bea85715ca0d4fc44c8961b0bfc8ba795ea69e84f68655c9b8c2b1b8731273",
+      "qualified_native_boundary": {
+        "issue": "uibcdf/molsysviewer#382",
+        "version": "5.13.1",
+        "files": {
+          "lib/mol-canvas3d/passes/image.js": "c825d20f26c609ff53069b3129775adbf4688ce9e220fd7acce04619e77a1d40",
+          "lib/mol-canvas3d/passes/draw.js": "6f980aa4e2771a7ce21deb4987b9d789c4e0c5ae29e7f0d2c178ff2dc2acaff2",
+          "lib/mol-canvas3d/passes/postprocessing.js": "3cc993d9d98bde9dd5d9048ea4ab97d5b13ebdbfc9054a6c706a05a92411784e",
+          "lib/mol-canvas3d/passes/smaa.js": "6f05261278c84464d50193fa8d26f45f8a8a6b345d555c4c4233f19778d9a738",
+          "lib/mol-gl/webgl/texture.js": "d1e0c6ac7063b563b0a156e26d47865beb79b7149062ec217826bd0f09075c03"
+        }
+      },
+      "current_receiving": "761/762/763/766",
+      "native_placeholders": [
+        1,
+        1
+      ],
+      "required_area_dimensions": [
+        160,
+        560
+      ],
+      "required_search_dimensions": [
+        66,
+        33
+      ],
+      "internal_wait_seconds": 5,
+      "no_warmup_render": true,
+      "quality_unchanged": true,
+      "external_issue_published": false,
+      "notice": "Private read-only seam is exact-byte qualified. The first-use distinction is independently native, not an established version regression. Unsupported native SMAA/other AA modes preserve their original behavior."
+    },
+    "image_regressions": {
+      "profile": "763",
+      "native_exit": 0,
+      "core_entries": [
+        "panel-popup-welcome",
+        "movie-export"
+      ],
+      "panel_addon_scope": "Complete native shape-only/addon Render/Clear/remount, both popups and later molecular loading.",
+      "movie_scope": "1280x720, four frames at four fps, embedded recipe, independent frame references, actual browser video and native cancellation with unrelated task health, preserved destination and overlays."
+    },
+    "image_source_guards": {
+      "profile": "766",
+      "passed": 521,
+      "failed": 0,
+      "skipped": 0,
+      "ruff_files": 1063,
+      "indexes_current": true,
+      "npm_audit_vulnerabilities": 0,
+      "includes": "Three native image-byte qualification/fault cases; all build/source/runner/distribution/reporting/static-view controls.",
+      "original_failure": "764: three cache-fault fixtures omitted the newly independently guarded native image files. The fixture is completed without changing its selected fault or assertion; affected module passes 14/14 in 765 before current full scoped receiving."
+    },
+    "image_attempts_notice": {
+      "741": "Native type errors in initial routing preparation.",
+      "742": "One popup test omitted its controller binding; 485/486 passed.",
+      "744": "New fixture attempted a second isolated browser context.",
+      "746": "New fixture observed the same popup bootstrap twice.",
+      "748/750/752/754/756": "Original strict pixel comparisons fail; native cameras/settings remain equal and later independent control 757 isolates first-use native behavior.",
+      "758": "Private ImagePass.drawPass requires an explicit qualified type boundary.",
+      "760": "Complete PNG flow passes; exact placeholder/dimension rejection is strengthened and received in 761/762.",
+      "764": "Native cache-fault fixture incompleteness, corrected in 765/766.",
+      "notice": "All original native exits/outputs are retained; successful preparation and reproduction are not whole-product acceptance."
     }
   },
   "controlled_profiles": [
@@ -1929,15 +2125,559 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "164341dc9eb5b63142149a96fd40068d2a4f35eb756b2492fb38be1915c11612"
+    },
+    {
+      "state": "completed",
+      "native_exit": 2,
+      "resource_stop": null,
+      "seconds": 14.880513256415725,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-741",
+      "peak_summed_owned_rss_mib": 453.4,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "b1b6ef5a839789d519ccd99f5c96a322377fd41d39953f204918788aacc384a6"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 34.870109936222434,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-742",
+      "peak_summed_owned_rss_mib": 506.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "69b7beeaa02feed49c953244de731c5ca8d417cc1f1075f5711de610e12bdc87"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 28.471156349871308,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-743",
+      "peak_summed_owned_rss_mib": 474.6,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "71cb40067847a66376f449971900b272c6659a7570a6de0e9b142136d0b64aec"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 31.86355026019737,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-744",
+      "peak_summed_owned_rss_mib": 2577.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "4b552a2b2eb68a64b489bc37e7e6343b7a9a1bd75c299582df89316ff5d0e89c"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.825333563610911,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-745",
+      "peak_summed_owned_rss_mib": 200.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "cd94ac199b6a04e19953b567f3b73d9c7bfde93f609c73b33a2767cba75d9a7a"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 54.451583477668464,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-746",
+      "peak_summed_owned_rss_mib": 3269.9,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "5245080383100e25efa0a475666127a10b9b22e02cd5f2128c7bc54b09ff259b"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.768869628664106,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-747",
+      "peak_summed_owned_rss_mib": 182.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "e3b8499d808a8a48ab0ddc36ea6b6b23e2f4ca75a9bdc6bca2dad113651966b7"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 62.1547907278873,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-748",
+      "peak_summed_owned_rss_mib": 3316.8,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "629b28b0ee4d9b6181b3b7f0f9d96d3aa3bd6d80b5b9864450be2b539ad9ec10"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.711066592950374,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-749",
+      "peak_summed_owned_rss_mib": 183.2,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "a03f9c2c38a0af6cd7cdb13e8cc5766b0ce5d0d7520e68672be39cbd86996730"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 61.39966789027676,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-750",
+      "peak_summed_owned_rss_mib": 3266.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "478a3667a1866867102b85d51a0ecd25248c98f9ecf18dfe9d42c0bfab708d30"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.685734311118722,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-751",
+      "peak_summed_owned_rss_mib": 207.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "c3b246f1cb634047a47fd218dc68668cd5b2ae063a4a4873460db10b74251d20"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 78.50258213980123,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-752",
+      "peak_summed_owned_rss_mib": 3265.8,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "3a39fd804fa79d335630dd7ea53d13fa363b3d0fed47f402de7cd130a4b31c7d"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.69825805304572,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-753",
+      "peak_summed_owned_rss_mib": 211.5,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "eee1aa314a1b42596f2d743cb47a9542814e90eb714b8c20f8e5b7c90bb6bed8"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 77.47825721139088,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-754",
+      "peak_summed_owned_rss_mib": 3284.8,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "e2a6270d952d4fd0a00e395d7ba56235714837d4b70a231488a01bf0dce112f8"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.6974709229543805,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-755",
+      "peak_summed_owned_rss_mib": 207.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "fb3d64af57ca58dbe6ba2e679377ff0e21c88c46be327e2c7ee2ecefa39e0b08"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 97.24612626200542,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-756",
+      "peak_summed_owned_rss_mib": 3325.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "41d1d61b7c32a7882a5c5ba5b902811a4cf021f543bfb094c764bca18011364a"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 64.12069845804945,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "native-cold-png-757",
+      "peak_summed_owned_rss_mib": 2068.6,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "4a9e31f500f67e8542732a87b43a4afeba311bb04cad9b85d253871c2c794b2c"
+    },
+    {
+      "state": "completed",
+      "native_exit": 2,
+      "resource_stop": null,
+      "seconds": 12.933705942705274,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-758",
+      "peak_summed_owned_rss_mib": 453.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "f9816eabb0fd16afd90912b2728188c12088eec7c9d1c835c3127e262317e2dd"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 34.230324951931834,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-759",
+      "peak_summed_owned_rss_mib": 463.1,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "51033fa93aa11e9bf4c3183f2a43bf60689d7ad2706ef01bdcafbfa38c5c418a"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 206.45465983403847,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-760",
+      "peak_summed_owned_rss_mib": 3638.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "bc8f97e0ed32827fb6152094c17daecbe908b3d38cc058d0b147d6b2b0dc51c2"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 35.288685015868396,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-studio-image-761",
+      "peak_summed_owned_rss_mib": 480.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "766054bc7ecae7daa00b482977f99626fb366f0a93cf0c159264a6e3b9d8774d"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 164.44912317488343,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-762",
+      "peak_summed_owned_rss_mib": 3658.3,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "69a62ac158b505a459e5519a9f811d28447a07ee7b28deb3882cf50e2b1a49eb"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 145.83341141603887,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-regressions-763",
+      "peak_summed_owned_rss_mib": 2451.4,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "8c49beee804bbd504847c5f6ca4bded867d835d03ea7eed6d1955e210d8d1159"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 45.320123712997884,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 46,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-final-764",
+      "peak_summed_owned_rss_mib": 629.7,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "d96649824b73774859845562e8a25a521063706d3788f9c72e6a885611541640"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 20.97231324017048,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-build-controls-765",
+      "peak_summed_owned_rss_mib": 629.4,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "e419dda994264341957c4b69e150438ad79293b37979270964106cdbe0f5a26e"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 40.31777691375464,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 48,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "studio-image-final-766",
+      "peak_summed_owned_rss_mib": 620.2,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "57835850ab6158a233cc15642ce84ad8b469bafaae6d2598658d0c27d7d15e99"
     }
   ],
   "remaining": [
     "Complete current core browser receiving and retain interruptions/partial coverage honestly.",
     "Receive remaining Movie/output/prolonged-host scopes; preserve selected Qt/full Jupyter/lifecycle source outcomes independently.",
     "Consolidate source/platform CI, installed candidate and compatibility documentation at the agreed freeze.",
-    "Preserve postponed human observations separately; do not count them as passing.",
-    "Resolve uibcdf/molsysviewer#380: detached Studio PNG must use its associated molecular canvas; the reproduced empty local export is not an upstream defect claim.",
-    "Keep #379 partial until the corrected #380 path preserves the stopped panel loop after image export."
+    "Preserve postponed human observations separately; do not count them as passing."
   ],
   "counter_notice": "The original 38/46 source-delivered and 1/46 finally accepted audit counters are unchanged; this is a separate adopted stream.",
   "custody": {
@@ -1969,6 +2709,43 @@
         "bytes": 30598140,
         "manifest_sha256": "b428ee655268016df6c318f27dfd5bc682494f1e23c58722a562b5601db6280a",
         "originals_retained": true
+      },
+      {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-studio-png-20261113",
+        "profiles": [
+          "build-studio-image-741",
+          "build-studio-image-742",
+          "build-studio-image-743",
+          "studio-image-744",
+          "build-studio-image-745",
+          "studio-image-746",
+          "build-studio-image-747",
+          "studio-image-748",
+          "build-studio-image-749",
+          "studio-image-750",
+          "build-studio-image-751",
+          "studio-image-752",
+          "build-studio-image-753",
+          "studio-image-754",
+          "build-studio-image-755",
+          "studio-image-756",
+          "native-cold-png-757",
+          "build-studio-image-758",
+          "build-studio-image-759",
+          "studio-image-760",
+          "build-studio-image-761",
+          "studio-image-762",
+          "studio-image-regressions-763",
+          "studio-image-final-764",
+          "studio-image-build-controls-765",
+          "studio-image-final-766"
+        ],
+        "files": 312,
+        "bytes": 146371821,
+        "manifest_sha256": "2c4ca6d3caf601a7a2854efefbc330b5cbf5f8b320ee5fed6ad57dd6ac8542f0",
+        "originals_retained": true,
+        "scope": "26 completed controlled profiles, original PNGs/native controls, current source/builds and diagnostic owner; originals retained. The custody reference is appended after the immutable payload copy."
       }
     ]
   },
@@ -1989,6 +2766,20 @@
       378
     ],
     "issue_379": "Remains open/partial: original 728 result.json also records panelAfter.animating=True; initial-loop and work-file controls alone do not receive image export.",
-    "custody_scope": "The immutable named manifest preserves the 56 controlled profiles through 735 and their original sources; later documentary reconciliation does not rewrite it."
+    "custody_scope": "The immutable named manifest preserves the 56 controlled profiles through 735 and their original sources; later documentary reconciliation does not rewrite it.",
+    "image_followup": {
+      "source_resolved_issues": [
+        379,
+        380,
+        382
+      ],
+      "current_native_profiles": [
+        "762",
+        "763"
+      ],
+      "current_source_checks": "761: 490 units; 766: 521 Python controls",
+      "broader_qualification": "pending",
+      "remote_closure": "Follows reviewed source publication; GitHub is authoritative for issue state."
+    }
   }
 }

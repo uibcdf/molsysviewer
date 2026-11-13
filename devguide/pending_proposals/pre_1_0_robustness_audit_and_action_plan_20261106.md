@@ -37,9 +37,12 @@ receives the matrix and bounded comparisons, with #370/#371's build-resolution
 and project-library corrections. The maintainer explicitly adopts 5.13.1 pre-freeze qualification under
 [#372](qualify_molstar_5_13_1_pre_1_0.md). #115 retains later v6/evolution
 work; #369 and all adopted migration gates remain open.
-[#380](../pending_bugs/detached_studio_png_uses_empty_canvas.md) is an additional
-pre-1.0 export defect: detached Studio must render PNG through its associated
-molecular canvas. It changes neither original 46-outcome counter.
+The additional [#380 PNG routing](../archive/detached_studio_png_uses_empty_canvas.md),
+[#379 panel loop](../archive/panel_only_native_loop.md) and
+[#382 native image readiness](../archive/native_image_asset_readiness.md)
+corrections now have current scoped receiving in 761/762/763/766. Complete
+Mol* qualification remains under #372. These change neither original
+46-outcome counter.
 
 **Current consolidation — 2026-11-11:** the original counter remains
 **38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance.

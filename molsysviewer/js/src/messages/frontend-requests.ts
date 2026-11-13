@@ -3,6 +3,7 @@ import { readCanvasDraw } from "../managers/canvas-draw";
 import type { MovingVisualSnapshot } from "./visual-state-snapshot";
 import { captureMovieFrame } from "./movie-frame-capture";
 import { readMovieEnvironment } from "../managers/movie-environment";
+import { isStudioImageRequest } from "../managers/studio-image-exports";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
     & Partial<Pick<MolSysViewerController, "moviePreviewClock" | "readMovieExportOverlays" | "snapshotMovieOverlays">>
@@ -72,7 +73,7 @@ export function isFrontendControl(message: any): boolean {
 /** File verdicts release controls independently of scene/draw progress. */
 export function isStudioWorkFileResult(message: any): boolean {
     return message?.op === "studio_action_result"
-        && (message.action === "save_work_file" || message.action === "cancel_work_file");
+        && ["save_work_file", "cancel_work_file", "download_image"].includes(message.action);
 }
 
 export function isFrontendRequest(message: any): boolean {
@@ -164,6 +165,7 @@ export async function handleFrontendRequest(controller: RequestController, messa
         return;
     }
     if (message.op !== "request_image_export") throw new Error("Unknown frontend request.");
+    const studioImage = isStudioImageRequest(message);
     const options = {
         width: typeof message.width === "number" ? message.width : undefined,
         height: typeof message.height === "number" ? message.height : undefined,
@@ -171,12 +173,25 @@ export async function handleFrontendRequest(controller: RequestController, messa
         transparent: !!message.transparent,
         preset: typeof message.preset === "string" ? message.preset : undefined,
         cameraSnapshot: message.camera_snapshot && typeof message.camera_snapshot === "object" ? message.camera_snapshot : undefined,
+        ...(studioImage ? { signal: capture?.signal, nativeViewport: true } : {}),
     };
-    const result = await controller.getImageDataUri(options);
     const metadata = {
         event: "image_export", scale: options.scale ?? 1, transparent: options.transparent,
         preset: options.preset ?? "current", width: options.width, height: options.height, format: "png",
+        ...(studioImage ? { request_id: message.request_id, capture_revision: message.capture_revision,
+            studio_image_request_id: message.studio_image_request_id } : {}),
     };
-    if (typeof result === "string" && result) send({ ...metadata, data_uri: result });
-    else if (result && typeof result === "object" && result.success === false) send({ ...result, ...metadata });
+    try {
+        if (studioImage && (!capture || capture.refused)) throw new Error("The image capture could not be reserved.");
+        if (capture?.signal.aborted) return;
+        const result = await controller.getImageDataUri(options);
+        if (capture?.signal.aborted) return;
+        if (typeof result === "string" && result) send({ ...metadata, data_uri: result });
+        else if (result && typeof result === "object" && result.success === false) send({ ...result, ...metadata });
+        else if (studioImage) send({ ...metadata, success: false, message: "PNG rendering returned no image." });
+    } catch (error) {
+        if (!studioImage) throw error;
+        if (!capture?.signal.aborted) send({ ...metadata, success: false,
+            message: error instanceof Error ? error.message : "PNG rendering failed." });
+    } finally { capture?.release(); }
 }

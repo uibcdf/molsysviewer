@@ -540,3 +540,6 @@ Completed work, kept for the reasoning:
 - [Bounded Studio receiving](studio_browser_receiving_partition.md) — #377 retains complete historical coverage through mandatory layout and persistent-capture core entries, received in real Mol*/Python.
 - [Pending popup captures](popup_pending_capture_close.md) — #378 retires actual closed popup owners promptly, preserving cancellation, late-reply refusal and the originating canvas.
 - [Moving Jupyter fixture budget](jupyter_moving_fixture_deadline_budget.md) — #381 receives two unchanged-default Python captures and all six explicitly delayed scientific captures, with shared contract validation.
+- [Panel-only rendering](panel_only_native_loop.md) — #379 keeps the hidden Studio loop stopped through initialization, work-file flows and actual PNG export.
+- [Detached Studio PNG](detached_studio_png_uses_empty_canvas.md) — #380 delegates to the associated canvas with exact native pixels, requester isolation and bounded cancellation/closure.
+- [Native image readiness](native_image_asset_readiness.md) — #382 waits for qualified SMAA uploads before first PNG/Movie rendering, preserving requested quality and cancellation.
