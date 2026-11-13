@@ -1,0 +1,1153 @@
+{
+  "schema": "molsysviewer.molstar_review_baselines@1",
+  "date": "2026-11-12",
+  "parent": "uibcdf/molsysviewer#369",
+  "status": "baseline_and_direct_import_inventory_received; capability review pending",
+  "molsysviewer_commit": "864df44dcc057a16c1eaec588c9b868a35b7671d",
+  "dependency": {
+    "declared": "^5.4.1",
+    "locked": "5.4.1",
+    "installed": "5.4.1",
+    "runtime_bundle_sha256": "9d1892b4a92fe36e9daabdc9d8a2c823666ad144fbcb6c075b06313ef2606c89",
+    "working_tree_notice": "No molecular/runtime source, dependency or environment change. The seven human sandbox paths remain preserved. This source inventory is not a clean installed candidate."
+  },
+  "packages": {
+    "npm-installed": {
+      "version": "5.4.1",
+      "source_commit": "74ff283e00a1254a45b9cd8ac80365b979e0e782",
+      "source_tag": "v5.4.1",
+      "registry_url": "https://registry.npmjs.org/molstar/5.4.1",
+      "registry_response_sha256": "f24400c35173acfce19e9a101a8c7ac9c6c788c1896d7ecd5ecc7f8bb64d351a",
+      "tarball_url": "https://registry.npmjs.org/molstar/-/molstar-5.4.1.tgz",
+      "integrity": "sha512-Dto3iZv/YbB7kDO7dJTDppOhx/8H2z4r8vJmC0b90EW00Zw1qdpveQyDO8/Ce64cIw9jLEn6XUYi4N0E9lFzDA==",
+      "tarball_sha256": "73065c9cd8d14a59ff7e3f0b494cf805c7f656c28817daeb2eece0d6e0f0dbc5",
+      "tarball_bytes": 15719526,
+      "engines": {
+        "node": ">=20.0.0"
+      },
+      "artifact_notice": "Previously preserved original tarball revalidated independently against this review's fresh registry integrity; no install or package execution."
+    },
+    "npm-latest": {
+      "version": "5.13.1",
+      "source_commit": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+      "source_tag": "v5.13.1",
+      "registry_url": "https://registry.npmjs.org/molstar/latest",
+      "registry_response_sha256": "16243050250042e5c961a308bfc3ae94179b5d0ed036b22479dea8ff7fdc4e71",
+      "tarball_url": "https://registry.npmjs.org/molstar/-/molstar-5.13.1.tgz",
+      "integrity": "sha512-iExD98bJN2P4JK6+pVMwdJlPePldBH8oNT0pZhs8ucxOp086NU2b/gThKwYMC3SWkdmv++a1g4fGwKfu4Glx1w==",
+      "tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+      "tarball_bytes": 17782753,
+      "engines": {
+        "node": ">=22.0.0"
+      },
+      "artifact_notice": "Previously preserved original tarball revalidated independently against this review's fresh registry integrity; no install or package execution."
+    }
+  },
+  "development": {
+    "remote": "https://github.com/molstar/molstar",
+    "branch": "master",
+    "commit": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+    "commit_time": "2026-11-09T00:37:07-08:00",
+    "clean": true,
+    "refresh": "git pull --ff-only: Already up to date; fetched origin/master equals HEAD",
+    "package_name": "@molstar/workspace",
+    "package_version": null,
+    "node": {
+      "node": ">=22.13.0"
+    },
+    "source_notice": "Development v6 pnpm/ESM workspace; neither the installed 5.4.1 nor npm latest 5.13.1."
+  },
+  "inventory": {
+    "source_scope": "Complete molsysviewer/js/src/**/*.ts AST scan; direct static import/export and literal dynamic imports. Not a complete transitive dependency or nonliteral loader inventory.",
+    "scanned_typescript_files": 117,
+    "importing_files": 30,
+    "declaration_count": 220,
+    "unique_modules": [
+      "molstar/lib/mol-canvas3d/camera",
+      "molstar/lib/mol-canvas3d/canvas3d",
+      "molstar/lib/mol-canvas3d/controls/trackball",
+      "molstar/lib/mol-canvas3d/passes/image",
+      "molstar/lib/mol-data/db/column",
+      "molstar/lib/mol-data/db/table",
+      "molstar/lib/mol-data/int/ordered-set",
+      "molstar/lib/mol-data/int/sorted-array",
+      "molstar/lib/mol-geo/geometry/geometry",
+      "molstar/lib/mol-geo/geometry/lines/lines",
+      "molstar/lib/mol-geo/geometry/lines/lines-builder",
+      "molstar/lib/mol-geo/geometry/mesh/builder/cylinder",
+      "molstar/lib/mol-geo/geometry/mesh/builder/ellipsoid",
+      "molstar/lib/mol-geo/geometry/mesh/builder/sphere",
+      "molstar/lib/mol-geo/geometry/mesh/builder/tube",
+      "molstar/lib/mol-geo/geometry/mesh/mesh",
+      "molstar/lib/mol-geo/geometry/mesh/mesh-builder",
+      "molstar/lib/mol-geo/geometry/text/font-atlas",
+      "molstar/lib/mol-geo/geometry/text/text",
+      "molstar/lib/mol-geo/geometry/text/text-builder",
+      "molstar/lib/mol-geo/util/marching-cubes/algorithm",
+      "molstar/lib/mol-gl/renderer",
+      "molstar/lib/mol-gl/scene",
+      "molstar/lib/mol-gl/webgl/context",
+      "molstar/lib/mol-math/geometry/primitives/sphere3d",
+      "molstar/lib/mol-math/geometry/spacegroup/cell",
+      "molstar/lib/mol-math/linear-algebra",
+      "molstar/lib/mol-math/linear-algebra/3d/mat4",
+      "molstar/lib/mol-math/linear-algebra/3d/vec3",
+      "molstar/lib/mol-math/linear-algebra/3d/vec4",
+      "molstar/lib/mol-math/linear-algebra/tensor",
+      "molstar/lib/mol-model-formats/structure/basic/schema",
+      "molstar/lib/mol-model/custom-property",
+      "molstar/lib/mol-model/location",
+      "molstar/lib/mol-model/loci",
+      "molstar/lib/mol-model/shape",
+      "molstar/lib/mol-model/structure",
+      "molstar/lib/mol-model/structure/coordinates",
+      "molstar/lib/mol-model/structure/model",
+      "molstar/lib/mol-model/structure/query",
+      "molstar/lib/mol-model/structure/topology",
+      "molstar/lib/mol-model/structure/trajectory",
+      "molstar/lib/mol-plugin-state/actions/structure",
+      "molstar/lib/mol-plugin-state/builder/structure/representation-preset",
+      "molstar/lib/mol-plugin-state/helpers/structure-representation-params",
+      "molstar/lib/mol-plugin-state/helpers/structure-transparency",
+      "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state",
+      "molstar/lib/mol-plugin-state/objects",
+      "molstar/lib/mol-plugin-state/transforms",
+      "molstar/lib/mol-plugin/behavior",
+      "molstar/lib/mol-plugin/behavior/static/state",
+      "molstar/lib/mol-plugin/commands",
+      "molstar/lib/mol-plugin/context",
+      "molstar/lib/mol-plugin/spec",
+      "molstar/lib/mol-repr/representation",
+      "molstar/lib/mol-repr/shape/loci/angle",
+      "molstar/lib/mol-repr/shape/loci/dihedral",
+      "molstar/lib/mol-repr/shape/loci/distance",
+      "molstar/lib/mol-repr/shape/representation",
+      "molstar/lib/mol-repr/structure/visual/util/gaussian",
+      "molstar/lib/mol-state",
+      "molstar/lib/mol-task",
+      "molstar/lib/mol-theme/color",
+      "molstar/lib/mol-theme/size/physical",
+      "molstar/lib/mol-theme/theme",
+      "molstar/lib/mol-theme/transparency",
+      "molstar/lib/mol-util/binding",
+      "molstar/lib/mol-util/clip",
+      "molstar/lib/mol-util/color",
+      "molstar/lib/mol-util/color/color",
+      "molstar/lib/mol-util/color/lists",
+      "molstar/lib/mol-util/color/names",
+      "molstar/lib/mol-util/color/scale",
+      "molstar/lib/mol-util/input/input-observer",
+      "molstar/lib/mol-util/param-definition",
+      "molstar/lib/mol-util/uuid",
+      "molstar/lib/mol-util/value-cell"
+    ],
+    "source_sha256": {
+      "molsysviewer/js/src/managers/active-selection.ts": "3de21b47b088f38e8609b39a7c2d6c6aedfab2d925461e92461108ccf12ccae8",
+      "molsysviewer/js/src/managers/camera-sync.ts": "5b11261fa0f5b3ad470ade2b33bea01126757161eaec01807b13f944b5de4ec4",
+      "molsysviewer/js/src/managers/canvas-draw.ts": "4d788938e9dcb88bbd62f47f3f0ebb4480e832ccbbb9693d4cf9e019db57dda4",
+      "molsysviewer/js/src/managers/handlers/annotation-handlers.ts": "fde0c407fdc97194d5530908f61ced8ed0346ee398471fd825bf2008bef874cd",
+      "molsysviewer/js/src/managers/handlers/interaction-handlers.ts": "9edc08cbf40694167cca7897e3190b4423356dca7ade246cf97238dfb7cddcd2",
+      "molsysviewer/js/src/managers/handlers/loader-handlers.ts": "15d35c771e52b93dc4abefe71fe07ef7281bb2374c96c9a6e46863055eb14513",
+      "molsysviewer/js/src/managers/handlers/measurement-handlers.ts": "f2962dbaddfba0dad6fe1abb29571645b5a327b192388fac5fa2f2421210d548",
+      "molsysviewer/js/src/managers/handlers/movie-handlers.ts": "075fc076ff32130a8fc0758759ee12c154b40a73a0cade9f308eeda6ee28b7a9",
+      "molsysviewer/js/src/managers/handlers/scene-handlers.ts": "bc062bf779a03f31c2d42d3cc2a822e43627c26a93a2f19540bc69838466bca1",
+      "molsysviewer/js/src/managers/handlers/shape-handlers.ts": "cff4c5a62b425b90e1ccc051850736966c9274c9da987dbfba3c9434a47406d6",
+      "molsysviewer/js/src/managers/handlers/state-handlers.ts": "1647b29090e037afe8982f734c4d9421a2a542827a447a8fff3dad922305af31",
+      "molsysviewer/js/src/managers/handlers/trajectory-handlers.ts": "ac4d2afff31074990cdc45a8d543ddc4d6c01c7247e4b4068c4aa63901f44e8b",
+      "molsysviewer/js/src/managers/measurement-tools.ts": "ad518adb7263c90b0dbe30a8876d12db07e27d50ba26231dbf0d4c85aff0ce92",
+      "molsysviewer/js/src/managers/movie-environment.ts": "65907d3403329b4b06349f987bce24d3ac8fcc3febfc1916263c0c8729af1ead",
+      "molsysviewer/js/src/managers/movie-timeline.ts": "ba5c4cfa1d1cddc3464f49627ea69aab63377bdafb3f5e36c5fd19aa733f69ca",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "f09a332f7201498b2ae9f95cd19f4e3e4c091830698164add7d9e6db83c09673",
+      "molsysviewer/js/src/messages/visual-state-snapshot.ts": "ae983dc883eef87a29e9c9b18e857e8d4b89de98a56b44f4c3da7195943983d5",
+      "molsysviewer/js/src/plugin/atom-indices.ts": "d883c5dc15b2a5cc3e51bc4da5f168ddceb6968e49b5a0b9f2754a549d7acd43",
+      "molsysviewer/js/src/plugin/font-atlas-uploads.ts": "d9583a35f07bd90027d71370d15059884e16a10c38e03d15aa6db110d3829a1f",
+      "molsysviewer/js/src/plugin/render-presentation.ts": "ec7b76eab5726a53a553bf4acdfe960749940d7670367ee90f0451019d0eb8e1",
+      "molsysviewer/js/src/plugin/structure.ts": "66436cc2eba15ffa9ffa19e94331cabec433b3352c2f44c9fd07e246ebe2108f",
+      "molsysviewer/js/src/shapes/annotation-callout.ts": "61a0e576e82da874c7789c3ed253a8487f15cac56c306831408a4692abee23e8",
+      "molsysviewer/js/src/shapes/index.ts": "366e64e4edf38f8bd1a2bca4eaa3c25f80c5cad19c3f643b2495333c870e3bd8",
+      "molsysviewer/js/src/shapes/measurement-centroids.ts": "48497924f532aff10242b3639883f64d27890dc964115f07786cb40f38bfe58c",
+      "molsysviewer/js/src/shapes/pocket-surface.ts": "32fe433274685f2e9ab8383159ca30e5bf78b269e28cdc4a94b952e43ab9a908",
+      "molsysviewer/js/src/themes/per-atom-color.ts": "9eb13fe970720178606d7ac2d960ca13f7f82d9f9b2c99f0d17f5b01419fe6e4",
+      "molsysviewer/js/src/themes/physicochemical-color.ts": "88ca642692a4809d64a89210fc394de7db6ac44c118a866529ad39d96ee781dd",
+      "molsysviewer/js/src/ui/group-panel.ts": "21ab0f957e1c2e9269b84a5bc9d2057a1e142562d708fe77cfdcada5a3849ad0",
+      "molsysviewer/js/src/ui/group-strip.ts": "2cee8be23a25d1bdd7604167cf52aada026cb5c52a5102a97fee15896a26e25e",
+      "molsysviewer/js/src/ui/panels/system-panel.ts": "9bb50c97da4b26c31d4e2d5782a9e4594188f991e6b26f6a94e8f423527a516b"
+    },
+    "raw_declaration_inventory": {
+      "sha256": "2292084253381cd9fc34ed24bec713067d4824a837e512d12f93dd1e4a8fb0aa",
+      "custody_path": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-review-baselines-20261112/import-inventory.json",
+      "notice": "Full source positions, declaration text, native resolutions and hashes are preserved as original evidence."
+    },
+    "original_artifact_comparison": [
+      {
+        "path": "lib/mol-canvas3d/camera.d.ts",
+        "installed_sha256": "f6c8306ea535b433b5effdedc82ad0c929fd2c0381df1f8f11437867da61755b",
+        "latest_sha256": "3a74672f3ee108baac8b95136a287cef08685edd2d461604625cee5a08307637",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/camera.js",
+        "installed_sha256": "fd486a3f1a4c2af7bfd25d2b574e3fb5edb89900acc9c541c57959c2538d03d5",
+        "latest_sha256": "3da54e30b2f6870cec600d92a1a9de29de9f8e6c7d04a39c68f610f8d7ac9ab2",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/canvas3d.d.ts",
+        "installed_sha256": "62d787daddfa92f42bb5ece5b7874a77254f4b84bfacafd67193ce55f1c55af8",
+        "latest_sha256": "25845a2456d9f426f71f29b2db932136395c167e9ac720d77166969ac17f8fc7",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/canvas3d.js",
+        "installed_sha256": "e1f0b7d1ed3cb083ddb2bb03fb208d0b368b863dd1cde164a9328920e1ad261d",
+        "latest_sha256": "d03ebbac5104ae0b967b6f89866cfe60c54e6f36654ad2c855753bcbaa0fdb69",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/controls/trackball.d.ts",
+        "installed_sha256": "2d705eac71c532bdfa6c64fc635100eb1626a38f805a94d103995b5d17e89716",
+        "latest_sha256": "d0cb82e8470586c39a9e7d81f7ef65e9dae90ea2f56a855113a268c4ddc7de23",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/controls/trackball.js",
+        "installed_sha256": "b377e035e156e1ac533d7448aa1789ba1974e8fba6b6c92b79dc464af053e931",
+        "latest_sha256": "a6e1dc94978ae30f7b5c6702f3f560633d7ded3b00b89b69acc6a71c6b4930d0",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/passes/image.d.ts",
+        "installed_sha256": "fd923a7ef050ae795b66e068770630626d07e886d7851242bc9731f021376fe9",
+        "latest_sha256": "a7d83aabda8be8d5b247fb599f4dbbb037b43d5a1aff8cc6d49629d109181ca2",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-canvas3d/passes/image.js",
+        "installed_sha256": "f8ac37bd1c8c2ec3b26382cb7fd727ad53cc582df496151b34f3c68f4db623c0",
+        "latest_sha256": "c825d20f26c609ff53069b3129775adbf4688ce9e220fd7acce04619e77a1d40",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-data/db/column.d.ts",
+        "installed_sha256": "e09684a1e3e88fb5bcb9b03f0ffbfa4a2f9af4011bd13ea461020822664e0dbb",
+        "latest_sha256": "a653b4d022bd376b08a713da99c4a6bf968b8a2baaf1af12eef1303149992889",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-data/db/column.js",
+        "installed_sha256": "788fdf0b5b121334e03c68b1a15658c1b173ce7f0b259e337d250e12a639bd8e",
+        "latest_sha256": "19d366c089f16e7877e33dcddd03746003e6019a8d0b00d9bfa5b70cf08c0954",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-data/db/table.d.ts",
+        "installed_sha256": "d6e1b6abd940c2e4d5acb115759abb95c61b41fd6ecd531bd5c5f6f3487e2c54",
+        "latest_sha256": "d6e1b6abd940c2e4d5acb115759abb95c61b41fd6ecd531bd5c5f6f3487e2c54",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-data/db/table.js",
+        "installed_sha256": "01bb73fb701cffec0f748ceb2e5c7e03bd03940559e208c976f44654fb52360a",
+        "latest_sha256": "79ef8a3483459caab84a2a40fd5319c10bb8922b2631ded8e3f82891cf3653ef",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-data/int/ordered-set.d.ts",
+        "installed_sha256": "4c8c9104ac5bafae25fe4f6394142c420af24b9ab1b9e53e7aa934bfaf9583cd",
+        "latest_sha256": "4c8c9104ac5bafae25fe4f6394142c420af24b9ab1b9e53e7aa934bfaf9583cd",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-data/int/ordered-set.js",
+        "installed_sha256": "9ead3d4adc446d0e659af0858417309c259d05f3f3a66a1a9b110494c8849998",
+        "latest_sha256": "9ead3d4adc446d0e659af0858417309c259d05f3f3a66a1a9b110494c8849998",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-data/int/sorted-array.d.ts",
+        "installed_sha256": "82ad75aadf22f6b983e5564b7bcf2c10da5b5dab87a3aad3c0da4c8c36b92d82",
+        "latest_sha256": "cba0c46fa9ca9e1c15a726177b57eee12c2b2a95cf4dc665ffda7738add5512d",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-data/int/sorted-array.js",
+        "installed_sha256": "1b2c4b7672ad48552519b98daa62ae943ca22bf22a19f7b2341acbaf9dfcb99f",
+        "latest_sha256": "251f703b36386ea91c138e591b1ba267db5c39c18b01aaf2509737bb2ccf526c",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/geometry.d.ts",
+        "installed_sha256": "2ed290c5036edbadcb7f86019887d410db56a459417efb53499023cd64ef3812",
+        "latest_sha256": "1f909932e1734e39607cd6c39f5683c30b588fdaeb519d754eafaed9caac0e49",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/geometry.js",
+        "installed_sha256": "d1459fdc54fa4c3b1235fe2b28be518dd31103f09377037beed29d98fbd2b7c2",
+        "latest_sha256": "9e53febe571768d4f007c1030b3d91bec7da9682529655cd754d4e356fdab545",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/lines/lines-builder.d.ts",
+        "installed_sha256": "2f1e8e59f8f5b8304646dace1f9bc2759770cfce144c69c384dd83e2a82249a0",
+        "latest_sha256": "67a47b9bb03f23f56aa715553b1346bbf5146b9407b82b7e3c4e6151af1d6e51",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/lines/lines-builder.js",
+        "installed_sha256": "bee6972c858d77788b9b28b75b6faeaecc1f1046e7fb6f8b75aac03058a7995a",
+        "latest_sha256": "35d21964d5a830c8d5649d8b864fccbc42b71132916b61cd1839f67cb7349c86",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/lines/lines.d.ts",
+        "installed_sha256": "9a64e974d27a9695d9746a80fb77f74c4bd15b86926cee6ace43987063599eea",
+        "latest_sha256": "93348c98b7e1ed83748b3140fa435a8ae975c3dca4fe51955ebc708d87c6e11b",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/lines/lines.js",
+        "installed_sha256": "1b981713b9612e14df3bbd59d6190e5bd41f94eee58ba61e7452c649287afa8c",
+        "latest_sha256": "e13184e5e570fe9e6f8c9857adf7d3940c607ef39dca09b94d237947383e8c4c",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/cylinder.d.ts",
+        "installed_sha256": "e9032a3bd981e8a4998f736cc7d62488f2dcd78fbb2e4f198789624700100aeb",
+        "latest_sha256": "e9032a3bd981e8a4998f736cc7d62488f2dcd78fbb2e4f198789624700100aeb",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/cylinder.js",
+        "installed_sha256": "dc6826d07e4e7eafe28821e1f454da2e7fba69df76f83c018658627fcce632ae",
+        "latest_sha256": "dc6826d07e4e7eafe28821e1f454da2e7fba69df76f83c018658627fcce632ae",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/ellipsoid.d.ts",
+        "installed_sha256": "39012136eb393b4490821f32374e14747aa1b29029ad0ee33085d1d16d50db83",
+        "latest_sha256": "39012136eb393b4490821f32374e14747aa1b29029ad0ee33085d1d16d50db83",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/ellipsoid.js",
+        "installed_sha256": "d9dfc7000ea4c436b7b1824f1aa6fb7904dc3b30bfa05507c046d4517b27a52f",
+        "latest_sha256": "d9dfc7000ea4c436b7b1824f1aa6fb7904dc3b30bfa05507c046d4517b27a52f",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/sphere.d.ts",
+        "installed_sha256": "da66d1202cf0abfea6e627657562f3590dfe0d4e5f7e513fb0005ffc5606cdfc",
+        "latest_sha256": "ad8120c624c667f299c173cbe2a401f76f528fd7a4b10e14d5b3b00af2cbd2db",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/sphere.js",
+        "installed_sha256": "8500c878d797cabe6924dce2b8f52f551e7db0d7da2f7eb4b20350e8f7632d0c",
+        "latest_sha256": "5145f36146199b40271a24e5a8f2b193c89dc66f0c112f07b24ec5671727a6c4",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/tube.d.ts",
+        "installed_sha256": "4e28e0355065911739bf1584b5de19c96ae6949b1a86c8627739f137acf2575f",
+        "latest_sha256": "4e28e0355065911739bf1584b5de19c96ae6949b1a86c8627739f137acf2575f",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/builder/tube.js",
+        "installed_sha256": "e9a5f298648aa6254d57b7e9b8b406a2de1d3a369a4d5f628fbb7bc504c286ee",
+        "latest_sha256": "e9a5f298648aa6254d57b7e9b8b406a2de1d3a369a4d5f628fbb7bc504c286ee",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/mesh-builder.d.ts",
+        "installed_sha256": "65db13dabbdf01302cc1b0381ce7779e435ade4885acdca98c21fd0da93c134d",
+        "latest_sha256": "acce845fbfedd88665301c2a8a6029e09a0e325a531f4aa53925e7166cde0265",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/mesh-builder.js",
+        "installed_sha256": "8d86c1024bd931d3561cd5b59316346be24e5be596d34f652e72eb05e9edb513",
+        "latest_sha256": "8d86c1024bd931d3561cd5b59316346be24e5be596d34f652e72eb05e9edb513",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/mesh.d.ts",
+        "installed_sha256": "b8820eda560e1d2c75bad0d52e2de7762dd704cddbff545fabad23295e766c23",
+        "latest_sha256": "946155c7a68e8037d04ee5e0d50e997957e40ad57ca2d974f126de4ac0d80e86",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/mesh/mesh.js",
+        "installed_sha256": "20c0c389149d20e70e5cbdf484c0d8a47e0966eed0ca3706af79f24e0189df6a",
+        "latest_sha256": "d2b8d59cf95ab7674feb83e39aeabdd2b097b884bf310f63e149d83320f9cc57",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/text/font-atlas.d.ts",
+        "installed_sha256": "9ef4cff5bc5598d4c8793ac9fad083ebedf5c2b0614179b101c85929a48deeb0",
+        "latest_sha256": "305c13659a3101e11c843ddfd676e38f40b633c735b560ba8cafe77283a66c84",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/text/font-atlas.js",
+        "installed_sha256": "5d845636bc348ca18fed086a59c0764ac2906fc39d57bf19c352b742ec80dff4",
+        "latest_sha256": "86e308ac2506f07885000d9e2b17d6c631019cef358f16e4de29133b4b7875ec",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/text/text-builder.d.ts",
+        "installed_sha256": "dd4a1b18ec8c50a3e83aaa58d2349b2ce2a4f1d42512f039b12899a396f90d61",
+        "latest_sha256": "a04d2dab5fc9c5c46a9686ac800ffb52cf8f886deb65acf0a47b38fb699dfccf",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/text/text-builder.js",
+        "installed_sha256": "5ac30fbe5af19d4c7596b047c28c9955900e7780f5a6848c45b3bcce5256c426",
+        "latest_sha256": "737e72806be220503b26471d5d15a2575b4f4233befbffe317f7eb6adcb21883",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/text/text.d.ts",
+        "installed_sha256": "cf41c9299af9efcc9fd490476713711e5e38a1f68575e5a8477c5e1e9b04ee99",
+        "latest_sha256": "6cddb3a50af0c33c9fab5124cb5990385a8e8bae2725f886d26d3154172510d8",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/geometry/text/text.js",
+        "installed_sha256": "ce1725e5c5eab1939295d63ce951b72b5c2a1f1f76e9fb14e8eb7a1fc804b967",
+        "latest_sha256": "7a15d92f08f84f1134776b544f1cf412a915154d2567b444f01b4e0b0fa2c456",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-geo/util/marching-cubes/algorithm.d.ts",
+        "installed_sha256": "ba6f4e0e35b4be9c40db55bbdeb836e91510ba1f565006bef13714dcb709248b",
+        "latest_sha256": "ba6f4e0e35b4be9c40db55bbdeb836e91510ba1f565006bef13714dcb709248b",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-geo/util/marching-cubes/algorithm.js",
+        "installed_sha256": "66c55109ccfbb84eae16a15bea469163d5d3f3f5722644937b5c56e458837317",
+        "latest_sha256": "66c55109ccfbb84eae16a15bea469163d5d3f3f5722644937b5c56e458837317",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-gl/renderer.d.ts",
+        "installed_sha256": "c4dad859a38cc65cad6956c6c8b1f6abd79d1c88b53c72b0dcbc1e6460b7189e",
+        "latest_sha256": "8a3d8ad63d35d4f01cbb93642d188615394da335d959d84666a52e6d22ecbb4f",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-gl/renderer.js",
+        "installed_sha256": "2db20f0fadfd5626630ae94ab808653eb2a1d80c8d6e5ec57219dccb0718de29",
+        "latest_sha256": "933f6c55863319b961c18e4091433a1d9ecbeacccad98b1558ad5e46cc6b32a8",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-gl/scene.d.ts",
+        "installed_sha256": "28d59b0ab7c50e06ad6a5ef13ca701796f7cec48e4a95214ac180480d4a7bb61",
+        "latest_sha256": "a26215b56f6bb89b4b278b40e31b80d8c4c76c464e4cf0f66fd016d64d596da0",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-gl/scene.js",
+        "installed_sha256": "b2210f429476ddad85f90caa7b63775ba300999d5333a2a8b82cd25bc4066c7e",
+        "latest_sha256": "e7c70f29bae27da9f7e5366ba75d3de3282565518ad947b019c9b3b7a8a7ea48",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-gl/webgl/context.d.ts",
+        "installed_sha256": "eadf6b7a676d15991bb4ea9cf250439cedcd798bed8159f298cd2bb72360d146",
+        "latest_sha256": "a83141145b362aa106d3fab7b789b85169538e75c1acc9a92aceb8d2bdb77b99",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-gl/webgl/context.js",
+        "installed_sha256": "76d48853662b2031e6fc0240132e67c394d07c333b8f68abd4eb33243c7c3173",
+        "latest_sha256": "466c31353137ad608ac371c2ce100ef559bff41faacd7e8de3b287b233d70dc6",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/geometry/primitives/sphere3d.d.ts",
+        "installed_sha256": "1fa645310e9f070d98ef85d336b705565b3b68d1fd7c6d357b470f6cba896e81",
+        "latest_sha256": "7d0afb7779d4ec5e7157e6c015b058ff8b58ce39586747ceaa758d04e0f13044",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/geometry/primitives/sphere3d.js",
+        "installed_sha256": "17b61141bb6f90808cf09d2caabbb47d0d9cab10d4a2dc3baa01ca18729e6c7f",
+        "latest_sha256": "6a999f9bc26d818c4fab74861264991fa8eb153c95cf6efcf0717823687521b2",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/geometry/spacegroup/cell.d.ts",
+        "installed_sha256": "ad21c12bec909cd0804ed9879210c2ce90cbd4f23c644d9777fd9f1335a18829",
+        "latest_sha256": "c546b7d6af86d2b2a2de2834934286a271480667e5552ec5c5ebfdf89d565d25",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/geometry/spacegroup/cell.js",
+        "installed_sha256": "cf1dfc3ab4355d904fd4a3fc3b800bd68aa576968cd8e9c99fe7d0faaa291e72",
+        "latest_sha256": "0aa4cb20f8819b8bcdb53857fa4ac50daa0d775eb3d3574f40640ac43cdbf635",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra.d.ts",
+        "installed_sha256": "63d27fb1861ed0f0fa527437a17dc51b27d2d58bb2bdac531f451b1408fca80b",
+        "latest_sha256": "63d27fb1861ed0f0fa527437a17dc51b27d2d58bb2bdac531f451b1408fca80b",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-math/linear-algebra.js",
+        "installed_sha256": "63d27fb1861ed0f0fa527437a17dc51b27d2d58bb2bdac531f451b1408fca80b",
+        "latest_sha256": "63d27fb1861ed0f0fa527437a17dc51b27d2d58bb2bdac531f451b1408fca80b",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/3d/mat4.d.ts",
+        "installed_sha256": "311e70b8170b721058bde575c2faedd922f2306f0a10d5e11ab0602672001dfc",
+        "latest_sha256": "454223e391756b8315b3684fd4e0b862f86f31a94f018dff6bcfc15451449aa9",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/3d/mat4.js",
+        "installed_sha256": "8d76fc1524885fc20700c27358099efea1d9e66d16ad57a3cbb842044aa9c54d",
+        "latest_sha256": "9c650e1a17d0dc77c6dfe9ec5e41c8fbc0f411b5f880be494165ac24c360dd45",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/3d/vec3.d.ts",
+        "installed_sha256": "fb0e5f910a4ed30c60abbadc41306387ab9bb457a6df76dbf2f866796fad15b6",
+        "latest_sha256": "41ad5e8e4129d1ee2cf1d1dbe032a27b9ae569dc67a8d71f1cf4b01eb837abf9",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/3d/vec3.js",
+        "installed_sha256": "5c43774eb5e41a528b112134ecae89ef5845c6acc0b008d7bb8c0268a96d2ebb",
+        "latest_sha256": "09726dd75ad100a100668467799859cfb22b9c02ca8226de11df541c000dc0fc",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/3d/vec4.d.ts",
+        "installed_sha256": "6daa284a5e13c7558e25ded5cc9c6134138ec72d023b40a629d9b1b9f3fb0cdc",
+        "latest_sha256": "7b82554975a0988157020463b1237a2eb34ae6c52fe1c44add755e128813ecdc",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/3d/vec4.js",
+        "installed_sha256": "a26891e59387ec25b09bc9d6bf4dba2d501169254838bb6fdc870329ebcef75d",
+        "latest_sha256": "947b0e8e4430de8684bef8d4150439a77471cac6e487f5dfe59bded329affe22",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/tensor.d.ts",
+        "installed_sha256": "dace9aa8062b598111ac3ffd66b11618e4a35c70e9df35cbb15b5b502d6ea1d9",
+        "latest_sha256": "abeda49106f5f791a9da9c7808b63bd682586b34ab66fcb71ae5884b7e95a2c2",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-math/linear-algebra/tensor.js",
+        "installed_sha256": "41ee962211f1533fa63bc69e398da7982ad5f7605ccf81e1798e432c675fd11c",
+        "latest_sha256": "dde543cab71bf828124f484c1be222651d8791b9d091b222f532d3f8b204cd18",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-model-formats/structure/basic/schema.d.ts",
+        "installed_sha256": "01e52e6d603fe4a59118f2fb498ae67f8f5e0385b8cea85deee13d3a0e24535c",
+        "latest_sha256": "addf87726f51cb6dca16a2745c6c041436d2aef27aa77d110219e4c1fd56c13b",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-model-formats/structure/basic/schema.js",
+        "installed_sha256": "350b1487baabdb3299d53318392c3b38c55180761f843f862bbf6f71f3f6173b",
+        "latest_sha256": "350b1487baabdb3299d53318392c3b38c55180761f843f862bbf6f71f3f6173b",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/custom-property.d.ts",
+        "installed_sha256": "7b5532b2b2c86617386526f2aabe88d770149b942a0ddda390851383de085f16",
+        "latest_sha256": "7b5532b2b2c86617386526f2aabe88d770149b942a0ddda390851383de085f16",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/custom-property.js",
+        "installed_sha256": "a1c17dbfbc3cb5d29e3265507223fcec39875d06cb0b92c0b46f421eb81f020f",
+        "latest_sha256": "a1c17dbfbc3cb5d29e3265507223fcec39875d06cb0b92c0b46f421eb81f020f",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/location.d.ts",
+        "installed_sha256": "b68f8cf81b9c8d4bd9bc55a06f3f6f9e695503bc13eeef9d516476e95d3f76f0",
+        "latest_sha256": "8f8b41c571ddb8292f441b1355d32cd2439d9b4ad3317fe4bc8985c4fadb2c4d",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-model/location.js",
+        "installed_sha256": "7945d915ce928516ffd57d18c5fb74f467c5bd4ec608c7afaf8e00908089e2a2",
+        "latest_sha256": "bc7021b120121919f1fc7a2369e7da3e7c5eab135a3b09cc8d08339f18f8c844",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-model/loci.d.ts",
+        "installed_sha256": "57a6491849e72d673f46e43654c048df444b1d37a3bc898bb78688cd1d7994ad",
+        "latest_sha256": "50df60625eb90f55ea85a514153c7534197253fe5cbd3c3511e9496a312ebb1b",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-model/loci.js",
+        "installed_sha256": "7a42c41a2b651648d4aad4fefe7a6af4b8f07e72a86efb354472a5ca387ee65b",
+        "latest_sha256": "cedaa67108da033fa0a73996e7df54af2352490ddae9f1d941bbeeaa9b428cc5",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-model/shape.d.ts",
+        "installed_sha256": "491f1fc5fb8d80d6e067dc1510a6b8647a8206679be918552ee8afe0fcfe3ae8",
+        "latest_sha256": "491f1fc5fb8d80d6e067dc1510a6b8647a8206679be918552ee8afe0fcfe3ae8",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/shape.js",
+        "installed_sha256": "491f1fc5fb8d80d6e067dc1510a6b8647a8206679be918552ee8afe0fcfe3ae8",
+        "latest_sha256": "491f1fc5fb8d80d6e067dc1510a6b8647a8206679be918552ee8afe0fcfe3ae8",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure.d.ts",
+        "installed_sha256": "30c935f8837c1783c9d216fb228b54becd7f57b3c73ca8ffa47fabc8f24b8e41",
+        "latest_sha256": "30c935f8837c1783c9d216fb228b54becd7f57b3c73ca8ffa47fabc8f24b8e41",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure.js",
+        "installed_sha256": "30c935f8837c1783c9d216fb228b54becd7f57b3c73ca8ffa47fabc8f24b8e41",
+        "latest_sha256": "30c935f8837c1783c9d216fb228b54becd7f57b3c73ca8ffa47fabc8f24b8e41",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/coordinates.d.ts",
+        "installed_sha256": "80e175326dacdee0f4b7f23e536aa8312b3a117345ad55e60e4b9280dff8d303",
+        "latest_sha256": "80e175326dacdee0f4b7f23e536aa8312b3a117345ad55e60e4b9280dff8d303",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/coordinates.js",
+        "installed_sha256": "80e175326dacdee0f4b7f23e536aa8312b3a117345ad55e60e4b9280dff8d303",
+        "latest_sha256": "80e175326dacdee0f4b7f23e536aa8312b3a117345ad55e60e4b9280dff8d303",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/model.d.ts",
+        "installed_sha256": "aae03e8ba8023a2ccbc6404d9cb4af23afd6c1844b8c221e28b06eb6e1f878f8",
+        "latest_sha256": "aae03e8ba8023a2ccbc6404d9cb4af23afd6c1844b8c221e28b06eb6e1f878f8",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/model.js",
+        "installed_sha256": "aae03e8ba8023a2ccbc6404d9cb4af23afd6c1844b8c221e28b06eb6e1f878f8",
+        "latest_sha256": "aae03e8ba8023a2ccbc6404d9cb4af23afd6c1844b8c221e28b06eb6e1f878f8",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/query.d.ts",
+        "installed_sha256": "bb5346fd3e80ce4e1fa643de1aa2af73751ad2d67a29c6c8a54aa20f63588699",
+        "latest_sha256": "bb5346fd3e80ce4e1fa643de1aa2af73751ad2d67a29c6c8a54aa20f63588699",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/query.js",
+        "installed_sha256": "817ce00db273328fdfe13b8373bf3423b68f8ae873d752343041a07d009409bf",
+        "latest_sha256": "817ce00db273328fdfe13b8373bf3423b68f8ae873d752343041a07d009409bf",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/topology.d.ts",
+        "installed_sha256": "6f0464dc77bbcf566e719075f8509f8d8d2f5b8629266307b75f5974111b23d0",
+        "latest_sha256": "6f0464dc77bbcf566e719075f8509f8d8d2f5b8629266307b75f5974111b23d0",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/topology.js",
+        "installed_sha256": "6f0464dc77bbcf566e719075f8509f8d8d2f5b8629266307b75f5974111b23d0",
+        "latest_sha256": "6f0464dc77bbcf566e719075f8509f8d8d2f5b8629266307b75f5974111b23d0",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/trajectory.d.ts",
+        "installed_sha256": "b181f58b2b6a20b57bcb7a5640ef8428463341963b22439b5acef6579d28fd6b",
+        "latest_sha256": "b181f58b2b6a20b57bcb7a5640ef8428463341963b22439b5acef6579d28fd6b",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-model/structure/trajectory.js",
+        "installed_sha256": "6135d1661d5a951e864a7eff3d5e87713a67b572852ab984e5eba182c880aeed",
+        "latest_sha256": "6135d1661d5a951e864a7eff3d5e87713a67b572852ab984e5eba182c880aeed",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin-state/actions/structure.d.ts",
+        "installed_sha256": "a6528c36825083bd134de023b6850a13f7a9c204ebb1a147573d4e83f2aa9c31",
+        "latest_sha256": "b6c7c871a41f58df6ed303a68b313cefa71d1033ee1b3af26c08928e5bbde4ed",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/actions/structure.js",
+        "installed_sha256": "fe97be5b12ada0612efaab462d7909967df1fd9a23de0d432a839063f785669b",
+        "latest_sha256": "e995bb4db3260b4ecfceaec783cdcdfac8fdb164624a48dd9795002d49465552",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/builder/structure/representation-preset.d.ts",
+        "installed_sha256": "f373957b326b3f3941ab9f483376ebc8d51668e81b6e54315ca70e36a063aa3a",
+        "latest_sha256": "a30c506133ff8ee5bd2765d696c7be3a94875e6189435f1c161a09c4c829b446",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/builder/structure/representation-preset.js",
+        "installed_sha256": "6781543ed0653bfa4356dd84911ad5a86dca181c036d745c129cc01f82c36161",
+        "latest_sha256": "c63e51f285cec0a530371b90285e5fce99a38350a472ac8f7efc891f35846ea4",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/helpers/structure-representation-params.d.ts",
+        "installed_sha256": "3a2fba9d1a13b61b3c34e88d3a7758282ef70396c85a78ab510323387065d21c",
+        "latest_sha256": "ac7d9289e9732e8f037a7ae4a353a94ebb19fd1f1f2042e5967a85bc27874be0",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/helpers/structure-representation-params.js",
+        "installed_sha256": "e86ea482e120fdb9e84d81d43ca930dcf62d3128ed5b3b6eb91bb3a35f850b01",
+        "latest_sha256": "1d4e07f139ccf40f6bcd5b8d78a3f111075f2ba789afdb10fef539828bba1234",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/helpers/structure-transparency.d.ts",
+        "installed_sha256": "4d322e702e5ebc0ffce0333af6100fc248ea525eebf5b1dbbbc1f2f5595bcbfd",
+        "latest_sha256": "4d322e702e5ebc0ffce0333af6100fc248ea525eebf5b1dbbbc1f2f5595bcbfd",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin-state/helpers/structure-transparency.js",
+        "installed_sha256": "58abde646c7e885e80866763f0cd0eb4509120230e69cf4b66ddce28926d12d7",
+        "latest_sha256": "58abde646c7e885e80866763f0cd0eb4509120230e69cf4b66ddce28926d12d7",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin-state/manager/structure/hierarchy-state.d.ts",
+        "installed_sha256": "ff6daf70ae673494e5e026cb72c5753ff8f13b0437054a9a16bb40980c97ccd2",
+        "latest_sha256": "ff6daf70ae673494e5e026cb72c5753ff8f13b0437054a9a16bb40980c97ccd2",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin-state/manager/structure/hierarchy-state.js",
+        "installed_sha256": "5a5522cdbb65d71ace1f007626ef3c8c34c8a54106fce3dce6d4f7920bed448e",
+        "latest_sha256": "5a5522cdbb65d71ace1f007626ef3c8c34c8a54106fce3dce6d4f7920bed448e",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin-state/objects.d.ts",
+        "installed_sha256": "91368de8dd6b8d8f84af51650d8fb2ae3bad8f8c8f33642e4abcedeb9e778958",
+        "latest_sha256": "a11e26aefa0609a2ad1963efca29434b560d1739b7ce7eff6fef9489520da091",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/objects.js",
+        "installed_sha256": "9ef0b1f6d8e6e77aaa7a5e5bf9da5378ed19336fca09e8aee385e0f7d9685da9",
+        "latest_sha256": "129c2bb43136c3ef216906b4e489b97fad96e8cbe677455663065abb63262c0f",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/transforms.d.ts",
+        "installed_sha256": "22e92d598f6fc4d7aa100a2cacdf2d1cb955e57345ff512d0a4691a580d28c9b",
+        "latest_sha256": "f0c718599ae4e264fbb972445ae398b02a1994211fcd550db10662a702917fc7",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin-state/transforms.js",
+        "installed_sha256": "8a6e223b686e88ceeac750319abc8410a056370e944d5a8bebea2dc2911b9f65",
+        "latest_sha256": "d9d916dd9940775af2109628898ae058ee976ca307a838b54700739d2b969cf8",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin/behavior.d.ts",
+        "installed_sha256": "91a4f7469a89044a8b59aacca7109d9f5c40878d2e8d838311d38d950320339d",
+        "latest_sha256": "91a4f7469a89044a8b59aacca7109d9f5c40878d2e8d838311d38d950320339d",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin/behavior.js",
+        "installed_sha256": "a6e3b75f920380da147ee266b5cc127dc44b017177f0c8ef942b69ac8ccdaebc",
+        "latest_sha256": "a6e3b75f920380da147ee266b5cc127dc44b017177f0c8ef942b69ac8ccdaebc",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin/behavior/static/state.d.ts",
+        "installed_sha256": "069357f4ad93895049dd321ed6819772c5a0dc3c48c2a55cfa11149898338083",
+        "latest_sha256": "069357f4ad93895049dd321ed6819772c5a0dc3c48c2a55cfa11149898338083",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin/behavior/static/state.js",
+        "installed_sha256": "4a2bcd4a6de16031eb966ac3fe48f29d8abc7e72b91f55990e1aba4fd3868b34",
+        "latest_sha256": "4a2bcd4a6de16031eb966ac3fe48f29d8abc7e72b91f55990e1aba4fd3868b34",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-plugin/commands.d.ts",
+        "installed_sha256": "c53d9708000cae59a7ea74b0e6c7b83ffc67c1c4af49709fe11bb4e66ffb20ee",
+        "latest_sha256": "9fb06d79ba873e83792a3ae888df5872bcec927e8bfa736c89824137adb99940",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin/commands.js",
+        "installed_sha256": "b2017602d985ce94d762d7f635f3c301d08e3a50559e26295f325c9d6ac6036d",
+        "latest_sha256": "f28404b17d87ab60780ea7b8f162f0e16299307e5881adc9c979f05a7556fb09",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin/context.d.ts",
+        "installed_sha256": "9ad1dfcc494b9715fe8f19a59a242b87298b4a32519e937848777629e9b800d5",
+        "latest_sha256": "e00f2fe61eb20015394286a0b9da8be296df5b2b6064c95a2e454f760ad75bc7",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin/context.js",
+        "installed_sha256": "33039c70015d112cd34adf4cfc7009bb9ceb915276d63ec4821708f3e3ebe8ae",
+        "latest_sha256": "7eb2ff679dc371b34fe3eb07a50d0f896facf7a74971c37f65ad8d5bd3a0615f",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin/spec.d.ts",
+        "installed_sha256": "fbea52d2c6317e2a4c4c8483c7447a58d7b8c156e639fd5ca07ffd061eac83d4",
+        "latest_sha256": "8f57d2186614a07c98d331df1b3dae6a5dcc0a2f7406939b9d690f493b7dfa15",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-plugin/spec.js",
+        "installed_sha256": "589bd2ab1ae2f416f2a5990dff947a777b5bc2fe6df5ae93905213cf80a015d7",
+        "latest_sha256": "c252c9eb0b4b5824f341a451f4aa10464a8456de74a07e4d4255e9e70b1b8b1a",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/representation.d.ts",
+        "installed_sha256": "e68d8e75de22fbd3fc5015a89347a002364f9a1f17528d289353e0c4a48f26a1",
+        "latest_sha256": "feda8ee769fafbd4443aa74480cec886719f3a9d2aecc7f172c0131e1053310a",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/representation.js",
+        "installed_sha256": "4c9f2144b960736bd7b872d763e37a9b793ea039f90a1f2961c10fb9e73e3e7a",
+        "latest_sha256": "418af23ff3471d1b955ac8158ff28be6c2650744846215e50cd3632fb13a5bf2",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/shape/loci/angle.d.ts",
+        "installed_sha256": "34af09211dc5159226649d6d1effd700e36c14f6726e1b2d7adf2dfb1e7dbdf1",
+        "latest_sha256": "ef939d9fda883ecb857829a65ba90cdca07d43a9f24439c2ed5749a3820d2e87",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/shape/loci/angle.js",
+        "installed_sha256": "a81d0172a02b9b295408f191c7825f30734c33fab60f44047cfefc34bd19d643",
+        "latest_sha256": "a81d0172a02b9b295408f191c7825f30734c33fab60f44047cfefc34bd19d643",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-repr/shape/loci/dihedral.d.ts",
+        "installed_sha256": "fe71042fc9ea7adbf7b47ab40fc7cb85cb6bfacb4fb4f90980efa4e2fe885438",
+        "latest_sha256": "5e4439f8f0667598b179edf657699d14ddca015312b0ea463a5b0602fab30afb",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/shape/loci/dihedral.js",
+        "installed_sha256": "3d870b1a12ecf24abad06cff5c1f21365e08d3ef1fca53772847da26be3ab73b",
+        "latest_sha256": "3d870b1a12ecf24abad06cff5c1f21365e08d3ef1fca53772847da26be3ab73b",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-repr/shape/loci/distance.d.ts",
+        "installed_sha256": "2174bd59b4053808c962835ca966718eb983d89710302e5464c6fd0da9460e3e",
+        "latest_sha256": "1b1e55fe1cde09004fcb08db1dbad439214ca7e1f567f6f35f72738004bf5b0f",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/shape/loci/distance.js",
+        "installed_sha256": "75e621e60a1012627055195eb516db91102a9231d980d7c75913511e9dc0123a",
+        "latest_sha256": "75e621e60a1012627055195eb516db91102a9231d980d7c75913511e9dc0123a",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-repr/shape/representation.d.ts",
+        "installed_sha256": "b1b4e12a5ff82983c48853471c4b9d23f1c53e04e49d9f2241fa7a7a6abfd05e",
+        "latest_sha256": "5dbaba58ee867abacb2a02d28eb7fe71b8ec266f77b1d3f3e7886cd4d64cd364",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/shape/representation.js",
+        "installed_sha256": "42076a49a5d3f159bd96a24d27d9c427d064ca459bb54f322c3f6b339af46ead",
+        "latest_sha256": "dd37108d0c0f7bff92a9e1ff3871ff244d7e1b9e6f219195ae0d67d680680f19",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/structure/visual/util/gaussian.d.ts",
+        "installed_sha256": "d3ca78df2faee80525b3524909d4f0486cbbdf229452fdf5f81712a308841785",
+        "latest_sha256": "ccd0783f97f39ec4b0972756f687b67dfc033f973a43680a043ce9f65d5efc93",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-repr/structure/visual/util/gaussian.js",
+        "installed_sha256": "0d66f15d5070e24988090051ca24d0b9a40aee22602fae127f10e3ae012891be",
+        "latest_sha256": "f2c0836db279d264d38e46f43871d425bab5a446dee5b9c6f0e9f30f3bc0d94f",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-state/index.d.ts",
+        "installed_sha256": "3d4aafbb99fd3ead2e7fca557d6589485c34e9df08b58c959119b86d8ec4ec27",
+        "latest_sha256": "3d4aafbb99fd3ead2e7fca557d6589485c34e9df08b58c959119b86d8ec4ec27",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-state/index.js",
+        "installed_sha256": "3d4aafbb99fd3ead2e7fca557d6589485c34e9df08b58c959119b86d8ec4ec27",
+        "latest_sha256": "3d4aafbb99fd3ead2e7fca557d6589485c34e9df08b58c959119b86d8ec4ec27",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-task/index.d.ts",
+        "installed_sha256": "1b7f22b6cd1561f2a43e1e6344ff75462b44f2737109cf6f0c6fbf2464dcf665",
+        "latest_sha256": "1b7f22b6cd1561f2a43e1e6344ff75462b44f2737109cf6f0c6fbf2464dcf665",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-task/index.js",
+        "installed_sha256": "1b7f22b6cd1561f2a43e1e6344ff75462b44f2737109cf6f0c6fbf2464dcf665",
+        "latest_sha256": "1b7f22b6cd1561f2a43e1e6344ff75462b44f2737109cf6f0c6fbf2464dcf665",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-theme/color.d.ts",
+        "installed_sha256": "932bb43779710001fb1f561503869a050c7ff9bda630d9be43cef2787b30d218",
+        "latest_sha256": "b3e41a00ee6bf4e3907309d5879b6da6322dbd53b3621d39a3a84c59ef5a76e8",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-theme/color.js",
+        "installed_sha256": "ee2d4d4fde213a3fe2e17aa7f69c1e6f0c88fc0042c4bb464ff722b14517586e",
+        "latest_sha256": "137a770e3e2500ac6ee137737b7004e7157318482bf1b8d5341e0a5d2d764745",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-theme/size/physical.d.ts",
+        "installed_sha256": "b84644b43db1f8b80926dc87e15cb11c8a9ff9d993b24b2cddaf8ae39b230552",
+        "latest_sha256": "b84644b43db1f8b80926dc87e15cb11c8a9ff9d993b24b2cddaf8ae39b230552",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-theme/size/physical.js",
+        "installed_sha256": "9e13c9e702f2cb023f75bd44e3fafbeac0e2e67851a12f1f7a233f45ea87709e",
+        "latest_sha256": "9e13c9e702f2cb023f75bd44e3fafbeac0e2e67851a12f1f7a233f45ea87709e",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-theme/theme.d.ts",
+        "installed_sha256": "6a444f070dd6bae9005a78cfa0771bae8f3712757befad6f7750091d63ddb69c",
+        "latest_sha256": "36f21b1034f9c994d84c1d23a3da4e2d59710355dc602d1b22f200605d1539b9",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-theme/theme.js",
+        "installed_sha256": "1bc77128921877a44fc5a70c2e324d142fb47732898cef9e7255ac201b7f7b09",
+        "latest_sha256": "1bc77128921877a44fc5a70c2e324d142fb47732898cef9e7255ac201b7f7b09",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-theme/transparency.d.ts",
+        "installed_sha256": "9bcb774c1cf1c18fb5138cf664041558fbc7a6d13806c7669ce6ecdc685547db",
+        "latest_sha256": "9bcb774c1cf1c18fb5138cf664041558fbc7a6d13806c7669ce6ecdc685547db",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-theme/transparency.js",
+        "installed_sha256": "ae94d7a09fd8c509f3ec604b2ccb04ef7dc9625d0df1c47affc3f701df758318",
+        "latest_sha256": "ae94d7a09fd8c509f3ec604b2ccb04ef7dc9625d0df1c47affc3f701df758318",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/binding.d.ts",
+        "installed_sha256": "1051aca3a1ac7ab406feaf4124c486249754eb000aef502b21269be8ba452d95",
+        "latest_sha256": "a2bfd06296ed8f5e671c3691401e780b6f80cd00ecb2e9b1d4bd53241f696953",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/binding.js",
+        "installed_sha256": "0e26ac7699a412a78768d9c8d143e5c8106941e325aa918fd978b300e9e0dc03",
+        "latest_sha256": "0e26ac7699a412a78768d9c8d143e5c8106941e325aa918fd978b300e9e0dc03",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/clip.d.ts",
+        "installed_sha256": "fc85a3000f208f05669b8dfa6e0e502ffb6cc5fe857b1c1f2bc8bc3971575a8e",
+        "latest_sha256": "1561c1eaa7b00dd46f9ea636a672cbc3a49140d1d827c0c737c0acf3d96233f8",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/clip.js",
+        "installed_sha256": "c110287ca49c7c18eb6b5a4a868dde5f2b928aeac2dedbcbc5453cc3d19f110e",
+        "latest_sha256": "d6da411d64ab2f7baca68de6c2b824639facc1855d0fe68d5e7e481894ac9e46",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/color/color.d.ts",
+        "installed_sha256": "42e3ba602376e43327dd590d0789e085fc2ada1aabac22eb4c32371be6426cd4",
+        "latest_sha256": "b0d6c645daec7f9f6ed99d2d460d5eeaffa0e74e9741e9af068ed483d4e574b2",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/color/color.js",
+        "installed_sha256": "846659ad35107f3cecb6720b65c8f36aa4b5d441913ee7ae6530481293a0c8f7",
+        "latest_sha256": "846659ad35107f3cecb6720b65c8f36aa4b5d441913ee7ae6530481293a0c8f7",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/index.d.ts",
+        "installed_sha256": "5adcff077a464cc955a77e66c0a99e79d7c0674a64f45cdbe49af33c03a560a0",
+        "latest_sha256": "5adcff077a464cc955a77e66c0a99e79d7c0674a64f45cdbe49af33c03a560a0",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/index.js",
+        "installed_sha256": "5adcff077a464cc955a77e66c0a99e79d7c0674a64f45cdbe49af33c03a560a0",
+        "latest_sha256": "5adcff077a464cc955a77e66c0a99e79d7c0674a64f45cdbe49af33c03a560a0",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/lists.d.ts",
+        "installed_sha256": "bec036d4156caf3309b4c2e479462895537e1a74ec26e9c67686293f82001e08",
+        "latest_sha256": "bec036d4156caf3309b4c2e479462895537e1a74ec26e9c67686293f82001e08",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/lists.js",
+        "installed_sha256": "c9caf4724057bb224ce7d95be96c3aca9230d92109ede31f3cfd123f19d18eef",
+        "latest_sha256": "c9caf4724057bb224ce7d95be96c3aca9230d92109ede31f3cfd123f19d18eef",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/names.d.ts",
+        "installed_sha256": "22af1d911d7e3d093a78eb4eaa9fd38d08435b16a23c5a3f58dce63e69ad919a",
+        "latest_sha256": "22af1d911d7e3d093a78eb4eaa9fd38d08435b16a23c5a3f58dce63e69ad919a",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/names.js",
+        "installed_sha256": "ff350de30816012298e379d8025d49e349f6daec148d203a5a5a9c52dacbcef8",
+        "latest_sha256": "ff350de30816012298e379d8025d49e349f6daec148d203a5a5a9c52dacbcef8",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/scale.d.ts",
+        "installed_sha256": "ad49078c9ab2730d701fcbb729d9aa71812f34d1b6d51d7c6f177161676def4e",
+        "latest_sha256": "ad49078c9ab2730d701fcbb729d9aa71812f34d1b6d51d7c6f177161676def4e",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/color/scale.js",
+        "installed_sha256": "6767cf77375ac762f5aa882068d1be5b2cebee762474b2f73d26847a96985827",
+        "latest_sha256": "7991f3d5a19c59767585c4167c9a0a2976fda0a23f307369646af9bbc56b9604",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/input/input-observer.d.ts",
+        "installed_sha256": "ca3b1c7ad10787a9cddc4d23aa89843d6a8b7c9aff70faaedc7c7f3a2aadaddd",
+        "latest_sha256": "c96f62cc44e70200ab7e9aebd72d51a4bd706c5f9dd12972a4231be3d6534a08",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/input/input-observer.js",
+        "installed_sha256": "87fbc65749ebd1893e3cc7b99c401f041404e1c3869fc35eb02d52cd4f6ae4c6",
+        "latest_sha256": "5aa837e80cbc093c0f5d6f85c69a11d2fe850fd2d9bea1975915be7b48a22019",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/param-definition.d.ts",
+        "installed_sha256": "c86d969b239bd5c2a9233081ed3ec59a538e898ed714a765b6ecf55a7dbaeec4",
+        "latest_sha256": "a70c75bb4ae2b08fcf6c1345c8cef52c80a4517f9ab3c69da6dd56467d8d233f",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/param-definition.js",
+        "installed_sha256": "814dbd7995d2e8bc3a789e549c11fe0747b8b1ddef0c1c3a872ccd466d8b8352",
+        "latest_sha256": "c11674e8a20ef9e2cdbb2336253b0d0df3ab2a0d2c36141b918ca9ab7fac05f7",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/uuid.d.ts",
+        "installed_sha256": "9a24fb878452e060370ce728c61925f7d4a1e494b1f74838d03dcc917d9a8ce8",
+        "latest_sha256": "9a24fb878452e060370ce728c61925f7d4a1e494b1f74838d03dcc917d9a8ce8",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/uuid.js",
+        "installed_sha256": "351a12c8fd205e12a5fa707ebb0112c819189c12ffd0c6d185ac1ce02c8e2d1d",
+        "latest_sha256": "58a22c511ad41517a9628cd5586f69c33a252bd3c3fe44bd76b2f1c246290aa5",
+        "same_bytes": false
+      },
+      {
+        "path": "lib/mol-util/value-cell.d.ts",
+        "installed_sha256": "66410dd7bfb062dbb29339dab712feb25559c2b6504ca8472780198a61ee4ffe",
+        "latest_sha256": "66410dd7bfb062dbb29339dab712feb25559c2b6504ca8472780198a61ee4ffe",
+        "same_bytes": true
+      },
+      {
+        "path": "lib/mol-util/value-cell.js",
+        "installed_sha256": "68a1a403f6346e679315055eb7e9b14678f6b17aa3021a87e1a13deacc1668c1",
+        "latest_sha256": "68a1a403f6346e679315055eb7e9b14678f6b17aa3021a87e1a13deacc1668c1",
+        "same_bytes": true
+      }
+    ],
+    "summary": {
+      "compared_files": 154,
+      "changed_in_latest": 91,
+      "missing_in_latest": 0,
+      "installed_declarations_and_js_match_original_tarball": true
+    },
+    "interpretation": "Path presence and byte differences are inventory evidence only, not signature/API/runtime compatibility. Includes direct native declarations and JS siblings; not the whole transitive graph."
+  },
+  "next": [
+    "Complete the eight-area native-owner/capability matrix",
+    "Trace consequential release/development changes against actual adapters",
+    "Classify findings and run bounded informative comparisons before an integration/dependency decision"
+  ],
+  "publication": "No dependency upgrade, upstream write, candidate/tag/package/Release or 1.0 publication.",
+  "recorded_utc": "2026-11-13T03:45:08.524905+00:00",
+  "validation": {
+    "scope": "Offline reporting/static-doc controls only; no alternate Molstar compilation/rendering or installed qualification.",
+    "profile": "molstar-review-667-records",
+    "passed": 454,
+    "failed": 0,
+    "index_check": "passed",
+    "native_exit": 0,
+    "seconds": 5.3250411581248045,
+    "peak_owned_rss_mib": 187.8,
+    "limits": {
+      "logical_cpus": 2,
+      "ram_gib": 2,
+      "swap_gib": 0,
+      "minimum_globally_available_gib": 6.5
+    },
+    "cleanup": {
+      "tracked": 4,
+      "survivors": [],
+      "errors": []
+    },
+    "inputs_unchanged": true
+  },
+  "custody": {
+    "state": "verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-review-baselines-20261112",
+    "custodian": "Diego Prada Gracia",
+    "files": 54,
+    "bytes": 39264214,
+    "manifest_sha256": "ccb10c16bad6679e4ece20211fa4147ab518a5a9d4b2ce5a813003b400b596ac",
+    "originals_retained": true
+  }
+}

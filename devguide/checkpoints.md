@@ -925,6 +925,13 @@ documentation handoff. Opening it does not upgrade the dependency or change
 the original 46-outcome counter; #115's timing needs an explicit decision if
 the review recommends changing it.
 
+Its [baseline inventory](molstar_integration_review_baselines_20261112.json)
+now freezes the received Movie head, original installed 5.4.1, freshly verified
+npm 5.13.1 and refreshed upstream v6 development. The compiler-based inventory
+finds 220 declarations across 30 importing files and 77 module paths; byte
+comparisons are not compatibility receiving. Complete the capability matrix,
+consequential behavioral comparisons and disposition under #369 next.
+
 The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
 first Timeline/Preview/Export editor over the shared Python API: typed keys,
 explicit review of drafts after Python edits, popup-owned capture and nested

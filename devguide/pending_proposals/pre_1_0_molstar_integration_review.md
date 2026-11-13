@@ -1,10 +1,10 @@
 ---
 summary: Reassess Mol* integration against current releases and development before 1.0.
 issue: uibcdf/molsysviewer#369
-status: open
+status: active
 opened: 2026-11-12
 closed:
-verification: asserted
+verification: inspected
 area: [architecture, frontend, dependencies, rendering]
 guard:
 normative:
@@ -14,8 +14,9 @@ supersedes: []
 
 # Mol* integration and capability review before 1.0
 
-**Required before the final documentation-review handoff. Review not yet
-executed.** The principal maintainer adopted this requirement on 2026-11-12:
+**Required before the final documentation-review handoff. Baselines and direct
+imports are inventoried; the capability review and acceptance remain open.**
+The principal maintainer adopted this requirement on 2026-11-12:
 the original implementation review is old enough to warrant a comprehensive
 reassessment of how MolSysViewer uses Mol*. Recent focused source investigations
 remain useful evidence, but do not establish that the complete integration is
@@ -34,6 +35,52 @@ assumptions or custom mechanisms have become obsolete? Which newer capabilities
 would materially improve the user experience, scientific visualization,
 correctness or performance before 1.0? Which should be deferred or rejected,
 with an explicit reason?
+
+## Baseline and import inventory received — 2026-11-12
+
+The [source-bound inventory](../molstar_integration_review_baselines_20261112.json)
+freezes MolSysViewer `864df44dcc057a16c1eaec588c9b868a35b7671d` after the
+integrated Movie story. The clean upstream checkout was refreshed with
+`git pull --ff-only`; it was already current. No dependency, runtime or
+environment was changed. Human sandbox work remains preserved.
+
+| Baseline | Exact identity | Evidence boundary |
+| --- | --- | --- |
+| Declared/locked/installed | `^5.4.1` / `5.4.1` / `5.4.1`; source `74ff283e00a1254a45b9cd8ac80365b979e0e782` | Fresh registry metadata, original tarball SHA-512 integrity, exact tag/source and selected installed declaration/JS bytes agree. Runtime bundle hash is retained separately. |
+| Latest published npm | `5.13.1`; source `a4e9cc79415213263090ee47bf380d2a33e0118e`, tag `v5.13.1` | Fresh npm `latest` metadata independently revalidates the previously preserved original tarball. This is artifact inspection, not MolSysViewer compatibility. |
+| Upstream development | `master` at `dabbf29f952880a034a9637e28c9844e3ae73d9f`, committed 2026-11-09 | Clean refreshed checkout and fetched `origin/master` agree. Its v6 ESM/workspace design is a separate migration, not the public 5.13.1 package. |
+
+The TypeScript compiler API scanned all **117** production `.ts` files under
+`molsysviewer/js/src`: **220** direct import/export declarations across **30**
+files address **77** distinct Mol* module paths. Every resolved declaration
+and its JS sibling matches the original 5.4.1 tarball. All **154** paths exist
+in 5.13.1; **91** have different bytes. These are inventory facts, not evidence
+of compatible signatures, behavior or a safe version bump. Literal dynamic
+imports are included; the transitive graph and nonliteral loading require
+their separate source review. Build-time compatibility adapters also need
+their own assessment rather than being mistaken for installed native bytes.
+
+The first source reading identifies these consequential comparisons to make:
+
+- The renderer/image-pass interception in `plugin/render-presentation.ts`
+  must be traced against newer separate marking/render passes. Existing
+  capture receiving is for the current runtime; it cannot qualify another one.
+- Native cell disposal, font-atlas and component-property caching need review
+  against the explicit local lifecycle repairs and #344/#356/#363 controls.
+  A newer release number alone does not justify removing them.
+- Native camera focus, surface/clipping, labels, picking and parsing have
+  received relevant changes since 5.4.1. Determine which affect actual
+  MolSysViewer paths, which supply a useful visual improvement, and which are
+  bypassed by MolSysMT-owned preparation and data conversion.
+- v6 changes package paths, explicit registry composition and the
+  `StateTransforms` facade. The current default-plugin/deep-import integration
+  therefore needs a migration assessment beyond renaming one dependency.
+
+These are review hypotheses and migration boundaries, not newly demonstrated
+MolSysViewer defects or accepted new features. The eight-area capability matrix,
+bounded behavioral comparisons and explicit dependency decision remain next.
+#369 stays open; #115 retains its existing deferral and the original 46-outcome
+counter is unchanged.
 
 ## Execution plan
 
