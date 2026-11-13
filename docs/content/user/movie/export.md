@@ -28,8 +28,9 @@ You can embed the exported file in an ordinary iframe:
 This first presentation profile supports static regions and the admitted
 camera, structure, visibility and appearance channels. Dynamic regions and
 incomplete or unsupported interaction projections are refused. Visible plots
-and legends require hiding them or explicitly passing `include_overlays=False`;
-the manifest records exclusions. Canvas popups and authoring are unavailable
+and legends are included, and plot indicators follow the movie's structure.
+Pass `include_overlays=False` to exclude them explicitly; the manifest records
+exclusions. Canvas popups and authoring are unavailable
 in this profile. Keep the `.msv` session for later scientific inspection and
 editing: HTML contains visual projections, not a replacement H5MSM archive of
 the complete named analyses. Source receiving is separate from published
@@ -99,9 +100,28 @@ Keep your molecular session to edit the story later.
 | `timeout` | `15.0` | Renderer/encoder wait budget in seconds, up to 300. |
 | `on_progress` | `None` | Synchronous callback receiving completed-frame counts and movie time in milliseconds. |
 
-Native labels and measurements are included. Visible DOM plots and legends
-currently require hiding or an explicit `include_overlays=False` exclusion.
-The manifest records this choice. Authoring controls are excluded.
+Native labels and measurements are included. Visible plots and colour legends
+are composed at the requested output resolution. Plots retain their title,
+curve, axes, units, numeric readout and structure indicator. Buttons, sliders
+and other authoring controls are excluded. The source data and supplied
+calculation context, including units and structure mappings, are retained in
+the manifest. Export does not invent missing scientific provenance.
+
+For media, expand plot cards and return any detached cards to the canvas before
+exporting. Keep their position, size and opacity fixed throughout the job.
+An unavailable or changing overlay causes an error and preserves any existing
+destination. To omit overlays explicitly, pass `include_overlays=False`.
+The renderer must advertise `movie_overlay_capture` version 1.
+
+Media composition maps card centres relative to the viewer viewport and scales
+both dimensions uniformly, preserving the chart's aspect ratio when output and
+canvas dimensions differ. It uses clean vector cards and a sans-serif font;
+it does not photograph the surrounding interface. The manifest records the
+source viewport in CSS pixels and the output rectangles in pixels. The current
+profile admits at most 32 overlays and 8 MiB of vector content, with at most
+256 legend entries and 16,384 label characters. These are explicit admission
+limits, not a universal memory guarantee. HTML uses live responsive overlays
+instead of raster composition.
 
 Samples cover `[0, duration)` at a constant rate. A one-second movie at 25 fps
 contains 25 samples, ending at 960 ms. Add a final hold when you want the ending

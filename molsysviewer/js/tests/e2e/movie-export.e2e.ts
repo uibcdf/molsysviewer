@@ -150,10 +150,14 @@ async function run() {
 
             await page.evaluate(() => { (window as any).__movieExportFault = undefined; });
             await command(page, { movie_export_legend: true });
+            await page.locator("[data-molsysviewer-legend]").waitFor({ state: "visible" });
+            // Declared data that is absent from the requesting canvas cannot
+            // quietly disappear from a successful Movie.
+            await page.locator("[data-molsysviewer-legend]").evaluate((element: HTMLElement) => { element.style.display = "none"; });
             await command(page, { movie_export: { path: sentinel, overwrite: true, timeout } });
             const overlay = await finished(page);
             assert.equal(overlay.ok, false);
-            assert.match(overlay.error, /overlay/i);
+            assert.match(overlay.error, /expand|overlay/i);
             assert.equal(await readFile(sentinel, "utf8"), "keep existing movie");
             await command(page, { movie_export_legend: false });
             await command(page, { movie_export: { path: sentinel, overwrite: true, format: "pngs", timeout: 0.05 } });

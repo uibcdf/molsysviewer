@@ -86,3 +86,36 @@ with factory() as view:
     ]:
         view.movie.add_track(track)
     asyncio.run(view.movie.export_async(out / "gates.html"))
+    view.movie.add_track(
+        {
+            "tag": "overlay-frame",
+            "target": {"domain": "structure"},
+            "property": "index",
+            "keys": [{"time_ms": 500, "value": 2}],
+        }
+    )
+    # Overlay data is added after the baseline: export must use the current
+    # declared scientific context, not a stale baseline copy.
+    view.trajectory_plot.show(
+        series={"Control": [0.2, 0.5, 0.3]},
+        x=[0, 10, 20],
+        colors=[0x00FF00],
+        tag="control",
+        title="Control <plot> & units",
+        x_label="Time (ps)",
+        y_label="Control (nm)",
+        width=360,
+        height=220,
+        observations=[
+            {
+                "schema": "test.movie_control@1",
+                "method": "explicit analytic test series",
+                "units": {"x": "ps", "y": "nm"},
+                "original_structure_indices": [4999, 0, 73],
+            }
+        ],
+    )
+    view.scene.set_legend([("Control (nm)", 0xFF0000), ("Group <A>&B", 0x0000FF)])
+    result = asyncio.run(view.movie.export_async(out / "overlays.html"))
+    assert len(result["manifest"]["composition"]["included_dom_overlays"]) == 2
+    (out / "overlays-manifest.json").write_text(json.dumps(result["manifest"]))

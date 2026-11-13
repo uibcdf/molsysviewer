@@ -74,9 +74,9 @@ Static HTML has no Python editing authority and offers no Movie editor.
 Preview uses the existing arbitrary-time seek/play/pause/reset APIs. Export
 uses the existing bounded MP4, WebM and PNG/manifest ZIP writer, with progress,
 cancellation and explicit overwrite/overlay policy. The destination is a path
-in the Python session, including for a remote session. Browser download,
-visible DOM-overlay composition and the complete
-integrated scientific story remain separate M4/M5 work. This slice does not
+in the Python session, including for a remote session. Browser download and
+the complete integrated scientific story remain separate M4/M5 work. The
+composition slice below extends this original editor/export scope. This slice does not
 complete #320. The original adapted-transport receiving does not qualify an
 actual notebook; that boundary has its separate receiving below. Installed,
 hosted, native Qt and postponed human acceptance remain separate.
@@ -143,8 +143,10 @@ composition. No CDN, local-source-path dependency, kernel, server or codec is
 required. Visual interaction series are not a complete H5MSM analysis archive;
 retain the MSV session for scientific editing and data recovery. The profile
 refuses dynamic regions and partial/unsupported/over-limit interaction
-projections. Visible DOM plots and legends need refusal or explicit recorded
-exclusion. No popup player or shared/network-runtime profile is promised here.
+projections. Current visible DOM plots and legends are included with detached
+scientific context, or explicitly excluded and recorded. The composition
+slice below extends the original web receipt. No popup player or
+shared/network-runtime profile is promised here.
 
 `MovieWebPlayer` compiles the same complete version-2 recipe, serializes native
 scene writes and paces its single clock on completed coherent draws. Layer
@@ -163,8 +165,68 @@ receiving. Its guard is
 `tests/test_movie_web.py::test_native_offline_movie_presentation` with
 `MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`; unselected skips do not qualify it. The
 same `movie-web` entry is registered in core browser CI. This does not complete
-#320, M2 host/accessibility review, overlay composition, M5, installed/hosted
+#320, M2 host/accessibility review, M5, installed/hosted
 or human acceptance.
+
+## Scientific overlay composition: first M4 profile
+
+Media export negotiates `movie_overlay_capture: [1]` in addition to the
+existing Movie frame capability. Python declares typed `(kind, tag)` identities
+for every visible trajectory plot and colour legend. The addressed renderer
+must return that exact set. It snapshots clean, closed SVG primitives from the
+existing plot/legend owners, then rasterizes them at the requested output
+resolution onto the same owned Mol* image. No arbitrary DOM photograph, external
+image/font/resource, authoring controls or new scientific calculation is used.
+XML text nodes preserve literal titles, labels and raw-value tooltips.
+
+`molsysviewer.movie_composition@1` records the viewer host viewport in CSS
+pixels, source card rectangles, output rectangles in pixels, card opacity and
+chart view-box dimensions. The `normalized-centres-uniform-scale@1` rule maps
+centres by their viewport fractions and uses the smaller output/source ratio
+for both dimensions. This preserves chart and text aspect ratio for different
+output shapes. The host rectangle includes docked space; source positions are
+not inferred from the narrower molecular drawing area. Media plots retain
+their title and chart/readout in a clean dark card with a sans-serif font.
+Legend text retains measured wrapping. Browser/device font metrics can differ;
+this profile does not promise byte-identical rendering across platforms.
+
+Scientific context is detached once into the manifest: series, supplied method
+and observation metadata, units, input/structure mappings and legend labels.
+It does not invent provenance absent from the producer. Each frame carries
+only a small checked layout descriptor; raw SVG stays in the renderer. Python
+independently checks projection, finite dimensions, bounds and exact identities.
+The first actual frame supplies the layout before the encoder opens, so video
+metadata and PNG manifests contain the same geometry. Later frames must retain
+it, including opacity/view-box, while playheads/readouts follow Movie structures.
+
+Expanded cards must be inside the addressed canvas. Missing, detached, minimized
+or out-of-bounds cards are refused with recovery instructions. Source overlay
+replacement, a viewport/card move/resize or opacity change during export fails
+without publishing over an existing destination. Renderer snapshots before
+and after a frame additionally reject mid-capture changes. Explicit
+`include_overlays=False` remains an audited exclusion. Fixed named failure
+types map to authored diagnostics; arbitrary renderer text/paths are not echoed.
+Cancellation shares the existing owned screenshot task and retires image-load
+listeners/object URLs. Admission limits are 32 overlays, 8 MiB SVG, 256 legend
+entries and 16,384 label characters; these are not a general RAM guarantee.
+
+HTML embeds the current scientific overlay context through the existing static
+export owners, independently of the older baseline. Its overlays remain live
+and responsive and follow offline structure seeks; it does not use raster media
+composition or require image codecs. The player reserves its measured bottom
+control area through the shared card/legend owners, updating the reservation
+on host/bar resize and releasing it on disposal. Default notebook/media cards
+retain zero reservation. Cards keep desired dimensions and fit the available
+area; authoring a private DOM placement is not required.
+
+The [composition receipt](movie_composition_receiving_20261112.json) records
+actual PNG/MP4 pixels, structure-specific playheads, context, failure/atomicity
+controls and offline HTML receiving. The native pytest selector is
+`tests/test_movie_composition.py::test_native_movie_overlay_composition` with
+`MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`, also registered as `movie-composition` in
+core browser CI. An unselected skip is not receiving. This bounded source
+profile does not complete M4/M5, actual Jupyter/Qt composition, accessibility,
+installed/hosted or postponed human acceptance, and does not close #320.
 
 ## One model, several consumers
 

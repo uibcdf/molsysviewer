@@ -31,6 +31,31 @@ class FrontendRequestError(CatalogException, RuntimeError):
         super().__init__(message, catalog=CATALOG, meta=META, extra={"reason": reason})
 
 
+class _MovieOverlayUnavailable(FrontendRequestError):
+    catalog_key = "movie_overlay_unavailable"
+
+
+class _MovieOverlayChanged(FrontendRequestError):
+    catalog_key = "movie_overlay_changed"
+
+
+class _MovieOverlayLimit(FrontendRequestError):
+    catalog_key = "movie_overlay_limit"
+
+
+def _renderer_failure(content):
+    # Only fixed authored types have public recovery instructions. Arbitrary
+    # renderer messages/paths never become user-facing diagnostic text.
+    known = {
+        "MovieOverlayUnavailable": _MovieOverlayUnavailable,
+        "MovieOverlayChanged": _MovieOverlayChanged,
+        "MovieOverlayLimit": _MovieOverlayLimit,
+    }
+    error_type = content.get("error_type")
+    selected = known.get(error_type) if isinstance(error_type, str) else None
+    return selected(reason=selected.catalog_key) if selected else FrontendRequestError(reason="renderer_refused")
+
+
 @dataclass(frozen=True)
 class FrontendRequest:
     owner_id: str
@@ -114,7 +139,9 @@ class FrontendRequests:
                 self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="request_timeout")))
             return False
         if content.get("ok") is not True:
-            self._publish(lambda: request.future.set_exception(FrontendRequestError(reason="renderer_refused")))
+            error_type = content.get("error_type")
+            failure = {"error_type": error_type if isinstance(error_type, str) else None}
+            self._publish(lambda: request.future.set_exception(_renderer_failure(failure)))
         else:
             payload = deepcopy(content)
             self._publish(lambda: request.future.set_result(payload))

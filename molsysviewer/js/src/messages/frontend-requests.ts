@@ -5,7 +5,7 @@ import { captureMovieFrame } from "./movie-frame-capture";
 import { readMovieEnvironment } from "../managers/movie-environment";
 
 type RequestController = Pick<MolSysViewerController, "getCameraSnapshot" | "getImageDataUri" | "onTrajectoryState" | "plugin">
-    & Partial<Pick<MolSysViewerController, "moviePreviewClock" | "readMovieExportOverlays">>
+    & Partial<Pick<MolSysViewerController, "moviePreviewClock" | "readMovieExportOverlays" | "snapshotMovieOverlays">>
     & { prepareMovingVisualCapture?(): void; readMovingVisualState?(): MovingVisualSnapshot | undefined;
         retainMovingCapturePresentation?(capture: Promise<unknown>): () => void };
 

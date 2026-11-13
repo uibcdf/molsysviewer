@@ -51,6 +51,7 @@ export class MovieWebPlayer {
     private status: HTMLOutputElement;
     private surface: HTMLElement;
     private interact: () => void;
+    private layoutObserver?: ResizeObserver;
 
     constructor(private controller: MolSysViewerController, private host: HTMLElement, presentation: any) {
         if (presentation?.schema !== "molsysviewer.movie_web@1" || presentation?.assets?.policy !== "embedded-offline") {
@@ -81,6 +82,11 @@ export class MovieWebPlayer {
         this.status = document.createElement("output"); this.status.setAttribute("aria-live", "off"); bar.appendChild(this.status);
         for (const event of ["pointerdown", "click", "wheel", "keydown"]) bar.addEventListener(event, e => e.stopPropagation());
         host.appendChild(bar);
+        const reserveControls = () => this.controller.setOverlayBottomInset(
+            Math.max(0, host.getBoundingClientRect().bottom - bar.getBoundingClientRect().top + 8));
+        reserveControls();
+        this.layoutObserver = new ResizeObserver(reserveControls);
+        this.layoutObserver.observe(host); this.layoutObserver.observe(bar);
         this.interact = () => this.pause();
         host.addEventListener("pointerdown", this.interact); host.addEventListener("wheel", this.interact, { passive: true });
         this.update();
@@ -223,6 +229,7 @@ export class MovieWebPlayer {
         if (this.closed) return;
         void this.pause(); this.closed = true; this.drawing.abort();
         this.host.removeEventListener("pointerdown", this.interact); this.host.removeEventListener("wheel", this.interact);
+        this.layoutObserver?.disconnect(); this.controller.setOverlayBottomInset(0);
         this.surface.remove(); delete this.host.dataset.molsysviewerMovieReady;
     }
 }

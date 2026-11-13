@@ -13,6 +13,24 @@ META = {
 }
 
 CATALOG = {
+    "movie_overlay_unavailable": {
+        "code": "MOLSYSVIEWER-MOVIE-OVERLAY-UNAVAILABLE",
+        "source": "molsysviewer.movie",
+        "category": "frontend",
+        "level": "ERROR",
+    },
+    "movie_overlay_changed": {
+        "code": "MOLSYSVIEWER-MOVIE-OVERLAY-CHANGED",
+        "source": "molsysviewer.movie",
+        "category": "frontend",
+        "level": "ERROR",
+    },
+    "movie_overlay_limit": {
+        "code": "MOLSYSVIEWER-MOVIE-OVERLAY-LIMIT",
+        "source": "molsysviewer.movie",
+        "category": "frontend",
+        "level": "ERROR",
+    },
     "work_file_save_cancelled": {
         "code": "MOLSYSVIEWER-WORK-FILE-SAVE-CANCELLED",
         "source": "molsysviewer.viewer.persistence",
@@ -287,6 +305,9 @@ CATALOG = {
 #: `devguide/smonitor.md` rule 1 ("zero string hardcoding") was satisfied on paper and
 #: defeated in practice.
 MESSAGES = {
+    "movie_overlay_unavailable": "A visible Movie plot or legend is unavailable in the requested canvas. Expand minimized plots, return detached cards, or explicitly exclude overlays before exporting.",
+    "movie_overlay_changed": "A Movie overlay changed during capture. Keep its canvas, plot cards and opacity fixed while exporting, then retry.",
+    "movie_overlay_limit": "Movie composition exceeds its vector limits. Use at most 32 overlays and 8 MiB of SVG content; legends admit at most 256 entries and 16384 characters. Reduce the displayed content or explicitly exclude overlays.",
     "work_file_save_cancelled": "Save cancelled. The destination has not been changed.",
     "frontend_request_failed": (
         "The live renderer request could not complete ({reason}). "

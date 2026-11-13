@@ -45,9 +45,20 @@ portable web/composition and M5's integrated scientific story remain with
 single-file/iframe player over the same complete Python recipe, with native
 reverse seek, appearance, interaction styles, hidden layer gates and playback
 controls. #367 corrects an empty colour-map mismatch. This is M4's bounded
-static-region/embedded-runtime profile; visible overlay composition, richer
+static-region/embedded-runtime profile; the composition tranche below extends
+its overlay scope. Richer
 portable profiles, M2 host/accessibility and M5 remain open. Source/installed,
 hosted and human acceptance stay separate; neither original counter changes.
+
+**Movie composition tranche — 2026-11-12:** the
+[composition receipt](../movie_composition_receiving_20261112.json) receives
+plots/colour legends in actual PNG/MP4 and offline HTML, with supplied scientific
+context, units, structure mappings and frame-specific playheads. Layout/style
+changes or unavailable cards preserve existing destinations. The shared
+floating-card owner reserves offline playback space. Original failures,
+resource limits, byte/source scopes and remaining host/integrated acceptance
+are explicit in the receipt. Continue #320 with M5 and M2 host/accessibility;
+this additional work changes neither original 46-outcome counter.
 
 **Actual-notebook Movie tranche — 2026-11-12:** the
 [shared receiving](../movie_jupyter_receiving_20261112.json) closes source

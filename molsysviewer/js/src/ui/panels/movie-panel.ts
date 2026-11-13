@@ -355,8 +355,8 @@ export class MoviePanel extends BasePanel {
         root.appendChild(this.field("Width (pixels)", "width", this.width, value => { this.width = value; }, "number"));
         root.appendChild(this.field("Height (pixels)", "height", this.height, value => { this.height = value; }, "number"));
         root.appendChild(this.check("Allow replacing an existing output file", this.overwrite, value => { this.overwrite = value; }));
-        root.appendChild(this.check("Include visible plots and legends; refuse unsupported composition", this.includeOverlays, value => { this.includeOverlays = value; }));
-        root.appendChild(note("Native labels are included. Visible plot/legend composition is not yet available: hide those overlays or explicitly exclude them. Output is written in the Python session, including when that session runs remotely."));
+        root.appendChild(this.check("Include visible plots and legends", this.includeOverlays, value => { this.includeOverlays = value; }));
+        root.appendChild(note("Native labels are included. For media, expand plot cards inside the canvas and keep their layout and opacity fixed during export. Unavailable or changing overlays stop export without replacing the file. Output is written in the Python session, including when that session runs remotely."));
         root.appendChild(note("HTML is an offline interactive presentation with Play, Pause and Seek. It uses the same recipe without a Python session; frame rate and image sampling do not apply. Static regions are required."));
         root.appendChild(this.button("Export Movie", () => this.submit("movie_export", { path: this.path, fps: this.fps,
             width_px: Number(this.width), height_px: Number(this.height), overwrite: this.overwrite,

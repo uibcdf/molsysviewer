@@ -224,9 +224,13 @@ first self-contained offline HTML profile is implemented through the same
 supported interaction visual series; actual file/iframe, reverse seek,
 controls and hidden-layer receiving are recorded in the
 [web receipt](../movie_web_receiving_20261112.json). Static regions are required;
-visible overlays and unsupported interaction projections are explicitly
-refused or excluded under the documented policy. This does not complete M4's
-composition or M5. The
+unsupported interaction projections are explicitly refused. The
+[composition receipt](../movie_composition_receiving_20261112.json) adds current
+plots/legends to offline HTML and vector composition in PNG/MP4, including
+scientific context, frame-specific indicators and guarded atomic publication.
+Expanded in-canvas cards and fixed layout/style are required for media, with
+explicit exclusions available. This bounded source profile does not complete
+M2 host/accessibility, M5 or installed/hosted/human qualification. The
 receiving entries below retain their original source/date scope; earlier
 remapping/appearance gaps are not a claim about current implementation.
 

@@ -127,6 +127,44 @@ async function run() {
                         .some((ref: any) => c.plugin.state.data.cells.get(ref)?.obj?.data?.repr?.renderObjects?.some((ro: any) => ro.state.visible))); });
                 assert.deepEqual(visible, at < 500 ? [true, false] : [false, false]);
             }
+            await page.goto(pathToFileURL(resolve(workspace, "overlays.html")).href);
+            await page.waitForFunction(() => document.querySelector('[data-molsysviewer-movie-ready="true"]'), undefined, { timeout: 45000 });
+            const plot = page.locator('[data-molsysviewer-datacard="control"]');
+            await plot.waitFor({ state: "visible" });
+            const checkSeparation = async () => {
+                await page.waitForFunction(() => {
+                    const card = document.querySelector('[data-molsysviewer-datacard="control"]')!.getBoundingClientRect();
+                    const bar = document.querySelector('[data-molsysviewer-movie-player]')!.getBoundingClientRect();
+                    return card.bottom + 6 <= bar.top;
+                });
+            };
+            await checkSeparation();
+            assert.match(await plot.textContent() ?? "", /Time \(ps\)/);
+            assert.match(await plot.textContent() ?? "", /Control \(nm\)/);
+            assert.match(await plot.textContent() ?? "", /Control <plot> & units/);
+            assert.match(await page.locator('[data-molsysviewer-legend]').textContent() ?? "", /Group <A>&B/);
+            const playheads: string[] = [];
+            for (const at of [0, 1000, 0]) {
+                await seek(page, at);
+                const navigation = plot.locator('[data-molsysviewer-plot-navigation="control"] input');
+                assert.equal(await navigation.inputValue(), at === 1000 ? "2" : "0");
+                const svg = plot.locator('svg').filter({ has: page.locator('polyline') });
+                playheads.push(await svg.innerHTML());
+            }
+            assert.notEqual(playheads[0], playheads[1], "the scientific plot must follow the movie structure");
+            assert.equal(playheads[0], playheads[2], "reverse seek must restore the same plot sample");
+            const overlays = JSON.parse(await readFile(resolve(workspace, "overlays-manifest.json"), "utf8"));
+            assert.deepEqual(overlays.composition.source_context.plots[0].series[0].observation.units, { x: "ps", y: "nm" });
+            assert.deepEqual(overlays.composition.source_context.plots[0].series[0].observation.original_structure_indices, [4999, 0, 73]);
+            if (process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR) {
+                await page.screenshot({ path: resolve(process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR, "offline-overlays.png") });
+                await copyFile(resolve(workspace, "overlays.html"), resolve(process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR, "offline-overlays.html"));
+                await copyFile(resolve(workspace, "overlays-manifest.json"), resolve(process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR, "overlays-manifest.json"));
+            }
+            await page.setViewportSize({ width: 420, height: 360 });
+            await checkSeparation();
+            await page.setViewportSize({ width: 1280, height: 720 });
+            await checkSeparation();
             await page.evaluate(() => (window as any).__molsysviewerDocsMovie.dispose());
             assert.equal(await page.locator('[data-molsysviewer-movie-player]').count(), 0);
             assert.deepEqual(requests, [], "offline presentation must not request remote assets");

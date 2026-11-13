@@ -122,6 +122,19 @@ pytest skip is not receiving. Publication/cancellation guards live in the
 same Python module. Installed packages, native Qt, shared/network assets and
 full #320 acceptance retain their separate requirements.
 
+Composited media receiving uses
+`tests/test_movie_composition.py::test_native_movie_overlay_composition` with
+`MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`. Build the runtime/harness and browser
+entries with the commands above, then select that guard. Its
+`movie-composition` entry also runs in core browser CI. A persistent real Python
+View and Mol*/Chromium export PNG/MP4; independent decoded-pixel probes check
+the curve, legend and structure-specific playheads, while manifest checks
+retain producer-supplied units/context. Actual card movement, opacity changes,
+minimization and explicit exclusion protect failure/publication semantics.
+The sibling offline guard receives live plots after Python closes, reverse
+seek and responsive playback/card separation. Unselected skips and build/core
+registration are not executed receiving or installed/native-host acceptance.
+
 For rendered Movie camera completion and interruption, the bounded frontend profile
 also accepts exactly `molsysviewer/js/tests/e2e/movie-playback.e2e.ts`. From
 `molsysviewer/js/`, build with `npm run build:harness` and

@@ -938,8 +938,18 @@ file and iframe, reverse seek, materials, labels, interaction styles, final
 draw, controls and hidden layer members have scoped native receiving. #367
 corrects empty colour-layer interpretation in complete Python recipes.
 Static regions and supported complete interaction projections are the admitted
-profile; overlays, richer profiles, M2/M5 and consolidated qualification remain
+profile; the composition receipt below extends overlays. Richer profiles,
+M2/M5 and consolidated qualification remain
 open. Neither audit counter nor publication/human-pause state changes.
+
+The [Movie composition receiving](movie_composition_receiving_20261112.json)
+adds clean plot/legend composition in PNG/MP4 and live overlays in offline HTML,
+with scientific context and structure-specific readouts. It receives actual
+media pixels, guarded layout/style changes and atomic destinations. Offline
+cards reserve playback-control space. Continue #320 with its integrated
+scientific story and remaining host/accessibility receiving; current source,
+installed, hosted and postponed human scopes stay separate. Both original
+audit counters and publication pauses remain unchanged.
 
 The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
 receives #344's source recurrence: followers retain coherent prefixes until a

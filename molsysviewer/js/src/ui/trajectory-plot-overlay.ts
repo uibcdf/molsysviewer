@@ -1,4 +1,5 @@
 import { FloatingDataCard } from "./floating-data-card";
+import { overlayBounds, plotSvgForMovie, svgDocument, svgNode, MovieOverlayError, type MovieSvgOverlay } from "./movie-overlay-composition";
 
 export interface TrajectoryPlotSeries {
     label: string;
@@ -106,6 +107,7 @@ interface PlotCardEntry {
  * readouts update on every frame change or click.
  */
 export class TrajectoryPlotOverlay {
+    private bottomInset = 0;
     private readonly entries = new Map<string, PlotCardEntry>();
     private currentFrame = 0;
 
@@ -178,6 +180,7 @@ export class TrajectoryPlotOverlay {
         }
 
         if (options.visible === false) entry.card.hide(); else entry.card.show();
+        entry.card.setBottomInset(this.bottomInset);
         this.renderEntry(entry);
         this.setFrame(this.currentFrame);
     }
@@ -195,6 +198,11 @@ export class TrajectoryPlotOverlay {
             entry.options = { ...entry.options, visible: false };
             entry.card.hide();
         }
+    }
+
+    setBottomInset(pixels: number): void {
+        this.bottomInset = pixels;
+        for (const entry of this.entries.values()) entry.card.setBottomInset(pixels);
     }
 
     private clear(tag?: string): void {
@@ -499,6 +507,26 @@ export class TrajectoryPlotOverlay {
         text.style.userSelect = "text";
         text.style.cursor = "text";
         text.onclick = event => event.stopPropagation();
+    }
+
+    movieSnapshots(): MovieSvgOverlay[] {
+        return [...this.entries.values()].filter(entry => entry.options.visible !== false).map(entry => {
+            if (entry.card.minimized || !entry.svg) throw new MovieOverlayError("MovieOverlayUnavailable", `Expand Movie plot ${entry.tag} before exporting.`);
+            const bounds = overlayBounds(entry.card.card, this.host);
+            const root = svgDocument(bounds.width, bounds.height);
+            root.appendChild(svgNode("rect", { width: bounds.width, height: bounds.height, rx: 10, fill: "rgba(18,18,22,0.88)" }));
+            const title = svgNode("svg", { x: 8, y: 3, width: bounds.width - 16, height: 20 });
+            title.appendChild(svgNode("text", { x: 0, y: 14, fill: "#f4f4f5", "font-family": "sans-serif", "font-size": 12, "font-weight": 600 },
+                entry.options.title || entry.options.y_label || "Trajectory plot"));
+            root.appendChild(title);
+            const plot = plotSvgForMovie(entry.svg);
+            for (const [name, value] of Object.entries({ x: "8", y: "26", width: String(bounds.width - 16), height: String(Math.max(1, bounds.height - 34)) })) plot.setAttribute(name, value);
+            root.appendChild(plot);
+            root.setAttribute("opacity", getComputedStyle(entry.card.card).opacity);
+            return { kind: "trajectory_plot", tag: entry.tag, bounds, svg: new XMLSerializer().serializeToString(root),
+                rendering: { opacity: Number(root.getAttribute("opacity")), view_box: {
+                    width: entry.svg.viewBox.baseVal.width, height: entry.svg.viewBox.baseVal.height } } };
+        });
     }
 
     dispose(): void {

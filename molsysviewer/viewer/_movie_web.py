@@ -12,6 +12,7 @@ from numbers import Real
 from pathlib import Path
 
 from ._movie_baseline import check_idle
+from ._movie_composition import overlay_requirements, overlay_revisions, overlays_unchanged
 from ._movie_endpoint import check_movie_revision
 from ._movie_export import _dimensions, _visible_overlays
 from ._movie_playback import _revisions
@@ -32,8 +33,7 @@ def _presentation(movie, width, height, include_overlays):
     recipe = timeline.to_dict()
     baseline = recipe["baseline"]["scene"]
     excluded = sorted(set(_visible_overlays(view, baseline) + _visible_overlays(view, scene)))
-    if excluded and include_overlays:
-        raise ValueError("Hide visible plots/legends or explicitly choose include_overlays=False for Movie HTML.")
+    required, context = overlay_requirements(view, scene)
     # Browser playback cannot delegate a coordinate-dependent selection to Python.
     if any(row.get("mode") == "dynamic" for row in baseline.get("regions", [])):
         raise ValueError("Movie HTML currently requires static regions; materialize dynamic regions explicitly.")
@@ -45,9 +45,11 @@ def _presentation(movie, width, height, include_overlays):
         candidate._restore_state_contents(deepcopy(baseline), clear_first=True, on_conflict="raise")
         candidate.player.pause(skip_digestion=True)
         candidate._last_camera_snapshot = deepcopy(recipe["baseline"]["camera"])
-        if not include_overlays:
-            candidate._scene_look.pop("legend", None)
-            candidate._scene_look.pop("trajectory_plot", None)
+        for name in ("legend", "trajectory_plot"):
+            if include_overlays and name in view._scene_look:
+                candidate._scene_look[name] = deepcopy(view._scene_look[name])
+            else:
+                candidate._scene_look.pop(name, None)
         messages = candidate._build_static_export_snapshot()
         for message in messages:
             if message.get("op") == "set_interaction_series" and any(
@@ -73,8 +75,10 @@ def _presentation(movie, width, height, include_overlays):
             "viewport": {"width": width, "height": height, "responsive": True},
             "composition": {
                 "native_annotations": True,
-                "dom_overlays": "refuse-visible" if include_overlays else "explicitly-excluded",
-                "excluded_dom_overlays": excluded,
+                "dom_overlays": "live-dom-overlays@1" if include_overlays else "explicitly-excluded",
+                "included_dom_overlays": required if include_overlays else [],
+                "excluded_dom_overlays": [] if include_overlays else excluded,
+                "source_context": context,
             },
             "controls": ["play", "pause", "seek", "restart"],
         }
@@ -87,7 +91,7 @@ def _presentation(movie, width, height, include_overlays):
             runtime_source=runtime,
             movie_presentation=manifest,
         )
-    return timeline, _revisions(view), html, manifest
+    return timeline, _revisions(view), overlay_revisions(view), html, manifest
 
 
 async def export_movie_web(movie, path, *, width, height, overwrite, include_overlays, timeout, on_progress):
@@ -124,6 +128,7 @@ async def export_movie_web(movie, path, *, width, height, overwrite, include_ove
             or movie._export_job is not job
             or movie._timeline is not timeline
             or _revisions(movie._view) != revisions
+            or not overlays_unchanged(movie._view, overlays)
         ):
             raise FrontendRequestError(reason="movie_export_superseded")
 
@@ -146,7 +151,9 @@ async def export_movie_web(movie, path, *, width, height, overwrite, include_ove
         return {"path": str(path), "manifest": deepcopy(manifest), "bytes": path.stat().st_size}
 
     try:
-        timeline, revisions, html, manifest = await _capture_owned_call(movie._view, prepare, deadline=deadline)
+        timeline, revisions, overlays, html, manifest = await _capture_owned_call(
+            movie._view, prepare, deadline=deadline
+        )
         # Yield before publication so cancellation cannot leave an apparently
         # successful output when its initiating Studio panel has already closed.
         await asyncio.sleep(0)

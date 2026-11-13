@@ -35,6 +35,7 @@ export class FloatingDataCard {
     private releasePopout?: () => void;
     private disposed = false;
     private visible = true;
+    private bottomInset = 0;
     private bodyDisplay = "";
     private readonly desiredSize: { width: number; height: number };
     private readonly status: HTMLDivElement;
@@ -356,8 +357,14 @@ export class FloatingDataCard {
         });
     }
 
+    /** Reserve space for host-owned controls without changing the desired size. */
+    public setBottomInset(pixels: number): void {
+        this.bottomInset = Number.isFinite(pixels) ? Math.max(0, pixels) : 0;
+        this.fitToHost(); this.measureBody();
+    }
+
     private fitToHost(): void {
-        const width = this.host.clientWidth, height = this.host.clientHeight;
+        const width = this.host.clientWidth, height = Math.max(0, this.host.clientHeight - this.bottomInset);
         if (this.disposed || !width || !height) return;
         const margin = Math.min(4, width / 4, height / 4);
         let left = parseFloat(this.card.style.left) || 0, top = parseFloat(this.card.style.top) || 0;

@@ -19,6 +19,7 @@ from numbers import Real
 from pathlib import Path
 from uuid import uuid4
 
+from ._movie_composition import checked_composition, overlay_requirements, overlay_revisions, overlays_unchanged
 from ._movie_endpoint import check_movie_revision
 from ._movie_playback import _revisions
 from ._movie_sampling import _MovieSampling
@@ -88,10 +89,14 @@ class _MovieExport:
         self.timeline.check_binding(view._source_state_binding(), scene)
         self.timeline.check_scene(scene)
         excluded = _visible_overlays(view, scene)
-        if include_overlays and excluded:
-            raise ValueError(
-                "Visible trajectory plot overlays cannot yet be composed into Movie output. Hide them or explicitly choose include_overlays=False."
-            )
+        required, context = overlay_requirements(view, scene)
+        self.required_overlays = required if include_overlays else []
+        if self.required_overlays and not any(
+            type(version) is int and version == 1
+            for version in view._frontend_capabilities.get("movie_overlay_capture", [])
+        ):
+            raise FrontendRequestError(reason="movie_overlay_capture_not_supported")
+        self.overlay_revision = overlay_revisions(view)
         self.id = uuid4().hex
         self.revisions = _revisions(view)
         self.manifest = {
@@ -105,8 +110,14 @@ class _MovieExport:
                 "source": "molecular-canvas",
                 "native_annotations": True,
                 "authoring_controls": False,
-                "dom_overlays": "refuse-visible" if include_overlays else "explicitly-excluded",
-                "excluded_dom_overlays": excluded,
+                "dom_overlays": "svg-composited@1"
+                if self.required_overlays
+                else "none-visible"
+                if include_overlays
+                else "explicitly-excluded",
+                "included_dom_overlays": deepcopy(self.required_overlays),
+                "excluded_dom_overlays": [] if include_overlays else excluded,
+                "source_context": context,
             },
             "recipe": self.timeline.to_dict(),
         }
@@ -125,6 +136,7 @@ class _MovieExport:
             movie._export_job is not self
             or movie._timeline is not self.timeline
             or self.revisions != _revisions(movie._view)
+            or not overlays_unchanged(movie._view, self.overlay_revision)
         ):
             raise FrontendRequestError(reason="movie_export_superseded")
 
@@ -401,7 +413,6 @@ async def export_movie(
         with tempfile.TemporaryDirectory(dir=path.parent, prefix=f".{path.name}.movie-") as directory:
             sink = _FrameSink(Path(directory), format, width, height, sampling, job.manifest, executable)
             try:
-                await sink.open(timeout)
                 for index in range(sampling.count):
 
                     def check():
@@ -420,9 +431,26 @@ async def export_movie(
                             "height": height,
                             "include_overlays": include_overlays,
                             "sample_level": sample_level,
+                            **(
+                                {"overlay_capture_version": 1, "required_overlays": deepcopy(job.required_overlays)}
+                                if job.required_overlays
+                                else {}
+                            ),
                         },
                     )
+                    if job.required_overlays:
+                        layout = checked_composition(captured.get("composition"), job.required_overlays, width, height)
+                        if index == 0:
+                            job.manifest["composition"]["layout"] = layout
+                        elif layout != job.manifest["composition"]["layout"]:
+                            raise ValueError(
+                                "Movie overlay layout or style changed during export; keep its canvas and cards fixed."
+                            )
                     blob = _png(captured["data_uri"], width, height)
+                    if index == 0:
+                        # Video metadata must already include the actual applied
+                        # overlay layout when FFmpeg reads its first frame.
+                        await sink.open(timeout)
                     await sink.append(blob, index, timeout)
                     if on_progress is not None:
 

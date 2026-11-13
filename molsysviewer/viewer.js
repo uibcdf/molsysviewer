@@ -17912,15 +17912,15 @@ function pad(n) {
   return n.length < 2 ? "0" + n : n;
 }
 function readUTF8(buff, p6, l) {
-  let s = "", ns;
+  let s = "", ns2;
   for (let i = 0; i < l; i++)
     s += "%" + pad(buff[p6 + i].toString(16));
   try {
-    ns = decodeURIComponent(s);
+    ns2 = decodeURIComponent(s);
   } catch (e) {
     return readASCII(buff, p6, l);
   }
-  return ns;
+  return ns2;
 }
 function writeUTF8(buff, p6, str11) {
   const strl = str11.length;
@@ -44597,7 +44597,7 @@ function getCategoryInstanceData(category, ctx) {
 }
 
 // node_modules/molstar/lib/mol-io/writer/cif/encoder/text.js
-var TextEncoder = class {
+var TextEncoder2 = class {
   constructor() {
     this.builder = StringBuilder.create();
     this.encoded = false;
@@ -45250,7 +45250,7 @@ var CifWriter;
   CifWriter2.Encoding = ArrayEncoding;
   function createEncoder(params) {
     const { binary = false, encoderName = "mol*" } = params || {};
-    return binary ? new BinaryEncoder(encoderName, params ? params.binaryEncodingPovider : void 0, params ? !!params.binaryAutoClassifyEncoding : false) : new TextEncoder();
+    return binary ? new BinaryEncoder(encoderName, params ? params.binaryEncodingPovider : void 0, params ? !!params.binaryAutoClassifyEncoding : false) : new TextEncoder2();
   }
   CifWriter2.createEncoder = createEncoder;
   function fields() {
@@ -65591,15 +65591,15 @@ var Mesh;
     const p6 = location2.position;
     const n = location2.normal;
     const vs = mesh.vertexBuffer.ref.value;
-    const ns = mesh.normalBuffer.ref.value;
+    const ns2 = mesh.normalBuffer.ref.value;
     const m = transform4.aTransform.ref.value;
     const getLocation = (groupIndex, instanceIndex) => {
       if (instanceIndex < 0) {
         Vec3.fromArray(p6, vs, groupIndex * 3);
-        Vec3.fromArray(n, ns, groupIndex * 3);
+        Vec3.fromArray(n, ns2, groupIndex * 3);
       } else {
         Vec3.transformMat4Offset(p6, vs, m, 0, groupIndex * 3, instanceIndex * 16);
-        Vec3.transformDirectionOffset(n, ns, m, 0, groupIndex * 3, instanceIndex * 16);
+        Vec3.transformDirectionOffset(n, ns2, m, 0, groupIndex * 3, instanceIndex * 16);
       }
       return location2;
     };
@@ -150986,6 +150986,134 @@ var MoviePreviewClock = class {
   }
 };
 
+// src/ui/movie-overlay-composition.ts
+var ns = "http://www.w3.org/2000/svg";
+var MovieOverlayError = class extends Error {
+  constructor(name, message) {
+    super(message);
+    this.name = name;
+  }
+};
+var svgNode = (name, attributes2 = {}, text2) => {
+  const node = document.createElementNS(ns, name);
+  for (const [key3, value] of Object.entries(attributes2)) node.setAttribute(key3, String(value));
+  if (text2 !== void 0) node.textContent = text2;
+  return node;
+};
+function svgDocument(width, height) {
+  return svgNode("svg", { xmlns: ns, width, height, viewBox: `0 0 ${width} ${height}` });
+}
+function overlayBounds(element, host) {
+  const rect = element.getBoundingClientRect(), viewport = host.getBoundingClientRect();
+  if (element.ownerDocument !== host.ownerDocument || !element.isConnected || rect.width <= 0 || rect.height <= 0 || getComputedStyle(element).visibility === "hidden") {
+    throw new MovieOverlayError("MovieOverlayUnavailable", "A visible Movie plot/legend must be expanded in its canvas; return detached cards before exporting.");
+  }
+  return { x: rect.left - viewport.left, y: rect.top - viewport.top, width: rect.width, height: rect.height };
+}
+function positionOverlay(bounds, viewport, width, height) {
+  if (![...Object.values(bounds), viewport.width, viewport.height, width, height].every(Number.isFinite) || bounds.width <= 0 || bounds.height <= 0 || viewport.width <= 0 || viewport.height <= 0 || width <= 0 || height <= 0 || bounds.x < -1 || bounds.y < -1 || bounds.x + bounds.width > viewport.width + 1 || bounds.y + bounds.height > viewport.height + 1) {
+    throw new MovieOverlayError("MovieOverlayUnavailable", "A Movie overlay is outside its viewer or has invalid dimensions.");
+  }
+  const scale = Math.min(width / viewport.width, height / viewport.height);
+  return {
+    x: (bounds.x + bounds.width / 2) / viewport.width * width - bounds.width * scale / 2,
+    y: (bounds.y + bounds.height / 2) / viewport.height * height - bounds.height * scale / 2,
+    width: bounds.width * scale,
+    height: bounds.height * scale
+  };
+}
+var allowedElements = /* @__PURE__ */ new Set(["svg", "g", "path", "polyline", "line", "rect", "text", "tspan", "title"]);
+var allowedAttributes = /* @__PURE__ */ new Set([
+  "x",
+  "y",
+  "x1",
+  "x2",
+  "y1",
+  "y2",
+  "width",
+  "height",
+  "viewBox",
+  "preserveAspectRatio",
+  "d",
+  "points",
+  "fill",
+  "stroke",
+  "stroke-width",
+  "stroke-dasharray",
+  "opacity",
+  "font-size",
+  "font-weight",
+  "text-anchor",
+  "transform"
+]);
+function plotSvgForMovie(source) {
+  if (!allowedElements.has(source.localName)) throw new Error("Unsupported primitive in Movie plot SVG.");
+  const clone = svgNode(source.localName);
+  for (const attr of Array.from(source.attributes)) {
+    if (!allowedAttributes.has(attr.name)) continue;
+    if ((attr.name === "fill" || attr.name === "stroke") && !/^(#[0-9a-f]{3,8}|none|transparent|rgba?\([\d.,% ]+\))$/i.test(attr.value)) {
+      throw new Error("Unsupported Movie plot colour.");
+    }
+    clone.setAttribute(attr.name, attr.value);
+  }
+  if (source.localName === "text") clone.setAttribute("font-family", "sans-serif");
+  for (const child of Array.from(source.childNodes)) {
+    if (child.nodeType === 3) clone.appendChild(document.createTextNode(child.textContent ?? ""));
+    else if (child.nodeType === 1) clone.appendChild(plotSvgForMovie(child));
+  }
+  return clone;
+}
+function overlaySnapshot(viewport, overlays, width, height) {
+  if (overlays.length > 32 || overlays.reduce((n, row3) => n + new TextEncoder().encode(row3.svg).byteLength, 0) > 8 * 1024 * 1024) {
+    throw new MovieOverlayError("MovieOverlayLimit", "Movie composition exceeds 32 overlays or 8 MiB of vector content.");
+  }
+  return {
+    schema: "molsysviewer.movie_composition@1",
+    viewport: { ...viewport, unit: "css-px" },
+    layers: overlays.map((row3) => ({ ...row3, output: positionOverlay(row3.bounds, viewport, width, height) }))
+  };
+}
+function overlayDescriptor(snapshot) {
+  return {
+    schema: snapshot.schema,
+    viewport: snapshot.viewport,
+    placement: "normalized-centres-uniform-scale@1",
+    unit: "px",
+    layers: snapshot.layers.map(({ kind, tag: tag2, bounds, output, rendering }) => ({ kind, tag: tag2, bounds, output, rendering }))
+  };
+}
+async function drawMovieOverlays(context2, snapshot, signal) {
+  for (const layer of snapshot.layers) {
+    if (signal.aborted) throw new DOMException("Movie composition cancelled.", "AbortError");
+    const parsed = new DOMParser().parseFromString(layer.svg, "image/svg+xml");
+    if (parsed.querySelector("parsererror")) throw new Error("Movie overlay SVG is invalid.");
+    parsed.documentElement.setAttribute("width", String(Math.max(1, Math.ceil(layer.output.width))));
+    parsed.documentElement.setAttribute("height", String(Math.max(1, Math.ceil(layer.output.height))));
+    const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(parsed.documentElement)], { type: "image/svg+xml" }));
+    const image = new Image();
+    let abort2;
+    try {
+      await new Promise((resolve, reject) => {
+        abort2 = () => {
+          image.src = "";
+          reject(new DOMException("Movie composition cancelled.", "AbortError"));
+        };
+        signal.addEventListener("abort", abort2, { once: true });
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error("Movie overlay could not be rasterized."));
+        image.src = url;
+        if (signal.aborted) abort2();
+      });
+      if (signal.aborted) throw new DOMException("Movie composition cancelled.", "AbortError");
+      context2.drawImage(image, layer.output.x, layer.output.y, layer.output.width, layer.output.height);
+    } finally {
+      if (abort2) signal.removeEventListener("abort", abort2);
+      image.onload = image.onerror = null;
+      URL.revokeObjectURL(url);
+    }
+  }
+}
+
 // src/managers/canvas-draw.ts
 async function readCanvasDraw(canvas, read, timeoutMs = 3e4, signal, ready) {
   return new Promise((resolve, reject) => {
@@ -152777,6 +152905,8 @@ var ToolStatusOverlay = class {
 var LegendOverlay = class {
   constructor(host) {
     this.host = host;
+    this.items = [];
+    this.bottomInset = 0;
     this.root = document.createElement("div");
     this.root.setAttribute("data-molsysviewer-legend", "true");
     Object.assign(this.root.style, {
@@ -152798,6 +152928,7 @@ var LegendOverlay = class {
     this.host.appendChild(this.root);
   }
   set(items, position = "top-right") {
+    this.items = items?.map((row3) => ({ ...row3 })) ?? [];
     if (!items || items.length === 0) {
       this.root.style.display = "none";
       this.root.replaceChildren();
@@ -152805,7 +152936,7 @@ var LegendOverlay = class {
     }
     Object.assign(this.root.style, {
       top: position.startsWith("top") ? "12px" : "",
-      bottom: position.startsWith("bottom") ? "12px" : "",
+      bottom: position.startsWith("bottom") ? `${12 + this.bottomInset}px` : "",
       left: position.endsWith("left") ? "12px" : "",
       right: position.endsWith("right") ? "12px" : ""
     });
@@ -152834,6 +152965,67 @@ var LegendOverlay = class {
     this.root.replaceChildren(...rows);
     this.root.style.display = "block";
   }
+  setBottomInset(pixels) {
+    this.bottomInset = Number.isFinite(pixels) ? Math.max(0, pixels) : 0;
+    if (this.root.style.bottom) this.root.style.bottom = `${12 + this.bottomInset}px`;
+  }
+  movieSnapshot() {
+    if (!this.items.length) return;
+    if (this.items.length > 256 || this.items.reduce((size4, row3) => size4 + row3.label.length, 0) > 16384) {
+      throw new MovieOverlayError("MovieOverlayLimit", "Movie legend exceeds 256 entries or 16384 characters.");
+    }
+    const bounds = overlayBounds(this.root, this.host);
+    const root = svgDocument(bounds.width, bounds.height);
+    root.appendChild(svgNode("rect", { width: bounds.width, height: bounds.height, rx: 6, fill: "rgba(20,20,20,0.72)" }));
+    const children = Array.from(this.root.children);
+    this.items.forEach((item2, index) => {
+      const row3 = children[index].getBoundingClientRect(), host = this.root.getBoundingClientRect();
+      const y = row3.top - host.top;
+      root.appendChild(svgNode("rect", {
+        x: 10,
+        y: y + 3,
+        width: 12,
+        height: 12,
+        rx: 2,
+        fill: `#${(item2.color & 16777215).toString(16).padStart(6, "0")}`
+      }));
+      const label2 = children[index].lastElementChild;
+      const range2 = document.createRange();
+      const text2 = label2.firstChild;
+      if (text2) {
+        let line = "", lastY = -Infinity, x = 28;
+        const flush = () => {
+          if (line) root.appendChild(svgNode("text", {
+            x,
+            y: lastY - host.top + 12,
+            fill: "#f2f2f2",
+            "font-size": 12,
+            "font-family": "sans-serif"
+          }, line));
+          line = "";
+        };
+        for (let offset4 = 0; offset4 < (text2.textContent?.length ?? 0); offset4++) {
+          range2.setStart(text2, offset4);
+          range2.setEnd(text2, offset4 + 1);
+          const rect = range2.getBoundingClientRect();
+          if (Math.abs(rect.top - lastY) > 1) {
+            flush();
+            lastY = rect.top;
+            x = rect.left - host.left;
+          }
+          line += text2.textContent[offset4];
+        }
+        flush();
+      }
+    });
+    return {
+      kind: "colour_legend",
+      tag: "colour-legend",
+      bounds,
+      svg: new XMLSerializer().serializeToString(root),
+      rendering: { opacity: 1, view_box: { width: bounds.width, height: bounds.height } }
+    };
+  }
   dispose() {
     this.root.remove();
   }
@@ -152848,6 +153040,7 @@ var FloatingDataCard = class {
     this.popoutWindow = null;
     this.disposed = false;
     this.visible = true;
+    this.bottomInset = 0;
     this.bodyDisplay = "";
     this.measuredSize = { width: 0, height: 0 };
     this.desiredSize = { width: Math.max(240, options.width ?? 450), height: Math.max(42, options.height ?? 210) };
@@ -153141,8 +153334,14 @@ var FloatingDataCard = class {
       this.resizeTo(this.card.offsetWidth + delta2[0], this.card.offsetHeight + delta2[1]);
     });
   }
+  /** Reserve space for host-owned controls without changing the desired size. */
+  setBottomInset(pixels) {
+    this.bottomInset = Number.isFinite(pixels) ? Math.max(0, pixels) : 0;
+    this.fitToHost();
+    this.measureBody();
+  }
   fitToHost() {
-    const width = this.host.clientWidth, height = this.host.clientHeight;
+    const width = this.host.clientWidth, height = Math.max(0, this.host.clientHeight - this.bottomInset);
     if (this.disposed || !width || !height) return;
     const margin = Math.min(4, width / 4, height / 4);
     let left = parseFloat(this.card.style.left) || 0, top = parseFloat(this.card.style.top) || 0;
@@ -153407,6 +153606,7 @@ var TrajectoryPlotOverlay = class {
     this.onSeek = onSeek;
     this.onPopout = onPopout;
     this.onHide = onHide;
+    this.bottomInset = 0;
     this.entries = /* @__PURE__ */ new Map();
     this.currentFrame = 0;
   }
@@ -153469,6 +153669,7 @@ var TrajectoryPlotOverlay = class {
     }
     if (options.visible === false) entry.card.hide();
     else entry.card.show();
+    entry.card.setBottomInset(this.bottomInset);
     this.renderEntry(entry);
     this.setFrame(this.currentFrame);
   }
@@ -153484,6 +153685,10 @@ var TrajectoryPlotOverlay = class {
       entry.options = { ...entry.options, visible: false };
       entry.card.hide();
     }
+  }
+  setBottomInset(pixels) {
+    this.bottomInset = pixels;
+    for (const entry of this.entries.values()) entry.card.setBottomInset(pixels);
   }
   clear(tag2) {
     if (!tag2) {
@@ -153768,6 +153973,35 @@ var TrajectoryPlotOverlay = class {
     text2.style.userSelect = "text";
     text2.style.cursor = "text";
     text2.onclick = (event) => event.stopPropagation();
+  }
+  movieSnapshots() {
+    return [...this.entries.values()].filter((entry) => entry.options.visible !== false).map((entry) => {
+      if (entry.card.minimized || !entry.svg) throw new MovieOverlayError("MovieOverlayUnavailable", `Expand Movie plot ${entry.tag} before exporting.`);
+      const bounds = overlayBounds(entry.card.card, this.host);
+      const root = svgDocument(bounds.width, bounds.height);
+      root.appendChild(svgNode("rect", { width: bounds.width, height: bounds.height, rx: 10, fill: "rgba(18,18,22,0.88)" }));
+      const title = svgNode("svg", { x: 8, y: 3, width: bounds.width - 16, height: 20 });
+      title.appendChild(svgNode(
+        "text",
+        { x: 0, y: 14, fill: "#f4f4f5", "font-family": "sans-serif", "font-size": 12, "font-weight": 600 },
+        entry.options.title || entry.options.y_label || "Trajectory plot"
+      ));
+      root.appendChild(title);
+      const plot = plotSvgForMovie(entry.svg);
+      for (const [name, value] of Object.entries({ x: "8", y: "26", width: String(bounds.width - 16), height: String(Math.max(1, bounds.height - 34)) })) plot.setAttribute(name, value);
+      root.appendChild(plot);
+      root.setAttribute("opacity", getComputedStyle(entry.card.card).opacity);
+      return {
+        kind: "trajectory_plot",
+        tag: entry.tag,
+        bounds,
+        svg: new XMLSerializer().serializeToString(root),
+        rendering: { opacity: Number(root.getAttribute("opacity")), view_box: {
+          width: entry.svg.viewBox.baseVal.width,
+          height: entry.svg.viewBox.baseVal.height
+        } }
+      };
+    });
   }
   dispose() {
     this.clear();
@@ -156288,10 +156522,10 @@ var MoviePanel = class extends BasePanel {
     root.appendChild(this.check("Allow replacing an existing output file", this.overwrite, (value) => {
       this.overwrite = value;
     }));
-    root.appendChild(this.check("Include visible plots and legends; refuse unsupported composition", this.includeOverlays, (value) => {
+    root.appendChild(this.check("Include visible plots and legends", this.includeOverlays, (value) => {
       this.includeOverlays = value;
     }));
-    root.appendChild(note("Native labels are included. Visible plot/legend composition is not yet available: hide those overlays or explicitly exclude them. Output is written in the Python session, including when that session runs remotely."));
+    root.appendChild(note("Native labels are included. For media, expand plot cards inside the canvas and keep their layout and opacity fixed during export. Unavailable or changing overlays stop export without replacing the file. Output is written in the Python session, including when that session runs remotely."));
     root.appendChild(note("HTML is an offline interactive presentation with Play, Pause and Seek. It uses the same recipe without a Python session; frame rate and image sampling do not apply. Static regions are required."));
     root.appendChild(this.button("Export Movie", () => this.submit("movie_export", {
       path: this.path,
@@ -173001,6 +173235,20 @@ var MolSysViewerController = class _MolSysViewerController {
       return bounds.width > 0 && bounds.height > 0;
     }).map((element) => element.getAttribute("data-molsysviewer-plot-navigation") ?? "colour-legend");
   }
+  setOverlayBottomInset(pixels) {
+    this.trajectoryPlotOverlay.setBottomInset(pixels);
+    this.legendOverlay.setBottomInset(pixels);
+  }
+  snapshotMovieOverlays(width, height, required) {
+    this.assertLiveCaptureCanvas();
+    if (required.length > 32) throw new MovieOverlayError("MovieOverlayLimit", "Movie composition exceeds 32 overlays.");
+    const rect = this.host.getBoundingClientRect();
+    const legend = this.legendOverlay.movieSnapshot();
+    const layers = [...legend ? [legend] : [], ...this.trajectoryPlotOverlay.movieSnapshots()];
+    const ids = (rows) => rows.map((row3) => JSON.stringify([row3.kind, row3.tag])).sort();
+    if (JSON.stringify(ids(layers)) !== JSON.stringify(ids(required))) throw new MovieOverlayError("MovieOverlayUnavailable", "Movie overlays differ from the declared visible plots and legend.");
+    return overlaySnapshot({ width: rect.width, height: rect.height }, layers, width, height);
+  }
   async getImageDataUri(options) {
     const helper = this.plugin.helpers.viewportScreenshot;
     if (!helper) return void 0;
@@ -173081,13 +173329,17 @@ var MolSysViewerController = class _MolSysViewerController {
             const pass = helper.imagePass;
             await pass.updateBackground();
             const data = await pass.getImageData(ctx, scaledWidth, scaledHeight);
-            await ctx.update("Encoding Movie PNG");
             const canvas = document.createElement("canvas");
             canvas.width = data.width;
             canvas.height = data.height;
             const context2 = canvas.getContext("2d");
             if (!context2) throw new Error("Movie PNG canvas is unavailable.");
             context2.putImageData(data, 0, 0);
+            if (options.movieOverlays) {
+              await ctx.update("Composing Movie overlays");
+              await drawMovieOverlays(context2, options.movieOverlays, signal);
+            }
+            await ctx.update("Encoding Movie PNG");
             return canvas.toDataURL("image/png");
           } finally {
             this.plugin.animationLoop.start({ immediate: true });
@@ -173352,7 +173604,13 @@ async function captureMovieFrame(controller, value, timeout, signal) {
     throw new Error("Invalid Movie frame capture.");
   }
   if (!controller.readMovieExportOverlays) throw new Error("Movie overlay inspection is unavailable.");
-  if (value.include_overlays && controller.readMovieExportOverlays().length) {
+  const version = value.overlay_capture_version;
+  if (version !== void 0 && (version !== 1 || !value.include_overlays || !controller.snapshotMovieOverlays || !Array.isArray(value.required_overlays) || !value.required_overlays.length || value.required_overlays.some((row3) => !row3 || !["trajectory_plot", "colour_legend"].includes(row3.kind) || typeof row3.tag !== "string" || !row3.tag))) {
+    throw new Error("Unsupported Movie overlay capture contract.");
+  }
+  const overlays = version === 1 ? controller.snapshotMovieOverlays(value.width, value.height, value.required_overlays) : void 0;
+  const originalOverlays = overlays ? JSON.stringify(overlays) : void 0;
+  if (version === void 0 && value.include_overlays && controller.readMovieExportOverlays().length) {
     throw new Error("Visible DOM overlays require explicit exclusion from Movie export.");
   }
   if (active.has(controller)) throw new Error("A previous Movie screenshot is still retiring.");
@@ -173365,7 +173623,8 @@ async function captureMovieFrame(controller, value, timeout, signal) {
     transparent: false,
     preset: "current",
     sampleLevel: value.sample_level,
-    signal: owned.signal
+    signal: owned.signal,
+    ...overlays ? { movieOverlays: overlays } : {}
   }));
   void image.then(() => active.delete(controller), () => active.delete(controller));
   let timer2;
@@ -173386,6 +173645,9 @@ async function captureMovieFrame(controller, value, timeout, signal) {
     if (typeof result2 !== "string" || !result2.startsWith("data:image/png;base64,")) {
       throw new Error("Movie screenshot failed to return PNG content.");
     }
+    if (overlays && JSON.stringify(controller.snapshotMovieOverlays(value.width, value.height, value.required_overlays)) !== originalOverlays) {
+      throw new MovieOverlayError("MovieOverlayChanged", "Movie overlay content or layout changed during screenshot.");
+    }
     return {
       job_id: value.job_id,
       frame_index: value.frame_index,
@@ -173393,7 +173655,8 @@ async function captureMovieFrame(controller, value, timeout, signal) {
       height: value.height,
       include_overlays: value.include_overlays,
       sample_level: value.sample_level,
-      data_uri: result2
+      data_uri: result2,
+      ...overlays ? { overlay_capture_version: 1, required_overlays: value.required_overlays, composition: overlayDescriptor(overlays) } : {}
     };
   } finally {
     if (timer2 !== void 0) clearTimeout(timer2);
@@ -176115,6 +176378,13 @@ var MovieWebPlayer = class {
     bar.appendChild(this.status);
     for (const event of ["pointerdown", "click", "wheel", "keydown"]) bar.addEventListener(event, (e) => e.stopPropagation());
     host.appendChild(bar);
+    const reserveControls = () => this.controller.setOverlayBottomInset(
+      Math.max(0, host.getBoundingClientRect().bottom - bar.getBoundingClientRect().top + 8)
+    );
+    reserveControls();
+    this.layoutObserver = new ResizeObserver(reserveControls);
+    this.layoutObserver.observe(host);
+    this.layoutObserver.observe(bar);
     this.interact = () => this.pause();
     host.addEventListener("pointerdown", this.interact);
     host.addEventListener("wheel", this.interact, { passive: true });
@@ -176280,6 +176550,8 @@ var MovieWebPlayer = class {
     this.drawing.abort();
     this.host.removeEventListener("pointerdown", this.interact);
     this.host.removeEventListener("wheel", this.interact);
+    this.layoutObserver?.disconnect();
+    this.controller.setOverlayBottomInset(0);
     this.surface.remove();
     delete this.host.dataset.molsysviewerMovieReady;
   }
@@ -179110,6 +179382,7 @@ async function bootDocsView(opts) {
       visual_state_capture: [1, 2],
       movie_preview: [1],
       movie_frame_capture: [1],
+      movie_overlay_capture: [1],
       movie_appearance: [1],
       movie_environment_capture: [1]
     } });
@@ -179845,6 +180118,7 @@ function render({ model, el, runtimeSource }) {
           visual_state_capture: [1, 2],
           movie_preview: [1],
           movie_frame_capture: [1],
+          movie_overlay_capture: [1],
           movie_appearance: [1],
           movie_environment_capture: [1]
         }

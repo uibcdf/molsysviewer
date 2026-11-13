@@ -618,7 +618,7 @@ export async function bootDocsView(opts: {
             await player.initialize();
         }
         notifyHost({ event: "ready", capabilities: {
-            array_native_molsys_ref: [1], visual_state_capture: [1, 2], movie_preview: [1], movie_frame_capture: [1], movie_appearance: [1], movie_environment_capture: [1],
+            array_native_molsys_ref: [1], visual_state_capture: [1, 2], movie_preview: [1], movie_frame_capture: [1], movie_overlay_capture: [1], movie_appearance: [1], movie_environment_capture: [1],
         } });
     } catch (err) {
         console.error("[MolSysViewer docs] Init error:", err);
@@ -1602,6 +1602,7 @@ export function render({ model, el, runtimeSource }: { model: any; el: HTMLEleme
                         visual_state_capture: [1, 2],
                         movie_preview: [1],
                         movie_frame_capture: [1],
+                        movie_overlay_capture: [1],
                         movie_appearance: [1],
                         movie_environment_capture: [1],
                     },

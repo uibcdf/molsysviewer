@@ -901,8 +901,13 @@ class MovieManager:
         Returns the absolute ``path``, output ``bytes`` and detached
         ``manifest`` (recipe, sampling, composition and encoder). The manifest
         is also embedded in video metadata or the PNG archive. Native geometry
-        annotations are included. Visible trajectory plots currently require
-        hiding or the explicit ``include_overlays=False`` exclusion.
+        annotations are included. Visible trajectory plots and colour legends
+        are included by default, with their scientific context in the manifest.
+        Media capture requires expanded cards inside the canvas and the
+        ``movie_overlay_capture`` renderer capability. Keep their layout and
+        opacity fixed throughout export; unavailable or changing overlays cause
+        refusal without replacing the destination. ``include_overlays=False``
+        explicitly excludes them. HTML retains live interactive overlays.
 
         ``on_progress`` is an optional synchronous callback receiving a detached
         progress dictionary. The view remains at the last sampled pose.

@@ -54,3 +54,4 @@ import "./coverage-dependencies.test";
 import "./local-ui-model.test";
 import "./movie-studio.test";
 import "./movie-web.test";
+import "./movie-composition.test";

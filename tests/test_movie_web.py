@@ -85,6 +85,20 @@ def test_stale_callback_cannot_publish_a_recipe(view, tmp_path):
     assert not path.exists()
 
 
+def test_replaced_overlay_context_cannot_publish_a_stale_presentation(view, tmp_path):
+    view.scene.set_legend([("Control", 0xFF0000)])
+    path = tmp_path / "existing.html"
+    path.write_bytes(b"original")
+
+    def replace(_):
+        # Equal values still create a new public message lifetime.
+        view.scene.set_legend([("Control", 0xFF0000)])
+
+    with pytest.raises(Exception, match="superseded"):
+        asyncio.run(view.movie.export_async(path, overwrite=True, on_progress=replace))
+    assert path.read_bytes() == b"original"
+
+
 def test_cancelled_web_task_does_not_publish(view, tmp_path):
     async def cancel():
         task = asyncio.create_task(view.movie.export_async(tmp_path / "cancelled.html"))
@@ -119,11 +133,15 @@ def test_closed_source_cannot_publish_after_progress(view, tmp_path):
     assert not list(tmp_path.iterdir())
 
 
-def test_visible_overlay_needs_an_explicit_exclusion(view, tmp_path):
+def test_web_overlays_preserve_current_context_and_explicit_exclusion(view, tmp_path):
     view.scene.set_legend([{"label": "Site", "color": 0xFF5500}])
     view.movie.rebase(view.movie.review_rebase())
-    with pytest.raises(ValueError, match="plots/legends"):
-        asyncio.run(view.movie.export_async(tmp_path / "refused.html"))
+    included = asyncio.run(view.movie.export_async(tmp_path / "included.html"))
+    assert included["manifest"]["composition"]["included_dom_overlays"] == [
+        {"kind": "colour_legend", "tag": "colour-legend"}
+    ]
+    messages = embedded((tmp_path / "included.html").read_text(), "molsysviewer-messages")
+    assert any(row["op"] == "set_legend" for row in messages)
     result = asyncio.run(view.movie.export_async(tmp_path / "excluded.html", include_overlays=False))
     assert result["manifest"]["composition"]["excluded_dom_overlays"] == ["colour-legend"]
     messages = embedded((tmp_path / "excluded.html").read_text(), "molsysviewer-messages")

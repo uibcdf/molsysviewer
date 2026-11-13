@@ -2,8 +2,11 @@
 
 import asyncio
 import base64
+import hashlib
+import importlib
 import io
 import json
+import os
 import runpy
 import subprocess
 import sys
@@ -50,6 +53,28 @@ def _video(path):
 
 
 def main():
+    origins = {
+        name: str(Path(importlib.import_module(name).__file__).resolve())
+        for name in ("molsysviewer", "molsysmt", "pyunitwizard", "molsysmt._rust")
+    }
+    for name, variable in (
+        ("molsysviewer", "MOLSYSVIEWER_ROOT"),
+        ("molsysmt", "MSV_RECEIVING_INNER_ROOT"),
+        ("molsysmt._rust", "MSV_RECEIVING_INNER_ROOT"),
+        ("pyunitwizard", "MSV_RECEIVING_SUPPORT_ROOT"),
+    ):
+        if os.environ.get(variable):
+            assert Path(origins[name]).is_relative_to(Path(os.environ[variable]).resolve()), origins
+    native_sha = hashlib.sha256(Path(origins["molsysmt._rust"]).read_bytes()).hexdigest()
+    if os.environ.get("MOLSYSVIEWER_EXPECTED_NATIVE_SHA256"):
+        assert native_sha == os.environ["MOLSYSVIEWER_EXPECTED_NATIVE_SHA256"]
+    if os.environ.get("MOLSYSVIEWER_MOVIE_EVIDENCE_DIR"):
+        (Path(os.environ["MOLSYSVIEWER_MOVIE_EVIDENCE_DIR"]) / "producer-origin.json").write_text(
+            json.dumps(
+                {"python": sys.version, "executable": sys.executable, "modules": origins, "native_sha256": native_sha},
+                indent=2,
+            )
+        )
     bridge = runpy.run_path(str(Path(__file__).with_name("canvas-popup-bridge.py")))
     source = msm.systems["pentalanine"]["traj_pentalanine.h5msm"]
     with msv.new_view(source, structure_indices=[4999, 0, 73]) as view:
@@ -145,6 +170,41 @@ def main():
             if "movie_export_legend" in event:
                 owner.scene.set_legend([("Control", 0xFF0000)] if event["movie_export_legend"] else [])
                 return True
+            if event.get("movie_composition_setup"):
+                owner.trajectory_plot.show(
+                    {"Control": [0.2, 0.5, 0.3]},
+                    x=[0, 10, 20],
+                    colors=[0x00FF00],
+                    tag="control",
+                    title="Control <plot> & units",
+                    x_label="Time (ps)",
+                    y_label="Control (nm)",
+                    width=360,
+                    height=220,
+                    observations=[
+                        {
+                            "schema": "test.movie_control@1",
+                            "method": "explicit analytic test series",
+                            "units": {"x": "ps", "y": "nm"},
+                            "original_structure_indices": [4999, 0, 73],
+                        }
+                    ],
+                )
+                owner.scene.set_legend([("Control (nm)", 0xFF0000), ("Group <A> & B", 0x0000FF)])
+                return True
+            if event.get("movie_composition_inspect"):
+                suffix = event["movie_composition_inspect"]
+                if suffix == ".zip":
+                    with zipfile.ZipFile(output[suffix]) as archive:
+                        manifest = json.loads(archive.read("manifest.json"))
+                        frames = [archive.read(f"frames/{index:08d}.png") for index in (0, 3)]
+                else:
+                    _, decoded, manifest = _video(output[suffix])
+                    frames = [imageio.imwrite("<bytes>", decoded[index], format="png") for index in (0, 3)]
+                return {
+                    "manifest": manifest,
+                    "images": ["data:image/png;base64," + base64.b64encode(frame).decode() for frame in frames],
+                }
             if event.get("movie_export_verify"):
                 with zipfile.ZipFile(output[".zip"]) as archive:
                     manifest = json.loads(archive.read("manifest.json"))

@@ -38,6 +38,7 @@ import { StateHandlers } from "./handlers/state-handlers";
 import { TrajectoryHandlers, TrajectoryState } from "./handlers/trajectory-handlers";
 import { MovieHandlers } from "./handlers/movie-handlers";
 import { MoviePreviewClock } from "./movie-preview-clock";
+import { drawMovieOverlays, overlaySnapshot, MovieOverlayError, type MovieOverlaySnapshot, type OverlayId } from "../ui/movie-overlay-composition";
 import { waitForCanvasDraw } from "./canvas-draw";
 import { CapturePresentationFence } from "./capture-presentation";
 import type { MovingVisualSnapshot } from "../messages/visual-state-snapshot";
@@ -4702,6 +4703,22 @@ export class MolSysViewerController {
         }).map(element => element.getAttribute("data-molsysviewer-plot-navigation") ?? "colour-legend");
     }
 
+    setOverlayBottomInset(pixels: number): void {
+        this.trajectoryPlotOverlay.setBottomInset(pixels);
+        this.legendOverlay.setBottomInset(pixels);
+    }
+
+    snapshotMovieOverlays(width: number, height: number, required: OverlayId[]): MovieOverlaySnapshot {
+        this.assertLiveCaptureCanvas();
+        if (required.length > 32) throw new MovieOverlayError("MovieOverlayLimit", "Movie composition exceeds 32 overlays.");
+        const rect = this.host.getBoundingClientRect();
+        const legend = this.legendOverlay.movieSnapshot();
+        const layers = [...(legend ? [legend] : []), ...this.trajectoryPlotOverlay.movieSnapshots()];
+        const ids = (rows: OverlayId[]) => rows.map(row => JSON.stringify([row.kind, row.tag])).sort();
+        if (JSON.stringify(ids(layers)) !== JSON.stringify(ids(required))) throw new MovieOverlayError("MovieOverlayUnavailable", "Movie overlays differ from the declared visible plots and legend.");
+        return overlaySnapshot({ width: rect.width, height: rect.height }, layers, width, height);
+    }
+
     private imageExportPending = false;
 
     async getImageDataUri(options?: {
@@ -4713,6 +4730,7 @@ export class MolSysViewerController {
         cameraSnapshot?: Camera.Snapshot;
         sampleLevel?: number;
         signal?: AbortSignal;
+        movieOverlays?: MovieOverlaySnapshot;
     }): Promise<string | { success: false; error_type: string; message: string; requested_width: number; requested_height: number; max_renderbuffer_size?: number; max_viewport_width?: number; max_viewport_height?: number } | undefined> {
         const helper = this.plugin.helpers.viewportScreenshot;
         if (!helper) return void 0;
@@ -4802,13 +4820,17 @@ export class MolSysViewerController {
                         const pass = helper.imagePass;
                         await pass.updateBackground();
                         const data = await pass.getImageData(ctx, scaledWidth, scaledHeight);
-                        await ctx.update("Encoding Movie PNG");
                         const canvas = document.createElement("canvas");
                         canvas.width = data.width;
                         canvas.height = data.height;
                         const context = canvas.getContext("2d");
                         if (!context) throw new Error("Movie PNG canvas is unavailable.");
                         context.putImageData(data, 0, 0);
+                        if (options.movieOverlays) {
+                            await ctx.update("Composing Movie overlays");
+                            await drawMovieOverlays(context, options.movieOverlays, signal);
+                        }
+                        await ctx.update("Encoding Movie PNG");
                         return canvas.toDataURL("image/png");
                     } finally { this.plugin.animationLoop.start({ immediate: true }); }
                 });
