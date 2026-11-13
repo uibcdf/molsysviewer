@@ -27,7 +27,8 @@ headless correspondence, native popup/session and decoded-media checks.
 The admitted legacy migration profile is source-received. Studio now has an
 experimental editor over this same Python owner; its host and catalogue scope
 is specified below. Richer renderer/style catalogues, complete authoring
-acceptance and a portable interactive web player remain open.
+acceptance and richer portable profiles remain open. The first self-contained
+web player is described below.
 The [appearance receipt](movie_appearance_receiving_20261110.json) retains its
 separate numerical, native-node, popup, session and media evidence.
 The sections below describe the broader M1–M6 design and its remaining work.
@@ -74,7 +75,7 @@ Preview uses the existing arbitrary-time seek/play/pause/reset APIs. Export
 uses the existing bounded MP4, WebM and PNG/manifest ZIP writer, with progress,
 cancellation and explicit overwrite/overlay policy. The destination is a path
 in the Python session, including for a remote session. Browser download,
-portable web presentation, visible DOM-overlay composition and the complete
+visible DOM-overlay composition and the complete
 integrated scientific story remain separate M4/M5 work. This slice does not
 complete #320. The original adapted-transport receiving does not qualify an
 actual notebook; that boundary has its separate receiving below. Installed,
@@ -122,6 +123,48 @@ session recovery and closing the initiator before releasing an actual held
 reply. Original failed entries and negative-to-positive ownership controls
 remain preserved under #365/#366. This does not complete Qt integration,
 authoring/accessibility review, portable web, overlay composition or M5.
+
+## Portable web presentation: first M4 profile
+
+`await view.movie.export_async("movie.html")` (or `format="html"`) writes one
+self-contained offline presentation. This extends the existing digested and
+signaled API. An isolated state-import owner borrows the current MolSys,
+restores the recorded baseline and projects it through the existing static
+export owners. It closes before publication. No source scene, coordinates or
+named analysis is edited. A job marker retains exclusive Movie ownership and
+projects Python-started activity to Studio. Cancellation, closed/superseded
+owners, invalid parameters and callback failures preserve destinations; final
+publication uses sibling/no-clobber filesystem semantics.
+
+The page embeds the full recipe, molecular projection, bounded static
+interaction series and installed runtime. Its manifest identifies that runtime
+by version and SHA-256, embedded assets, responsive viewport hints and
+composition. No CDN, local-source-path dependency, kernel, server or codec is
+required. Visual interaction series are not a complete H5MSM analysis archive;
+retain the MSV session for scientific editing and data recovery. The profile
+refuses dynamic regions and partial/unsupported/over-limit interaction
+projections. Visible DOM plots and legends need refusal or explicit recorded
+exclusion. No popup player or shared/network-runtime profile is promised here.
+
+`MovieWebPlayer` compiles the same complete version-2 recipe, serializes native
+scene writes and paces its single clock on completed coherent draws. Layer
+gates derive from the baseline and preserve untracked hidden members, including
+after appearance rebuilds. Interaction style changes reuse their occurrence
+series. Seek storms retain only the latest queued intention. Explicit seek
+and new playback invalidate material caches so exploration cannot redefine a
+later sample. Pause drains the accepted sample; disposal retires the clock,
+queued writes, draw wait and DOM listeners. Play/Pause/Restart, a labeled time
+slider and seconds readout fit a compact bottom bar. Playback starts paused;
+ordinary pointer/wheel exploration pauses it.
+
+The [web receipt](movie_web_receiving_20261112.json) records the original #367
+complete-recipe refusal, unit correction and offline native file/iframe
+receiving. Its guard is
+`tests/test_movie_web.py::test_native_offline_movie_presentation` with
+`MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`; unselected skips do not qualify it. The
+same `movie-web` entry is registered in core browser CI. This does not complete
+#320, M2 host/accessibility review, overlay composition, M5, installed/hosted
+or human acceptance.
 
 ## One model, several consumers
 

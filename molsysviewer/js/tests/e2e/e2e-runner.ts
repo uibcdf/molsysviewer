@@ -67,6 +67,7 @@ const SUITES = [
     "movie-export",
     "movie-appearance",
     "movie-studio",
+    "movie-web",
 ] as const;
 const SERVER_GPU_SUITES = new Set<string>(["remote-session"]);
 const REMOTE_SUITES = new Set<string>(["remote-client-rendering", "remote-input", "remote-session"]);

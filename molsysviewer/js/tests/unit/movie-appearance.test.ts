@@ -4,6 +4,14 @@ import { compileMovieTimeline } from "../../src/managers/movie-timeline";
 import { movieRepresentationTypes } from "../../src/managers/movie-appearance";
 import oracle from "../fixtures/movie-appearance-oracle.json";
 
+test("complete Python scene recipes admit empty colour-layer records but reject nonempty ones", () => {
+    const recipe: any = structuredClone(oracle.recipe);
+    recipe.baseline.scene.whole.color_layer = {};
+    for (const expected of oracle.samples) compare(compileMovieTimeline(recipe).evaluate(expected.time_ms), expected);
+    recipe.baseline.scene.whole.color_layer = { source: "scalar" };
+    assert.throws(() => compileMovieTimeline(recipe), /per-atom colour layer/);
+});
+
 test("observed environments retain declared intent without changing logical evaluation", () => {
     const recipe: any = structuredClone(oracle.recipe);
     recipe.baseline.environment_capture = { version: 1, intent: { background: { mode: "dark" } } };

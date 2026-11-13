@@ -40,6 +40,15 @@ capture and detached preview/export. Full M2 host/accessibility receiving,
 portable web/composition and M5's integrated scientific story remain with
 #320. This additional stream changes neither original counter above.
 
+**Portable Movie tranche — 2026-11-12:** the
+[web receipt](../movie_web_receiving_20261112.json) receives a first offline
+single-file/iframe player over the same complete Python recipe, with native
+reverse seek, appearance, interaction styles, hidden layer gates and playback
+controls. #367 corrects an empty colour-map mismatch. This is M4's bounded
+static-region/embedded-runtime profile; visible overlay composition, richer
+portable profiles, M2 host/accessibility and M5 remain open. Source/installed,
+hosted and human acceptance stay separate; neither original counter changes.
+
 **Actual-notebook Movie tranche — 2026-11-12:** the
 [shared receiving](../movie_jupyter_receiving_20261112.json) closes source
 defects #365/#366 and receives the complete notebook/popup flow, including

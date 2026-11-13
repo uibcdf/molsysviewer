@@ -332,6 +332,20 @@ async def _encoder(format, timeout):
 async def export_movie(
     movie, path, *, fps, width_px, height_px, sample_level, format, overwrite, include_overlays, timeout, on_progress
 ):
+    selected_format = format or {".html": "html", ".htm": "html"}.get(Path(path).suffix.lower())
+    if selected_format == "html":
+        from ._movie_web import export_movie_web
+
+        return await export_movie_web(
+            movie,
+            path,
+            width=width_px,
+            height=height_px,
+            overwrite=overwrite,
+            include_overlays=include_overlays,
+            timeout=timeout,
+            on_progress=on_progress,
+        )
     from depdigest import dep_digest
 
     @dep_digest("imageio")

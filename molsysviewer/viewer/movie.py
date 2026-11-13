@@ -880,7 +880,14 @@ class MovieManager:
         on_progress=None,
         skip_digestion: bool = False,
     ) -> dict:
-        """Render a version-2 Movie to MP4, WebM or a lossless PNG ZIP.
+        """Export a version-2 Movie to media or an offline HTML presentation.
+
+        ``.html`` (or ``format="html"``) embeds the runtime, molecular scene,
+        interaction geometry and recipe with Play/Pause/Seek/Restart controls.
+        It works without Python, a server, network or image codecs. This route
+        preserves the source view and requires static regions; dynamic regions
+        are refused. Its responsive viewport does not sample at ``fps`` or use
+        ``sample_level``. Canvas popup playback is not part of this profile.
 
         Samples the half-open interval at a constant rational ``fps`` (for
         example ``"30000/1001"``). The live primary canvas must support Movie
@@ -899,7 +906,7 @@ class MovieManager:
 
         ``on_progress`` is an optional synchronous callback receiving a detached
         progress dictionary. The view remains at the last sampled pose.
-        MP4/WebM require the optional imageio-ffmpeg backend; all formats require
+        MP4/WebM require the optional imageio-ffmpeg backend; media formats require
         ImageIO. A missing renderer or codec never produces a placeholder.
         """
         from ._movie_export import export_movie

@@ -56,8 +56,9 @@ public 0.24.0 package or a standalone HTML export.
 3. In **Preview**, choose a time and **Go to time**, or use **Play** and
    **Pause**. The slider prepares a time; it does not send repeated scene edits
    while being dragged. Restoring the initial scene requires confirmation.
-4. In **Export**, enter a path in the Python session and choose MP4, WebM or
-   lossless PNG ZIP, rate and pixel dimensions. A remote session writes to
+4. In **Export**, enter a path in the Python session: MP4, WebM,
+   lossless PNG ZIP, or an offline interactive HTML movie. Media use the chosen
+   rate and pixel dimensions. A remote session writes to
    that remote filesystem. Progress and cancellation are available; the
    [export contract](export.md) describes encoders and visible-overlay limits.
 
@@ -73,8 +74,9 @@ Live actions require a compatible renderer and a running integrated async
 host. Unsupported hosts show an explanation and disable those actions. The
 ordinary experimental Qt host still needs that loop integration. Automated
 development receiving covers actual Jupyter, canvas popups and detached Studio;
-native Qt and human acceptance remain separate. Interactive
-portable Movie playback and visible plot/legend composition remain in development.
+native Qt and human acceptance remain separate. The first
+[offline HTML playback profile](export.md) supports static regions; visible
+plot/legend composition and richer portable profiles remain in development.
 
 Python and Studio share the running Movie: either can pause a preview started
 by the other. Studio also shows when a capture or export was started from

@@ -108,6 +108,20 @@ browser entry. The deterministic scene/loop controls live in
 relevant assertions. A passing adapted comm bridge or registration alone does
 not establish actual-notebook, native Qt, installed or human acceptance.
 
+Portable Movie receiving uses
+`tests/test_movie_web.py::test_native_offline_movie_presentation` with
+`MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`. Build the runtime with
+`npm run build:runtime`, build registered browser entries with
+`npm run build:e2e:all`, then select that pytest guard. Its `movie-web` entry
+also runs in the core browser lane. A public-API fixture exports real
+pentalanine, closes Python, relocates the single HTML and opens it offline in
+real Mol*/Chromium. Independent Python samples are compared with native
+camera, structure, materials, labels and interactions through reverse seek,
+controls, iframe and layer gates. Browser/WebGL failure fails; the unselected
+pytest skip is not receiving. Publication/cancellation guards live in the
+same Python module. Installed packages, native Qt, shared/network assets and
+full #320 acceptance retain their separate requirements.
+
 For rendered Movie camera completion and interruption, the bounded frontend profile
 also accepts exactly `molsysviewer/js/tests/e2e/movie-playback.e2e.ts`. From
 `molsysviewer/js/`, build with `npm run build:harness` and

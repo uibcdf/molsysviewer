@@ -3968,6 +3968,7 @@ class MolSysView(
         background: str = "auto",
         host_event_transport: str | None = None,
         messages_url: str | None = None,
+        movie_presentation: dict | None = None,
     ) -> str:
         """Create an HTML page that boots the runtime and replays the scene.
 
@@ -4012,6 +4013,8 @@ class MolSysView(
             ui_config["host_event_transport"] = str(host_event_transport)
         if messages_url:
             ui_config["messages_url"] = messages_url
+        if movie_presentation is not None:
+            ui_config["movie_presentation"] = movie_presentation
 
         messages_json = self._json_for_html_script(messages) if inline_messages else "[]"
         ui_json = self._json_for_html_script(ui_config)

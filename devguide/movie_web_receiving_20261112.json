@@ -1,0 +1,570 @@
+{
+  "schema": "molsysviewer.movie_web_receiving@1",
+  "date": "2026-11-12",
+  "parent": "uibcdf/molsysviewer#320",
+  "issues": [
+    "uibcdf/molsysviewer#367"
+  ],
+  "status": "source_received",
+  "scope": "First embedded-offline static-region presentation; source receiving, not installed/hosted/Qt/human or complete Movie acceptance.",
+  "sources": {
+    "molsysviewer_base": "47d6f96c1ba49598f80f78032e0aa73fb1113eda",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "pyunitwizard": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+    "native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "runtime_notice": "Frozen source/support routes in the explicit Python 3.14 environment, not public package identities.",
+    "working_code_sha256": {
+      "molsysviewer/_private/argdigest/argument/format.py": "c44191521f4afbe815f9d4eba8096e3c3e0be5815d05683a82bff9b267fa9c2d",
+      "molsysviewer/js/package.json": "948163eea475adc69d069d407dd532540d4b5f4c485ae1804f47807a2760b198",
+      "molsysviewer/js/src/index.ts": "47936496340e52589d39ee9b8bba432a2da9b9c6c0b1994d34955f94a305ce36",
+      "molsysviewer/js/src/managers/handlers/interaction-handlers.ts": "9edc08cbf40694167cca7897e3190b4423356dca7ade246cf97238dfb7cddcd2",
+      "molsysviewer/js/src/managers/movie-appearance.ts": "6fc40f101f38d9b53ff58a00ac286049d9dd82d188b68c87d3459bb486c2ab9c",
+      "molsysviewer/js/src/managers/movie-web-player.ts": "e55b3db2afabb5210c77ba42afa94684dc84cee2d9cd28fba1b6a4be03eeb88b",
+      "molsysviewer/js/src/ui/panels/movie-panel.ts": "a7fcf0453fec7a9ce4c1c5a57397a942baa12eebe297c2b7f2c73fafe9ac347a",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "67068632b13c8f5dd945051272c4f9ad005245b31e63a1a109f05c0698508462",
+      "molsysviewer/js/tests/e2e/movie-web-fixture.py": "d2a95f77cd7a42509650aa3b3ef45348bf56998d038775e1187d3b7437939c1d",
+      "molsysviewer/js/tests/e2e/movie-web.e2e.ts": "3a4adfc9504a7c56ca4e14f20702e464a8e0d09bc2aa58f3b3785428492f37a8",
+      "molsysviewer/js/tests/unit/index.test.ts": "f564aa62219f1eeb19168398c4a2c0147ac4dd1b7c8d30cbd0065beee5ff2e7b",
+      "molsysviewer/js/tests/unit/movie-appearance.test.ts": "cd75dd91451412867b2862e9ef0bde7dc33b6941a56b0c606cdecefab8d06676",
+      "molsysviewer/js/tests/unit/movie-web.test.ts": "db33c5d84556ce403f15efd70e99743f7c48b85d4b7fa72058cf852036577916",
+      "molsysviewer/viewer.js": "4703ccf5de5aead85d772e6d164c0bea0fbbd6e219a45780c1044108d1750902",
+      "molsysviewer/viewer/_movie_export.py": "2c54c61a3fe1a26376032ac5258889e4dd1b1601a2a68e9f0a64cd981ce371e2",
+      "molsysviewer/viewer/_movie_web.py": "729858805cdae8c181e8f33d6cde24e2523f3980a84437be4f12f9f90518ab20",
+      "molsysviewer/viewer/core.py": "e68d38171369ddbb8d365674f82c9f157a15b553a02d8eed68b736a920d0c1cc",
+      "molsysviewer/viewer/movie.py": "48baa75e4274f4402348d2182a86337729ff73d17a15f26ca725f2dcb7441c83",
+      "tests/test_movie_web.py": "cfd35c2c7116422278039f72e4022bc1d01c322af249fcc30d8df881eaee0527"
+    }
+  },
+  "remaining": [
+    "visible DOM-overlay composition",
+    "M2 host/accessibility receiving",
+    "richer portable profiles",
+    "M5 integrated scientific story",
+    "covering source/installed/manual qualification"
+  ],
+  "audit_counters": {
+    "source": 38,
+    "final": 1,
+    "denominator": 46,
+    "changed": false
+  },
+  "publication": "paused; no candidate/tag/package/Release/1.0 authorization",
+  "actual_producer": {
+    "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+    "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "modules": {
+      "molsysviewer": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+      "molsysmt": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/__init__.py",
+      "pyunitwizard": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+      "molsysmt._rust": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/_rust.abi3.so"
+    },
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+  },
+  "completed_utc": "2026-11-12T23:59:27.378966+00:00",
+  "validation": {
+    "python_regression": {
+      "passed": 776,
+      "skipped": 7,
+      "warnings": 448,
+      "warning_kind": "LegacyH5MSMWarning from deliberate 0.4 fixtures; retained"
+    },
+    "js": {
+      "passed": 471,
+      "skipped": 0
+    },
+    "offline_native": {
+      "passed": 1,
+      "selector": "tests/test_movie_web.py::test_native_offline_movie_presentation",
+      "required_environment": "MOLSYSVIEWER_MOVIE_BROWSER_TEST=1",
+      "route": "relocated file and local iframe, offline real Mol*/Chromium after Python producer closes",
+      "checks": [
+        "full saved Python recipe",
+        "independent Python/native forward/reverse samples",
+        "native camera/structure/material/text/environment checks",
+        "interaction frame/status/style",
+        "one serialized writer and last queued seek",
+        "restoration after manual background exploration",
+        "Play/Pause/Restart and completed final draw",
+        "layer gates preserve hidden animated members",
+        "disposal and no HTTP requests"
+      ],
+      "producer_origins_and_native_digest_checked": true
+    },
+    "documentation": {
+      "passed": 29
+    },
+    "lint_and_format": "passed; 1057 Python files",
+    "strict_types": "passed for runtime and final browser guard",
+    "public_call_shape": "unchanged; existing digested/signaled export_async accepts html",
+    "core_ci_registration": "registered; not dispatched or qualified this turn"
+  },
+  "runs": [
+    {
+      "native_exit": 1,
+      "seconds": 11.782861314015463,
+      "peak_owned_rss_mib": 500.6,
+      "selected_inputs": 9911,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-617-backend",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 396025856,
+      "evidence": {
+        "stdout.log": "0f9209e09a82495ead874ea51eb57af1e278684388f12449a5e03f4787ad435f",
+        "inputs-after.json": "1ba8b40dc660c307f53e2a8d4a8b8ae37abc651fb836b2f3b2ab902e8eeeda43",
+        "resources-before.json": "9a5057a9a85650b14256829a87805a42a6f7a5f3b0db41e8a22ab2e6b0cc1a54",
+        "invocation.json": "617e7f43d91ed63814d1427f7e7e78b85fa2b0ed5aaecbbeaa0f7c408b4f7170",
+        "inputs-before.json": "1ba8b40dc660c307f53e2a8d4a8b8ae37abc651fb836b2f3b2ab902e8eeeda43",
+        "junit.xml": "04496107df6e966633bed5608eae8ae1a31b332bb1c00bd128850325329cbf23"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 25.297449459088966,
+      "peak_owned_rss_mib": 577.2,
+      "selected_inputs": 9912,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-618-movie-web",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 568770560,
+      "evidence": {
+        "stdout.log": "1a57a0a09742f53a29654e2645060430d5920509ae04ca226871bc6577eb5a43",
+        "inputs-after.json": "2eebe9a7057cf532e95c392317e8b6fc35bbfb0cbafefce14b37dcf8b216c258",
+        "resources-before.json": "77a9eaea71d0ce2848b2326d8e58fe0d8a6b00120b41fca432630b13bc2b3784",
+        "invocation.json": "b47822f165ca4eced0b36d35a59310b6cce6adfd723b21ef7e92ad294c7dfa8d",
+        "inputs-before.json": "2eebe9a7057cf532e95c392317e8b6fc35bbfb0cbafefce14b37dcf8b216c258"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 54.10405048402026,
+      "peak_owned_rss_mib": 1441.2,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-619-native",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 604344320,
+      "evidence": {
+        "stdout.log": "56e88b1bbeca75c29f3e6bb42b7d79513e4c9b232892f87c5e644c4d3ad73ba9",
+        "inputs-after.json": "53d8dd4e0e72b2000259660bcd2bec40c256a351df02b5012d15062ef9d2c924",
+        "resources-before.json": "43397bc8bd9ee069529e44c0e6ec1a918c9f3f5e43a07df589ab7c12d0c87b4a",
+        "invocation.json": "8dd0532b01df918401fb24fa14248bdc12a87c2817ffd3ccc43af31d444df268",
+        "inputs-before.json": "53d8dd4e0e72b2000259660bcd2bec40c256a351df02b5012d15062ef9d2c924"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 16.197047512046993,
+      "peak_owned_rss_mib": 1452.2,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-620-diagnostic",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 505417728,
+      "evidence": {
+        "stdout.log": "7388064622c1c61ab969e37051112e6086c9fc4b9349b8b6d63fa63404db72c6",
+        "inputs-after.json": "9745a8cf1ead7d19096520c8f85787dea65ed623f62eb6ad497eebb3cde94b18",
+        "resources-before.json": "b0f85020c88336da94a7353b35e7be3ab0b500f4085781a282bffd16e5bac334",
+        "invocation.json": "087ea6f05a2dfc9db029c77a8b8f5591e732d4b149eaa7cfd7953aa3bf2e2ce9",
+        "inputs-before.json": "9745a8cf1ead7d19096520c8f85787dea65ed623f62eb6ad497eebb3cde94b18"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 24.683979650959373,
+      "peak_owned_rss_mib": 575.5,
+      "selected_inputs": 9912,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-621-movie-web-fix",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 570044416,
+      "evidence": {
+        "stdout.log": "9fdcf61b337b60d1b8de5106d016445bf247dee9104f9e61b37072c392e4bf29",
+        "inputs-after.json": "0af18528bf70c20c65b24cf5dc1c461c4c559f5a376d1a4249ce942af74154e0",
+        "resources-before.json": "c5676f434a27db676523214e2f2efbcfd989763f490d48a2a6588f5b664f5ed1",
+        "invocation.json": "845a314a772cd3eb8c2df90108e56f0dea36aee255e6f86aa9498478f3a97cc5",
+        "inputs-before.json": "0af18528bf70c20c65b24cf5dc1c461c4c559f5a376d1a4249ce942af74154e0"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 19.844361532013863,
+      "peak_owned_rss_mib": 1658.7,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-622-native-fixed",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 757846016,
+      "evidence": {
+        "stdout.log": "e40ce304d92f972e791751d8590054a5ef86b117743615fa8b38e2a1146838e1",
+        "inputs-after.json": "3f47746f4d6bec00801739fa88bb7b47a6cd0080f1232d5eb2d2edbf83c0456b",
+        "resources-before.json": "adbb4424c464a4edc71ab45e9c06a9b88fbe75287462cd02cb1380e7d51eaca8",
+        "invocation.json": "75cfd73a4ba48346767d4d6cc452c6946db4e4e12f99e991fbfcafa373a0a6ff",
+        "inputs-before.json": "3f47746f4d6bec00801739fa88bb7b47a6cd0080f1232d5eb2d2edbf83c0456b",
+        "junit.xml": "a2eb1f1039627c47583f02f9eeaff9b130cd7e5444059fca4617cd9ee8bfd3e2"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 61.02189366519451,
+      "peak_owned_rss_mib": 1724.4,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-623-native-observer",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 827965440,
+      "evidence": {
+        "stdout.log": "0af324e14765a6ded6a4aa3b7ec69caac5056bcf8c4a30a26a1c21f8fef8c060",
+        "inputs-after.json": "860dbe9dfbc7868545b87726096aba404d49c37e46fb0b907898fc0ec2a5d6e7",
+        "resources-before.json": "cbc638ac481c66bc334c490ade253ad1962944383c849dee477def8e93cc6fcd",
+        "invocation.json": "97d216a75963324f72af544d975a9a13ca4b58a97faa3fe3c27ca5e531802f91",
+        "inputs-before.json": "860dbe9dfbc7868545b87726096aba404d49c37e46fb0b907898fc0ec2a5d6e7",
+        "junit.xml": "7e7a4d356e3d0838da31053f466e7272246b20e82cd1267ef7b3e7c4d07450cc"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 68.16274438705295,
+      "peak_owned_rss_mib": 1890.5,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-624-native-controls",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1011339264,
+      "evidence": {
+        "stdout.log": "ece139f507be08033fb5f7158bcdc987e20859812708ed424d305da7c51017be",
+        "offline-movie.html": "c767b8f28c57a39d02a4e94fb7b0545569a7dd29b20fe5c8cc5fc0001dada730",
+        "inputs-after.json": "101a7b389b517c917a8be97c7d038328effec14a8bb36048a9170c8e69525184",
+        "resources-before.json": "eeb800fa1bd689157061d2d9bd6bfe4f6aae184340144f021e8497cf2360db5b",
+        "invocation.json": "a81fbcf7fb35e1c6a9ee2b610146b4ceea24e9f720ef40ea101d2e40af07aced",
+        "inputs-before.json": "101a7b389b517c917a8be97c7d038328effec14a8bb36048a9170c8e69525184",
+        "offline-movie.png": "43ab55a7beb85f2409a2ed47384e2828f9572f0c743966ed0e86cd063f380039",
+        "junit.xml": "bce286d96ae0d4d48eca4adae18b3ba9f4918c4c5da7f8e163b3b1d17de948ac"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 13.45403679087758,
+      "peak_owned_rss_mib": 515.9,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-625-headless",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 447451136,
+      "evidence": {
+        "stdout.log": "989ae36e52d7dfc6d3bc9ace47802d3f2e4868b23827dd5ff3d97e7631ee0277",
+        "inputs-after.json": "d75ee5a3345ad3368d96c951c027bc0ac083cf90c2190a8ab8f65e4c82d27e45",
+        "resources-before.json": "6d48892124cfa779f17959b94a355e435025db6febe8b7d9d4742484a020bc13",
+        "invocation.json": "7a437a26c5248efaa8ec22edbedaba4de9c95d675d3e7258fc5bc278629000e0",
+        "inputs-before.json": "d75ee5a3345ad3368d96c951c027bc0ac083cf90c2190a8ab8f65e4c82d27e45",
+        "junit.xml": "f4a4d784df7d7fb9d48f7ceca1430d8e60f2cdcc8a612c00b9b3aed1677df73f"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 25.04636983992532,
+      "peak_owned_rss_mib": 583.0,
+      "selected_inputs": 9912,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-626-movie-web-final",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 575578112,
+      "evidence": {
+        "stdout.log": "970f0f7b5980f6f9844a16412033f26a96113e958d3afe9667e4112808341480",
+        "inputs-after.json": "fdbd831e361b395974be4314289744a088006630ead3ae37c4d5fedf81eb6ba5",
+        "resources-before.json": "62c57462d1a7d1a6cf9918e2a3e3e2ed21de6ba61420ebe88e02d80fa3652d3c",
+        "invocation.json": "362cf2f3ee623162e05b40835a0a97ef0c28b7e32f0ba20fe1deff89e59c9cfe",
+        "inputs-before.json": "fdbd831e361b395974be4314289744a088006630ead3ae37c4d5fedf81eb6ba5"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 68.51401111995801,
+      "peak_owned_rss_mib": 1982.0,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-627-native-final",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1113792512,
+      "evidence": {
+        "stdout.log": "4bfae93ef792dd94dcfb270ec3e106f8b1329d729a84929d7a3e622c8dfba365",
+        "offline-movie.html": "138eae0dfb3ae4d76514c4db3ef88cf2942ab6548b8674a9fdec0b12568fe0db",
+        "inputs-after.json": "e0225ddeb022d267c650c42f39de08b7e021a3100867d7576171a0665d552af0",
+        "resources-before.json": "7583a82e95b51c37c6d81746395a12c6249d61b262d9f5f505bd739a180e2522",
+        "invocation.json": "0337a5764e83c50592a35bb2d29e053b80e88c9b423dce709bfdaa8904e00b54",
+        "inputs-before.json": "e0225ddeb022d267c650c42f39de08b7e021a3100867d7576171a0665d552af0",
+        "offline-movie.png": "a39a7a2ec52bb572f7bdd90a85436e808c08a85f8752be814471696725531a1a",
+        "junit.xml": "88e4958f9365ddd147c34eb2481722066bc128302dee22ef390f53c5b0d0a443"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 93.92644718615338,
+      "peak_owned_rss_mib": 573.2,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-628-regression",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 520851456,
+      "evidence": {
+        "stdout.log": "c3329d6eacc4b7aa1263a044198680a95b8366d1b9faee5b8ad243af480b4505",
+        "inputs-after.json": "e0225ddeb022d267c650c42f39de08b7e021a3100867d7576171a0665d552af0",
+        "resources-before.json": "2b1c4de322b0205e88ac947e66a73017ec9effb63d861b84e518c0c1aaaace22",
+        "invocation.json": "2be95ce450bcddb718e2d9fa8c3fa7912b8cf307b7ae98afd78095e5e8dc587a",
+        "inputs-before.json": "e0225ddeb022d267c650c42f39de08b7e021a3100867d7576171a0665d552af0",
+        "junit.xml": "ee44cb5a37bc197391d4ca1e47817f12a4a2327e83740b92a5fd722f9ef4d87d"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 63.454572235932574,
+      "peak_owned_rss_mib": 1890.6,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-629-native-origin",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 1003401216,
+      "evidence": {
+        "stdout.log": "3093c50cc7adf920a55678fab42a716c53be96f57c87a845115a5bc29b24e545",
+        "offline-movie.html": "9b98298f1a90971efb7b07c083193a7f2fd5cd831823101655a077dc45a01ab4",
+        "inputs-after.json": "11d4a6f982318f6fd4a148077d6feae0ea85e0d7f86cb65d013b7e4c30fd8ffb",
+        "resources-before.json": "24adf34e2693884b6bff0fb722caf274d80f18e86e727f2b36206bd1cb9685de",
+        "invocation.json": "a856eaea5c4de3c4e3fc3ae5a26a2df7cdf35da4ffa8ab41080ff496817f6046",
+        "inputs-before.json": "11d4a6f982318f6fd4a148077d6feae0ea85e0d7f86cb65d013b7e4c30fd8ffb",
+        "offline-movie.png": "77a43cc9dd914ac9279c502caa309f4df17dbd59a542bddf488fea4d06a5a9ee",
+        "fixture-origin.json": "6ef0c8dada9ef42510e1f85632451cdd10ee140db6ebeb7ee994df4f4aad3dbe",
+        "junit.xml": "ebd948069521da962d8e119e503c32602cc9f6bdcdc76c7648c68676e5045fa6"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 11.981819984968752,
+      "peak_owned_rss_mib": 533.5,
+      "selected_inputs": 9914,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-web-630-records",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "observed_cgroup_peak_bytes": 524111872,
+      "evidence": {
+        "stdout.log": "e6bdc80a4d8bb54087ed5f4a08c840a8baabf28323f985ee59cac70499a945cd",
+        "inputs-after.json": "51b6866af946f8a4b4d5b674f2e06a94c9b8bdbc22139e9ca4716c3256d2f3b0",
+        "resources-before.json": "adcc3a7ea312790c3d3df84ca9193d07ee5d60f8e067d0cc0b106d2872be7862",
+        "invocation.json": "8af56d359766d6f2589841a0cc5bc709de43659e3733851336996017c8646aec",
+        "inputs-before.json": "51b6866af946f8a4b4d5b674f2e06a94c9b8bdbc22139e9ca4716c3256d2f3b0",
+        "junit.xml": "6c38b6902471bc872c465deaf31d483470cc31ccc1233ab76b9df1e0c8b16679"
+      }
+    }
+  ],
+  "original_outcomes": [
+    {
+      "profile": "movie-web-617-backend",
+      "outcome": "9 passed/1 failed: new fixture used mode in representation kwargs instead of Region.set_mode; fixture corrected."
+    },
+    {
+      "profile": "movie-web-619-native",
+      "outcome": "Original boot timeout; retained. 620 obtains the actual #367 error, not an inference from timeout."
+    },
+    {
+      "profile": "movie-web-620-diagnostic",
+      "outcome": "Complete valid Python recipe refused for empty colour_layer map; #367 corrected the TypeScript validator."
+    },
+    {
+      "profile": "movie-web-622-native-fixed",
+      "outcome": "Boot succeeds; observer incorrectly read alphaFactor from shape rather than its representation; corrected test observer."
+    },
+    {
+      "profile": "movie-web-623-native-observer",
+      "outcome": "All forward/reverse samples pass; one-second clip finishes before physical Pause click. Separate 60-second hold receives physical Pause, retaining the one-second final-draw case."
+    },
+    {
+      "profile": "movie-web-624-native-controls",
+      "outcome": "Complete native guard passes before final material-cache/job-marker refinements."
+    },
+    {
+      "profile": "movie-web-627-native-final",
+      "outcome": "Final runtime native guard passes; 629 adds producer self-origin/native-digest verification without changing runtime."
+    }
+  ],
+  "limits": {
+    "region_policy": "static only; dynamic rejected",
+    "interaction_policy": "complete supported visual projections only; broken/partial/unsupported/render-limit rejected",
+    "dom_overlays": "refused unless explicitly excluded; retained recipe keeps context",
+    "assets": "one embedded offline file; no shared/CDN or popup profile",
+    "scientific_archive": "visual projections, not a replacement for full named-analysis H5MSM/MSV",
+    "fps_sample_level": "media-only; HTML is continuous and responsive",
+    "memory": "in-memory scene projection; no universal RAM or out-of-core promise"
+  },
+  "resource_policy": {
+    "scheduling": "sequential; no Slurm found",
+    "maximum_actual_limits": "4 logical CPUs / 4 GiB per native/build scope; 2 CPUs / 2 GiB for Python/records",
+    "swap_limit": 0,
+    "global_available_reserve_gib": 6.5,
+    "all_owned_processes_retired": true,
+    "temporary_review": "native fixture workspaces disposed by their owner; original receiving logs/outputs retained; no foreign cleanup"
+  },
+  "private_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-web-20261112",
+    "custodian": "Diego Prada Gracia",
+    "files": 117,
+    "original_bytes": 87524586,
+    "manifest_file": "manifest.json",
+    "manifest_sha256": "4c976a04b1fe3d3d055d5816671e8d62bbea442cc7ddf8c100536cfb3d345989",
+    "verified": true,
+    "originals_retained": true,
+    "permissions": "directories 0700; files 0600",
+    "scope": "Original controlled receiving artifacts and final changed source; not full intermediate checkouts or an environment. Original files retained."
+  }
+}

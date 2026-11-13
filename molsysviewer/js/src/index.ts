@@ -31,6 +31,7 @@ import { PopupReplayLog } from "./messages/popup-replay-log";
 import { WidgetEnvelopeAdapter } from "./messages/widget-envelope";
 import { ownFrameQuery } from "./messages/frame-query";
 import { ownMovieIntent } from "./messages/movie-studio-intent";
+import { MovieWebPlayer } from "./managers/movie-web-player";
 import { ACTION_CATEGORIES, FRONTEND_AUTHORITATIVE } from "./messages/runtime-actions";
 
 export { RemoteInputAdapter } from "./messages/remote-input-adapter";
@@ -609,6 +610,13 @@ export async function bootDocsView(opts: {
         const canvas = controller.plugin.canvas3d;
         if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
         await waitForCanvasDraw(canvas);
+        if (ui.movie_presentation !== undefined) {
+            if (hasAuthority) throw new Error("A portable Movie cannot own a live Python host.");
+            const player = new MovieWebPlayer(controller, target, ui.movie_presentation);
+            (window as any).__molsysviewerDocsMovie = player;
+            window.addEventListener("pagehide", () => player.dispose(), { once: true });
+            await player.initialize();
+        }
         notifyHost({ event: "ready", capabilities: {
             array_native_molsys_ref: [1], visual_state_capture: [1, 2], movie_preview: [1], movie_frame_capture: [1], movie_appearance: [1], movie_environment_capture: [1],
         } });

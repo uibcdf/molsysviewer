@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [#367: Complete Python Movie recipes admit empty colour layers in the offline TypeScript player.](movie_complete_recipe_empty_colour_layer.md)
+
 - [#366: Python and Studio share loop-independent Movie completion and actual runtime control.](movie_python_studio_completion.md)
 - [#365: Movie async admission and bounded commits receive actual Jupyter across scene owners.](movie_async_scene_ownership.md)
 

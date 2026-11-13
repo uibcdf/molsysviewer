@@ -1,0 +1,88 @@
+"""Produce a real Movie, then retire Python before testing offline playback."""
+
+import asyncio
+import hashlib
+import importlib
+import json
+import os
+import runpy
+import sys
+from pathlib import Path
+
+root = Path(__file__).resolve().parents[4]
+out = Path(sys.argv[1])
+origins = {
+    name: str(Path(importlib.import_module(name).__file__).resolve())
+    for name in ("molsysviewer", "molsysmt", "pyunitwizard", "molsysmt._rust")
+}
+for name, variable in (
+    ("molsysviewer", "MOLSYSVIEWER_ROOT"),
+    ("molsysmt", "MSV_RECEIVING_INNER_ROOT"),
+    ("molsysmt._rust", "MSV_RECEIVING_INNER_ROOT"),
+    ("pyunitwizard", "MSV_RECEIVING_SUPPORT_ROOT"),
+):
+    if os.environ.get(variable):
+        assert Path(origins[name]).is_relative_to(Path(os.environ[variable]).resolve()), origins
+native_sha = hashlib.sha256(Path(origins["molsysmt._rust"]).read_bytes()).hexdigest()
+if os.environ.get("MOLSYSVIEWER_EXPECTED_NATIVE_SHA256"):
+    assert native_sha == os.environ["MOLSYSVIEWER_EXPECTED_NATIVE_SHA256"]
+(out / "fixture-origin.json").write_text(
+    json.dumps(
+        {
+            "executable": sys.executable,
+            "python": sys.version,
+            "modules": origins,
+            "native_sha256": native_sha,
+        },
+        indent=2,
+    )
+)
+factory = runpy.run_path(str(root / "tests/test_movie_appearance.py"))["make_appearance_view"]
+with factory() as view:
+    camera = view.movie.to_dict()["baseline"]["camera"]
+    view.movie.add_track(
+        {
+            "tag": "camera",
+            "target": {"domain": "camera"},
+            "property": "pose",
+            "keys": [
+                {
+                    "time_ms": 1000,
+                    "value": {
+                        **camera,
+                        "position": [camera["target"][0] + 35, camera["target"][1], camera["target"][2]],
+                    },
+                }
+            ],
+        }
+    )
+    before = view.export_state()
+    samples = {str(at): view.movie.evaluate(at) for at in [0, 250, 500, 750, 1000]}
+    result = asyncio.run(view.movie.export_async(out / "movie.html"))
+    assert view.export_state() == before
+    (out / "expected.json").write_text(json.dumps({"samples": samples, "manifest": result["manifest"]}))
+    view.movie.set_duration(60000)
+    asyncio.run(view.movie.export_async(out / "long.html"))
+    # Include a visibly hidden, animated shape in another independent gate case.
+    view.layers.add("movie-layer")
+    view.shapes["site"].set_layer_tag("movie-layer")
+    view.shapes.add_sphere(
+        center="[0,0,0] angstrom", radius="1 angstrom", tag="gate-hidden", layer_tag="movie-layer"
+    ).hide()
+    view.movie.set_baseline(1000, camera=camera)
+    for track in [
+        {
+            "tag": "gate",
+            "target": {"domain": "layer", "tag": "movie-layer"},
+            "property": "visible",
+            "keys": [{"time_ms": 500, "value": False}],
+        },
+        {
+            "tag": "shape-colour",
+            "target": {"domain": "shape", "tag": "gate-hidden"},
+            "property": "color",
+            "keys": [{"time_ms": 1000, "value": 0xFF0000}],
+        },
+    ]:
+        view.movie.add_track(track)
+    asyncio.run(view.movie.export_async(out / "gates.html"))

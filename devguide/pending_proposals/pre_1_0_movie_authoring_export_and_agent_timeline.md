@@ -218,7 +218,15 @@ owns those rules. The admitted legacy profile below is now source-received.
 Studio has its first experimental Timeline/Preview/Export editor over the
 same Python Movie owner, including canvas-owned popup capture and detached
 Studio preview/export. Richer renderer channels, complete authoring acceptance,
-portable web playback and the complete integrated story remain open. The
+the complete integrated story and richer portable profiles remain open. The
+first self-contained offline HTML profile is implemented through the same
+`export_async` API. It embeds its runtime, recipe, molecular projection and
+supported interaction visual series; actual file/iframe, reverse seek,
+controls and hidden-layer receiving are recorded in the
+[web receipt](../movie_web_receiving_20261112.json). Static regions are required;
+visible overlays and unsupported interaction projections are explicitly
+refused or excluded under the documented policy. This does not complete M4's
+composition or M5. The
 receiving entries below retain their original source/date scope; earlier
 remapping/appearance gaps are not a claim about current implementation.
 

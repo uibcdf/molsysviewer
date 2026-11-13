@@ -931,6 +931,16 @@ Their failed originals, deterministic controls and final media/session checks
 remain in the receipt. The next Movie work is full M2 host/accessibility review,
 M4 portable web/composition and the integrated M5 story; #320 stays open.
 
+The [first portable Movie receiving](movie_web_receiving_20261112.json)
+receives a self-contained offline HTML player through `export_async`, using
+the same full recipe and native scene owners after Python closes. Relocated
+file and iframe, reverse seek, materials, labels, interaction styles, final
+draw, controls and hidden layer members have scoped native receiving. #367
+corrects empty colour-layer interpretation in complete Python recipes.
+Static regions and supported complete interaction projections are the admitted
+profile; overlays, richer profiles, M2/M5 and consolidated qualification remain
+open. Neither audit counter nor publication/human-pause state changes.
+
 The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
 receives #344's source recurrence: followers retain coherent prefixes until a
 native draw; scientific frame queries survive foreign scene ownership and

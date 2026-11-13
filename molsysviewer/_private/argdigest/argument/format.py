@@ -14,7 +14,9 @@ def digest_format(format, caller=None):  # noqa: A002 — the public argument is
     from argdigest.core.caller import caller_matches
 
     formats = (
-        ("mp4", "webm", "pngs") if caller_matches(caller, "molsysviewer.viewer.movie.export_async") else MOVIE_FORMATS
+        ("mp4", "webm", "pngs", "html")
+        if caller_matches(caller, "molsysviewer.viewer.movie.export_async")
+        else MOVIE_FORMATS
     )
     if format is None:
         return None

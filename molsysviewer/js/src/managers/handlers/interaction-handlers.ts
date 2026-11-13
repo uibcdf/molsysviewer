@@ -84,6 +84,14 @@ export class InteractionHandlers {
         this.series.set(message.tag, message);
         await this.apply({ ...message, ...message.frames[this.frame], op: "set_interaction_frame" });
     }
+    /** Portable Movie changes only rendering style; occurrences remain shared. */
+    async setMovieStyle(tag: string, values: { color?: number; alpha?: number }) {
+        const message = this.series.get(tag);
+        if (!message) throw new Error(`Movie interaction series ${tag} is missing.`);
+        const next = { ...message, style: { ...message.style, ...values } };
+        this.series.set(tag, next);
+        await this.apply({ ...next, ...next.frames[this.frame], op: "set_interaction_frame" });
+    }
     async apply(message: InteractionFrame) {
         if ((message.projection_revision ?? this.latestRevision) < this.latestRevision) return;
         this.latestRevision = Math.max(this.latestRevision, message.projection_revision ?? -1);

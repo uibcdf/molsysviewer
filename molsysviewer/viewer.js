@@ -17,9 +17,9 @@ var __export = (target, all3) => {
 };
 var __copyProps = (to, from2, except, desc) => {
   if (from2 && typeof from2 === "object" || typeof from2 === "function") {
-    for (let key2 of __getOwnPropNames(from2))
-      if (!__hasOwnProp.call(to, key2) && key2 !== except)
-        __defProp(to, key2, { get: () => from2[key2], enumerable: !(desc = __getOwnPropDesc(from2, key2)) || desc.enumerable });
+    for (let key3 of __getOwnPropNames(from2))
+      if (!__hasOwnProp.call(to, key3) && key3 !== except)
+        __defProp(to, key3, { get: () => from2[key3], enumerable: !(desc = __getOwnPropDesc(from2, key3)) || desc.enumerable });
   }
   return to;
 };
@@ -49,14 +49,14 @@ var require_mutative_cjs_development = __commonJS({
       immutable: "immutable"
     };
     var internal2 = {};
-    function has8(target, key2) {
-      return target instanceof Map ? target.has(key2) : Object.prototype.hasOwnProperty.call(target, key2);
+    function has8(target, key3) {
+      return target instanceof Map ? target.has(key3) : Object.prototype.hasOwnProperty.call(target, key3);
     }
-    function getDescriptor(target, key2) {
-      if (key2 in target) {
+    function getDescriptor(target, key3) {
+      if (key3 in target) {
         let prototype = Reflect.getPrototypeOf(target);
         while (prototype) {
-          const descriptor = Reflect.getOwnPropertyDescriptor(prototype, key2);
+          const descriptor = Reflect.getOwnPropertyDescriptor(prototype, key3);
           if (descriptor)
             return descriptor;
           prototype = Reflect.getPrototypeOf(prototype);
@@ -101,10 +101,10 @@ var require_mutative_cjs_development = __commonJS({
           return null;
         }
         const isSet2 = target.parent.type === 3;
-        const key2 = isSet2 ? Array.from(target.parent.setMap.keys()).indexOf(target.key) : target.key;
-        if (!(isSet2 && parentCopy.size > key2 || has8(parentCopy, key2)))
+        const key3 = isSet2 ? Array.from(target.parent.setMap.keys()).indexOf(target.key) : target.key;
+        if (!(isSet2 && parentCopy.size > key3 || has8(parentCopy, key3)))
           return null;
-        path.push(key2);
+        path.push(key3);
       }
       if (target.parent) {
         return getPath(target.parent, path);
@@ -126,21 +126,21 @@ var require_mutative_cjs_development = __commonJS({
         return 3;
       return 0;
     }
-    function get11(target, key2) {
-      return getType2(target) === 2 ? target.get(key2) : target[key2];
+    function get11(target, key3) {
+      return getType2(target) === 2 ? target.get(key3) : target[key3];
     }
-    function set4(target, key2, value) {
+    function set4(target, key3, value) {
       const type3 = getType2(target);
       if (type3 === 2) {
-        target.set(key2, value);
+        target.set(key3, value);
       } else {
-        target[key2] = value;
+        target[key3] = value;
       }
     }
-    function peek(target, key2) {
+    function peek(target, key3) {
       const state = getProxyDraft(target);
       const source = state ? latest(state) : target;
-      return source[key2];
+      return source[key3];
     }
     function isEqual(x, y) {
       if (x === y) {
@@ -172,8 +172,8 @@ var require_mutative_cjs_development = __commonJS({
     }
     function resolvePath(base, path) {
       for (let index = 0; index < path.length - 1; index += 1) {
-        const key2 = path[index];
-        base = get11(getType2(base) === 3 ? Array.from(base) : base, key2);
+        const key3 = path[index];
+        base = get11(getType2(base) === 3 ? Array.from(base) : base, key3);
         if (typeof base !== "object") {
           throw new Error(`Cannot resolve patch at '${path.join("/")}'.`);
         }
@@ -182,10 +182,10 @@ var require_mutative_cjs_development = __commonJS({
     }
     function strictCopy(target) {
       const copy = Object.create(Object.getPrototypeOf(target));
-      Reflect.ownKeys(target).forEach((key2) => {
-        let desc = Reflect.getOwnPropertyDescriptor(target, key2);
+      Reflect.ownKeys(target).forEach((key3) => {
+        let desc = Reflect.getOwnPropertyDescriptor(target, key3);
         if (desc.enumerable && desc.configurable && desc.writable) {
-          copy[key2] = target[key2];
+          copy[key3] = target[key3];
           return;
         }
         if (!desc.writable) {
@@ -197,9 +197,9 @@ var require_mutative_cjs_development = __commonJS({
             configurable: true,
             writable: true,
             enumerable: desc.enumerable,
-            value: target[key2]
+            value: target[key3]
           };
-        Reflect.defineProperty(copy, key2, desc);
+        Reflect.defineProperty(copy, key3, desc);
       });
       return copy;
     }
@@ -232,12 +232,12 @@ var require_mutative_cjs_development = __commonJS({
         throw new Error(`Unsupported mark result: ${markResult}`);
       } else if (typeof original2 === "object" && Object.getPrototypeOf(original2) === Object.prototype) {
         const copy = {};
-        Object.keys(original2).forEach((key2) => {
-          copy[key2] = original2[key2];
+        Object.keys(original2).forEach((key3) => {
+          copy[key3] = original2[key3];
         });
-        Object.getOwnPropertySymbols(original2).forEach((key2) => {
-          if (propIsEnum.call(original2, key2)) {
-            copy[key2] = original2[key2];
+        Object.getOwnPropertySymbols(original2).forEach((key3) => {
+          if (propIsEnum.call(original2, key3)) {
+            copy[key3] = original2[key3];
           }
         });
         return copy;
@@ -275,8 +275,8 @@ var require_mutative_cjs_development = __commonJS({
         return new Set(iterable);
       }
       const copy = Object.create(Object.getPrototypeOf(target));
-      for (const key2 in target)
-        copy[key2] = deepClone2(target[key2]);
+      for (const key3 in target)
+        copy[key3] = deepClone2(target[key3]);
       return copy;
     }
     function cloneIfNeeded(target) {
@@ -307,13 +307,13 @@ var require_mutative_cjs_development = __commonJS({
             if (stack[0] === value) {
               throw new Error(`Forbids circular reference`);
             }
-            throw new Error(`Forbids circular reference: ~/${keys3.slice(0, index).map((key2, index2) => {
-              if (typeof key2 === "symbol")
-                return `[${key2.toString()}]`;
+            throw new Error(`Forbids circular reference: ~/${keys3.slice(0, index).map((key3, index2) => {
+              if (typeof key3 === "symbol")
+                return `[${key3.toString()}]`;
               const parent = stack[index2];
-              if (typeof key2 === "object" && (parent instanceof Map || parent instanceof Set))
-                return Array.from(parent.keys()).indexOf(key2);
-              return key2;
+              if (typeof key3 === "object" && (parent instanceof Map || parent instanceof Set))
+                return Array.from(parent.keys()).indexOf(key3);
+              return key3;
             }).join("/")}`);
           }
           stack.push(value);
@@ -332,9 +332,9 @@ var require_mutative_cjs_development = __commonJS({
       const type3 = getType2(target);
       switch (type3) {
         case 2:
-          for (const [key2, value] of target) {
-            deepFreeze(key2, key2, updatedValues, stack, keys3);
-            deepFreeze(value, key2, updatedValues, stack, keys3);
+          for (const [key3, value] of target) {
+            deepFreeze(key3, key3, updatedValues, stack, keys3);
+            deepFreeze(value, key3, updatedValues, stack, keys3);
           }
           target.set = target.clear = target.delete = throwFrozenError;
           break;
@@ -367,8 +367,8 @@ var require_mutative_cjs_development = __commonJS({
     function forEach3(target, iter) {
       const type3 = getType2(target);
       if (type3 === 0) {
-        Reflect.ownKeys(target).forEach((key2) => {
-          iter(key2, target[key2], target);
+        Reflect.ownKeys(target).forEach((key3) => {
+          iter(key3, target[key3], target);
         });
       } else if (type3 === 1) {
         let index = 0;
@@ -386,13 +386,13 @@ var require_mutative_cjs_development = __commonJS({
       const isSet2 = target instanceof Set;
       const setMap = isSet2 ? /* @__PURE__ */ new Map() : void 0;
       handledSet.add(target);
-      forEach3(target, (key2, value) => {
+      forEach3(target, (key3, value) => {
         var _a;
         if (isDraft(value)) {
           const proxyDraft = getProxyDraft(value);
           ensureShallowCopy(proxyDraft);
           const updatedValue = ((_a = proxyDraft.assignedMap) === null || _a === void 0 ? void 0 : _a.size) || proxyDraft.operated ? proxyDraft.copy : proxyDraft.original;
-          set4(isSet2 ? setMap : target, key2, updatedValue);
+          set4(isSet2 ? setMap : target, key3, updatedValue);
         } else {
           handleValue(value, handledSet, options);
         }
@@ -406,10 +406,10 @@ var require_mutative_cjs_development = __commonJS({
         });
       }
     }
-    function finalizeAssigned(proxyDraft, key2) {
+    function finalizeAssigned(proxyDraft, key3) {
       const copy = proxyDraft.type === 3 ? proxyDraft.setMap : proxyDraft.copy;
-      if (proxyDraft.finalities.revoke.length > 1 && proxyDraft.assignedMap.get(key2) && copy) {
-        handleValue(get11(copy, key2), proxyDraft.finalities.handledSet, proxyDraft.options);
+      if (proxyDraft.finalities.revoke.length > 1 && proxyDraft.assignedMap.get(key3) && copy) {
+        handleValue(get11(copy, key3), proxyDraft.finalities.handledSet, proxyDraft.options);
       }
     }
     function finalizeSetValue(target) {
@@ -432,7 +432,7 @@ var require_mutative_cjs_development = __commonJS({
         target.finalized = true;
       }
     }
-    function markFinalization(target, key2, value, generatePatches2) {
+    function markFinalization(target, key3, value, generatePatches2) {
       const proxyDraft = getProxyDraft(value);
       if (proxyDraft) {
         if (!proxyDraft.callbacks) {
@@ -441,7 +441,7 @@ var require_mutative_cjs_development = __commonJS({
         proxyDraft.callbacks.push((patches, inversePatches) => {
           var _a;
           const copy = target.type === 3 ? target.setMap : target.copy;
-          if (isEqual(get11(copy, key2), value)) {
+          if (isEqual(get11(copy, key3), value)) {
             let updatedValue = proxyDraft.original;
             if (proxyDraft.copy) {
               updatedValue = proxyDraft.copy;
@@ -452,7 +452,7 @@ var require_mutative_cjs_development = __commonJS({
               target.options.updatedValues = (_a = target.options.updatedValues) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new WeakMap();
               target.options.updatedValues.set(updatedValue, proxyDraft.original);
             }
-            set4(copy, key2, updatedValue);
+            set4(copy, key3, updatedValue);
           }
         });
         if (target.options.enableAutoFreeze) {
@@ -464,8 +464,8 @@ var require_mutative_cjs_development = __commonJS({
       if (isDraftable(value, target.options)) {
         target.finalities.draft.push(() => {
           const copy = target.type === 3 ? target.setMap : target.copy;
-          if (isEqual(get11(copy, key2), value)) {
-            finalizeAssigned(target, key2);
+          if (isEqual(get11(copy, key3), value)) {
+            finalizeAssigned(target, key3);
           }
         });
       }
@@ -528,13 +528,13 @@ var require_mutative_cjs_development = __commonJS({
       }
     }
     function generatePatchesFromAssigned({ original: original2, copy, assignedMap }, basePath, patches, inversePatches, pathAsArray) {
-      assignedMap.forEach((assignedValue, key2) => {
-        const originalValue = get11(original2, key2);
-        const value = cloneIfNeeded(get11(copy, key2));
-        const op4 = !assignedValue ? Operation.Remove : has8(original2, key2) ? Operation.Replace : Operation.Add;
+      assignedMap.forEach((assignedValue, key3) => {
+        const originalValue = get11(original2, key3);
+        const value = cloneIfNeeded(get11(copy, key3));
+        const op4 = !assignedValue ? Operation.Remove : has8(original2, key3) ? Operation.Replace : Operation.Add;
         if (isEqual(originalValue, value) && op4 === Operation.Replace)
           return;
-        const _path = basePath.concat(key2);
+        const _path = basePath.concat(key3);
         const path = escapePath(_path, pathAsArray);
         patches.push(op4 === Operation.Remove ? { op: op4, path } : { op: op4, path, value });
         inversePatches.push(op4 === Operation.Add ? { op: Operation.Remove, path } : op4 === Operation.Remove ? { op: Operation.Add, path, value: originalValue } : { op: Operation.Replace, path, value: originalValue });
@@ -611,34 +611,34 @@ var require_mutative_cjs_development = __commonJS({
         const current3 = latest(getProxyDraft(this));
         return current3.size;
       },
-      has(key2) {
-        return latest(getProxyDraft(this)).has(key2);
+      has(key3) {
+        return latest(getProxyDraft(this)).has(key3);
       },
-      set(key2, value) {
+      set(key3, value) {
         const target = getProxyDraft(this);
         const source = latest(target);
-        if (!source.has(key2) || !isEqual(source.get(key2), value)) {
+        if (!source.has(key3) || !isEqual(source.get(key3), value)) {
           ensureShallowCopy(target);
           markChanged(target);
-          target.assignedMap.set(key2, true);
-          target.copy.set(key2, value);
-          markFinalization(target, key2, value, generatePatches);
+          target.assignedMap.set(key3, true);
+          target.copy.set(key3, value);
+          markFinalization(target, key3, value, generatePatches);
         }
         return this;
       },
-      delete(key2) {
-        if (!this.has(key2)) {
+      delete(key3) {
+        if (!this.has(key3)) {
           return false;
         }
         const target = getProxyDraft(this);
         ensureShallowCopy(target);
         markChanged(target);
-        if (target.original.has(key2)) {
-          target.assignedMap.set(key2, false);
+        if (target.original.has(key3)) {
+          target.assignedMap.set(key3, false);
         } else {
-          target.assignedMap.delete(key2);
+          target.assignedMap.delete(key3);
         }
-        target.copy.delete(key2);
+        target.copy.delete(key3);
         return true;
       },
       clear() {
@@ -648,8 +648,8 @@ var require_mutative_cjs_development = __commonJS({
         ensureShallowCopy(target);
         markChanged(target);
         target.assignedMap = /* @__PURE__ */ new Map();
-        for (const [key2] of target.original) {
-          target.assignedMap.set(key2, false);
+        for (const [key3] of target.original) {
+          target.assignedMap.set(key3, false);
         }
         target.copy.clear();
       },
@@ -659,10 +659,10 @@ var require_mutative_cjs_development = __commonJS({
           callback.call(thisArg, this.get(_key), _key, this);
         });
       },
-      get(key2) {
+      get(key3) {
         var _a, _b;
         const target = getProxyDraft(this);
-        const value = latest(target).get(key2);
+        const value = latest(target).get(key3);
         const mutable = ((_b = (_a = target.options).mark) === null || _b === void 0 ? void 0 : _b.call(_a, value, dataTypes)) === dataTypes.mutable;
         if (target.options.strict) {
           checkReadable(value, target.options, mutable);
@@ -673,18 +673,18 @@ var require_mutative_cjs_development = __commonJS({
         if (target.finalized || !isDraftable(value, target.options)) {
           return value;
         }
-        if (value !== target.original.get(key2)) {
+        if (value !== target.original.get(key3)) {
           return value;
         }
         const draft = internal2.createDraft({
           original: value,
           parentDraft: target,
-          key: key2,
+          key: key3,
           finalities: target.finalities,
           options: target.options
         });
         ensureShallowCopy(target);
-        target.copy.set(key2, draft);
+        target.copy.set(key3, draft);
         return draft;
       },
       keys() {
@@ -732,22 +732,22 @@ var require_mutative_cjs_development = __commonJS({
       const result2 = iterator2.next();
       if (result2.done)
         return result2;
-      const key2 = result2.value;
-      let value = target.setMap.get(key2);
+      const key3 = result2.value;
+      let value = target.setMap.get(key3);
       const currentDraft = getProxyDraft(value);
       const mutable = ((_b = (_a = target.options).mark) === null || _b === void 0 ? void 0 : _b.call(_a, value, dataTypes)) === dataTypes.mutable;
       if (target.options.strict) {
-        checkReadable(key2, target.options, mutable);
+        checkReadable(key3, target.options, mutable);
       }
-      if (!mutable && !currentDraft && isDraftable(key2, target.options) && !target.finalized && target.original.has(key2)) {
+      if (!mutable && !currentDraft && isDraftable(key3, target.options) && !target.finalized && target.original.has(key3)) {
         const proxy = internal2.createDraft({
-          original: key2,
+          original: key3,
           parentDraft: target,
-          key: key2,
+          key: key3,
           finalities: target.finalities,
           options: target.options
         });
-        target.setMap.set(key2, proxy);
+        target.setMap.set(key3, proxy);
         value = proxy;
       } else if (currentDraft) {
         value = currentDraft.proxy;
@@ -875,17 +875,17 @@ var require_mutative_cjs_development = __commonJS({
     }
     var setHandlerKeys = Reflect.ownKeys(setHandler);
     var proxyHandler = {
-      get(target, key2, receiver) {
+      get(target, key3, receiver) {
         var _a, _b;
-        const copy = (_a = target.copy) === null || _a === void 0 ? void 0 : _a[key2];
+        const copy = (_a = target.copy) === null || _a === void 0 ? void 0 : _a[key3];
         if (copy && target.finalities.draftsCache.has(copy)) {
           return copy;
         }
-        if (key2 === PROXY_DRAFT)
+        if (key3 === PROXY_DRAFT)
           return target;
         let markResult;
         if (target.options.mark) {
-          const value2 = key2 === "size" && (target.original instanceof Map || target.original instanceof Set) ? Reflect.get(target.original, key2) : Reflect.get(target.original, key2, receiver);
+          const value2 = key3 === "size" && (target.original instanceof Map || target.original instanceof Set) ? Reflect.get(target.original, key3) : Reflect.get(target.original, key3, receiver);
           markResult = target.options.mark(value2, dataTypes);
           if (markResult === dataTypes.mutable) {
             if (target.options.strict) {
@@ -895,107 +895,107 @@ var require_mutative_cjs_development = __commonJS({
           }
         }
         const source = latest(target);
-        if (source instanceof Map && mapHandlerKeys.includes(key2)) {
-          if (key2 === "size") {
+        if (source instanceof Map && mapHandlerKeys.includes(key3)) {
+          if (key3 === "size") {
             return Object.getOwnPropertyDescriptor(mapHandler, "size").get.call(target.proxy);
           }
-          const handle = mapHandler[key2];
+          const handle = mapHandler[key3];
           return handle.bind(target.proxy);
         }
-        if (source instanceof Set && setHandlerKeys.includes(key2)) {
-          if (key2 === "size") {
+        if (source instanceof Set && setHandlerKeys.includes(key3)) {
+          if (key3 === "size") {
             return Object.getOwnPropertyDescriptor(setHandler, "size").get.call(target.proxy);
           }
-          const handle = setHandler[key2];
+          const handle = setHandler[key3];
           return handle.bind(target.proxy);
         }
-        if (!has8(source, key2)) {
-          const desc = getDescriptor(source, key2);
+        if (!has8(source, key3)) {
+          const desc = getDescriptor(source, key3);
           return desc ? `value` in desc ? desc.value : (
             // !case: support for getter
             (_b = desc.get) === null || _b === void 0 ? void 0 : _b.call(target.proxy)
           ) : void 0;
         }
-        const value = source[key2];
+        const value = source[key3];
         if (target.options.strict) {
           checkReadable(value, target.options);
         }
         if (target.finalized || !isDraftable(value, target.options)) {
           return value;
         }
-        if (value === peek(target.original, key2)) {
+        if (value === peek(target.original, key3)) {
           ensureShallowCopy(target);
-          target.copy[key2] = createDraft({
-            original: target.original[key2],
+          target.copy[key3] = createDraft({
+            original: target.original[key3],
             parentDraft: target,
-            key: target.type === 1 ? Number(key2) : key2,
+            key: target.type === 1 ? Number(key3) : key3,
             finalities: target.finalities,
             options: target.options
           });
           if (typeof markResult === "function") {
-            const subProxyDraft = getProxyDraft(target.copy[key2]);
+            const subProxyDraft = getProxyDraft(target.copy[key3]);
             ensureShallowCopy(subProxyDraft);
             markChanged(subProxyDraft);
             return subProxyDraft.copy;
           }
-          return target.copy[key2];
+          return target.copy[key3];
         }
         if (isDraft(value)) {
           target.finalities.draftsCache.add(value);
         }
         return value;
       },
-      set(target, key2, value) {
+      set(target, key3, value) {
         var _a;
         if (target.type === 3 || target.type === 2) {
           throw new Error(`Map/Set draft does not support any property assignment.`);
         }
         let _key;
-        if (target.type === 1 && key2 !== "length" && !(Number.isInteger(_key = Number(key2)) && _key >= 0 && (key2 === 0 || _key === 0 || String(_key) === String(key2)))) {
+        if (target.type === 1 && key3 !== "length" && !(Number.isInteger(_key = Number(key3)) && _key >= 0 && (key3 === 0 || _key === 0 || String(_key) === String(key3)))) {
           throw new Error(`Only supports setting array indices and the 'length' property.`);
         }
-        const desc = getDescriptor(latest(target), key2);
+        const desc = getDescriptor(latest(target), key3);
         if (desc === null || desc === void 0 ? void 0 : desc.set) {
           desc.set.call(target.proxy, value);
           return true;
         }
-        const current3 = peek(latest(target), key2);
+        const current3 = peek(latest(target), key3);
         const currentProxyDraft = getProxyDraft(current3);
         if (currentProxyDraft && isEqual(currentProxyDraft.original, value)) {
-          target.copy[key2] = value;
+          target.copy[key3] = value;
           target.assignedMap = (_a = target.assignedMap) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new Map();
-          target.assignedMap.set(key2, false);
+          target.assignedMap.set(key3, false);
           return true;
         }
-        if (isEqual(value, current3) && (value !== void 0 || has8(target.original, key2)))
+        if (isEqual(value, current3) && (value !== void 0 || has8(target.original, key3)))
           return true;
         ensureShallowCopy(target);
         markChanged(target);
-        if (has8(target.original, key2) && isEqual(value, target.original[key2])) {
-          target.assignedMap.delete(key2);
+        if (has8(target.original, key3) && isEqual(value, target.original[key3])) {
+          target.assignedMap.delete(key3);
         } else {
-          target.assignedMap.set(key2, true);
+          target.assignedMap.set(key3, true);
         }
-        target.copy[key2] = value;
-        markFinalization(target, key2, value, generatePatches);
+        target.copy[key3] = value;
+        markFinalization(target, key3, value, generatePatches);
         return true;
       },
-      has(target, key2) {
-        return key2 in latest(target);
+      has(target, key3) {
+        return key3 in latest(target);
       },
       ownKeys(target) {
         return Reflect.ownKeys(latest(target));
       },
-      getOwnPropertyDescriptor(target, key2) {
+      getOwnPropertyDescriptor(target, key3) {
         const source = latest(target);
-        const descriptor = Reflect.getOwnPropertyDescriptor(source, key2);
+        const descriptor = Reflect.getOwnPropertyDescriptor(source, key3);
         if (!descriptor)
           return descriptor;
         return {
           writable: true,
-          configurable: target.type !== 1 || key2 !== "length",
+          configurable: target.type !== 1 || key3 !== "length",
           enumerable: descriptor.enumerable,
-          value: source[key2]
+          value: source[key3]
         };
       },
       getPrototypeOf(target) {
@@ -1007,26 +1007,26 @@ var require_mutative_cjs_development = __commonJS({
       defineProperty() {
         throw new Error(`Cannot call 'defineProperty()' on drafts`);
       },
-      deleteProperty(target, key2) {
+      deleteProperty(target, key3) {
         var _a;
         if (target.type === 1) {
-          return proxyHandler.set.call(this, target, key2, void 0, target.proxy);
+          return proxyHandler.set.call(this, target, key3, void 0, target.proxy);
         }
-        if (peek(target.original, key2) !== void 0 || key2 in target.original) {
+        if (peek(target.original, key3) !== void 0 || key3 in target.original) {
           ensureShallowCopy(target);
           markChanged(target);
-          target.assignedMap.set(key2, false);
+          target.assignedMap.set(key3, false);
         } else {
           target.assignedMap = (_a = target.assignedMap) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new Map();
-          target.assignedMap.delete(key2);
+          target.assignedMap.delete(key3);
         }
         if (target.copy)
-          delete target.copy[key2];
+          delete target.copy[key3];
         return true;
       }
     };
     function createDraft(createDraftOptions) {
-      const { original: original2, parentDraft, key: key2, finalities, options } = createDraftOptions;
+      const { original: original2, parentDraft, key: key3, finalities, options } = createDraftOptions;
       const type3 = getType2(original2);
       const proxyDraft = {
         type: type3,
@@ -1040,8 +1040,8 @@ var require_mutative_cjs_development = __commonJS({
         // Mapping of draft Set items to their corresponding draft values.
         setMap: type3 === 3 ? new Map(original2.entries()) : void 0
       };
-      if (key2 || "key" in createDraftOptions) {
-        proxyDraft.key = key2;
+      if (key3 || "key" in createDraftOptions) {
+        proxyDraft.key = key3;
       }
       const { proxy, revoke } = Proxy.revocable(type3 === 1 ? Object.assign([], proxyDraft) : proxyDraft, proxyHandler);
       finalities.revoke.push(revoke);
@@ -1052,7 +1052,7 @@ var require_mutative_cjs_development = __commonJS({
           var _a, _b;
           const oldProxyDraft = getProxyDraft(proxy);
           let copy = target.type === 3 ? target.setMap : target.copy;
-          const draft = get11(copy, key2);
+          const draft = get11(copy, key3);
           const proxyDraft2 = getProxyDraft(draft);
           if (proxyDraft2) {
             let updatedValue = proxyDraft2.original;
@@ -1065,7 +1065,7 @@ var require_mutative_cjs_development = __commonJS({
               target.options.updatedValues = (_a = target.options.updatedValues) !== null && _a !== void 0 ? _a : /* @__PURE__ */ new WeakMap();
               target.options.updatedValues.set(updatedValue, proxyDraft2.original);
             }
-            set4(copy, key2, updatedValue);
+            set4(copy, key3, updatedValue);
           }
           (_b = oldProxyDraft.callbacks) === null || _b === void 0 ? void 0 : _b.forEach((callback) => {
             callback(patches, inversePatches);
@@ -1135,7 +1135,7 @@ var require_mutative_cjs_development = __commonJS({
     }
     function handleReturnValue(options) {
       const { rootDraft, value, useRawReturn = false, isRoot = true } = options;
-      forEach3(value, (key2, item2, source) => {
+      forEach3(value, (key3, item2, source) => {
         const proxyDraft = getProxyDraft(item2);
         if (proxyDraft && rootDraft && proxyDraft.finalities === rootDraft.finalities) {
           options.isContainDraft = true;
@@ -1143,9 +1143,9 @@ var require_mutative_cjs_development = __commonJS({
           if (source instanceof Set) {
             const arr = Array.from(source);
             source.clear();
-            arr.forEach((_item) => source.add(key2 === _item ? currentValue : _item));
+            arr.forEach((_item) => source.add(key3 === _item ? currentValue : _item));
           } else {
-            set4(source, key2, currentValue);
+            set4(source, key3, currentValue);
           }
         } else if (typeof item2 === "object" && item2 !== null) {
           options.value = item2;
@@ -1183,14 +1183,14 @@ var require_mutative_cjs_development = __commonJS({
       } else {
         currentValue = target;
       }
-      forEach3(currentValue, (key2, value) => {
-        if (proxyDraft && isEqual(get11(proxyDraft.original, key2), value))
+      forEach3(currentValue, (key3, value) => {
+        if (proxyDraft && isEqual(get11(proxyDraft.original, key3), value))
           return;
         const newValue = getCurrent(value);
         if (newValue !== value) {
           if (currentValue === target)
             ensureShallowCopy2();
-          set4(currentValue, key2, newValue);
+          set4(currentValue, key3, newValue);
         }
       });
       if (type3 === 3) {
@@ -1331,52 +1331,52 @@ var require_mutative_cjs_development = __commonJS({
           let base = draft;
           for (let index = 0; index < path.length - 1; index += 1) {
             const parentType = getType2(base);
-            let key3 = path[index];
-            if (typeof key3 !== "string" && typeof key3 !== "number") {
-              key3 = String(key3);
+            let key4 = path[index];
+            if (typeof key4 !== "string" && typeof key4 !== "number") {
+              key4 = String(key4);
             }
-            if ((parentType === 0 || parentType === 1) && (key3 === "__proto__" || key3 === "constructor") || typeof base === "function" && key3 === "prototype") {
+            if ((parentType === 0 || parentType === 1) && (key4 === "__proto__" || key4 === "constructor") || typeof base === "function" && key4 === "prototype") {
               throw new Error(`Patching reserved attributes like __proto__ and constructor is not allowed.`);
             }
-            base = get11(parentType === 3 ? Array.from(base) : base, key3);
+            base = get11(parentType === 3 ? Array.from(base) : base, key4);
             if (typeof base !== "object") {
               throw new Error(`Cannot apply patch at '${path.join("/")}'.`);
             }
           }
           const type3 = getType2(base);
           const value = deepClone2(patch.value);
-          const key2 = path[path.length - 1];
+          const key3 = path[path.length - 1];
           switch (op4) {
             case Operation.Replace:
               switch (type3) {
                 case 2:
-                  return base.set(key2, value);
+                  return base.set(key3, value);
                 case 3:
                   throw new Error(`Cannot apply replace patch to set.`);
                 default:
-                  return base[key2] = value;
+                  return base[key3] = value;
               }
             case Operation.Add:
               switch (type3) {
                 case 1:
-                  return key2 === "-" ? base.push(value) : base.splice(key2, 0, value);
+                  return key3 === "-" ? base.push(value) : base.splice(key3, 0, value);
                 case 2:
-                  return base.set(key2, value);
+                  return base.set(key3, value);
                 case 3:
                   return base.add(value);
                 default:
-                  return base[key2] = value;
+                  return base[key3] = value;
               }
             case Operation.Remove:
               switch (type3) {
                 case 1:
-                  return base.splice(key2, 1);
+                  return base.splice(key3, 1);
                 case 2:
-                  return base.delete(key2);
+                  return base.delete(key3);
                 case 3:
                   return base.delete(patch.value);
                 default:
-                  return delete base[key2];
+                  return delete base[key3];
               }
             default:
               throw new Error(`Unsupported patch operation: ${op4}.`);
@@ -1385,7 +1385,7 @@ var require_mutative_cjs_development = __commonJS({
       };
       if (applyOptions === null || applyOptions === void 0 ? void 0 : applyOptions.mutable) {
         {
-          if (Object.keys(applyOptions).filter((key2) => key2 !== "mutable").length) {
+          if (Object.keys(applyOptions).filter((key3) => key3 !== "mutable").length) {
             console.warn('The "mutable" option is not allowed to be used with other options.');
           }
         }
@@ -1876,14 +1876,14 @@ var ObjectSeq = /* @__PURE__ */ (function(KeyedSeq2) {
   if (KeyedSeq2) ObjectSeq2.__proto__ = KeyedSeq2;
   ObjectSeq2.prototype = Object.create(KeyedSeq2 && KeyedSeq2.prototype);
   ObjectSeq2.prototype.constructor = ObjectSeq2;
-  ObjectSeq2.prototype.get = function get11(key2, notSetValue) {
-    if (notSetValue !== void 0 && !this.has(key2)) {
+  ObjectSeq2.prototype.get = function get11(key3, notSetValue) {
+    if (notSetValue !== void 0 && !this.has(key3)) {
       return notSetValue;
     }
-    return this._object[key2];
+    return this._object[key3];
   };
-  ObjectSeq2.prototype.has = function has8(key2) {
-    return hasOwnProperty.call(this._object, key2);
+  ObjectSeq2.prototype.has = function has8(key3) {
+    return hasOwnProperty.call(this._object, key3);
   };
   ObjectSeq2.prototype.__iterate = function __iterate2(fn, reverse3) {
     var object = this._object;
@@ -1891,8 +1891,8 @@ var ObjectSeq = /* @__PURE__ */ (function(KeyedSeq2) {
     var size4 = keys3.length;
     var i = 0;
     while (i !== size4) {
-      var key2 = keys3[reverse3 ? size4 - ++i : i++];
-      if (fn(object[key2], key2, this) === false) {
+      var key3 = keys3[reverse3 ? size4 - ++i : i++];
+      if (fn(object[key3], key3, this) === false) {
         break;
       }
     }
@@ -1907,17 +1907,17 @@ var ObjectSeq = /* @__PURE__ */ (function(KeyedSeq2) {
       if (i === size4) {
         return iteratorDone();
       }
-      var key2 = keys3[reverse3 ? size4 - ++i : i++];
-      return iteratorValue(type3, key2, object[key2]);
+      var key3 = keys3[reverse3 ? size4 - ++i : i++];
+      return iteratorValue(type3, key3, object[key3]);
     });
   };
   return ObjectSeq2;
 })(KeyedSeq);
 ObjectSeq.prototype[IS_ORDERED_SYMBOL] = true;
 var CollectionSeq = /* @__PURE__ */ (function(IndexedSeq2) {
-  function CollectionSeq2(collection) {
-    this._collection = collection;
-    this.size = collection.length || collection.size;
+  function CollectionSeq2(collection2) {
+    this._collection = collection2;
+    this.size = collection2.length || collection2.size;
   }
   if (IndexedSeq2) CollectionSeq2.__proto__ = IndexedSeq2;
   CollectionSeq2.prototype = Object.create(IndexedSeq2 && IndexedSeq2.prototype);
@@ -1926,8 +1926,8 @@ var CollectionSeq = /* @__PURE__ */ (function(IndexedSeq2) {
     if (reverse3) {
       return this.cacheResult().__iterate(fn, reverse3);
     }
-    var collection = this._collection;
-    var iterator2 = getIterator(collection);
+    var collection2 = this._collection;
+    var iterator2 = getIterator(collection2);
     var iterations = 0;
     if (isIterator(iterator2)) {
       var step;
@@ -1943,8 +1943,8 @@ var CollectionSeq = /* @__PURE__ */ (function(IndexedSeq2) {
     if (reverse3) {
       return this.cacheResult().__iterator(type3, reverse3);
     }
-    var collection = this._collection;
-    var iterator2 = getIterator(collection);
+    var collection2 = this._collection;
+    var iterator2 = getIterator(collection2);
     if (!isIterator(iterator2)) {
       return new Iterator2(iteratorDone);
     }
@@ -2084,13 +2084,13 @@ function hashString(string) {
   return smi(hashed);
 }
 var COLLISION_HASH_BASE = (Math.random() * 1048576 | 1) % 1048576 || 40503;
-function hashCollisionKey(key2) {
-  if (typeof key2 !== "string") {
-    return hash(key2);
+function hashCollisionKey(key3) {
+  if (typeof key3 !== "string") {
+    return hash(key3);
   }
   var hashed = 0;
-  for (var ii = 0; ii < key2.length; ii++) {
-    hashed = COLLISION_HASH_BASE * hashed + key2.charCodeAt(ii) | 0;
+  for (var ii = 0; ii < key3.length; ii++) {
+    hashed = COLLISION_HASH_BASE * hashed + key3.charCodeAt(ii) | 0;
   }
   return hashed;
 }
@@ -2209,11 +2209,11 @@ var ToKeyedSequence = /* @__PURE__ */ (function(KeyedSeq2) {
   if (KeyedSeq2) ToKeyedSequence2.__proto__ = KeyedSeq2;
   ToKeyedSequence2.prototype = Object.create(KeyedSeq2 && KeyedSeq2.prototype);
   ToKeyedSequence2.prototype.constructor = ToKeyedSequence2;
-  ToKeyedSequence2.prototype.get = function get11(key2, notSetValue) {
-    return this._iter.get(key2, notSetValue);
+  ToKeyedSequence2.prototype.get = function get11(key3, notSetValue) {
+    return this._iter.get(key3, notSetValue);
   };
-  ToKeyedSequence2.prototype.has = function has8(key2) {
-    return this._iter.has(key2);
+  ToKeyedSequence2.prototype.has = function has8(key3) {
+    return this._iter.has(key3);
   };
   ToKeyedSequence2.prototype.valueSeq = function valueSeq2() {
     return this._iter.valueSeq();
@@ -2297,8 +2297,8 @@ var ToSetSequence = /* @__PURE__ */ (function(SetSeq2) {
   if (SetSeq2) ToSetSequence2.__proto__ = SetSeq2;
   ToSetSequence2.prototype = Object.create(SetSeq2 && SetSeq2.prototype);
   ToSetSequence2.prototype.constructor = ToSetSequence2;
-  ToSetSequence2.prototype.has = function has8(key2) {
-    return this._iter.includes(key2);
+  ToSetSequence2.prototype.has = function has8(key3) {
+    return this._iter.includes(key3);
   };
   ToSetSequence2.prototype.__iterate = function __iterate2(fn, reverse3) {
     var this$1$1 = this;
@@ -2365,36 +2365,36 @@ var FromEntriesSequence = /* @__PURE__ */ (function(KeyedSeq2) {
   return FromEntriesSequence2;
 })(KeyedSeq);
 ToIndexedSequence.prototype.cacheResult = ToKeyedSequence.prototype.cacheResult = ToSetSequence.prototype.cacheResult = FromEntriesSequence.prototype.cacheResult = cacheResultThrough;
-function flipFactory(collection) {
-  var flipSequence = makeSequence(collection);
-  flipSequence._iter = collection;
-  flipSequence.size = collection.size;
+function flipFactory(collection2) {
+  var flipSequence = makeSequence(collection2);
+  flipSequence._iter = collection2;
+  flipSequence.size = collection2.size;
   flipSequence.flip = function() {
-    return collection;
+    return collection2;
   };
   flipSequence.reverse = function() {
-    var reversedSequence = collection.reverse.apply(this);
+    var reversedSequence = collection2.reverse.apply(this);
     reversedSequence.flip = function() {
-      return collection.reverse();
+      return collection2.reverse();
     };
     return reversedSequence;
   };
-  flipSequence.has = function(key2) {
-    return collection.includes(key2);
+  flipSequence.has = function(key3) {
+    return collection2.includes(key3);
   };
-  flipSequence.includes = function(key2) {
-    return collection.has(key2);
+  flipSequence.includes = function(key3) {
+    return collection2.has(key3);
   };
   flipSequence.cacheResult = cacheResultThrough;
   flipSequence.__iterateUncached = function(fn, reverse3) {
     var this$1$1 = this;
-    return collection.__iterate(function(v4, k) {
+    return collection2.__iterate(function(v4, k) {
       return fn(k, v4, this$1$1) !== false;
     }, reverse3);
   };
   flipSequence.__iteratorUncached = function(type3, reverse3) {
     if (type3 === ITERATE_ENTRIES) {
-      var iterator2 = collection.__iterator(type3, reverse3);
+      var iterator2 = collection2.__iterator(type3, reverse3);
       return new Iterator2(function() {
         var step = iterator2.next();
         if (!step.done) {
@@ -2405,26 +2405,26 @@ function flipFactory(collection) {
         return step;
       });
     }
-    return collection.__iterator(
+    return collection2.__iterator(
       type3 === ITERATE_VALUES ? ITERATE_KEYS : ITERATE_VALUES,
       reverse3
     );
   };
   return flipSequence;
 }
-function mapFactory(collection, mapper, context2) {
-  var mappedSequence = makeSequence(collection);
-  mappedSequence.size = collection.size;
-  mappedSequence.has = function(key2) {
-    return collection.has(key2);
+function mapFactory(collection2, mapper, context2) {
+  var mappedSequence = makeSequence(collection2);
+  mappedSequence.size = collection2.size;
+  mappedSequence.has = function(key3) {
+    return collection2.has(key3);
   };
-  mappedSequence.get = function(key2, notSetValue) {
-    var v4 = collection.get(key2, NOT_SET);
-    return v4 === NOT_SET ? notSetValue : mapper.call(context2, v4, key2, collection);
+  mappedSequence.get = function(key3, notSetValue) {
+    var v4 = collection2.get(key3, NOT_SET);
+    return v4 === NOT_SET ? notSetValue : mapper.call(context2, v4, key3, collection2);
   };
   mappedSequence.__iterateUncached = function(fn, reverse3) {
     var this$1$1 = this;
-    return collection.__iterate(
+    return collection2.__iterate(
       function(v4, k, c8) {
         return fn(mapper.call(context2, v4, k, c8), k, this$1$1) !== false;
       },
@@ -2432,55 +2432,55 @@ function mapFactory(collection, mapper, context2) {
     );
   };
   mappedSequence.__iteratorUncached = function(type3, reverse3) {
-    var iterator2 = collection.__iterator(ITERATE_ENTRIES, reverse3);
+    var iterator2 = collection2.__iterator(ITERATE_ENTRIES, reverse3);
     return new Iterator2(function() {
       var step = iterator2.next();
       if (step.done) {
         return step;
       }
       var entry = step.value;
-      var key2 = entry[0];
+      var key3 = entry[0];
       return iteratorValue(
         type3,
-        key2,
-        mapper.call(context2, entry[1], key2, collection),
+        key3,
+        mapper.call(context2, entry[1], key3, collection2),
         step
       );
     });
   };
   return mappedSequence;
 }
-function reverseFactory(collection, useKeys) {
-  var reversedSequence = makeSequence(collection);
-  reversedSequence._iter = collection;
-  reversedSequence.size = collection.size;
+function reverseFactory(collection2, useKeys) {
+  var reversedSequence = makeSequence(collection2);
+  reversedSequence._iter = collection2;
+  reversedSequence.size = collection2.size;
   reversedSequence.reverse = function() {
-    return collection;
+    return collection2;
   };
-  if (collection.flip) {
+  if (collection2.flip) {
     reversedSequence.flip = function() {
-      var flipSequence = flipFactory(collection);
+      var flipSequence = flipFactory(collection2);
       flipSequence.reverse = function() {
-        return collection.flip();
+        return collection2.flip();
       };
       return flipSequence;
     };
   }
-  reversedSequence.get = function(key2, notSetValue) {
-    return collection.get(useKeys ? key2 : -1 - key2, notSetValue);
+  reversedSequence.get = function(key3, notSetValue) {
+    return collection2.get(useKeys ? key3 : -1 - key3, notSetValue);
   };
-  reversedSequence.has = function(key2) {
-    return collection.has(useKeys ? key2 : -1 - key2);
+  reversedSequence.has = function(key3) {
+    return collection2.has(useKeys ? key3 : -1 - key3);
   };
   reversedSequence.includes = function(value) {
-    return collection.includes(value);
+    return collection2.includes(value);
   };
   reversedSequence.cacheResult = cacheResultThrough;
   reversedSequence.__iterate = function(fn, reverse3) {
     var this$1$1 = this;
     var i = 0;
-    reverse3 && ensureSize(collection);
-    return collection.__iterate(
+    reverse3 && ensureSize(collection2);
+    return collection2.__iterate(
       function(v4, k) {
         return fn(v4, useKeys ? k : reverse3 ? this$1$1.size - ++i : i++, this$1$1);
       },
@@ -2489,8 +2489,8 @@ function reverseFactory(collection, useKeys) {
   };
   reversedSequence.__iterator = function(type3, reverse3) {
     var i = 0;
-    reverse3 && ensureSize(collection);
-    var iterator2 = collection.__iterator(ITERATE_ENTRIES, !reverse3);
+    reverse3 && ensureSize(collection2);
+    var iterator2 = collection2.__iterator(ITERATE_ENTRIES, !reverse3);
     return new Iterator2(function() {
       var step = iterator2.next();
       if (step.done) {
@@ -2509,22 +2509,22 @@ function reverseFactory(collection, useKeys) {
   };
   return reversedSequence;
 }
-function filterFactory(collection, predicate, context2, useKeys) {
-  var filterSequence = makeSequence(collection);
+function filterFactory(collection2, predicate, context2, useKeys) {
+  var filterSequence = makeSequence(collection2);
   if (useKeys) {
-    filterSequence.has = function(key2) {
-      var v4 = collection.get(key2, NOT_SET);
-      return v4 !== NOT_SET && !!predicate.call(context2, v4, key2, collection);
+    filterSequence.has = function(key3) {
+      var v4 = collection2.get(key3, NOT_SET);
+      return v4 !== NOT_SET && !!predicate.call(context2, v4, key3, collection2);
     };
-    filterSequence.get = function(key2, notSetValue) {
-      var v4 = collection.get(key2, NOT_SET);
-      return v4 !== NOT_SET && predicate.call(context2, v4, key2, collection) ? v4 : notSetValue;
+    filterSequence.get = function(key3, notSetValue) {
+      var v4 = collection2.get(key3, NOT_SET);
+      return v4 !== NOT_SET && predicate.call(context2, v4, key3, collection2) ? v4 : notSetValue;
     };
   }
   filterSequence.__iterateUncached = function(fn, reverse3) {
     var this$1$1 = this;
     var iterations = 0;
-    collection.__iterate(function(v4, k, c8) {
+    collection2.__iterate(function(v4, k, c8) {
       if (predicate.call(context2, v4, k, c8)) {
         iterations++;
         return fn(v4, useKeys ? k : iterations - 1, this$1$1);
@@ -2533,7 +2533,7 @@ function filterFactory(collection, predicate, context2, useKeys) {
     return iterations;
   };
   filterSequence.__iteratorUncached = function(type3, reverse3) {
-    var iterator2 = collection.__iterator(ITERATE_ENTRIES, reverse3);
+    var iterator2 = collection2.__iterator(ITERATE_ENTRIES, reverse3);
     var iterations = 0;
     return new Iterator2(function() {
       while (true) {
@@ -2542,61 +2542,61 @@ function filterFactory(collection, predicate, context2, useKeys) {
           return step;
         }
         var entry = step.value;
-        var key2 = entry[0];
+        var key3 = entry[0];
         var value = entry[1];
-        if (predicate.call(context2, value, key2, collection)) {
-          return iteratorValue(type3, useKeys ? key2 : iterations++, value, step);
+        if (predicate.call(context2, value, key3, collection2)) {
+          return iteratorValue(type3, useKeys ? key3 : iterations++, value, step);
         }
       }
     });
   };
   return filterSequence;
 }
-function countByFactory(collection, grouper, context2) {
+function countByFactory(collection2, grouper, context2) {
   var groups = Map2().asMutable();
-  collection.__iterate(function(v4, k) {
-    groups.update(grouper.call(context2, v4, k, collection), 0, function(a8) {
+  collection2.__iterate(function(v4, k) {
+    groups.update(grouper.call(context2, v4, k, collection2), 0, function(a8) {
       return a8 + 1;
     });
   });
   return groups.asImmutable();
 }
-function groupByFactory(collection, grouper, context2) {
-  var isKeyedIter = isKeyed(collection);
-  var groups = (isOrdered(collection) ? OrderedMap() : Map2()).asMutable();
-  collection.__iterate(function(v4, k) {
+function groupByFactory(collection2, grouper, context2) {
+  var isKeyedIter = isKeyed(collection2);
+  var groups = (isOrdered(collection2) ? OrderedMap() : Map2()).asMutable();
+  collection2.__iterate(function(v4, k) {
     groups.update(
-      grouper.call(context2, v4, k, collection),
+      grouper.call(context2, v4, k, collection2),
       function(a8) {
         return a8 = a8 || [], a8.push(isKeyedIter ? [k, v4] : v4), a8;
       }
     );
   });
-  var coerce = collectionClass(collection);
+  var coerce = collectionClass(collection2);
   return groups.map(function(arr) {
-    return reify(collection, coerce(arr));
+    return reify(collection2, coerce(arr));
   }).asImmutable();
 }
-function partitionFactory(collection, predicate, context2) {
-  var isKeyedIter = isKeyed(collection);
+function partitionFactory(collection2, predicate, context2) {
+  var isKeyedIter = isKeyed(collection2);
   var groups = [[], []];
-  collection.__iterate(function(v4, k) {
-    groups[predicate.call(context2, v4, k, collection) ? 1 : 0].push(
+  collection2.__iterate(function(v4, k) {
+    groups[predicate.call(context2, v4, k, collection2) ? 1 : 0].push(
       isKeyedIter ? [k, v4] : v4
     );
   });
-  var coerce = collectionClass(collection);
+  var coerce = collectionClass(collection2);
   return groups.map(function(arr) {
-    return reify(collection, coerce(arr));
+    return reify(collection2, coerce(arr));
   });
 }
-function sliceFactory(collection, begin, end4, useKeys) {
-  var originalSize = collection.size;
+function sliceFactory(collection2, begin, end4, useKeys) {
+  var originalSize = collection2.size;
   if (wholeSlice(begin, end4, originalSize)) {
-    return collection;
+    return collection2;
   }
   if (typeof originalSize === "undefined" && (begin < 0 || end4 < 0)) {
-    return sliceFactory(collection.toSeq().cacheResult(), begin, end4, useKeys);
+    return sliceFactory(collection2.toSeq().cacheResult(), begin, end4, useKeys);
   }
   var resolvedBegin = resolveBegin(begin, originalSize);
   var resolvedEnd = resolveEnd(end4, originalSize);
@@ -2605,12 +2605,12 @@ function sliceFactory(collection, begin, end4, useKeys) {
   if (resolvedSize === resolvedSize) {
     sliceSize = resolvedSize < 0 ? 0 : resolvedSize;
   }
-  var sliceSeq = makeSequence(collection);
-  sliceSeq.size = sliceSize === 0 ? sliceSize : collection.size && sliceSize || void 0;
-  if (!useKeys && isSeq(collection) && sliceSize >= 0) {
+  var sliceSeq = makeSequence(collection2);
+  sliceSeq.size = sliceSize === 0 ? sliceSize : collection2.size && sliceSize || void 0;
+  if (!useKeys && isSeq(collection2) && sliceSize >= 0) {
     sliceSeq.get = function(index, notSetValue) {
       index = wrapIndex(this, index);
-      return index >= 0 && index < sliceSize ? collection.get(index + resolvedBegin, notSetValue) : notSetValue;
+      return index >= 0 && index < sliceSize ? collection2.get(index + resolvedBegin, notSetValue) : notSetValue;
     };
   }
   sliceSeq.__iterateUncached = function(fn, reverse3) {
@@ -2624,7 +2624,7 @@ function sliceFactory(collection, begin, end4, useKeys) {
     var skipped = 0;
     var isSkipping = true;
     var iterations = 0;
-    collection.__iterate(function(v4, k) {
+    collection2.__iterate(function(v4, k) {
       if (!(isSkipping && (isSkipping = skipped++ < resolvedBegin))) {
         iterations++;
         return fn(v4, useKeys ? k : iterations - 1, this$1$1) !== false && iterations !== sliceSize;
@@ -2639,7 +2639,7 @@ function sliceFactory(collection, begin, end4, useKeys) {
     if (sliceSize === 0) {
       return new Iterator2(iteratorDone);
     }
-    var iterator2 = collection.__iterator(type3, reverse3);
+    var iterator2 = collection2.__iterator(type3, reverse3);
     var skipped = 0;
     var iterations = 0;
     return new Iterator2(function() {
@@ -2661,15 +2661,15 @@ function sliceFactory(collection, begin, end4, useKeys) {
   };
   return sliceSeq;
 }
-function takeWhileFactory(collection, predicate, context2) {
-  var takeSequence = makeSequence(collection);
+function takeWhileFactory(collection2, predicate, context2) {
+  var takeSequence = makeSequence(collection2);
   takeSequence.__iterateUncached = function(fn, reverse3) {
     var this$1$1 = this;
     if (reverse3) {
       return this.cacheResult().__iterate(fn, reverse3);
     }
     var iterations = 0;
-    collection.__iterate(
+    collection2.__iterate(
       function(v4, k, c8) {
         return predicate.call(context2, v4, k, c8) && ++iterations && fn(v4, k, this$1$1);
       }
@@ -2681,7 +2681,7 @@ function takeWhileFactory(collection, predicate, context2) {
     if (reverse3) {
       return this.cacheResult().__iterator(type3, reverse3);
     }
-    var iterator2 = collection.__iterator(ITERATE_ENTRIES, reverse3);
+    var iterator2 = collection2.__iterator(ITERATE_ENTRIES, reverse3);
     var iterating = true;
     return new Iterator2(function() {
       if (!iterating) {
@@ -2703,8 +2703,8 @@ function takeWhileFactory(collection, predicate, context2) {
   };
   return takeSequence;
 }
-function skipWhileFactory(collection, predicate, context2, useKeys) {
-  var skipSequence = makeSequence(collection);
+function skipWhileFactory(collection2, predicate, context2, useKeys) {
+  var skipSequence = makeSequence(collection2);
   skipSequence.__iterateUncached = function(fn, reverse3) {
     var this$1$1 = this;
     if (reverse3) {
@@ -2712,7 +2712,7 @@ function skipWhileFactory(collection, predicate, context2, useKeys) {
     }
     var isSkipping = true;
     var iterations = 0;
-    collection.__iterate(function(v4, k, c8) {
+    collection2.__iterate(function(v4, k, c8) {
       if (!(isSkipping && (isSkipping = predicate.call(context2, v4, k, c8)))) {
         iterations++;
         return fn(v4, useKeys ? k : iterations - 1, this$1$1);
@@ -2725,7 +2725,7 @@ function skipWhileFactory(collection, predicate, context2, useKeys) {
     if (reverse3) {
       return this.cacheResult().__iterator(type3, reverse3);
     }
-    var iterator2 = collection.__iterator(ITERATE_ENTRIES, reverse3);
+    var iterator2 = collection2.__iterator(ITERATE_ENTRIES, reverse3);
     var skipping = true;
     var iterations = 0;
     return new Iterator2(function() {
@@ -2842,9 +2842,9 @@ var ConcatSeq = /* @__PURE__ */ (function(Seq2) {
   };
   return ConcatSeq2;
 })(Seq);
-function concatFactory(collection, values2) {
-  var isKeyedCollection = isKeyed(collection);
-  var iters = [collection].concat(values2).map(function(v4) {
+function concatFactory(collection2, values2) {
+  var isKeyedCollection = isKeyed(collection2);
+  var iters = [collection2].concat(values2).map(function(v4) {
     if (!isCollection(v4)) {
       v4 = isKeyedCollection ? keyedSeqFromValue(v4) : indexedSeqFromValue(Array.isArray(v4) ? v4 : [v4]);
     } else if (isKeyedCollection) {
@@ -2855,18 +2855,18 @@ function concatFactory(collection, values2) {
     return v4.size !== 0;
   });
   if (iters.length === 0) {
-    return collection;
+    return collection2;
   }
   if (iters.length === 1) {
     var singleton = iters[0];
-    if (singleton === collection || isKeyedCollection && isKeyed(singleton) || isIndexed(collection) && isIndexed(singleton)) {
+    if (singleton === collection2 || isKeyedCollection && isKeyed(singleton) || isIndexed(collection2) && isIndexed(singleton)) {
       return singleton;
     }
   }
   return new ConcatSeq(iters);
 }
-function flattenFactory(collection, depth, useKeys) {
-  var flatSequence = makeSequence(collection);
+function flattenFactory(collection2, depth, useKeys) {
+  var flatSequence = makeSequence(collection2);
   flatSequence.__iterateUncached = function(fn, reverse3) {
     if (reverse3) {
       return this.cacheResult().__iterate(fn, reverse3);
@@ -2886,14 +2886,14 @@ function flattenFactory(collection, depth, useKeys) {
         return !stopped;
       }, reverse3);
     }
-    flatDeep(collection, 0);
+    flatDeep(collection2, 0);
     return iterations;
   };
   flatSequence.__iteratorUncached = function(type3, reverse3) {
     if (reverse3) {
       return this.cacheResult().__iterator(type3, reverse3);
     }
-    var iterator2 = collection.__iterator(type3, reverse3);
+    var iterator2 = collection2.__iterator(type3, reverse3);
     var stack = [];
     var iterations = 0;
     return new Iterator2(function() {
@@ -2919,19 +2919,19 @@ function flattenFactory(collection, depth, useKeys) {
   };
   return flatSequence;
 }
-function flatMapFactory(collection, mapper, context2) {
-  var coerce = collectionClass(collection);
-  return collection.toSeq().map(function(v4, k) {
-    return coerce(mapper.call(context2, v4, k, collection));
+function flatMapFactory(collection2, mapper, context2) {
+  var coerce = collectionClass(collection2);
+  return collection2.toSeq().map(function(v4, k) {
+    return coerce(mapper.call(context2, v4, k, collection2));
   }).flatten(true);
 }
-function interposeFactory(collection, separator) {
-  var interposedSequence = makeSequence(collection);
-  interposedSequence.size = collection.size && collection.size * 2 - 1;
+function interposeFactory(collection2, separator) {
+  var interposedSequence = makeSequence(collection2);
+  interposedSequence.size = collection2.size && collection2.size * 2 - 1;
   interposedSequence.__iterateUncached = function(fn, reverse3) {
     var this$1$1 = this;
     var iterations = 0;
-    collection.__iterate(
+    collection2.__iterate(
       function(v4) {
         return (!iterations || fn(separator, iterations++, this$1$1) !== false) && fn(v4, iterations++, this$1$1) !== false;
       },
@@ -2940,7 +2940,7 @@ function interposeFactory(collection, separator) {
     return iterations;
   };
   interposedSequence.__iteratorUncached = function(type3, reverse3) {
-    var iterator2 = collection.__iterator(ITERATE_VALUES, reverse3);
+    var iterator2 = collection2.__iterator(ITERATE_VALUES, reverse3);
     var iterations = 0;
     var step;
     return new Iterator2(function() {
@@ -2955,14 +2955,14 @@ function interposeFactory(collection, separator) {
   };
   return interposedSequence;
 }
-function sortFactory(collection, comparator, mapper) {
+function sortFactory(collection2, comparator, mapper) {
   if (!comparator) {
     comparator = defaultComparator;
   }
-  var isKeyedCollection = isKeyed(collection);
+  var isKeyedCollection = isKeyed(collection2);
   var index = 0;
-  var entries3 = collection.toSeq().map(function(v4, k) {
-    return [k, v4, index++, mapper ? mapper(v4, k, collection) : v4];
+  var entries3 = collection2.toSeq().map(function(v4, k) {
+    return [k, v4, index++, mapper ? mapper(v4, k, collection2) : v4];
   }).valueSeq().toArray();
   entries3.sort(function(a8, b8) {
     return comparator(a8[3], b8[3]) || a8[2] - b8[2];
@@ -2973,21 +2973,21 @@ function sortFactory(collection, comparator, mapper) {
       entries3[i] = v4[1];
     }
   );
-  return isKeyedCollection ? KeyedSeq(entries3) : isIndexed(collection) ? IndexedSeq(entries3) : SetSeq(entries3);
+  return isKeyedCollection ? KeyedSeq(entries3) : isIndexed(collection2) ? IndexedSeq(entries3) : SetSeq(entries3);
 }
-function maxFactory(collection, comparator, mapper) {
+function maxFactory(collection2, comparator, mapper) {
   if (!comparator) {
     comparator = defaultComparator;
   }
   if (mapper) {
-    var entry = collection.toSeq().map(function(v4, k) {
-      return [v4, mapper(v4, k, collection)];
+    var entry = collection2.toSeq().map(function(v4, k) {
+      return [v4, mapper(v4, k, collection2)];
     }).reduce(function(a8, b8) {
       return maxCompare(comparator, a8[1], b8[1]) ? b8 : a8;
     });
     return entry && entry[0];
   }
-  return collection.reduce(function(a8, b8) {
+  return collection2.reduce(function(a8, b8) {
     return maxCompare(comparator, a8, b8) ? b8 : a8;
   });
 }
@@ -3057,12 +3057,12 @@ function validateEntry(entry) {
     throw new TypeError("Expected [K, V] tuple: " + entry);
   }
 }
-function collectionClass(collection) {
-  return isKeyed(collection) ? KeyedCollection : isIndexed(collection) ? IndexedCollection : SetCollection;
+function collectionClass(collection2) {
+  return isKeyed(collection2) ? KeyedCollection : isIndexed(collection2) ? IndexedCollection : SetCollection;
 }
-function makeSequence(collection) {
+function makeSequence(collection2) {
   return Object.create(
-    (isKeyed(collection) ? KeyedSeq : isIndexed(collection) ? IndexedSeq : SetSeq).prototype
+    (isKeyed(collection2) ? KeyedSeq : isIndexed(collection2) ? IndexedSeq : SetSeq).prototype
   );
 }
 function cacheResultThrough() {
@@ -3109,11 +3109,11 @@ function is(valueA, valueB) {
   }
   return !!(isValueObject(valueA) && isValueObject(valueB) && valueA.equals(valueB));
 }
-function update$1(collection, key2, notSetValue, updater) {
+function update$1(collection2, key3, notSetValue, updater) {
   return updateIn(
     // @ts-expect-error Index signature for type string is missing in type V[]
-    collection,
-    [key2],
+    collection2,
+    [key3],
     notSetValue,
     updater
   );
@@ -3131,7 +3131,7 @@ function mergeWith$1(merger) {
   }
   return mergeIntoKeyedWith(this, iters, merger);
 }
-function mergeIntoKeyedWith(collection, collections2, merger) {
+function mergeIntoKeyedWith(collection2, collections2, merger) {
   var iters = [];
   for (var ii = 0; ii < collections2.length; ii++) {
     var collection$1 = KeyedCollection(collections2[ii]);
@@ -3140,23 +3140,23 @@ function mergeIntoKeyedWith(collection, collections2, merger) {
     }
   }
   if (iters.length === 0) {
-    return collection;
+    return collection2;
   }
-  if (collection.toSeq().size === 0 && !collection.__ownerID && iters.length === 1) {
-    return isRecord(collection) ? collection : collection.constructor(iters[0]);
+  if (collection2.toSeq().size === 0 && !collection2.__ownerID && iters.length === 1) {
+    return isRecord(collection2) ? collection2 : collection2.constructor(iters[0]);
   }
-  return collection.withMutations(function(collection2) {
-    var mergeIntoCollection = merger ? function(value, key2) {
+  return collection2.withMutations(function(collection3) {
+    var mergeIntoCollection = merger ? function(value, key3) {
       update$1(
-        collection2,
-        key2,
+        collection3,
+        key3,
         NOT_SET,
         function(oldVal) {
-          return oldVal === NOT_SET ? value : merger(oldVal, value, key2);
+          return oldVal === NOT_SET ? value : merger(oldVal, value, key3);
         }
       );
-    } : function(value, key2) {
-      collection2.set(key2, value);
+    } : function(value, key3) {
+      collection3.set(key3, value);
     };
     for (var ii2 = 0; ii2 < iters.length; ii2++) {
       iters[ii2].forEach(mergeIntoCollection);
@@ -3183,8 +3183,8 @@ function isPlainObject(value) {
 function isDataStructure(value) {
   return typeof value === "object" && (isImmutable(value) || Array.isArray(value) || isPlainObject(value));
 }
-function isProtoKey(key2) {
-  return typeof key2 === "string" && (key2 === "__proto__" || key2 === "constructor");
+function isProtoKey(key3) {
+  return typeof key3 === "string" && (key3 === "__proto__" || key3 === "constructor");
 }
 function arrCopy(arr, offset4) {
   offset4 = offset4 || 0;
@@ -3200,47 +3200,47 @@ function shallowCopy(from2) {
     return arrCopy(from2);
   }
   var to = {};
-  for (var key2 in from2) {
-    if (isProtoKey(key2)) {
+  for (var key3 in from2) {
+    if (isProtoKey(key3)) {
       continue;
     }
-    if (hasOwnProperty.call(from2, key2)) {
-      to[key2] = from2[key2];
+    if (hasOwnProperty.call(from2, key3)) {
+      to[key3] = from2[key3];
     }
   }
   return to;
 }
-function mergeDeepWithSources(collection, sources, merger) {
-  return mergeWithSources(collection, sources, deepMergerWith(merger));
+function mergeDeepWithSources(collection2, sources, merger) {
+  return mergeWithSources(collection2, sources, deepMergerWith(merger));
 }
-function mergeWithSources(collection, sources, merger) {
-  if (!isDataStructure(collection)) {
+function mergeWithSources(collection2, sources, merger) {
+  if (!isDataStructure(collection2)) {
     throw new TypeError(
-      "Cannot merge into non-data-structure value: " + collection
+      "Cannot merge into non-data-structure value: " + collection2
     );
   }
-  if (isImmutable(collection)) {
-    return typeof merger === "function" && collection.mergeWith ? collection.mergeWith.apply(collection, [merger].concat(sources)) : collection.merge ? collection.merge.apply(collection, sources) : collection.concat.apply(collection, sources);
+  if (isImmutable(collection2)) {
+    return typeof merger === "function" && collection2.mergeWith ? collection2.mergeWith.apply(collection2, [merger].concat(sources)) : collection2.merge ? collection2.merge.apply(collection2, sources) : collection2.concat.apply(collection2, sources);
   }
-  var isArray = Array.isArray(collection);
-  var merged = collection;
+  var isArray = Array.isArray(collection2);
+  var merged = collection2;
   var Collection3 = isArray ? IndexedCollection : KeyedCollection;
   var mergeItem = isArray ? function(value) {
-    if (merged === collection) {
+    if (merged === collection2) {
       merged = shallowCopy(merged);
     }
     merged.push(value);
-  } : function(value, key2) {
-    if (isProtoKey(key2)) {
+  } : function(value, key3) {
+    if (isProtoKey(key3)) {
       return;
     }
-    var hasVal = hasOwnProperty.call(merged, key2);
-    var nextVal = hasVal && merger ? merger(merged[key2], value, key2) : value;
-    if (!hasVal || nextVal !== merged[key2]) {
-      if (merged === collection) {
+    var hasVal = hasOwnProperty.call(merged, key3);
+    var nextVal = hasVal && merger ? merger(merged[key3], value, key3) : value;
+    if (!hasVal || nextVal !== merged[key3]) {
+      if (merged === collection2) {
         merged = shallowCopy(merged);
       }
-      merged[key2] = nextVal;
+      merged[key3] = nextVal;
     }
   };
   for (var i = 0; i < sources.length; i++) {
@@ -3249,8 +3249,8 @@ function mergeWithSources(collection, sources, merger) {
   return merged;
 }
 function deepMergerWith(merger) {
-  function deepMerger(oldValue, newValue, key2) {
-    return isDataStructure(oldValue) && isDataStructure(newValue) && areMergeable(oldValue, newValue) ? mergeWithSources(oldValue, [newValue], deepMerger) : merger ? merger(oldValue, newValue, key2) : newValue;
+  function deepMerger(oldValue, newValue, key3) {
+    return isDataStructure(oldValue) && isDataStructure(newValue) && areMergeable(oldValue, newValue) ? mergeWithSources(oldValue, [newValue], deepMerger) : merger ? merger(oldValue, newValue, key3) : newValue;
   }
   return deepMerger;
 }
@@ -3288,16 +3288,16 @@ function mergeIn(keyPath) {
     return mergeWithSources(m, iters);
   });
 }
-function setIn$1(collection, keyPath, value) {
-  return updateIn(collection, keyPath, NOT_SET, function() {
+function setIn$1(collection2, keyPath, value) {
+  return updateIn(collection2, keyPath, NOT_SET, function() {
     return value;
   });
 }
 function setIn(keyPath, v4) {
   return setIn$1(this, keyPath, v4);
 }
-function update(key2, notSetValue, updater) {
-  return arguments.length === 1 ? key2(this) : update$1(this, key2, notSetValue, updater);
+function update(key3, notSetValue, updater) {
+  return arguments.length === 1 ? key3(this) : update$1(this, key3, notSetValue, updater);
 }
 function updateIn$1(keyPath, notSetValue, updater) {
   return updateIn(this, keyPath, notSetValue, updater);
@@ -3349,13 +3349,13 @@ var Map2 = /* @__PURE__ */ (function(KeyedCollection2) {
     return updateMap(this, k, NOT_SET);
   };
   Map3.prototype.deleteAll = function deleteAll(keys3) {
-    var collection = Collection(keys3);
-    if (collection.size === 0) {
+    var collection2 = Collection(keys3);
+    if (collection2.size === 0) {
       return this;
     }
     return this.withMutations(function(map4) {
-      collection.forEach(function(key2) {
-        return map4.remove(key2);
+      collection2.forEach(function(key3) {
+        return map4.remove(key3);
       });
     });
   };
@@ -3381,8 +3381,8 @@ var Map2 = /* @__PURE__ */ (function(KeyedCollection2) {
   Map3.prototype.map = function map4(mapper, context2) {
     var this$1$1 = this;
     return this.withMutations(function(map5) {
-      map5.forEach(function(value, key2) {
-        map5.set(key2, mapper.call(context2, value, key2, this$1$1));
+      map5.forEach(function(value, key3) {
+        map5.set(key3, mapper.call(context2, value, key3, this$1$1));
       });
     });
   };
@@ -3443,22 +3443,22 @@ var ArrayMapNode = function ArrayMapNode2(ownerID, entries3) {
   this.ownerID = ownerID;
   this.entries = entries3;
 };
-ArrayMapNode.prototype.get = function get(shift2, keyHash, key2, notSetValue) {
+ArrayMapNode.prototype.get = function get(shift2, keyHash, key3, notSetValue) {
   var entries3 = this.entries;
   for (var ii = 0, len = entries3.length; ii < len; ii++) {
-    if (is(key2, entries3[ii][0])) {
+    if (is(key3, entries3[ii][0])) {
       return entries3[ii][1];
     }
   }
   return notSetValue;
 };
-ArrayMapNode.prototype.update = function update2(ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
+ArrayMapNode.prototype.update = function update2(ownerID, shift2, keyHash, key3, value, didChangeSize, didAlter) {
   var removed = value === NOT_SET;
   var entries3 = this.entries;
   var idx = 0;
   var len = entries3.length;
   for (; idx < len; idx++) {
-    if (is(key2, entries3[idx][0])) {
+    if (is(key3, entries3[idx][0])) {
       break;
     }
   }
@@ -3472,7 +3472,7 @@ ArrayMapNode.prototype.update = function update2(ownerID, shift2, keyHash, key2,
     return;
   }
   if (!exists && !removed && entries3.length >= MAX_ARRAY_MAP_SIZE) {
-    return createNodes(ownerID, entries3, key2, value);
+    return createNodes(ownerID, entries3, key3, value);
   }
   var isEditable = ownerID && ownerID === this.ownerID;
   var newEntries = isEditable ? entries3 : arrCopy(entries3);
@@ -3480,10 +3480,10 @@ ArrayMapNode.prototype.update = function update2(ownerID, shift2, keyHash, key2,
     if (removed) {
       idx === len - 1 ? newEntries.pop() : newEntries[idx] = newEntries.pop();
     } else {
-      newEntries[idx] = [key2, value];
+      newEntries[idx] = [key3, value];
     }
   } else {
-    newEntries.push([key2, value]);
+    newEntries.push([key3, value]);
   }
   if (isEditable) {
     this.entries = newEntries;
@@ -3496,22 +3496,22 @@ var BitmapIndexedNode = function BitmapIndexedNode2(ownerID, bitmap, nodes) {
   this.bitmap = bitmap;
   this.nodes = nodes;
 };
-BitmapIndexedNode.prototype.get = function get2(shift2, keyHash, key2, notSetValue) {
+BitmapIndexedNode.prototype.get = function get2(shift2, keyHash, key3, notSetValue) {
   if (keyHash === void 0) {
-    keyHash = hash(key2);
+    keyHash = hash(key3);
   }
   var bit = 1 << ((shift2 === 0 ? keyHash : keyHash >>> shift2) & MASK);
   var bitmap = this.bitmap;
   return (bitmap & bit) === 0 ? notSetValue : this.nodes[popCount(bitmap & bit - 1)].get(
     shift2 + SHIFT,
     keyHash,
-    key2,
+    key3,
     notSetValue
   );
 };
-BitmapIndexedNode.prototype.update = function update3(ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
+BitmapIndexedNode.prototype.update = function update3(ownerID, shift2, keyHash, key3, value, didChangeSize, didAlter) {
   if (keyHash === void 0) {
-    keyHash = hash(key2);
+    keyHash = hash(key3);
   }
   var keyHashFrag = (shift2 === 0 ? keyHash : keyHash >>> shift2) & MASK;
   var bit = 1 << keyHashFrag;
@@ -3528,7 +3528,7 @@ BitmapIndexedNode.prototype.update = function update3(ownerID, shift2, keyHash, 
     ownerID,
     shift2 + SHIFT,
     keyHash,
-    key2,
+    key3,
     value,
     didChangeSize,
     didAlter
@@ -3560,17 +3560,17 @@ var HashArrayMapNode = function HashArrayMapNode2(ownerID, count4, nodes) {
   this.count = count4;
   this.nodes = nodes;
 };
-HashArrayMapNode.prototype.get = function get3(shift2, keyHash, key2, notSetValue) {
+HashArrayMapNode.prototype.get = function get3(shift2, keyHash, key3, notSetValue) {
   if (keyHash === void 0) {
-    keyHash = hash(key2);
+    keyHash = hash(key3);
   }
   var idx = (shift2 === 0 ? keyHash : keyHash >>> shift2) & MASK;
   var node = this.nodes[idx];
-  return node ? node.get(shift2 + SHIFT, keyHash, key2, notSetValue) : notSetValue;
+  return node ? node.get(shift2 + SHIFT, keyHash, key3, notSetValue) : notSetValue;
 };
-HashArrayMapNode.prototype.update = function update4(ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
+HashArrayMapNode.prototype.update = function update4(ownerID, shift2, keyHash, key3, value, didChangeSize, didAlter) {
   if (keyHash === void 0) {
-    keyHash = hash(key2);
+    keyHash = hash(key3);
   }
   var idx = (shift2 === 0 ? keyHash : keyHash >>> shift2) & MASK;
   var removed = value === NOT_SET;
@@ -3584,7 +3584,7 @@ HashArrayMapNode.prototype.update = function update4(ownerID, shift2, keyHash, k
     ownerID,
     shift2 + SHIFT,
     keyHash,
-    key2,
+    key3,
     value,
     didChangeSize,
     didAlter
@@ -3616,18 +3616,18 @@ var HashCollisionNode = function HashCollisionNode2(ownerID, keyHash, entries3) 
   this.entries = entries3;
   this._index = void 0;
 };
-HashCollisionNode.prototype._positionOf = function _positionOf(key2, buildIndex) {
+HashCollisionNode.prototype._positionOf = function _positionOf(key3, buildIndex) {
   var entries3 = this.entries;
   var index = this._index;
   if (index === void 0 && buildIndex && entries3.length >= MIN_HASH_COLLISION_INDEX_SIZE) {
     index = this._buildIndex();
   }
   if (index !== void 0) {
-    var positions = index[hashCollisionKey(key2)];
+    var positions = index[hashCollisionKey(key3)];
     if (positions !== void 0) {
       for (var jj = 0; jj < positions.length; jj++) {
         var ii = positions[jj];
-        if (is(key2, entries3[ii][0])) {
+        if (is(key3, entries3[ii][0])) {
           return ii;
         }
       }
@@ -3635,7 +3635,7 @@ HashCollisionNode.prototype._positionOf = function _positionOf(key2, buildIndex)
     return -1;
   }
   for (var ii$1 = 0, len = entries3.length; ii$1 < len; ii$1++) {
-    if (is(key2, entries3[ii$1][0])) {
+    if (is(key3, entries3[ii$1][0])) {
       return ii$1;
     }
   }
@@ -3656,13 +3656,13 @@ HashCollisionNode.prototype._buildIndex = function _buildIndex() {
   this._index = index;
   return index;
 };
-HashCollisionNode.prototype.get = function get4(shift2, keyHash, key2, notSetValue) {
-  var idx = this._positionOf(key2, true);
+HashCollisionNode.prototype.get = function get4(shift2, keyHash, key3, notSetValue) {
+  var idx = this._positionOf(key3, true);
   return idx === -1 ? notSetValue : this.entries[idx][1];
 };
-HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
+HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, key3, value, didChangeSize, didAlter) {
   if (keyHash === void 0) {
-    keyHash = hash(key2);
+    keyHash = hash(key3);
   }
   var removed = value === NOT_SET;
   if (keyHash !== this.keyHash) {
@@ -3671,12 +3671,12 @@ HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, 
     }
     SetRef(didAlter);
     SetRef(didChangeSize);
-    return mergeIntoNode(this, ownerID, shift2, keyHash, [key2, value]);
+    return mergeIntoNode(this, ownerID, shift2, keyHash, [key3, value]);
   }
   var entries3 = this.entries;
   var len = entries3.length;
   var isEditable = ownerID && ownerID === this.ownerID;
-  var foundIdx = this._positionOf(key2, isEditable);
+  var foundIdx = this._positionOf(key3, isEditable);
   var idx = foundIdx === -1 ? len : foundIdx;
   var exists = foundIdx !== -1;
   if (exists ? entries3[idx][1] === value : removed) {
@@ -3695,12 +3695,12 @@ HashCollisionNode.prototype.update = function update5(ownerID, shift2, keyHash, 
         this._index = void 0;
       }
     } else {
-      newEntries[idx] = [key2, value];
+      newEntries[idx] = [key3, value];
     }
   } else {
-    newEntries.push([key2, value]);
+    newEntries.push([key3, value]);
     if (isEditable && this._index !== void 0) {
-      var secondaryHash = hashCollisionKey(key2);
+      var secondaryHash = hashCollisionKey(key3);
       var positions = this._index[secondaryHash];
       if (positions !== void 0) {
         positions.push(len);
@@ -3720,12 +3720,12 @@ var ValueNode = function ValueNode2(ownerID, keyHash, entry) {
   this.keyHash = keyHash;
   this.entry = entry;
 };
-ValueNode.prototype.get = function get5(shift2, keyHash, key2, notSetValue) {
-  return is(key2, this.entry[0]) ? this.entry[1] : notSetValue;
+ValueNode.prototype.get = function get5(shift2, keyHash, key3, notSetValue) {
+  return is(key3, this.entry[0]) ? this.entry[1] : notSetValue;
 };
-ValueNode.prototype.update = function update6(ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
+ValueNode.prototype.update = function update6(ownerID, shift2, keyHash, key3, value, didChangeSize, didAlter) {
   var removed = value === NOT_SET;
-  var keyMatch = is(key2, this.entry[0]);
+  var keyMatch = is(key3, this.entry[0]);
   if (keyMatch ? value === this.entry[1] : removed) {
     return this;
   }
@@ -3739,10 +3739,10 @@ ValueNode.prototype.update = function update6(ownerID, shift2, keyHash, key2, va
       this.entry[1] = value;
       return this;
     }
-    return new ValueNode(ownerID, this.keyHash, [key2, value]);
+    return new ValueNode(ownerID, this.keyHash, [key3, value]);
   }
   SetRef(didChangeSize);
-  return mergeIntoNode(this, ownerID, shift2, hash(key2), [key2, value]);
+  return mergeIntoNode(this, ownerID, shift2, hash(key3), [key3, value]);
 };
 ArrayMapNode.prototype.iterate = HashCollisionNode.prototype.iterate = function(fn, reverse3) {
   var entries3 = this.entries;
@@ -3870,20 +3870,20 @@ function updateMap(map4, k, v4) {
   }
   return newRoot ? makeMap(newSize, newRoot) : emptyMap();
 }
-function updateNode(node, ownerID, shift2, keyHash, key2, value, didChangeSize, didAlter) {
+function updateNode(node, ownerID, shift2, keyHash, key3, value, didChangeSize, didAlter) {
   if (!node) {
     if (value === NOT_SET) {
       return node;
     }
     SetRef(didAlter);
     SetRef(didChangeSize);
-    return new ValueNode(ownerID, keyHash, [key2, value]);
+    return new ValueNode(ownerID, keyHash, [key3, value]);
   }
   return node.update(
     ownerID,
     shift2,
     keyHash,
-    key2,
+    key3,
     value,
     didChangeSize,
     didAlter
@@ -3902,11 +3902,11 @@ function mergeIntoNode(node, ownerID, shift2, keyHash, entry) {
   var nodes = idx1 === idx2 ? [mergeIntoNode(node, ownerID, shift2 + SHIFT, keyHash, entry)] : (newNode = new ValueNode(ownerID, keyHash, entry), idx1 < idx2 ? [node, newNode] : [newNode, node]);
   return new BitmapIndexedNode(ownerID, 1 << idx1 | 1 << idx2, nodes);
 }
-function createNodes(ownerID, entries3, key2, value) {
+function createNodes(ownerID, entries3, key3, value) {
   if (!ownerID) {
     ownerID = new OwnerID();
   }
-  var node = new ValueNode(ownerID, hash(key2), [key2, value]);
+  var node = new ValueNode(ownerID, hash(key3), [key3, value]);
   for (var ii = 0; ii < entries3.length; ii++) {
     var entry = entries3[ii];
     node = node.update(ownerID, 0, void 0, entry[0], entry[1]);
@@ -4002,77 +4002,77 @@ function quoteString(value) {
     return JSON.stringify(value);
   }
 }
-function has(collection, key2) {
-  return isImmutable(collection) ? (
+function has(collection2, key3) {
+  return isImmutable(collection2) ? (
     // @ts-expect-error key might be a number or symbol, which is not handled be Record key type
-    collection.has(key2)
+    collection2.has(key3)
   ) : (
     // @ts-expect-error key might be anything else than PropertyKey, and will return false in that case but runtime is OK
-    isDataStructure(collection) && hasOwnProperty.call(collection, key2)
+    isDataStructure(collection2) && hasOwnProperty.call(collection2, key3)
   );
 }
-function get6(collection, key2, notSetValue) {
-  return isImmutable(collection) ? collection.get(key2, notSetValue) : !has(collection, key2) ? notSetValue : (
+function get6(collection2, key3, notSetValue) {
+  return isImmutable(collection2) ? collection2.get(key3, notSetValue) : !has(collection2, key3) ? notSetValue : (
     // @ts-expect-error weird "get" here,
-    typeof collection.get === "function" ? (
+    typeof collection2.get === "function" ? (
       // @ts-expect-error weird "get" here,
-      collection.get(key2)
+      collection2.get(key3)
     ) : (
       // @ts-expect-error key is unknown here,
-      collection[key2]
+      collection2[key3]
     )
   );
 }
-function remove(collection, key2) {
-  if (!isDataStructure(collection)) {
-    throw new TypeError("Cannot update non-data-structure value: " + collection);
+function remove(collection2, key3) {
+  if (!isDataStructure(collection2)) {
+    throw new TypeError("Cannot update non-data-structure value: " + collection2);
   }
-  if (isImmutable(collection)) {
-    if (!collection.remove) {
-      throw new TypeError("Cannot update immutable value without .remove() method: " + collection);
+  if (isImmutable(collection2)) {
+    if (!collection2.remove) {
+      throw new TypeError("Cannot update immutable value without .remove() method: " + collection2);
     }
-    return collection.remove(key2);
+    return collection2.remove(key3);
   }
-  if (!hasOwnProperty.call(collection, key2)) {
-    return collection;
+  if (!hasOwnProperty.call(collection2, key3)) {
+    return collection2;
   }
-  var collectionCopy = shallowCopy(collection);
+  var collectionCopy = shallowCopy(collection2);
   if (Array.isArray(collectionCopy)) {
-    collectionCopy.splice(key2, 1);
+    collectionCopy.splice(key3, 1);
   } else {
-    delete collectionCopy[key2];
+    delete collectionCopy[key3];
   }
   return collectionCopy;
 }
-function set(collection, key2, value) {
-  if (isProtoKey(key2)) {
-    return collection;
+function set(collection2, key3, value) {
+  if (isProtoKey(key3)) {
+    return collection2;
   }
-  if (!isDataStructure(collection)) {
-    throw new TypeError("Cannot update non-data-structure value: " + collection);
+  if (!isDataStructure(collection2)) {
+    throw new TypeError("Cannot update non-data-structure value: " + collection2);
   }
-  if (isImmutable(collection)) {
-    if (!collection.set) {
-      throw new TypeError("Cannot update immutable value without .set() method: " + collection);
+  if (isImmutable(collection2)) {
+    if (!collection2.set) {
+      throw new TypeError("Cannot update immutable value without .set() method: " + collection2);
     }
-    return collection.set(key2, value);
+    return collection2.set(key3, value);
   }
-  if (hasOwnProperty.call(collection, key2) && value === collection[key2]) {
-    return collection;
+  if (hasOwnProperty.call(collection2, key3) && value === collection2[key3]) {
+    return collection2;
   }
-  var collectionCopy = shallowCopy(collection);
-  collectionCopy[key2] = value;
+  var collectionCopy = shallowCopy(collection2);
+  collectionCopy[key3] = value;
   return collectionCopy;
 }
-function updateIn(collection, keyPath, notSetValue, updater) {
+function updateIn(collection2, keyPath, notSetValue, updater) {
   if (!updater) {
     updater = notSetValue;
     notSetValue = void 0;
   }
   var updatedValue = updateInDeeply(
-    isImmutable(collection),
+    isImmutable(collection2),
     // @ts-expect-error type issues with Record and mixed types
-    collection,
+    collection2,
     coerceKeyPath(keyPath),
     0,
     notSetValue,
@@ -4090,8 +4090,8 @@ function updateInDeeply(inImmutable, existing, keyPath, i, notSetValue, updater)
   if (!wasNotSet && !isDataStructure(existing)) {
     throw new TypeError("Cannot update within non-data-structure value in path [" + Array.from(keyPath).slice(0, i).map(quoteString) + "]: " + existing);
   }
-  var key2 = keyPath[i];
-  var nextExisting = wasNotSet ? NOT_SET : get6(existing, key2, NOT_SET);
+  var key3 = keyPath[i];
+  var nextExisting = wasNotSet ? NOT_SET : get6(existing, key3, NOT_SET);
   var nextUpdated = updateInDeeply(
     nextExisting === NOT_SET ? inImmutable : isImmutable(nextExisting),
     // @ts-expect-error mixed type
@@ -4101,10 +4101,10 @@ function updateInDeeply(inImmutable, existing, keyPath, i, notSetValue, updater)
     notSetValue,
     updater
   );
-  return nextUpdated === nextExisting ? existing : nextUpdated === NOT_SET ? remove(existing, key2) : set(wasNotSet ? inImmutable ? emptyMap() : {} : existing, key2, nextUpdated);
+  return nextUpdated === nextExisting ? existing : nextUpdated === NOT_SET ? remove(existing, key3) : set(wasNotSet ? inImmutable ? emptyMap() : {} : existing, key3, nextUpdated);
 }
-function removeIn(collection, keyPath) {
-  return updateIn(collection, keyPath, function() {
+function removeIn(collection2, keyPath) {
+  return updateIn(collection2, keyPath, function() {
     return NOT_SET;
   });
 }
@@ -5019,9 +5019,9 @@ var EMPTY_STACK;
 function emptyStack() {
   return EMPTY_STACK || (EMPTY_STACK = makeStack(0));
 }
-function reduce(collection, reducer, reduction, context2, useFirst, reverse3) {
-  assertNotInfinite(collection.size);
-  collection.__iterate(function(v4, k, c8) {
+function reduce(collection2, reducer, reduction, context2, useFirst, reverse3) {
+  assertNotInfinite(collection2.size);
+  collection2.__iterate(function(v4, k, c8) {
     if (useFirst) {
       useFirst = false;
       reduction = v4;
@@ -5419,22 +5419,22 @@ var EMPTY_SET;
 function emptySet() {
   return EMPTY_SET || (EMPTY_SET = makeSet(emptyMap()));
 }
-function getIn$1(collection, searchKeyPath, notSetValue) {
+function getIn$1(collection2, searchKeyPath, notSetValue) {
   var keyPath = coerceKeyPath(searchKeyPath);
   var i = 0;
   while (i !== keyPath.length) {
-    collection = get6(collection, keyPath[i++], NOT_SET);
-    if (collection === NOT_SET) {
+    collection2 = get6(collection2, keyPath[i++], NOT_SET);
+    if (collection2 === NOT_SET) {
       return notSetValue;
     }
   }
-  return collection;
+  return collection2;
 }
 function getIn(searchKeyPath, notSetValue) {
   return getIn$1(this, searchKeyPath, notSetValue);
 }
-function hasIn$1(collection, keyPath) {
-  return getIn$1(collection, keyPath, NOT_SET) !== NOT_SET;
+function hasIn$1(collection2, keyPath) {
+  return getIn$1(collection2, keyPath, NOT_SET) !== NOT_SET;
 }
 function hasIn(searchKeyPath) {
   return hasIn$1(this, searchKeyPath);
@@ -5476,14 +5476,14 @@ function toJS(value) {
   });
   return result2;
 }
-function hashCollection(collection) {
-  if (collection.size === Infinity) {
+function hashCollection(collection2) {
+  if (collection2.size === Infinity) {
     return 0;
   }
-  var ordered = isOrdered(collection);
-  var keyed = isKeyed(collection);
+  var ordered = isOrdered(collection2);
+  var keyed = isKeyed(collection2);
   var h = ordered ? 1 : 0;
-  collection.__iterate(keyed ? ordered ? function(v4, k) {
+  collection2.__iterate(keyed ? ordered ? function(v4, k) {
     h = 31 * h + hashMerge(hash(v4), hash(k)) | 0;
   } : function(v4, k) {
     h = h + hashMerge(hash(v4), hash(k)) | 0;
@@ -5492,7 +5492,7 @@ function hashCollection(collection) {
   } : function(v4) {
     h = h + hash(v4) | 0;
   });
-  return murmurHashOfSize(collection.size, h);
+  return murmurHashOfSize(collection2.size, h);
 }
 function murmurHashOfSize(size4, h) {
   h = imul(h, 3432918353);
@@ -5508,8 +5508,8 @@ function hashMerge(a8, b8) {
   return a8 ^ b8 + 2654435769 + (a8 << 6) + (a8 >> 2) | 0;
 }
 function mixin(ctor, methods) {
-  var keyCopier = function(key2) {
-    ctor.prototype[key2] = methods[key2];
+  var keyCopier = function(key3) {
+    ctor.prototype[key3] = methods[key3];
   };
   Object.keys(methods).forEach(keyCopier);
   Object.getOwnPropertySymbols && Object.getOwnPropertySymbols(methods).forEach(keyCopier);
@@ -5692,13 +5692,13 @@ mixin(Collection, {
     return deepEqual(this, other);
   },
   entrySeq: function entrySeq() {
-    var collection = this;
-    if (collection._cache) {
-      return new ArraySeq(collection._cache);
+    var collection2 = this;
+    if (collection2._cache) {
+      return new ArraySeq(collection2._cache);
     }
-    var entriesSequence = collection.toSeq().map(entryMapper).toIndexedSeq();
+    var entriesSequence = collection2.toSeq().map(entryMapper).toIndexedSeq();
     entriesSequence.fromEntrySeq = function() {
-      return collection.toSeq();
+      return collection2.toSeq();
     };
     return entriesSequence;
   },
@@ -5741,8 +5741,8 @@ mixin(Collection, {
     return new FromEntriesSequence(this);
   },
   get: function get7(searchKey, notSetValue) {
-    return this.find(function(_, key2) {
-      return is(key2, searchKey);
+    return this.find(function(_, key3) {
+      return is(key3, searchKey);
     }, void 0, notSetValue);
   },
   getIn,
@@ -5896,12 +5896,12 @@ mixin(IndexedCollection, {
     return entry ? entry[0] : -1;
   },
   indexOf: function indexOf(searchValue) {
-    var key2 = this.keyOf(searchValue);
-    return key2 === void 0 ? -1 : key2;
+    var key3 = this.keyOf(searchValue);
+    return key3 === void 0 ? -1 : key3;
   },
   lastIndexOf: function lastIndexOf(searchValue) {
-    var key2 = this.lastKeyOf(searchValue);
-    return key2 === void 0 ? -1 : key2;
+    var key3 = this.lastKeyOf(searchValue);
+    return key3 === void 0 ? -1 : key3;
   },
   reverse: function reverse2() {
     return reify(this, reverseFactory(this, false));
@@ -5935,14 +5935,14 @@ mixin(IndexedCollection, {
   },
   get: function get8(index, notSetValue) {
     index = wrapIndex(this, index);
-    return index < 0 || this.size === Infinity || this.size !== void 0 && index > this.size ? notSetValue : this.find(function(_, key2) {
-      return key2 === index;
+    return index < 0 || this.size === Infinity || this.size !== void 0 && index > this.size ? notSetValue : this.find(function(_, key3) {
+      return key3 === index;
     }, void 0, notSetValue);
   },
   has: function has3(index) {
     index = wrapIndex(this, index);
-    return index >= 0 && (this.size !== void 0 ? this.size === Infinity || index < this.size : this.find(function(_, key2) {
-      return key2 === index;
+    return index >= 0 && (this.size !== void 0 ? this.size === Infinity || index < this.size : this.find(function(_, key3) {
+      return key3 === index;
     }, void 0, NOT_SET) !== NOT_SET);
   },
   interpose: function interpose(separator) {
@@ -12276,7 +12276,7 @@ var InputObserver;
       resizeObserver = new window.ResizeObserver(onResize);
     }
     const events = createEvents();
-    const { drag, interactionEnd, wheel, pinch, gesture, click: click2, move, leave, enter, resize, modifiers: modifiers3, key: key2, keyUp, keyDown, lock, trackedPointers } = events;
+    const { drag, interactionEnd, wheel, pinch, gesture, click: click2, move, leave, enter, resize, modifiers: modifiers3, key: key3, keyUp, keyDown, lock, trackedPointers } = events;
     attach();
     function attach() {
       element.addEventListener("contextmenu", onContextMenu, false);
@@ -12430,7 +12430,7 @@ var InputObserver;
     function handleKeyPress(event) {
       if (!getKeyOnElement(event) || !isInside)
         return;
-      key2.next({
+      key3.next({
         key: event.key,
         code: event.code,
         modifiers: getModifierKeys(),
@@ -14068,13 +14068,13 @@ function partitionArrayAsc(data, parts, l, r) {
 }
 function insertionSortArrayAsc(data, start4, end4) {
   for (let i = start4 + 1; i <= end4; i++) {
-    const key2 = data[i];
+    const key3 = data[i];
     let j = i - 1;
-    while (j >= start4 && data[j] > key2) {
+    while (j >= start4 && data[j] > key3) {
       data[j + 1] = data[j];
       j = j - 1;
     }
-    data[j + 1] = key2;
+    data[j + 1] = key3;
   }
 }
 function quickSortArrayAsc(data, parts, low, high) {
@@ -14120,17 +14120,17 @@ function _makeBuckets(indices3, getKey2, sortBuckets, start4, end4) {
   let prevKey = getKey2(indices3[0]);
   let isBucketed = true;
   for (let i = start4; i < end4; i++) {
-    const key2 = getKey2(indices3[i]);
-    if (buckets.has(key2)) {
-      buckets.get(key2).count++;
-      if (prevKey !== key2)
+    const key3 = getKey2(indices3[i]);
+    if (buckets.has(key3)) {
+      buckets.get(key3).count++;
+      if (prevKey !== key3)
         isBucketed = false;
     } else {
-      const bucket = { key: key2, count: 1, offset: i };
-      buckets.set(key2, bucket);
+      const bucket = { key: key3, count: 1, offset: i };
+      buckets.set(key3, bucket);
       bucketList[bucketList.length] = bucket;
     }
-    prevKey = key2;
+    prevKey = key3;
   }
   const bucketOffsets = new Int32Array(bucketList.length + 1);
   bucketOffsets[bucketList.length] = end4;
@@ -14159,8 +14159,8 @@ function _makeBuckets(indices3, getKey2, sortBuckets, start4, end4) {
   }
   const reorderedIndices = new Int32Array(end4 - start4);
   for (let i = start4; i < end4; i++) {
-    const key2 = getKey2(indices3[i]);
-    const bucket = buckets.get(key2);
+    const key3 = getKey2(indices3[i]);
+    const bucket = buckets.get(key3);
     reorderedIndices[bucket.offset++] = indices3[i];
   }
   for (let i = 0, _i = reorderedIndices.length; i < _i; i++) {
@@ -14181,29 +14181,29 @@ function makeBuckets(indices3, getKey2, options) {
 
 // node_modules/molstar/lib/mol-data/util/equivalence-classes.js
 var EquivalenceClassesImpl = class {
-  createGroup(key2, value) {
+  createGroup(key3, value) {
     const id = this.id++;
-    const keys3 = [key2];
+    const keys3 = [key3];
     this.groups[id] = keys3;
     return { id, keys: keys3, value };
   }
   // Return the group representative.
-  add(key2, a8) {
+  add(key3, a8) {
     const hash5 = this.getHash(a8);
     if (this.byHash.has(hash5)) {
       const groups = this.byHash.get(hash5);
       for (let i = 0, _i = groups.length; i < _i; i++) {
         const group2 = groups[i];
         if (this.areEqual(a8, group2.value)) {
-          group2.keys[group2.keys.length] = key2;
+          group2.keys[group2.keys.length] = key3;
           return group2.value;
         }
       }
-      const group = this.createGroup(key2, a8);
+      const group = this.createGroup(key3, a8);
       groups[groups.length] = group;
       return group.value;
     } else {
-      const group = this.createGroup(key2, a8);
+      const group = this.createGroup(key3, a8);
       this.byHash.set(hash5, [group]);
       return group.value;
     }
@@ -14388,9 +14388,9 @@ var ObjectHasher256 = class {
   addObject(obj, depth) {
     const keys3 = Object.keys(obj).sort();
     this.addNumber(keys3.length);
-    for (const key2 of keys3) {
-      this.addString(key2);
-      this.hashValue(obj[key2], depth + 1);
+    for (const key3 of keys3) {
+      this.addString(key3);
+      this.hashValue(obj[key3], depth + 1);
     }
   }
 };
@@ -14464,18 +14464,18 @@ function hashMurmur128o(obj, seed = 42) {
   const jsonString = JSON.stringify(obj);
   return murmurHash3_128(jsonString, seed);
 }
-function murmurHash3_128(key2, seed) {
+function murmurHash3_128(key3, seed) {
   let h1 = seed >>> 0;
   let h2 = seed >>> 0;
   let h3 = seed >>> 0;
   let h4 = seed >>> 0;
-  const remainder = key2.length % 16;
-  const bytes = key2.length - remainder;
+  const remainder = key3.length % 16;
+  const bytes = key3.length - remainder;
   for (let i = 0; i < bytes; i += 16) {
-    let k12 = key2.charCodeAt(i) & 255 | (key2.charCodeAt(i + 1) & 255) << 8 | (key2.charCodeAt(i + 2) & 255) << 16 | (key2.charCodeAt(i + 3) & 255) << 24;
-    let k22 = key2.charCodeAt(i + 4) & 255 | (key2.charCodeAt(i + 5) & 255) << 8 | (key2.charCodeAt(i + 6) & 255) << 16 | (key2.charCodeAt(i + 7) & 255) << 24;
-    let k32 = key2.charCodeAt(i + 8) & 255 | (key2.charCodeAt(i + 9) & 255) << 8 | (key2.charCodeAt(i + 10) & 255) << 16 | (key2.charCodeAt(i + 11) & 255) << 24;
-    let k42 = key2.charCodeAt(i + 12) & 255 | (key2.charCodeAt(i + 13) & 255) << 8 | (key2.charCodeAt(i + 14) & 255) << 16 | (key2.charCodeAt(i + 15) & 255) << 24;
+    let k12 = key3.charCodeAt(i) & 255 | (key3.charCodeAt(i + 1) & 255) << 8 | (key3.charCodeAt(i + 2) & 255) << 16 | (key3.charCodeAt(i + 3) & 255) << 24;
+    let k22 = key3.charCodeAt(i + 4) & 255 | (key3.charCodeAt(i + 5) & 255) << 8 | (key3.charCodeAt(i + 6) & 255) << 16 | (key3.charCodeAt(i + 7) & 255) << 24;
+    let k32 = key3.charCodeAt(i + 8) & 255 | (key3.charCodeAt(i + 9) & 255) << 8 | (key3.charCodeAt(i + 10) & 255) << 16 | (key3.charCodeAt(i + 11) & 255) << 24;
+    let k42 = key3.charCodeAt(i + 12) & 255 | (key3.charCodeAt(i + 13) & 255) << 8 | (key3.charCodeAt(i + 14) & 255) << 16 | (key3.charCodeAt(i + 15) & 255) << 24;
     k12 = Math.imul(k12, 597399067);
     k12 = k12 << 15 | k12 >>> 17;
     k12 = Math.imul(k12, 2869860233);
@@ -14508,56 +14508,56 @@ function murmurHash3_128(key2, seed) {
   let k1 = 0, k2 = 0, k3 = 0, k4 = 0;
   switch (remainder) {
     case 15:
-      k4 ^= key2.charCodeAt(bytes + 14) << 16;
+      k4 ^= key3.charCodeAt(bytes + 14) << 16;
     case 14:
-      k4 ^= key2.charCodeAt(bytes + 13) << 8;
+      k4 ^= key3.charCodeAt(bytes + 13) << 8;
     case 13:
-      k4 ^= key2.charCodeAt(bytes + 12);
+      k4 ^= key3.charCodeAt(bytes + 12);
       k4 = Math.imul(k4, 2716044179);
       k4 = k4 << 13 | k4 >>> 19;
       k4 = Math.imul(k4, 597399067);
       h4 ^= k4;
     case 12:
-      k3 ^= key2.charCodeAt(bytes + 11) << 24;
+      k3 ^= key3.charCodeAt(bytes + 11) << 24;
     case 11:
-      k3 ^= key2.charCodeAt(bytes + 10) << 16;
+      k3 ^= key3.charCodeAt(bytes + 10) << 16;
     case 10:
-      k3 ^= key2.charCodeAt(bytes + 9) << 8;
+      k3 ^= key3.charCodeAt(bytes + 9) << 8;
     case 9:
-      k3 ^= key2.charCodeAt(bytes + 8);
+      k3 ^= key3.charCodeAt(bytes + 8);
       k3 = Math.imul(k3, 951274213);
       k3 = k3 << 17 | k3 >>> 15;
       k3 = Math.imul(k3, 2716044179);
       h3 ^= k3;
     case 8:
-      k2 ^= key2.charCodeAt(bytes + 7) << 24;
+      k2 ^= key3.charCodeAt(bytes + 7) << 24;
     case 7:
-      k2 ^= key2.charCodeAt(bytes + 6) << 16;
+      k2 ^= key3.charCodeAt(bytes + 6) << 16;
     case 6:
-      k2 ^= key2.charCodeAt(bytes + 5) << 8;
+      k2 ^= key3.charCodeAt(bytes + 5) << 8;
     case 5:
-      k2 ^= key2.charCodeAt(bytes + 4);
+      k2 ^= key3.charCodeAt(bytes + 4);
       k2 = Math.imul(k2, 2869860233);
       k2 = k2 << 16 | k2 >>> 16;
       k2 = Math.imul(k2, 951274213);
       h2 ^= k2;
     case 4:
-      k1 ^= key2.charCodeAt(bytes + 3) << 24;
+      k1 ^= key3.charCodeAt(bytes + 3) << 24;
     case 3:
-      k1 ^= key2.charCodeAt(bytes + 2) << 16;
+      k1 ^= key3.charCodeAt(bytes + 2) << 16;
     case 2:
-      k1 ^= key2.charCodeAt(bytes + 1) << 8;
+      k1 ^= key3.charCodeAt(bytes + 1) << 8;
     case 1:
-      k1 ^= key2.charCodeAt(bytes);
+      k1 ^= key3.charCodeAt(bytes);
       k1 = Math.imul(k1, 597399067);
       k1 = k1 << 15 | k1 >>> 17;
       k1 = Math.imul(k1, 2869860233);
       h1 ^= k1;
   }
-  h1 ^= key2.length;
-  h2 ^= key2.length;
-  h3 ^= key2.length;
-  h4 ^= key2.length;
+  h1 ^= key3.length;
+  h2 ^= key3.length;
+  h3 ^= key3.length;
+  h4 ^= key3.length;
   h1 += h2;
   h1 += h3;
   h1 += h4;
@@ -19495,10 +19495,10 @@ var AssetManager = class {
   }
   clearTag(tag2) {
     const keys3 = Array.from(this._assets.keys());
-    for (const key2 of keys3) {
-      const entry = this._assets.get(key2);
+    for (const key3 of keys3) {
+      const entry = this._assets.get(key3);
       if (entry && entry.tag === tag2) {
-        this._assets.delete(key2);
+        this._assets.delete(key3);
       }
     }
   }
@@ -19679,7 +19679,7 @@ var ParamDefinition;
       type: "mapped",
       defaultValue: { name, params: map4[name].defaultValue },
       select: Select(name, options, info),
-      map: (key2) => map4[key2]
+      map: (key3) => map4[key3]
     }, info);
   }
   ParamDefinition2.MappedStatic = MappedStatic;
@@ -19944,13 +19944,13 @@ var ParamDefinition;
       return value;
     } else if (p6.type === "group") {
       const ret = {};
-      for (const key2 of Object.keys(p6.params)) {
-        const param = p6.params[key2];
-        if (value[key2] === void 0) {
+      for (const key3 of Object.keys(p6.params)) {
+        const param = p6.params[key3];
+        if (value[key3] === void 0) {
           if (defaultIfUndefined)
-            ret[key2] = param.defaultValue;
+            ret[key3] = param.defaultValue;
         } else {
-          ret[key2] = normalizeParam(param, value[key2], defaultIfUndefined);
+          ret[key3] = normalizeParam(param, value[key3], defaultIfUndefined);
         }
       }
       return ret;
@@ -19995,13 +19995,13 @@ var ParamDefinition;
       return defaultIfUndefined ? getDefaultValues(p6) : value;
     }
     const ret = {};
-    for (const key2 of Object.keys(p6)) {
-      const param = p6[key2];
-      if (value[key2] === void 0) {
+    for (const key3 of Object.keys(p6)) {
+      const param = p6[key3];
+      if (value[key3] === void 0) {
         if (defaultIfUndefined === "all")
-          ret[key2] = param.defaultValue;
+          ret[key3] = param.defaultValue;
       } else {
-        ret[key2] = normalizeParam(param, value[key2], defaultIfUndefined !== "skip");
+        ret[key3] = normalizeParam(param, value[key3], defaultIfUndefined !== "skip");
       }
     }
     return ret;
@@ -20180,14 +20180,14 @@ function arrayIsIdentity(xs) {
   }
   return true;
 }
-function arrayMapUpsert(xs, key2, value) {
+function arrayMapUpsert(xs, key3, value) {
   for (let i = 0, il = xs.length; i < il; ++i) {
-    if (xs[i][0] === key2) {
+    if (xs[i][0] === key3) {
       xs[i][1] = value;
       return;
     }
   }
-  xs.push([key2, value]);
+  xs.push([key3, value]);
 }
 function range(start4, end4) {
   if (end4 === void 0) {
@@ -21367,20 +21367,20 @@ var SymmetryOperator;
   SymmetryOperator2.RotationTranslationEpsilon = 5e-3;
   function create3(name, matrix, info) {
     var _a;
-    let { assembly, ncsId, hkl, spgrOp, key: key2 } = info || {};
+    let { assembly, ncsId, hkl, spgrOp, key: key3 } = info || {};
     const _hkl = hkl ? Vec3.clone(hkl) : Vec3();
     spgrOp = spgrOp !== null && spgrOp !== void 0 ? spgrOp : -1;
-    key2 = key2 !== null && key2 !== void 0 ? key2 : -1;
+    key3 = key3 !== null && key3 !== void 0 ? key3 : -1;
     ncsId = ncsId || -1;
     const isIdentity2 = Mat4.isIdentity(matrix);
     const suffix = getSuffix(info, isIdentity2);
     const instanceId = (_a = info === null || info === void 0 ? void 0 : info.instanceId) !== null && _a !== void 0 ? _a : name;
     if (isIdentity2)
-      return { name, instanceId, assembly, matrix, inverse: Mat4.identity(), isIdentity: true, hkl: _hkl, spgrOp, ncsId, suffix, key: key2 };
+      return { name, instanceId, assembly, matrix, inverse: Mat4.identity(), isIdentity: true, hkl: _hkl, spgrOp, ncsId, suffix, key: key3 };
     if (!Mat4.isRotationAndTranslation(matrix, SymmetryOperator2.RotationTranslationEpsilon)) {
       console.warn(`Symmetry operator (${name}) should be a composition of rotation and translation.`);
     }
-    return { name, instanceId, assembly, matrix, inverse: Mat4.invert(Mat4(), matrix), isIdentity: false, hkl: _hkl, spgrOp, key: key2, ncsId, suffix };
+    return { name, instanceId, assembly, matrix, inverse: Mat4.invert(Mat4(), matrix), isIdentity: false, hkl: _hkl, spgrOp, key: key3, ncsId, suffix };
   }
   SymmetryOperator2.create = create3;
   function isSymmetryOperator(x) {
@@ -23358,12 +23358,12 @@ var Result;
 
 // node_modules/molstar/lib/mol-util/fibonacci-heap.js
 var Node = class {
-  constructor(key2, value) {
+  constructor(key3, value) {
     this.parent = null;
     this.child = null;
     this.degree = 0;
     this.isMarked = false;
-    this.key = key2;
+    this.key = key3;
     this.value = value;
     this.prev = this;
     this.next = this;
@@ -23504,8 +23504,8 @@ var FibonacciHeap = class {
   * @param value The value to insert.
   * @return node The inserted node.
   */
-  insert(key2, value) {
-    const node = new Node(key2, value);
+  insert(key3, value) {
+    const node = new Node(key3, value);
     this._minNode = this._mergeLists(this._minNode, node);
     this._nodeCount++;
     return node;
@@ -25070,8 +25070,8 @@ function Binding(triggers, action = "", description = "") {
     return binding.triggers.some((t5) => Trigger5.match(t5, buttons, modifiers3));
   }
   Binding2.match = match;
-  function matchKey(binding, code, modifiers3, key2) {
-    return binding.triggers.some((t5) => Trigger5.matchKey(t5, code, modifiers3, key2));
+  function matchKey(binding, code, modifiers3, key3) {
+    return binding.triggers.some((t5) => Trigger5.matchKey(t5, code, modifiers3, key3));
   }
   Binding2.matchKey = matchKey;
   function formatTriggers(binding) {
@@ -25102,9 +25102,9 @@ function Binding(triggers, action = "", description = "") {
       return b8 !== void 0 && (b8 === buttons || ButtonsType.has(b8, buttons)) && (!m || ModifiersKeys.areEqual(m, modifiers3));
     }
     Trigger6.match = match2;
-    function matchKey2(trigger, code, modifiers3, key2) {
+    function matchKey2(trigger, code, modifiers3, key3) {
       const { modifiers: m, code: c8 } = trigger;
-      return c8 !== void 0 && (c8 === code || c8.length === 1 && code.length === 4 && code.startsWith("Key") && !!key2 && key2.length === 1 && key2.toUpperCase() === c8.toUpperCase()) && (!m || ModifiersKeys.areEqual(m, modifiers3));
+      return c8 !== void 0 && (c8 === code || c8.length === 1 && code.length === 4 && code.startsWith("Key") && !!key3 && key3.length === 1 && key3.toUpperCase() === c8.toUpperCase()) && (!m || ModifiersKeys.areEqual(m, modifiers3));
     }
     Trigger6.matchKey = matchKey2;
     function format2(trigger) {
@@ -25711,42 +25711,42 @@ var TrackballControls;
       Vec2.copy(_rotPrev, getMouseOnCircle(cx, cy));
       Vec2.copy(_rotCurr, getMouseOnCircle(movementX + cx, movementY + cy));
     }
-    function onKeyDown({ modifiers: modifiers3, code, key: key2, x, y }) {
+    function onKeyDown({ modifiers: modifiers3, code, key: key3, x, y }) {
       if (outsideViewport(x, y))
         return;
-      if (Binding.matchKey(b8.keyMoveForward, code, modifiers3, key2)) {
+      if (Binding.matchKey(b8.keyMoveForward, code, modifiers3, key3)) {
         keyState.moveForward = 1;
-      } else if (Binding.matchKey(b8.keyMoveBack, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveBack, code, modifiers3, key3)) {
         keyState.moveBack = 1;
-      } else if (Binding.matchKey(b8.keyMoveLeft, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveLeft, code, modifiers3, key3)) {
         keyState.moveLeft = 1;
-      } else if (Binding.matchKey(b8.keyMoveRight, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveRight, code, modifiers3, key3)) {
         keyState.moveRight = 1;
-      } else if (Binding.matchKey(b8.keyMoveUp, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveUp, code, modifiers3, key3)) {
         keyState.moveUp = 1;
-      } else if (Binding.matchKey(b8.keyMoveDown, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyMoveDown, code, modifiers3, key3)) {
         keyState.moveDown = 1;
-      } else if (Binding.matchKey(b8.keyRollLeft, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyRollLeft, code, modifiers3, key3)) {
         keyState.rollLeft = 1;
-      } else if (Binding.matchKey(b8.keyRollRight, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyRollRight, code, modifiers3, key3)) {
         keyState.rollRight = 1;
-      } else if (Binding.matchKey(b8.keyPitchUp, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyPitchUp, code, modifiers3, key3)) {
         keyState.pitchUp = 1;
-      } else if (Binding.matchKey(b8.keyPitchDown, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyPitchDown, code, modifiers3, key3)) {
         keyState.pitchDown = 1;
-      } else if (Binding.matchKey(b8.keyYawLeft, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyYawLeft, code, modifiers3, key3)) {
         keyState.yawLeft = 1;
-      } else if (Binding.matchKey(b8.keyYawRight, code, modifiers3, key2)) {
+      } else if (Binding.matchKey(b8.keyYawRight, code, modifiers3, key3)) {
         keyState.yawRight = 1;
       }
-      if (Binding.matchKey(b8.boostMove, code, modifiers3, key2)) {
+      if (Binding.matchKey(b8.boostMove, code, modifiers3, key3)) {
         keyState.boostMove = 1;
       }
-      if (Binding.matchKey(b8.enablePointerLock, code, modifiers3, key2)) {
+      if (Binding.matchKey(b8.enablePointerLock, code, modifiers3, key3)) {
         input.requestPointerLock(viewport);
       }
     }
-    function onKeyUp({ modifiers: modifiers3, code, key: key2, x, y }) {
+    function onKeyUp({ modifiers: modifiers3, code, key: key3, x, y }) {
       var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
       if (outsideViewport(x, y))
         return;
@@ -25794,33 +25794,33 @@ var TrackballControls;
         codes.push(code);
       }
       for (const code2 of codes) {
-        if (Binding.matchKey(b8.keyMoveForward, code2, modifiers3, key2)) {
+        if (Binding.matchKey(b8.keyMoveForward, code2, modifiers3, key3)) {
           keyState.moveForward = 0;
-        } else if (Binding.matchKey(b8.keyMoveBack, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveBack, code2, modifiers3, key3)) {
           keyState.moveBack = 0;
-        } else if (Binding.matchKey(b8.keyMoveLeft, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveLeft, code2, modifiers3, key3)) {
           keyState.moveLeft = 0;
-        } else if (Binding.matchKey(b8.keyMoveRight, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveRight, code2, modifiers3, key3)) {
           keyState.moveRight = 0;
-        } else if (Binding.matchKey(b8.keyMoveUp, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveUp, code2, modifiers3, key3)) {
           keyState.moveUp = 0;
-        } else if (Binding.matchKey(b8.keyMoveDown, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyMoveDown, code2, modifiers3, key3)) {
           keyState.moveDown = 0;
-        } else if (Binding.matchKey(b8.keyRollLeft, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyRollLeft, code2, modifiers3, key3)) {
           keyState.rollLeft = 0;
-        } else if (Binding.matchKey(b8.keyRollRight, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyRollRight, code2, modifiers3, key3)) {
           keyState.rollRight = 0;
-        } else if (Binding.matchKey(b8.keyPitchUp, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyPitchUp, code2, modifiers3, key3)) {
           keyState.pitchUp = 0;
-        } else if (Binding.matchKey(b8.keyPitchDown, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyPitchDown, code2, modifiers3, key3)) {
           keyState.pitchDown = 0;
-        } else if (Binding.matchKey(b8.keyYawLeft, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyYawLeft, code2, modifiers3, key3)) {
           keyState.yawLeft = 0;
-        } else if (Binding.matchKey(b8.keyYawRight, code2, modifiers3, key2)) {
+        } else if (Binding.matchKey(b8.keyYawRight, code2, modifiers3, key3)) {
           keyState.yawRight = 0;
         }
       }
-      if (Binding.matchKey(b8.boostMove, code, modifiers3, key2)) {
+      if (Binding.matchKey(b8.boostMove, code, modifiers3, key3)) {
         keyState.boostMove = 0;
       }
     }
@@ -39999,8 +39999,8 @@ var IntAdjacencyGraph;
       newOffsets[++vo] = eo;
     }
     const newEdgeProps = {};
-    for (const key2 of Object.keys(edgeProps)) {
-      newEdgeProps[key2] = arrayPickIndices(edgeProps[key2], edgeIndices);
+    for (const key3 of Object.keys(edgeProps)) {
+      newEdgeProps[key3] = arrayPickIndices(edgeProps[key3], edgeIndices);
     }
     return create3(newOffsets, newA, newB, newEdgeCount, newEdgeProps, props);
   }
@@ -41522,7 +41522,7 @@ var ResidueHydrophobicity = {
 // node_modules/molstar/lib/mol-model-formats/structure/property/bonds/index-pair.js
 function getGraph(indexA, indexB, props, count4) {
   const builder = new IntAdjacencyGraph.EdgeBuilder(count4, indexA, indexB);
-  const key2 = new Int32Array(builder.slotCount);
+  const key3 = new Int32Array(builder.slotCount);
   const operatorA = new Array(builder.slotCount);
   const operatorB = new Array(builder.slotCount);
   const order = new Int8Array(builder.slotCount);
@@ -41530,13 +41530,13 @@ function getGraph(indexA, indexB, props, count4) {
   const flag = new Array(builder.slotCount);
   for (let i = 0, _i = builder.edgeCount; i < _i; i++) {
     builder.addNextEdge();
-    builder.assignProperty(key2, props.key ? props.key[i] : -1);
+    builder.assignProperty(key3, props.key ? props.key[i] : -1);
     builder.assignDirectedProperty(operatorA, props.operatorA ? props.operatorA[i] : -1, operatorB, props.operatorB ? props.operatorB[i] : -1);
     builder.assignProperty(order, props.order ? props.order[i] : 1);
     builder.assignProperty(distance2, props.distance ? props.distance[i] : -1);
     builder.assignProperty(flag, props.flag ? props.flag[i] : BondType.Flag.Covalent);
   }
-  return builder.createGraph({ key: key2, operatorA, operatorB, order, distance: distance2, flag });
+  return builder.createGraph({ key: key3, operatorA, operatorB, order, distance: distance2, flag });
 }
 var IndexPairBonds;
 (function(IndexPairBonds2) {
@@ -41563,7 +41563,7 @@ var IndexPairBonds;
     const { pairs, count: count4 } = data;
     const indexA = pairs.indexA.toArray();
     const indexB = pairs.indexB.toArray();
-    const key2 = pairs.key && pairs.key.toArray();
+    const key3 = pairs.key && pairs.key.toArray();
     const operatorA = pairs.operatorA && pairs.operatorA.toArray();
     const operatorB = pairs.operatorB && pairs.operatorB.toArray();
     const order = pairs.order && pairs.order.toArray();
@@ -41579,7 +41579,7 @@ var IndexPairBonds;
         }
       }
     }
-    const bonds = getGraph(indexA, indexB, { key: key2, operatorA, operatorB, order, distance: distance2, flag }, count4);
+    const bonds = getGraph(indexA, indexB, { key: key3, operatorA, operatorB, order, distance: distance2, flag }, count4);
     const bySameOperator = /* @__PURE__ */ new Map();
     if (hasOperators) {
       const { operatorA: operatorA2, operatorB: operatorB2 } = bonds.edgeProps;
@@ -42014,10 +42014,10 @@ function createColumn(schema, field2, value, toArray2) {
     toArray: toArray2
   };
 }
-function createListColumn(schema, category, key2) {
+function createListColumn(schema, category, key3) {
   const separator = schema.separator;
   const itemParse = schema.itemParse;
-  const f = category.getField(key2);
+  const f = category.getField(key3);
   const value = f ? (row3) => f.str(row3).split(separator).map((x) => itemParse(x.trim())).filter((x) => !!x) : (row3) => [];
   const toArray2 = (params) => column_helpers_exports.createAndFillArray(category.rowCount, value, params);
   return {
@@ -42031,12 +42031,12 @@ function createListColumn(schema, category, key2) {
     toArray: toArray2
   };
 }
-function createTensorColumn(schema, category, key2) {
+function createTensorColumn(schema, category, key3) {
   const space = schema.space;
-  const zeroOffset = category.fieldNames.includes(`${key2}[0]`) || category.fieldNames.includes(`${key2}[0][0]`) || category.fieldNames.includes(`${key2}[0][0][0]`);
+  const zeroOffset = category.fieldNames.includes(`${key3}[0]`) || category.fieldNames.includes(`${key3}[0][0]`) || category.fieldNames.includes(`${key3}[0][0][0]`);
   const fst = zeroOffset ? 0 : 1;
-  const namingVariant = category.fieldNames.includes(`${key2}_1`) || category.fieldNames.includes(`${key2}_11`) || category.fieldNames.includes(`${key2}_111`) ? "underscore" : "brackets";
-  const getName = tensorFieldNameGetter(key2, space.rank, zeroOffset, namingVariant);
+  const namingVariant = category.fieldNames.includes(`${key3}_1`) || category.fieldNames.includes(`${key3}_11`) || category.fieldNames.includes(`${key3}_111`) ? "underscore" : "brackets";
+  const getName = tensorFieldNameGetter(key3, space.rank, zeroOffset, namingVariant);
   const first4 = category.getField(getName(fst, fst, fst)) || Column.Undefined(category.rowCount, schema);
   const value = (row3) => getTensor(category, space, row3, getName);
   const toArray2 = (params) => column_helpers_exports.createAndFillArray(category.rowCount, value, params);
@@ -42112,15 +42112,15 @@ function getField(field2, category, flatFrame, aliases) {
     }
   }
 }
-function createTable(key2, schema, frame2, aliases) {
-  let cat = frame2.categories[key2];
+function createTable(key3, schema, frame2, aliases) {
+  let cat = frame2.categories[key3];
   if (aliases) {
     const flatFrame = flattenFrame(frame2);
     const fields = /* @__PURE__ */ Object.create(null);
     const fieldNames = [];
     let rowCount = 0;
     for (const k of Object.keys(schema)) {
-      const field2 = getField(k, key2, flatFrame, aliases);
+      const field2 = getField(k, key3, flatFrame, aliases);
       if (field2) {
         fields[k] = field2;
         fieldNames.push(k);
@@ -42129,14 +42129,14 @@ function createTable(key2, schema, frame2, aliases) {
     }
     cat = {
       rowCount,
-      name: key2,
+      name: key3,
       fieldNames: [...fieldNames],
       getField(name) {
         return fields[name];
       }
     };
   }
-  return new CategoryTable(cat || CifCategory.empty(key2), schema, !!cat);
+  return new CategoryTable(cat || CifCategory.empty(key3), schema, !!cat);
 }
 
 // node_modules/molstar/lib/mol-model/structure/structure/element/element.js
@@ -42354,16 +42354,16 @@ var UniqueArray;
     return { keys: /* @__PURE__ */ new Set(), array: [] };
   }
   UniqueArray2.create = create3;
-  function add({ keys: keys3, array: array2 }, key2, value) {
-    if (keys3.has(key2))
+  function add({ keys: keys3, array: array2 }, key3, value) {
+    if (keys3.has(key3))
       return false;
-    keys3.add(key2);
+    keys3.add(key3);
     array2[array2.length] = value;
     return true;
   }
   UniqueArray2.add = add;
-  function has8({ keys: keys3 }, key2) {
-    return keys3.has(key2);
+  function has8({ keys: keys3 }, key3) {
+    return keys3.has(key3);
   }
   UniqueArray2.has = has8;
 })(UniqueArray || (UniqueArray = {}));
@@ -42493,18 +42493,18 @@ function symbolList(table) {
   _symbolList(table, list3);
   return list3;
 }
-function formatKey(key2) {
+function formatKey(key3) {
   const regex = /([a-z])([A-Z])([a-z]|$)/g;
-  return key2.replace(regex, (s, a8, b8, c8) => `${a8}-${b8.toLocaleLowerCase()}${c8}`).replace(regex, (s, a8, b8, c8) => `${a8}-${b8.toLocaleLowerCase()}${c8}`);
+  return key3.replace(regex, (s, a8, b8, c8) => `${a8}-${b8.toLocaleLowerCase()}${c8}`).replace(regex, (s, a8, b8, c8) => `${a8}-${b8.toLocaleLowerCase()}${c8}`);
 }
-function _normalizeTable(namespace, key2, obj) {
+function _normalizeTable(namespace, key3, obj) {
   if (isSymbol(obj)) {
     obj.info.namespace = namespace;
-    obj.info.name = obj.info.name || formatKey(key2);
+    obj.info.name = obj.info.name || formatKey(key3);
     obj.id = `${obj.info.namespace}.${obj.info.name}`;
     return;
   }
-  const currentNs = `${obj["@namespace"] || formatKey(key2)}`;
+  const currentNs = `${obj["@namespace"] || formatKey(key3)}`;
   const newNs = namespace ? `${namespace}.${currentNs}` : currentNs;
   for (const childKey of Object.keys(obj)) {
     if (typeof obj[childKey] !== "object" && !isSymbol(obj[childKey]))
@@ -44500,9 +44500,9 @@ var Encoder;
     }
   }
   Encoder2.writeDatabase = writeDatabase;
-  function writeDatabaseCollection(encoder, collection) {
-    for (const name of Object.keys(collection)) {
-      writeDatabase(encoder, name, collection[name]);
+  function writeDatabaseCollection(encoder, collection2) {
+    for (const name of Object.keys(collection2)) {
+      writeDatabase(encoder, name, collection2[name]);
     }
   }
   Encoder2.writeDatabaseCollection = writeDatabaseCollection;
@@ -44656,16 +44656,16 @@ var TextEncoder = class {
     return StringBuilder.getString(this.builder);
   }
 };
-function writeValue(builder, data, key2, f, floatPrecision, index) {
+function writeValue(builder, data, key3, f, floatPrecision, index) {
   const kind = f.valueKind;
-  const p6 = kind ? kind(key2, data) : Column.ValueKinds.Present;
+  const p6 = kind ? kind(key3, data) : Column.ValueKinds.Present;
   if (p6 !== Column.ValueKinds.Present) {
     if (p6 === Column.ValueKinds.NotPresent)
       writeNotPresent(builder);
     else
       writeUnknown(builder);
   } else {
-    const val = f.value(key2, data, index);
+    const val = f.value(key3, data, index);
     const t5 = f.type;
     if (t5 === Field.Type.Str) {
       if (isMultiline(val)) {
@@ -44702,14 +44702,14 @@ function writeCifSingleRecord(category, instance, source, builder, filter5, form
     return;
   width += category.name.length + 6;
   const it = src.keys();
-  const key2 = it.move();
+  const key3 = it.move();
   const precisions = getFloatPrecisions(category.name, instance.fields, formatter);
   for (let _f = 0; _f < fields.length; _f++) {
     const f = fields[_f];
     if (!filter5.includeField(category.name, f.name))
       continue;
     StringBuilder.writePadRight(builder, `_${category.name}.${f.name}`, width);
-    const multiline = writeValue(builder, data, key2, f, precisions[_f], 0);
+    const multiline = writeValue(builder, data, key3, f, precisions[_f], 0);
     if (!multiline)
       StringBuilder.newline(builder);
   }
@@ -44734,10 +44734,10 @@ function writeCifLoop(category, instance, source, builder, filter5, formatter) {
       continue;
     const it = src.keys();
     while (it.hasNext) {
-      const key2 = it.move();
+      const key3 = it.move();
       let multiline = false;
       for (let _f = 0; _f < fieldCount; _f++) {
-        multiline = writeValue(builder, data, key2, fields[_f], precisions[_f], index);
+        multiline = writeValue(builder, data, key3, fields[_f], precisions[_f], index);
       }
       if (!multiline)
         StringBuilder.newline(builder);
@@ -44904,8 +44904,8 @@ function encodedSize(value) {
       const keys3 = Object.keys(value);
       length2 = keys3.length;
       for (let i = 0; i < length2; i++) {
-        const key2 = keys3[i];
-        size4 += encodedSize(key2) + encodedSize(value[key2]);
+        const key3 = keys3[i];
+        size4 += encodedSize(key3) + encodedSize(value[key3]);
       }
     }
     if (length2 < 16) {
@@ -45059,9 +45059,9 @@ function encodeInternal(value, view2, bytes, offset4) {
       }
     } else {
       for (let i = 0, _i = keys3.length; i < _i; i++) {
-        const key2 = keys3[i];
-        size4 += encodeInternal(key2, view2, bytes, offset4 + size4);
-        size4 += encodeInternal(value[key2], view2, bytes, offset4 + size4);
+        const key3 = keys3[i];
+        size4 += encodeInternal(key3, view2, bytes, offset4 + size4);
+        size4 += encodeInternal(value[key3], view2, bytes, offset4 + size4);
       }
     }
     return size4;
@@ -45218,15 +45218,15 @@ function getFieldData(field2, arrayCtor, totalCount, data) {
     const d5 = data[_d].data;
     const keys3 = data[_d].keys();
     while (keys3.hasNext) {
-      const key2 = keys3.move();
-      const p6 = valueKind ? valueKind(key2, d5) : Column.ValueKinds.Present;
+      const key3 = keys3.move();
+      const p6 = valueKind ? valueKind(key3, d5) : Column.ValueKinds.Present;
       if (p6 !== Column.ValueKinds.Present) {
         mask[offset4] = p6;
         if (isStr)
           array2[offset4] = "";
         allPresent = false;
       } else {
-        const value = getter(key2, d5, offset4);
+        const value = getter(key3, d5, offset4);
         if (typeof value === "string" && !value) {
           mask[offset4] = Column.ValueKinds.NotPresent;
           allPresent = false;
@@ -45377,7 +45377,7 @@ var ComponentBond;
       const nameB = atom_id_2.value(i);
       const order = value_order.value(i);
       const aromatic = pdbx_aromatic_flag.value(i) === "y";
-      const key2 = pdbx_ordinal.value(i);
+      const key3 = pdbx_ordinal.value(i);
       if (entry.id !== id) {
         entry = addEntry2(id);
       }
@@ -45399,26 +45399,26 @@ var ComponentBond;
           ord = 4;
           break;
       }
-      entry.add(nameA, nameB, ord, flags2, key2);
+      entry.add(nameA, nameB, ord, flags2, key3);
     }
     return entries3;
   }
   ComponentBond2.getEntriesFromChemCompBond = getEntriesFromChemCompBond;
   class Entry {
-    add(a8, b8, order, flags2, key2, swap2 = true) {
+    add(a8, b8, order, flags2, key3, swap2 = true) {
       const e = this.map.get(a8);
       if (e !== void 0) {
         const f = e.get(b8);
         if (f === void 0) {
-          e.set(b8, { order, flags: flags2, key: key2 });
+          e.set(b8, { order, flags: flags2, key: key3 });
         }
       } else {
         const map4 = /* @__PURE__ */ new Map();
-        map4.set(b8, { order, flags: flags2, key: key2 });
+        map4.set(b8, { order, flags: flags2, key: key3 });
         this.map.set(a8, map4);
       }
       if (swap2)
-        this.add(b8, a8, order, flags2, key2, false);
+        this.add(b8, a8, order, flags2, key3, false);
     }
     constructor(id) {
       this.id = id;
@@ -45587,14 +45587,14 @@ function getGraph2(atomA, atomB, _order, _flags, _key, atomCount2, props) {
   const builder = new IntAdjacencyGraph.EdgeBuilder(atomCount2, atomA, atomB);
   const flags2 = new Uint16Array(builder.slotCount);
   const order = new Int8Array(builder.slotCount);
-  const key2 = new Uint32Array(builder.slotCount);
+  const key3 = new Uint32Array(builder.slotCount);
   for (let i = 0, _i = builder.edgeCount; i < _i; i++) {
     builder.addNextEdge();
     builder.assignProperty(flags2, _flags[i]);
     builder.assignProperty(order, _order[i]);
-    builder.assignProperty(key2, _key[i]);
+    builder.assignProperty(key3, _key[i]);
   }
-  return builder.createGraph({ flags: flags2, order, key: key2 }, props);
+  return builder.createGraph({ flags: flags2, order, key: key3 }, props);
 }
 var tmpDistVecA = Vec3();
 var tmpDistVecB = Vec3();
@@ -45610,7 +45610,7 @@ function findIndexPairBonds(unit2) {
   const { type_symbol } = unit2.model.atomicHierarchy.atoms;
   const atomCount2 = unit2.elements.length;
   const { maxDistance } = indexPairs;
-  const { offset: offset4, b: b8, edgeProps: { order, distance: distance2, flag, key: key2, operatorA, operatorB } } = indexPairs.bonds;
+  const { offset: offset4, b: b8, edgeProps: { order, distance: distance2, flag, key: key3, operatorA, operatorB } } = indexPairs.bonds;
   const { atomSourceIndex: sourceIndex } = unit2.model.atomicHierarchy;
   const { invertedIndex } = Model.getInvertedAtomSourceIndex(unit2.model);
   const atomA = [];
@@ -45655,7 +45655,7 @@ function findIndexPairBonds(unit2) {
         atomB[atomB.length] = _bI;
         orders[orders.length] = order[i];
         flags2[flags2.length] = flag[i];
-        keys3[keys3.length] = key2[i];
+        keys3[keys3.length] = key3[i];
       }
     }
   }
@@ -45683,7 +45683,7 @@ function findBonds(unit2, props) {
   const atomB = [];
   const flags2 = [];
   const order = [];
-  const key2 = [];
+  const key3 = [];
   let lastResidue = -1;
   let componentMap = void 0;
   let isWatery = true, isDictionaryBased = true, isSequenced = true;
@@ -45709,7 +45709,7 @@ function findBonds(unit2, props) {
         atomB[atomB.length] = _bI;
         flags2[flags2.length] = se.flags;
         order[order.length] = se.order;
-        key2[key2.length] = se.rowIndex;
+        key3[key3.length] = se.rowIndex;
         if (!hasStructConn)
           structConnAdded.clear();
         hasStructConn = true;
@@ -45776,7 +45776,7 @@ function findBonds(unit2, props) {
             flag2 |= BondType.Flag.MetallicCoordination;
           }
           flags2[flags2.length] = flag2;
-          key2[key2.length] = e.key;
+          key3[key3.length] = e.key;
         }
         continue;
       }
@@ -45799,7 +45799,7 @@ function findBonds(unit2, props) {
         atomB[atomB.length] = _bI;
         order[order.length] = getIntraBondOrderFromTable(compId3, atomIdA, label_atom_id.value(bI));
         flags2[flags2.length] = (isMetal2 ? BondType.Flag.MetallicCoordination : BondType.Flag.Covalent) | BondType.Flag.Computed;
-        key2[key2.length] = -1;
+        key3[key3.length] = -1;
         const seqIdB = label_seq_id.value(rbI);
         if (seqIdA === seqIdB)
           isDictionaryBased = false;
@@ -45808,7 +45808,7 @@ function findBonds(unit2, props) {
       }
     }
   }
-  return getGraph2(atomA, atomB, order, flags2, key2, atomCount2, {
+  return getGraph2(atomA, atomB, order, flags2, key3, atomCount2, {
     canRemap: isWatery || isDictionaryBased && isSequenced
   });
 }
@@ -45823,7 +45823,7 @@ function getIndexPairBonds(unit2) {
   const bonds = indexPairs.bySameOperator.get(unit2.conformation.operator.key);
   if (!bonds)
     return IntraUnitBonds.Empty;
-  const { a: a8, b: b8, edgeProps: { key: key2, flag, order } } = indexPairs.bonds;
+  const { a: a8, b: b8, edgeProps: { key: key3, flag, order } } = indexPairs.bonds;
   const { invertedIndex } = Model.getInvertedAtomSourceIndex(unit2.model);
   const { elements } = unit2;
   const atomA = [];
@@ -45847,7 +45847,7 @@ function getIndexPairBonds(unit2) {
     atomB[atomB.length] = _bI;
     flags2[flags2.length] = flag[i];
     orders[orders.length] = order[i];
-    keys3[keys3.length] = key2[i];
+    keys3[keys3.length] = key3[i];
   }
   return getGraph2(atomA, atomB, orders, flags2, keys3, elements.length, {
     canRemap: false,
@@ -45915,7 +45915,7 @@ function findPairBonds(unitA, unitB, props, builder) {
       continue;
     if (!props.forceCompute && indexPairs) {
       const { maxDistance } = indexPairs;
-      const { offset: offset4, b: b8, edgeProps: { order, distance: distance2, flag, key: key2, operatorA, operatorB } } = indexPairs.bonds;
+      const { offset: offset4, b: b8, edgeProps: { order, distance: distance2, flag, key: key3, operatorA, operatorB } } = indexPairs.bonds;
       const srcA = sourceIndex.value(aI);
       const aeI2 = getElementIdx(type_symbolA.value(aI));
       for (let i = offset4[srcA], il = offset4[srcA + 1]; i < il; ++i) {
@@ -45947,7 +45947,7 @@ function findPairBonds(unitA, unitB, props, builder) {
           }
         }
         if (add) {
-          builder.add(_aI, _bI, { order: order[i], flag: flag[i], key: key2[i] });
+          builder.add(_aI, _bI, { order: order[i], flag: flag[i], key: key3[i] });
         }
       }
       continue;
@@ -46036,16 +46036,16 @@ function canAddFromIndexPairBonds(structure) {
 function addIndexPairBonds(structure, builder) {
   const opUnits = /* @__PURE__ */ new Map();
   for (const u2 of structure.units) {
-    const { key: key2 } = u2.conformation.operator;
-    if (opUnits.has(key2))
-      opUnits.get(key2).add(u2);
+    const { key: key3 } = u2.conformation.operator;
+    if (opUnits.has(key3))
+      opUnits.get(key3).add(u2);
     else
-      opUnits.set(key2, /* @__PURE__ */ new Set([u2]));
+      opUnits.set(key3, /* @__PURE__ */ new Set([u2]));
   }
   for (const m of structure.models) {
     const indexPairs = IndexPairBonds.Provider.get(m);
     const { a: a8, b: b8 } = indexPairs.bonds;
-    const { order, flag, key: key2, operatorA, operatorB } = indexPairs.bonds.edgeProps;
+    const { order, flag, key: key3, operatorA, operatorB } = indexPairs.bonds.edgeProps;
     const { invertedIndex } = Model.getInvertedAtomSourceIndex(m);
     const atomsToUnits = /* @__PURE__ */ new Map();
     for (const u2 of structure.units) {
@@ -46105,7 +46105,7 @@ function addIndexPairBonds(structure, builder) {
         const _bI = SortedArray.indexOf(uB.elements, bI);
         if (_bI < 0)
           return;
-        builder.add(_aI, _bI, { order: order[i], flag: flag[i], key: key2[i] });
+        builder.add(_aI, _bI, { order: order[i], flag: flag[i], key: key3[i] });
       });
       builder.finishUnitPair();
     });
@@ -49090,9 +49090,9 @@ var Bundle;
     const elementGroups = /* @__PURE__ */ new Map();
     for (let i = 0, il = _elements.length; i < il; ++i) {
       const e = _elements[i];
-      const key2 = hash2(hashFnv32a(e.ranges), hashFnv32a(e.set));
-      if (elementGroups.has(key2)) {
-        const { groupedUnits } = elementGroups.get(key2);
+      const key3 = hash2(hashFnv32a(e.ranges), hashFnv32a(e.set));
+      if (elementGroups.has(key3)) {
+        const { groupedUnits } = elementGroups.get(key3);
         if (groupedUnits.has(e.unit.invariantId)) {
           groupedUnits.get(e.unit.invariantId).push(e.unit.id);
         } else {
@@ -49101,7 +49101,7 @@ var Bundle;
       } else {
         const groupedUnits = /* @__PURE__ */ new Map();
         groupedUnits.set(e.unit.invariantId, [e.unit.id]);
-        elementGroups.set(key2, { groupedUnits, set: e.set, ranges: e.ranges });
+        elementGroups.set(key3, { groupedUnits, set: e.set, ranges: e.ranges });
       }
     }
     const elements = [];
@@ -49513,12 +49513,12 @@ var UniqueStructuresBuilder = class {
   }
 };
 var LinearGroupingBuilder = class {
-  add(key2, unit2, element) {
-    let b8 = this.builderMap.get(key2);
+  add(key3, unit2, element) {
+    let b8 = this.builderMap.get(key3);
     if (!b8) {
       b8 = this.source.subsetBuilder(true);
       this.builders[this.builders.length] = b8;
-      this.builderMap.set(key2, b8);
+      this.builderMap.set(key3, b8);
     }
     b8.addToUnit(unit2, element);
   }
@@ -49816,7 +49816,7 @@ function bondedAtomicPairs(bondTest) {
     for (const unit2 of structure.units) {
       if (unit2.kind !== Unit.Kind.Atomic)
         continue;
-      const { offset: intraBondOffset, b: intraBondB, edgeProps: { flags: flags2, order, key: key2 } } = unit2.bonds;
+      const { offset: intraBondOffset, b: intraBondB, edgeProps: { flags: flags2, order, key: key3 } } = unit2.bonds;
       atomicBond.a.unit = unit2;
       atomicBond.b.unit = unit2;
       for (let i = 0, _i = unit2.elements.length; i < _i; i++) {
@@ -49827,7 +49827,7 @@ function bondedAtomicPairs(bondTest) {
           atomicBond.b.element = unit2.elements[intraBondB[lI]];
           atomicBond.type = flags2[lI];
           atomicBond.order = order[lI];
-          atomicBond.key = key2[lI];
+          atomicBond.key = key3[lI];
           if (atomicBond.test(ctx, false)) {
             const b8 = structure.subsetBuilder(false);
             b8.beginUnit(unit2.id);
@@ -49955,8 +49955,8 @@ var StructureUniqueSubsetBuilder = class {
 };
 
 // node_modules/molstar/lib/mol-model/structure/model/properties/secondary-structure.js
-function SecondaryStructure(type3, key2, elements, getIndex) {
-  return { type: type3, key: key2, elements, getIndex };
+function SecondaryStructure(type3, key3, elements, getIndex) {
+  return { type: type3, key: key3, elements, getIndex };
 }
 
 // node_modules/molstar/lib/mol-model-props/computed/secondary-structure/dssp/common.js
@@ -50755,12 +50755,12 @@ function addSheets(cat, coordinates, map4, sheetCount, elements) {
   let currentKey = sheetCount + 1;
   for (let i = 0, _i = cat._rowCount; i < _i; i++) {
     const id = sheet_id.value(i);
-    let key2;
+    let key3;
     if (sheet_id_key.has(id))
-      key2 = sheet_id_key.get(id);
+      key3 = sheet_id_key.get(id);
     else {
-      key2 = currentKey++;
-      sheet_id_key.set(id, key2);
+      key3 = currentKey++;
+      sheet_id_key.set(id, key3);
     }
     const type3 = SecondaryStructureType.create(SecondaryStructureType.Flag.Beta | SecondaryStructureType.Flag.BetaSheet);
     const element = {
@@ -50794,13 +50794,13 @@ function addSheets(cat, coordinates, map4, sheetCount, elements) {
 }
 function assignSecondaryStructureEntry(hierarchy, coordinates, entry, resStart, resEnd, data) {
   const { auth_seq_id, label_seq_id, pdbx_PDB_ins_code } = hierarchy.residues;
-  const { endSeqId, endInsCode, key: key2, type: type3 } = entry;
+  const { endSeqId, endInsCode, key: key3, type: type3 } = entry;
   const seq_id = coordinates === "label" ? label_seq_id : auth_seq_id;
   let rI = resStart;
   while (rI < resEnd) {
     const seqNumber = seq_id.value(rI);
     data.type[rI] = type3;
-    data.key[rI] = key2;
+    data.key[rI] = key3;
     if (seqNumber > endSeqId || seqNumber === endSeqId && pdbx_PDB_ins_code.value(rI) === endInsCode) {
       break;
     }
@@ -51567,7 +51567,7 @@ function expandConnected(ctx, structure) {
       continue;
     }
     const inputUnitA = inputStructure.unitMap.get(unit2.id);
-    const { offset: intraBondOffset, b: intraBondB, edgeProps: { flags: flags2, order, key: key2 } } = inputUnitA.bonds;
+    const { offset: intraBondOffset, b: intraBondB, edgeProps: { flags: flags2, order, key: key3 } } = inputUnitA.bonds;
     atomicBond.setStructure(inputStructure);
     atomicBond.a.unit = inputUnitA;
     atomicBond.b.unit = inputUnitA;
@@ -51585,7 +51585,7 @@ function expandConnected(ctx, structure) {
         atomicBond.b.element = bElement;
         atomicBond.type = flags2[lI];
         atomicBond.order = order[lI];
-        atomicBond.key = key2[lI];
+        atomicBond.key = key3[lI];
         if (atomicBond.test(ctx, true)) {
           builder.addToUnit(unit2.id, bElement);
         }
@@ -52137,7 +52137,7 @@ function checkConnected(ctx, structure) {
     if (!Unit.isAtomic(unit2))
       continue;
     const inputUnit = input.unitMap.get(unit2.id);
-    const { offset: offset4, b: b8, edgeProps: { flags: flags2, order, key: key2 } } = inputUnit.bonds;
+    const { offset: offset4, b: b8, edgeProps: { flags: flags2, order, key: key3 } } = inputUnit.bonds;
     const bondedUnits = interBonds.getConnectedUnits(unit2.id);
     const buCount = bondedUnits.length;
     const srcElements = unit2.elements;
@@ -52157,7 +52157,7 @@ function checkConnected(ctx, structure) {
         atomicBond.bIndex = b8[l];
         atomicBond.type = flags2[l];
         atomicBond.order = order[l];
-        atomicBond.key = key2[l];
+        atomicBond.key = key3[l];
         if (atomicBond.test(queryCtx, true))
           return true;
       }
@@ -52945,11 +52945,11 @@ function computeCarbohydrates(structure) {
   function ringElementKey(residueIndex2, unitId, altId) {
     return `${residueIndex2}|${unitId}|${altId}`;
   }
-  function addRingElement(key2, elementIndex) {
-    if (elementsWithRingMap.has(key2))
-      elementsWithRingMap.get(key2).push(elementIndex);
+  function addRingElement(key3, elementIndex) {
+    if (elementsWithRingMap.has(key3))
+      elementsWithRingMap.get(key3).push(elementIndex);
     else
-      elementsWithRingMap.set(key2, [elementIndex]);
+      elementsWithRingMap.set(key3, [elementIndex]);
   }
   function fixLinkDirection(iA, iB) {
     Vec3.sub(elements[iA].geometry.direction, elements[iB].geometry.center, elements[iA].geometry.center);
@@ -53107,12 +53107,12 @@ function computeCarbohydrates(structure) {
   return { links, terminalLinks, elements, partialElements, ...buildLookups(elements, links, terminalLinks) };
 }
 function buildLookups(elements, links, terminalLinks) {
-  function key2(unit2, element) {
+  function key3(unit2, element) {
     return cantorPairing(unit2.id, element);
   }
   function getIndices(map4, unit2, index) {
     const indices3 = [];
-    const il = map4.get(key2(unit2, index));
+    const il = map4.get(key3(unit2, index));
     if (il !== void 0) {
       for (const i of il)
         arraySetAdd(indices3, i);
@@ -53124,7 +53124,7 @@ function buildLookups(elements, links, terminalLinks) {
     const { unit: unit2, ringIndex } = elements[i];
     const ring2 = unit2.rings.all[ringIndex];
     for (let j = 0, jl = ring2.length; j < jl; ++j) {
-      const k = key2(unit2, unit2.elements[ring2[j]]);
+      const k = key3(unit2, unit2.elements[ring2[j]]);
       const e = elementsMap.get(k);
       if (e === void 0)
         elementsMap.set(k, [i]);
@@ -53141,7 +53141,7 @@ function buildLookups(elements, links, terminalLinks) {
     const { unit: unit2, ringIndex } = elements[l.carbohydrateIndexA];
     const ring2 = unit2.rings.all[ringIndex];
     for (let j = 0, jl = ring2.length; j < jl; ++j) {
-      const k = key2(unit2, unit2.elements[ring2[j]]);
+      const k = key3(unit2, unit2.elements[ring2[j]]);
       const e = linksMap.get(k);
       if (e === void 0)
         linksMap.set(k, [i]);
@@ -53159,7 +53159,7 @@ function buildLookups(elements, links, terminalLinks) {
       const { unit: unit2, ringIndex } = elements[carbohydrateIndex];
       const ring2 = unit2.rings.all[ringIndex];
       for (let j = 0, jl = ring2.length; j < jl; ++j) {
-        const k = key2(unit2, unit2.elements[ring2[j]]);
+        const k = key3(unit2, unit2.elements[ring2[j]]);
         const e = terminalLinksMap.get(k);
         if (e === void 0)
           terminalLinksMap.set(k, [i]);
@@ -53167,7 +53167,7 @@ function buildLookups(elements, links, terminalLinks) {
           e.push(i);
       }
     } else {
-      const k = key2(elementUnit, elementUnit.elements[elementIndex]);
+      const k = key3(elementUnit, elementUnit.elements[elementIndex]);
       const e = terminalLinksMap.get(k);
       if (e === void 0)
         terminalLinksMap.set(k, [i]);
@@ -53675,8 +53675,8 @@ function getEntityIndices(structure) {
     while (chainsIt.hasNext) {
       const chainSegment = chainsIt.move();
       l.element = elements[chainSegment.start];
-      const key2 = prop(l);
-      UniqueArray.add(keys3, key2, key2);
+      const key3 = prop(l);
+      UniqueArray.add(keys3, key3, key3);
     }
   }
   sortArray(keys3.array);
@@ -54448,10 +54448,10 @@ var SymbolRuntimeImpl = class {
     } else {
       args = /* @__PURE__ */ Object.create(null);
       constArgs = true;
-      for (const key2 of Object.keys(inputArgs)) {
-        const compiled = _compile(ctx, inputArgs[key2]);
+      for (const key3 of Object.keys(inputArgs)) {
+        const compiled = _compile(ctx, inputArgs[key3]);
         constArgs = constArgs && compiled.isConst;
-        args[key2] = compiled.fn;
+        args[key3] = compiled.fn;
       }
     }
     if (this.isConst) {
@@ -55076,13 +55076,13 @@ function Loci(structure, elements) {
     for (const e of loci.elements) {
       const { indices: indices3 } = e;
       const { elements } = e.unit;
-      const key2 = e.unit.conformation.operator.name;
+      const key3 = e.unit.conformation.operator.name;
       let sourceIndices;
-      if (sourceIndexMap.has(key2))
-        sourceIndices = sourceIndexMap.get(key2).xs;
+      if (sourceIndexMap.has(key3))
+        sourceIndices = sourceIndexMap.get(key3).xs;
       else {
         sourceIndices = UniqueArray.create();
-        sourceIndexMap.set(key2, { modelLabel: e.unit.model.label, modelIndex: e.unit.model.modelNum, xs: sourceIndices });
+        sourceIndexMap.set(key3, { modelLabel: e.unit.model.label, modelIndex: e.unit.model.modelNum, xs: sourceIndices });
       }
       for (let i = 0, _i = OrderedSet2.size(indices3); i < _i; i++) {
         const idx = sourceIndex(e.unit, elements[OrderedSet2.getAt(indices3, i)]);
@@ -55102,11 +55102,11 @@ function Loci(structure, elements) {
     for (let i = 0, il = opData.length; i < il; ++i) {
       const d5 = opData[i];
       const hash5 = hash2(hashFnv32a(d5.atom.ranges), hashFnv32a(d5.atom.set));
-      const key2 = `${hash5}|${d5.entity ? d5.entity.modelLabel + d5.entity.modelIndex : ""}`;
-      if (opGroups.has(key2)) {
-        opGroups.get(key2).chain.opName.push(...d5.chain.opName);
+      const key3 = `${hash5}|${d5.entity ? d5.entity.modelLabel + d5.entity.modelIndex : ""}`;
+      if (opGroups.has(key3)) {
+        opGroups.get(key3).chain.opName.push(...d5.chain.opName);
       } else {
-        opGroups.set(key2, d5);
+        opGroups.set(key3, d5);
       }
     }
     const opQueries = [];
@@ -55196,9 +55196,9 @@ var Stats;
     };
   }
   Stats2.create = create3;
-  function addCountHelper(map4, key2, inc) {
-    const count4 = map4.get(key2) || 0;
-    map4.set(key2, count4 + inc);
+  function addCountHelper(map4, key3, inc) {
+    const count4 = map4.get(key3) || 0;
+    map4.set(key3, count4 + inc);
   }
   function handleElement(stats, structure, element) {
     const { indices: indices3, unit: unit2 } = element;
@@ -56421,8 +56421,8 @@ function decodeMsgPack(buffer) {
 function map3(state, length2) {
   const value = {};
   for (let i = 0; i < length2; i++) {
-    const key2 = parse(state);
-    value[key2] = parse(state);
+    const key3 = parse(state);
+    value[key3] = parse(state);
   }
   return value;
 }
@@ -59560,64 +59560,64 @@ var Index = class {
     const entityIndex2 = this.map.label_asym_id.get(label_asym_id);
     return entityIndex2 !== void 0 ? entityIndex2 : -1;
   }
-  findChainLabel(key2) {
-    const eI = this.entityIndex(key2.label_entity_id);
+  findChainLabel(key3) {
+    const eI = this.entityIndex(key3.label_entity_id);
     if (eI < 0 || !this.map.entity_index_label_asym_id.has(eI))
       return -1;
     const cm = this.map.entity_index_label_asym_id.get(eI);
     if (!cm)
       return -1;
-    return cm.has(key2.label_asym_id) ? cm.get(key2.label_asym_id) : -1;
+    return cm.has(key3.label_asym_id) ? cm.get(key3.label_asym_id) : -1;
   }
-  findChainAuth(key2) {
-    if (!this.map.auth_asym_id_auth_seq_id.has(key2.auth_asym_id))
+  findChainAuth(key3) {
+    if (!this.map.auth_asym_id_auth_seq_id.has(key3.auth_asym_id))
       return -1;
-    const rm = this.map.auth_asym_id_auth_seq_id.get(key2.auth_asym_id);
-    return rm.has(key2.auth_seq_id) ? rm.get(key2.auth_seq_id) : -1;
+    const rm = this.map.auth_asym_id_auth_seq_id.get(key3.auth_asym_id);
+    return rm.has(key3.auth_seq_id) ? rm.get(key3.auth_seq_id) : -1;
   }
   findResidue(label_entity_id_or_key, label_asym_id, auth_seq_id, pdbx_PDB_ins_code) {
-    let key2;
+    let key3;
     if (arguments.length === 1) {
-      key2 = label_entity_id_or_key;
+      key3 = label_entity_id_or_key;
     } else {
       _tempResidueKey.label_entity_id = label_entity_id_or_key;
       _tempResidueKey.label_asym_id = label_asym_id;
       _tempResidueKey.auth_seq_id = auth_seq_id;
       _tempResidueKey.pdbx_PDB_ins_code = pdbx_PDB_ins_code;
-      key2 = _tempResidueKey;
+      key3 = _tempResidueKey;
     }
-    const cI = this.findChainLabel(key2);
+    const cI = this.findChainLabel(key3);
     if (cI < 0)
       return -1;
     const rm = this.map.chain_index_auth_seq_id.get(cI);
-    const id = getResidueId(key2.auth_seq_id, key2.pdbx_PDB_ins_code || "");
+    const id = getResidueId(key3.auth_seq_id, key3.pdbx_PDB_ins_code || "");
     return rm.has(id) ? rm.get(id) : -1;
   }
-  findResidueLabel(key2) {
-    const cI = this.findChainLabel(key2);
+  findResidueLabel(key3) {
+    const cI = this.findChainLabel(key3);
     if (cI < 0)
       return -1;
     const rm = this.map.chain_index_label_seq_id.get(cI);
-    const id = getResidueId(key2.label_seq_id, key2.pdbx_PDB_ins_code || "");
+    const id = getResidueId(key3.label_seq_id, key3.pdbx_PDB_ins_code || "");
     return rm.has(id) ? rm.get(id) : -1;
   }
-  findResidueAuth(key2) {
-    const cI = this.findChainAuth(key2);
+  findResidueAuth(key3) {
+    const cI = this.findChainAuth(key3);
     if (cI < 0)
       return -1;
     const rm = this.map.chain_index_auth_seq_id.get(cI);
-    const id = getResidueId(key2.auth_seq_id, key2.pdbx_PDB_ins_code || "");
+    const id = getResidueId(key3.auth_seq_id, key3.pdbx_PDB_ins_code || "");
     return rm.has(id) ? rm.get(id) : -1;
   }
-  findResidueInsertion(key2) {
-    const cI = this.findChainLabel(key2);
+  findResidueInsertion(key3) {
+    const cI = this.findChainLabel(key3);
     if (cI < 0)
       return -1;
     const rm = this.map.chain_index_label_seq_id.get(cI);
-    const id = getResidueId(key2.label_seq_id, key2.pdbx_PDB_ins_code || "");
+    const id = getResidueId(key3.label_seq_id, key3.pdbx_PDB_ins_code || "");
     if (rm.has(id))
       return rm.get(id);
-    const idx = SortedArray.findPredecessorIndex(this.map.label_seq_id, key2.label_seq_id);
+    const idx = SortedArray.findPredecessorIndex(this.map.label_seq_id, key3.label_seq_id);
     const start4 = AtomicHierarchy.chainStartResidueIndex(this.map.segments, cI);
     if (idx < start4)
       return start4;
@@ -59626,23 +59626,23 @@ var Index = class {
       return end4;
     return idx;
   }
-  findAtom(key2) {
-    const rI = this.findResidue(key2);
+  findAtom(key3) {
+    const rI = this.findResidue(key3);
     if (rI < 0)
       return -1;
-    if (typeof key2.label_alt_id === "undefined") {
-      return findAtomByName(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.label_atom_id, key2.label_atom_id);
+    if (typeof key3.label_alt_id === "undefined") {
+      return findAtomByName(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.label_atom_id, key3.label_atom_id);
     }
-    return findAtomByNameAndAltLoc(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.label_atom_id, this.map.label_alt_id, key2.label_atom_id, key2.label_alt_id);
+    return findAtomByNameAndAltLoc(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.label_atom_id, this.map.label_alt_id, key3.label_atom_id, key3.label_alt_id);
   }
-  findAtomAuth(key2) {
-    const rI = this.findResidueAuth(key2);
+  findAtomAuth(key3) {
+    const rI = this.findResidueAuth(key3);
     if (rI < 0)
       return -1;
-    if (typeof key2.label_alt_id === "undefined") {
-      return findAtomByName(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.auth_atom_id, key2.auth_atom_id);
+    if (typeof key3.label_alt_id === "undefined") {
+      return findAtomByName(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.auth_atom_id, key3.auth_atom_id);
     }
-    return findAtomByNameAndAltLoc(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.auth_atom_id, this.map.label_alt_id, key2.auth_atom_id, key2.label_alt_id);
+    return findAtomByNameAndAltLoc(this.residueOffsets[rI], this.residueOffsets[rI + 1], this.map.auth_atom_id, this.map.label_alt_id, key3.auth_atom_id, key3.label_alt_id);
   }
   findAtomOnResidue(rI, label_atom_id, label_alt_id) {
     if (typeof label_alt_id === "undefined") {
@@ -59886,15 +59886,15 @@ function getCoarseIndex(data) {
   return new Index2(data);
 }
 var EmptyIndex = class {
-  findElement(key2, out) {
+  findElement(key3, out) {
     out.kind = void 0;
     out.index = -1;
     return false;
   }
-  findSphereElement(key2) {
+  findSphereElement(key3) {
     return -1;
   }
-  findGaussianElement(key2) {
+  findGaussianElement(key3) {
     return -1;
   }
 };
@@ -59910,36 +59910,36 @@ var Index2 = class {
       this._gaussianMapping = buildMapping(this.data.gaussians);
     return this._gaussianMapping;
   }
-  findSphereElement(key2) {
+  findSphereElement(key3) {
     var _a;
     const mapping = this.sphereMapping;
-    let xs = mapping[key2.label_entity_id];
+    let xs = mapping[key3.label_entity_id];
     if (!xs)
       return -1;
-    xs = xs[key2.label_asym_id];
+    xs = xs[key3.label_asym_id];
     if (!xs)
       return -1;
-    return (_a = xs[key2.label_seq_id]) !== null && _a !== void 0 ? _a : -1;
+    return (_a = xs[key3.label_seq_id]) !== null && _a !== void 0 ? _a : -1;
   }
-  findGaussianElement(key2) {
+  findGaussianElement(key3) {
     var _a;
     const mapping = this.gaussianMapping;
-    let xs = mapping[key2.label_entity_id];
+    let xs = mapping[key3.label_entity_id];
     if (!xs)
       return -1;
-    xs = xs[key2.label_asym_id];
+    xs = xs[key3.label_asym_id];
     if (!xs)
       return -1;
-    return (_a = xs[key2.label_seq_id]) !== null && _a !== void 0 ? _a : -1;
+    return (_a = xs[key3.label_seq_id]) !== null && _a !== void 0 ? _a : -1;
   }
-  findElement(key2, out) {
-    const sphere = this.findSphereElement(key2);
+  findElement(key3, out) {
+    const sphere = this.findSphereElement(key3);
     if (sphere >= 0) {
       out.kind = "spheres";
       out.index = sphere;
       return true;
     }
-    const gaussian = this.findGaussianElement(key2);
+    const gaussian = this.findGaussianElement(key3);
     if (gaussian >= 0) {
       out.kind = "gaussians";
       out.index = gaussian;
@@ -59999,18 +59999,18 @@ var CoarseHierarchy;
 })(CoarseHierarchy || (CoarseHierarchy = {}));
 
 // node_modules/molstar/lib/mol-model/structure/model/properties/utils/coarse-keys.js
-function getElementKey(map4, key2, counter) {
-  if (map4.has(key2))
-    return map4.get(key2);
+function getElementKey(map4, key3, counter) {
+  if (map4.has(key3))
+    return map4.get(key3);
   const ret = counter.index++;
-  map4.set(key2, ret);
+  map4.set(key3, ret);
   return ret;
 }
-function getElementSubstructureKeyMap(map4, key2) {
-  if (map4.has(key2))
-    return map4.get(key2);
+function getElementSubstructureKeyMap(map4, key3) {
+  if (map4.has(key3))
+    return map4.get(key3);
   const ret = /* @__PURE__ */ new Map();
-  map4.set(key2, ret);
+  map4.set(key3, ret);
   return ret;
 }
 function createLookUp(entities, chain2, seq) {
@@ -60062,9 +60062,9 @@ function getCoarseKeys(data, entities) {
     const eK2 = entityKey[start4];
     chainToEntity[cI] = eK2;
     const map4 = getElementSubstructureKeyMap(chainMaps, eK2);
-    const key2 = getElementKey(map4, asym_id.value(start4), chainCounter);
+    const key3 = getElementKey(map4, asym_id.value(start4), chainCounter);
     for (let i = start4; i < end4; i++)
-      chainKey[i] = key2;
+      chainKey[i] = key3;
     const elementIndices = [];
     const seqRanges = [];
     for (let i = start4; i < end4; i++) {
@@ -60074,7 +60074,7 @@ function getCoarseKeys(data, entities) {
       seqRanges.push(seqStart, seqEnd);
     }
     const seqMap = { elementIndices, seqRanges: SortedRanges.ofSortedRanges(seqRanges) };
-    seqMaps.set(key2, seqMap);
+    seqMaps.set(key3, seqMap);
   }
   const { findChainKey, findSequenceKey } = createLookUp(entities, chainMaps, seqMaps);
   const getEntityFromChain = (c8) => {
@@ -60661,8 +60661,8 @@ function getMissingResidues(data) {
   };
   const c8 = data.pdbx_unobs_or_zero_occ_residues;
   for (let i = 0, il = c8._rowCount; i < il; ++i) {
-    const key2 = getKey2(c8.PDB_model_num.value(i), c8.label_asym_id.value(i), c8.label_seq_id.value(i));
-    map4.set(key2, { polymer_flag: c8.polymer_flag.value(i), occupancy_flag: c8.occupancy_flag.value(i) });
+    const key3 = getKey2(c8.PDB_model_num.value(i), c8.label_asym_id.value(i), c8.label_seq_id.value(i));
+    map4.set(key3, { polymer_flag: c8.polymer_flag.value(i), occupancy_flag: c8.occupancy_flag.value(i) });
   }
   return {
     has: (model_num, asym_id, seq_id) => {
@@ -70788,11 +70788,11 @@ var hklOffset = 1e4;
 function hklKey(hkl) {
   return hkl.map((v4) => `${v4 + hklOffset}`.padStart(5, "0")).join("");
 }
-function hklKeySplit(key2) {
+function hklKeySplit(key3) {
   const len = integerDigitCount(hklOffset, 0);
-  const h = parseInt(key2.substr(0, len));
-  const k = parseInt(key2.substr(len, len));
-  const l = parseInt(key2.substr(len + len, len));
+  const h = parseInt(key3.substr(0, len));
+  const k = parseInt(key3.substr(len, len));
+  const l = parseInt(key3.substr(len + len, len));
   return Vec3.create(h - hklOffset, k - hklOffset, l - hklOffset);
 }
 function formatHkl(hkl) {
@@ -77029,11 +77029,11 @@ function createBuilder() {
   const indices3 = [];
   const vertexMap = /* @__PURE__ */ new Map();
   function addVertex(v4) {
-    const key2 = `${v4[0].toFixed(5)}|${v4[1].toFixed(5)}|${v4[2].toFixed(5)}`;
-    let idx = vertexMap.get(key2);
+    const key3 = `${v4[0].toFixed(5)}|${v4[1].toFixed(5)}|${v4[2].toFixed(5)}`;
+    let idx = vertexMap.get(key3);
     if (idx === void 0) {
       idx = vertices2.length / 3;
-      vertexMap.set(key2, idx);
+      vertexMap.set(key3, idx);
       vertices2.push(...v4);
     }
     return idx;
@@ -77493,8 +77493,8 @@ function getCylinderPropsKey(props) {
   return hashFnv32a(tmpPropValues);
 }
 function getCylinder(props) {
-  const key2 = getCylinderPropsKey(props);
-  let cylinder = cylinderMap.get(key2);
+  const key3 = getCylinderPropsKey(props);
+  let cylinder = cylinderMap.get(key3);
   if (cylinder === void 0) {
     if (props.radialSegments && props.radialSegments <= 4) {
       const sideCount = Math.max(3, props.radialSegments);
@@ -77503,7 +77503,7 @@ function getCylinder(props) {
     } else {
       cylinder = Cylinder(props);
     }
-    cylinderMap.set(key2, cylinder);
+    cylinderMap.set(key3, cylinder);
   }
   return cylinder;
 }
@@ -79679,12 +79679,12 @@ function substSymbols(expr) {
       return expr;
   } else {
     newArgs = {};
-    for (const key2 of Object.keys(expr.args)) {
-      const oldArg = expr.args[key2];
+    for (const key3 of Object.keys(expr.args)) {
+      const oldArg = expr.args[key3];
       const newArg = substSymbols(oldArg);
       if (oldArg !== newArg)
         argsChanged = true;
-      newArgs[key2] = newArg;
+      newArgs[key3] = newArg;
     }
     if (!isMacro && !headChanged && !argsChanged)
       return expr;
@@ -79869,10 +79869,10 @@ var MonadicParser = class _MonadicParser {
   MonadicParser2.seqMap = seqMap;
   function createLanguage(parsers) {
     const language = {};
-    for (const key2 of Object.keys(parsers)) {
-      (function(key3) {
-        language[key3] = lazy(() => parsers[key3](language));
-      })(key2);
+    for (const key3 of Object.keys(parsers)) {
+      (function(key4) {
+        language[key4] = lazy(() => parsers[key4](language));
+      })(key3);
     }
     return language;
   }
@@ -84455,8 +84455,8 @@ function updateStructureComponent(a8, b8, oldParams, newParams, cache) {
 }
 
 // node_modules/molstar/lib/mol-io/reader/mol/parser.js
-function formalChargeMapper(key2) {
-  switch (key2) {
+function formalChargeMapper(key3) {
+  switch (key3) {
     case 7:
       return -3;
     case 6:
@@ -84474,7 +84474,7 @@ function formalChargeMapper(key2) {
     case 4:
       return 0;
     default:
-      console.error(`Value ${key2} is outside the 0-7 range, defaulting to 0.`);
+      console.error(`Value ${key3} is outside the 0-7 range, defaulting to 0.`);
       return 0;
   }
 }
@@ -85328,7 +85328,7 @@ async function getModels4(mol2, ctx) {
     if (_models.frameCount > 0) {
       const indexA = Column.ofIntArray(Column.mapToArray(bonds.origin_atom_id, (x) => x - 1, Int32Array));
       const indexB = Column.ofIntArray(Column.mapToArray(bonds.target_atom_id, (x) => x - 1, Int32Array));
-      const key2 = bonds.bond_id;
+      const key3 = bonds.bond_id;
       const order = Column.ofIntArray(Column.mapToArray(bonds.bond_type, (x) => {
         switch (x) {
           case "ar":
@@ -85361,7 +85361,7 @@ async function getModels4(mol2, ctx) {
             return BondType.Flag.Covalent;
         }
       }, Int8Array));
-      const pairBonds = IndexPairBonds.fromData({ pairs: { key: key2, indexA, indexB, order, flag }, count: atoms2.count }, { maxDistance: crysin ? -1 : Infinity });
+      const pairBonds = IndexPairBonds.fromData({ pairs: { key: key3, indexA, indexB, order, flag }, count: atoms2.count }, { maxDistance: crysin ? -1 : Infinity });
       const first4 = _models.representative;
       IndexPairBonds.Provider.set(first4, pairBonds);
       AtomPartialCharge.Provider.set(first4, {
@@ -86298,10 +86298,10 @@ async function getModels6(mol, ctx, unitsStyle = "real") {
     if (bonds.count !== 0) {
       const indexA = Column.ofIntArray(Column.mapToArray(bonds.atomIdA, (x) => x - 1, Int32Array));
       const indexB = Column.ofIntArray(Column.mapToArray(bonds.atomIdB, (x) => x - 1, Int32Array));
-      const key2 = bonds.bondId;
+      const key3 = bonds.bondId;
       const order = Column.ofConst(1, bonds.count, Column.Schema.int);
       const flag = Column.ofConst(BondType.Flag.Covalent, bonds.count, Column.Schema.int);
-      const pairBonds = IndexPairBonds.fromData({ pairs: { key: key2, indexA, indexB, order, flag }, count: atoms2.count }, { maxDistance: Infinity });
+      const pairBonds = IndexPairBonds.fromData({ pairs: { key: key3, indexA, indexB, order, flag }, count: atoms2.count }, { maxDistance: Infinity });
       IndexPairBonds.Provider.set(first4, pairBonds);
     }
     AtomPartialCharge.Provider.set(first4, {
@@ -108305,12 +108305,12 @@ var XRManager = class {
     });
     this.checkSupported();
     (_a = navigator.xr) === null || _a === void 0 ? void 0 : _a.addEventListener("devicechange", this.checkSupported);
-    this.keyUpSub = input.keyUp.subscribe(({ code, modifiers: modifiers3, key: key2 }) => {
+    this.keyUpSub = input.keyUp.subscribe(({ code, modifiers: modifiers3, key: key3 }) => {
       const b8 = this.attribs.bindings;
-      if (Binding.matchKey(b8.exit, code, modifiers3, key2)) {
+      if (Binding.matchKey(b8.exit, code, modifiers3, key3)) {
         this.end();
       }
-      if (Binding.matchKey(b8.togglePassthrough, code, modifiers3, key2)) {
+      if (Binding.matchKey(b8.togglePassthrough, code, modifiers3, key3)) {
         this.togglePassthrough.next();
       }
     });
@@ -109895,13 +109895,13 @@ var PluginConfigItem = class {
   valueOf() {
     return this.key;
   }
-  constructor(key2, defaultValue) {
-    this.key = key2;
+  constructor(key3, defaultValue) {
+    this.key = key3;
     this.defaultValue = defaultValue;
   }
 };
-function item(key2, defaultValue) {
-  return new PluginConfigItem(key2, defaultValue);
+function item(key3, defaultValue) {
+  return new PluginConfigItem(key3, defaultValue);
 }
 var PluginConfig = {
   item,
@@ -109960,16 +109960,16 @@ var PluginConfig = {
   }
 };
 var PluginConfigManager = class {
-  get(key2) {
-    if (!this._config.has(key2))
-      return key2.defaultValue;
-    return this._config.get(key2);
+  get(key3) {
+    if (!this._config.has(key3))
+      return key3.defaultValue;
+    return this._config.get(key3);
   }
-  set(key2, value) {
-    this._config.set(key2, value);
+  set(key3, value) {
+    this._config.set(key3, value);
   }
-  delete(key2) {
-    this._config.delete(key2);
+  delete(key3) {
+    this._config.delete(key3);
   }
   constructor(initial) {
     this._config = /* @__PURE__ */ new Map();
@@ -113561,12 +113561,12 @@ function refineInteractions(structure, interactions) {
 }
 function hydrophobicRefiner(structure, interactions) {
   const { contacts } = interactions;
-  const handleResidueContact = function(dist, edge, key2, map4, set4) {
-    const [minDist, minIndex] = map4.get(key2) || [Infinity, -1];
+  const handleResidueContact = function(dist, edge, key3, map4, set4) {
+    const [minDist, minIndex] = map4.get(key3) || [Infinity, -1];
     if (dist < minDist) {
       if (minIndex !== -1)
         set4(minIndex);
-      map4.set(key2, [dist, edge]);
+      map4.set(key3, [dist, edge]);
     } else {
       set4(edge);
     }
@@ -113873,9 +113873,9 @@ async function computeInteractions(ctx, structure, props, options) {
   return interactions;
 }
 function findUnitFeatures(structure, unit2, featureProviders, cacheKey) {
-  const key2 = `features-${cacheKey}`;
-  if (unit2.transientCache.has(key2)) {
-    return unit2.transientCache.get(key2);
+  const key3 = `features-${cacheKey}`;
+  if (unit2.transientCache.has(key3)) {
+    return unit2.transientCache.get(key3);
   }
   const count4 = unit2.elements.length;
   const featuresBuilder = FeaturesBuilder.create(count4, count4 / 2);
@@ -113885,7 +113885,7 @@ function findUnitFeatures(structure, unit2, featureProviders, cacheKey) {
     }
   }
   const features = featuresBuilder.getFeatures(count4);
-  unit2.transientCache.set(key2, features);
+  unit2.transientCache.set(key3, features);
   return features;
 }
 function findIntraUnitContacts(structure, unit2, features, contactTesters, props) {
@@ -116023,8 +116023,8 @@ var PluginStateSnapshotManager = class _PluginStateSnapshotManager extends State
     this.updateState({ current: void 0, entries: List() });
     this.events.changed.next(void 0);
   }
-  applyKey(key2) {
-    const e = this.state.entries.find((e2) => e2.key === key2);
+  applyKey(key3) {
+    const e = this.state.entries.find((e2) => e2.key === key3);
     if (!e)
       return;
     this.updateState({ current: e.snapshot.id });
@@ -116518,11 +116518,11 @@ function Snapshots(ctx) {
   PluginCommands.State.Snapshots.Remove.subscribe(ctx, ({ id }) => {
     ctx.managers.snapshot.remove(id);
   });
-  PluginCommands.State.Snapshots.Add.subscribe(ctx, async ({ key: key2, name, description, descriptionFormat, params }) => {
+  PluginCommands.State.Snapshots.Add.subscribe(ctx, async ({ key: key3, name, description, descriptionFormat, params }) => {
     var _a;
     const snapshot = ctx.state.getSnapshot(params);
     const image = ((_a = params === null || params === void 0 ? void 0 : params.image) !== null && _a !== void 0 ? _a : ctx.state.snapshotParams.value.image) ? await PluginStateSnapshotManager.getCanvasImageAsset(ctx, `${snapshot.id}-image.png`) : void 0;
-    const entry = PluginStateSnapshotManager.Entry(snapshot, { key: key2, name, description, descriptionFormat, image });
+    const entry = PluginStateSnapshotManager.Entry(snapshot, { key: key3, name, description, descriptionFormat, image });
     ctx.managers.snapshot.add(entry);
   });
   PluginCommands.State.Snapshots.Replace.subscribe(ctx, async ({ id, params }) => {
@@ -117160,14 +117160,14 @@ var CameraControls = PluginBehavior.create({
   category: "interaction",
   ctor: class extends PluginBehavior.Handler {
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.key, ({ code, key: key2, modifiers: modifiers3 }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.key, ({ code, key: key3, modifiers: modifiers3 }) => {
         var _a;
         if (!this.ctx.canvas3d)
           return;
         const b8 = { ...DefaultCameraControlsBindings, ...this.params.bindings };
         const tp = this.ctx.canvas3d.props.trackball;
         const ip = this.ctx.canvas3d.props.illumination;
-        if (Binding.matchKey(b8.keySpinAnimation, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.keySpinAnimation, code, modifiers3, key3)) {
           const name = tp.animate.name !== "spin" ? "spin" : "off";
           if (name === "off") {
             PluginCommands.Canvas3D.SetSettings(this.ctx, {
@@ -117189,7 +117189,7 @@ var CameraControls = PluginBehavior.create({
             });
           }
         }
-        if (Binding.matchKey(b8.keyRockAnimation, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.keyRockAnimation, code, modifiers3, key3)) {
           const name = tp.animate.name !== "rock" ? "rock" : "off";
           if (name === "off") {
             PluginCommands.Canvas3D.SetSettings(this.ctx, {
@@ -117211,7 +117211,7 @@ var CameraControls = PluginBehavior.create({
             });
           }
         }
-        if (Binding.matchKey(b8.keyToggleFlyMode, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.keyToggleFlyMode, code, modifiers3, key3)) {
           const flyMode = !tp.flyMode;
           PluginCommands.Canvas3D.SetSettings(this.ctx, {
             settings: {
@@ -117225,10 +117225,10 @@ var CameraControls = PluginBehavior.create({
             this.ctx.canvas3dContext.canvas.style.cursor = flyMode ? "crosshair" : "unset";
           }
         }
-        if (Binding.matchKey(b8.keyResetView, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.keyResetView, code, modifiers3, key3)) {
           PluginCommands.Camera.Reset(this.ctx, {});
         }
-        if (Binding.matchKey(b8.keyGlobalIllumination, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.keyGlobalIllumination, code, modifiers3, key3)) {
           PluginCommands.Canvas3D.SetSettings(this.ctx, {
             settings: {
               illumination: {
@@ -117276,24 +117276,24 @@ var SnapshotControls = PluginBehavior.create({
   category: "interaction",
   ctor: class extends PluginBehavior.Handler {
     register() {
-      this.subscribeObservable(this.ctx.behaviors.interaction.keyReleased, ({ code, modifiers: modifiers3, key: key2 }) => {
+      this.subscribeObservable(this.ctx.behaviors.interaction.keyReleased, ({ code, modifiers: modifiers3, key: key3 }) => {
         if (!this.ctx.canvas3d || this.ctx.isBusy)
           return;
         const b8 = this.params.bindings;
         const { snapshot } = this.ctx.managers;
-        if (Binding.matchKey(b8.next, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.next, code, modifiers3, key3)) {
           snapshot.applyNext(1);
         }
-        if (Binding.matchKey(b8.previous, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.previous, code, modifiers3, key3)) {
           snapshot.applyNext(-1);
         }
-        if (Binding.matchKey(b8.first, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.first, code, modifiers3, key3)) {
           const e = snapshot.state.entries.get(0);
           const s = snapshot.setCurrent(e.snapshot.id);
           if (s)
             return this.ctx.state.setSnapshot(s);
         }
-        if (Binding.matchKey(b8.last, code, modifiers3, key2)) {
+        if (Binding.matchKey(b8.last, code, modifiers3, key3)) {
           const e = snapshot.state.entries.get(snapshot.state.entries.size - 1);
           const s = snapshot.setCurrent(e.snapshot.id);
           if (s)
@@ -117498,7 +117498,7 @@ var DefaultMaxAsa = 121;
 
 // node_modules/molstar/lib/mol-model-props/computed/accessible-surface-area/shrake-rupley/radii.js
 function assignRadiusForHeavyAtoms(ctx) {
-  const { key: key2 } = StructureProperties.residue;
+  const { key: key3 } = StructureProperties.residue;
   const { type_symbol, label_atom_id, label_comp_id } = StructureProperties.atom;
   const { structure, atomRadiusType, serialResidueIndex } = ctx;
   const l = element_exports.Location.create(structure);
@@ -117515,7 +117515,7 @@ function assignRadiusForHeavyAtoms(ctx) {
       const eI = elements[j];
       const mj = m + j;
       l.element = eI;
-      residueIdx = key2(l);
+      residueIdx = key3(l);
       if (prevResidueIdx !== residueIdx)
         ++serialResidueIdx;
       prevResidueIdx = residueIdx;
@@ -118225,13 +118225,13 @@ function SIFTSMappingColorTheme(ctx, props) {
     const palette = getPalette(globalAccessionMap.size + 1, props, { valueLabel: (i) => `${i}` });
     const colorMap = /* @__PURE__ */ new Map();
     const getColor2 = (location2) => {
-      const key2 = SIFTSMapping.getKey(location2);
-      if (!key2)
+      const key3 = SIFTSMapping.getKey(location2);
+      if (!key3)
         return DefaultColor22;
-      if (colorMap.has(key2))
-        return colorMap.get(key2);
-      const color2 = palette.color(globalAccessionMap.get(key2));
-      colorMap.set(key2, color2);
+      if (colorMap.has(key3))
+        return colorMap.get(key3);
+      const color2 = palette.color(globalAccessionMap.get(key3));
+      colorMap.set(key3, color2);
       return color2;
     };
     color = (location2) => {
@@ -118426,8 +118426,8 @@ function getPairKey(indexA, unitA, indexB, unitB) {
 var PairRestraints = class {
   /** Indices into this.pairs */
   getPairIndices(indexA, unitA, indexB, unitB) {
-    const key2 = getPairKey(indexA, unitA, indexB, unitB);
-    return this.pairKeyIndices.get(key2) || emptyArray2;
+    const key3 = getPairKey(indexA, unitA, indexB, unitB);
+    return this.pairKeyIndices.get(key3) || emptyArray2;
   }
   getPairs(indexA, unitA, indexB, unitB) {
     const indices3 = this.getPairIndices(indexA, unitA, indexB, unitB);
@@ -118437,12 +118437,12 @@ var PairRestraints = class {
     this.pairs = pairs;
     const pairKeyIndices = /* @__PURE__ */ new Map();
     this.pairs.forEach((p6, i) => {
-      const key2 = getPairKey(p6.indexA, p6.unitA, p6.indexB, p6.unitB);
-      const indices3 = pairKeyIndices.get(key2);
+      const key3 = getPairKey(p6.indexA, p6.unitA, p6.indexB, p6.unitB);
+      const indices3 = pairKeyIndices.get(key3);
       if (indices3)
         indices3.push(i);
       else
-        pairKeyIndices.set(key2, [i]);
+        pairKeyIndices.set(key3, [i]);
     });
     this.count = pairs.length;
     this.pairKeyIndices = pairKeyIndices;
@@ -119902,11 +119902,11 @@ var StructureBuilder = class {
     return cell.transform.transformer === StateTransforms.Model.StructureComponent;
   }
   /** returns undefined if the component is empty/null */
-  async tryCreateComponent(structure, params, key2, tags) {
+  async tryCreateComponent(structure, params, key3, tags) {
     var _a, _b;
     const state = this.dataState;
     const root = state.build().to(structure);
-    const keyTag = `structure-component-${key2}`;
+    const keyTag = `structure-component-${key3}`;
     const component = root.applyOrUpdateTagged(keyTag, StateTransforms.Model.StructureComponent, params, {
       tags: tags ? [...tags, keyTag] : [keyTag]
     });
@@ -119918,12 +119918,12 @@ var StructureBuilder = class {
     }
     return selector;
   }
-  tryCreateComponentFromExpression(structure, expression, key2, params) {
+  tryCreateComponentFromExpression(structure, expression, key3, params) {
     return this.tryCreateComponent(structure, {
       type: { name: "expression", params: expression },
       nullIfEmpty: true,
       label: ((params === null || params === void 0 ? void 0 : params.label) || "").trim()
-    }, key2, params === null || params === void 0 ? void 0 : params.tags);
+    }, key3, params === null || params === void 0 ? void 0 : params.tags);
   }
   tryCreateComponentStatic(structure, type3, params) {
     return this.tryCreateComponent(structure, {
@@ -119932,7 +119932,7 @@ var StructureBuilder = class {
       label: ((params === null || params === void 0 ? void 0 : params.label) || "").trim()
     }, `static-${type3}`, params === null || params === void 0 ? void 0 : params.tags);
   }
-  tryCreateComponentFromSelection(structure, selection, key2, params) {
+  tryCreateComponentFromSelection(structure, selection, key3, params) {
     return this.plugin.runTask(Task.create("Query Component", async (taskCtx) => {
       var _a, _b;
       let { label: label2, tags } = params || {};
@@ -119955,7 +119955,7 @@ var StructureBuilder = class {
       if (selection.ensureCustomProperties) {
         await selection.ensureCustomProperties({ runtime: taskCtx, assetManager: this.plugin.managers.asset, errorContext: this.plugin.errorContext }, structureData);
       }
-      return this.tryCreateComponent(structure, transformParams, key2, tags);
+      return this.tryCreateComponent(structure, transformParams, key3, tags);
     }));
   }
   constructor(plugin) {
@@ -123036,8 +123036,8 @@ function toggleLoci(currentLoci, newLoci) {
 // node_modules/molstar/lib/mol-util/lru-cache.js
 var LRUCache;
 (function(LRUCache2) {
-  function entry(key2, data) {
-    return { key: key2, data };
+  function entry(key3, data) {
+    return { key: key3, data };
   }
   function create3(capacity) {
     return {
@@ -123046,9 +123046,9 @@ var LRUCache;
     };
   }
   LRUCache2.create = create3;
-  function get11(cache, key2) {
+  function get11(cache, key3) {
     for (let e = cache.entries.first; e; e = e.next) {
-      if (e.value.key === key2) {
+      if (e.value.key === key3) {
         cache.entries.remove(e);
         cache.entries.addLast(e.value);
         return e.value.data;
@@ -123057,20 +123057,20 @@ var LRUCache;
     return void 0;
   }
   LRUCache2.get = get11;
-  function set4(cache, key2, data) {
+  function set4(cache, key3, data) {
     let removed = void 0;
     if (cache.entries.count >= cache.capacity) {
       const first4 = cache.entries.first;
       removed = first4.value.data;
       cache.entries.remove(first4);
     }
-    cache.entries.addLast(entry(key2, data));
+    cache.entries.addLast(entry(key3, data));
     return removed;
   }
   LRUCache2.set = set4;
-  function remove3(cache, key2) {
+  function remove3(cache, key3) {
     for (let e = cache.entries.first; e; e = e.next) {
-      if (e.value.key === key2) {
+      if (e.value.key === key3) {
         cache.entries.remove(e);
         break;
       }
@@ -123969,13 +123969,13 @@ var StructureHierarchyManager = class _StructureHierarchyManager extends PluginC
     const map4 = /* @__PURE__ */ new Map();
     for (const s of structures) {
       for (const c8 of s.components) {
-        const key2 = c8.key;
-        if (!key2)
+        const key3 = c8.key;
+        if (!key3)
           continue;
-        let component = map4.get(key2);
+        let component = map4.get(key3);
         if (!component) {
           component = [];
-          map4.set(key2, component);
+          map4.set(key3, component);
           groups.push(component);
         }
         component.push(c8);
@@ -124536,10 +124536,10 @@ var BuiltInMarkdownExtension = [
     execute: ({ event, args, manager }) => {
       if (event !== "click")
         return;
-      const key2 = args["apply-snapshot"];
-      if (!key2)
+      const key3 = args["apply-snapshot"];
+      if (!key3)
         return;
-      manager.plugin.managers.snapshot.applyKey(key2);
+      manager.plugin.managers.snapshot.applyKey(key3);
     }
   },
   {
@@ -135808,14 +135808,14 @@ function VolumeVisual(builder, materialId) {
   let geometryVersion = -1;
   let locationIt;
   let positionIt;
-  function prepareUpdate(theme, props, volume, key2) {
+  function prepareUpdate(theme, props, volume, key3) {
     if (!volume && !currentVolume) {
       throw new Error("missing volume");
     }
     newProps = Object.assign({}, currentProps, props);
     newTheme = theme;
     newVolume = volume;
-    newKey = key2;
+    newKey = key3;
     VisualUpdateState.reset(updateState);
     if (!renderObject) {
       updateState.createNew = true;
@@ -135909,7 +135909,7 @@ function VolumeVisual(builder, materialId) {
       geometryVersion += 1;
     }
   }
-  function eachInstance(loci, volume, key2, apply) {
+  function eachInstance(loci, volume, key3, apply) {
     let changed = false;
     if (Volume.Cell.isLoci(loci)) {
       if (Volume.Cell.isLociEmpty(loci))
@@ -135928,7 +135928,7 @@ function VolumeVisual(builder, materialId) {
       if (!Volume.areEquivalent(loci.volume, volume))
         return false;
       for (const { segments: segments2, instances } of loci.elements) {
-        if (OrderedSet2.has(segments2, key2)) {
+        if (OrderedSet2.has(segments2, key3)) {
           OrderedSet2.forEach(instances, (j) => {
             if (apply(Interval.ofSingleton(j)))
               changed = true;
@@ -136072,18 +136072,18 @@ function VolumeRepresentation(label2, ctx, getParams, visualCtor, getLoci6, getK
   let _params;
   let _props;
   let _theme = Theme.createEmpty();
-  async function visual(runtime, key2) {
+  async function visual(runtime, key3) {
     var _a;
-    let visual2 = visuals.get(key2);
+    let visual2 = visuals.get(key3);
     if (!visual2) {
-      visual2 = visualCtor(materialId, _volume, key2, _props, webgl);
-      visuals.set(key2, visual2);
-    } else if ((_a = visual2.mustRecreate) === null || _a === void 0 ? void 0 : _a.call(visual2, { volume: _volume, key: key2 }, _props, webgl)) {
+      visual2 = visualCtor(materialId, _volume, key3, _props, webgl);
+      visuals.set(key3, visual2);
+    } else if ((_a = visual2.mustRecreate) === null || _a === void 0 ? void 0 : _a.call(visual2, { volume: _volume, key: key3 }, _props, webgl)) {
       visual2.destroy();
-      visual2 = visualCtor(materialId, _volume, key2, _props, webgl);
-      visuals.set(key2, visual2);
+      visual2 = visualCtor(materialId, _volume, key3, _props, webgl);
+      visuals.set(key3, visual2);
     }
-    return visual2.createOrUpdate({ webgl, runtime }, _theme, _props, { volume: _volume, key: key2 });
+    return visual2.createOrUpdate({ webgl, runtime }, _theme, _props, { volume: _volume, key: key3 });
   }
   function createOrUpdate(props = {}, volume) {
     if (volume && volume !== _volume) {
@@ -136267,7 +136267,7 @@ function suitableForGpu2(volume, webgl) {
   const { powerOfTwoSize } = getVolumeTexture2dLayout(gridDim, Padding);
   return powerOfTwoSize <= webgl.maxTextureSize / 2;
 }
-function IsosurfaceVisual(materialId, volume, key2, props, webgl) {
+function IsosurfaceVisual(materialId, volume, key3, props, webgl) {
   if (props.tryUseGpu && webgl && gpuSupport2(webgl) && suitableForGpu2(volume, webgl)) {
     return IsosurfaceTextureMeshVisual(materialId);
   }
@@ -136277,7 +136277,7 @@ function getLoci(volume, props) {
   const instances = Interval.ofLength(volume.instances.length);
   return Volume.Isosurface.Loci(volume, props.isoValue, instances);
 }
-function getIsosurfaceLoci(pickingId, volume, key2, props, id) {
+function getIsosurfaceLoci(pickingId, volume, key3, props, id) {
   const { objectId, groupId, instanceId } = pickingId;
   if (id === objectId) {
     const granularity = Volume.PickingGranularity.get(volume);
@@ -136293,10 +136293,10 @@ function getIsosurfaceLoci(pickingId, volume, key2, props, id) {
   }
   return EmptyLoci;
 }
-function eachIsosurface(loci, volume, key2, props, apply) {
+function eachIsosurface(loci, volume, key3, props, apply) {
   return eachVolumeLoci(loci, volume, { isoValue: props.isoValue }, apply);
 }
-async function createVolumeIsosurfaceMesh(ctx, volume, key2, theme, props, mesh) {
+async function createVolumeIsosurfaceMesh(ctx, volume, key3, theme, props, mesh) {
   ctx.runtime.update({ message: "Marching cubes..." });
   let cells = volume.grid.cells;
   if (shouldWrap(volume, props.wrap)) {
@@ -136385,7 +136385,7 @@ var VolumeIsosurfaceTexture;
   }
   VolumeIsosurfaceTexture2.get = get11;
 })(VolumeIsosurfaceTexture || (VolumeIsosurfaceTexture = {}));
-function createVolumeIsosurfaceTextureMesh(ctx, volume, key2, theme, props, textureMesh) {
+function createVolumeIsosurfaceTextureMesh(ctx, volume, key3, theme, props, textureMesh) {
   const { webgl } = ctx;
   if (!webgl)
     throw new Error("webgl context required to create volume isosurface texture-mesh");
@@ -136438,7 +136438,7 @@ function IsosurfaceTextureMeshVisual(materialId) {
     }
   }, materialId);
 }
-async function createVolumeIsosurfaceWireframe(ctx, volume, key2, theme, props, lines) {
+async function createVolumeIsosurfaceWireframe(ctx, volume, key3, theme, props, lines) {
   ctx.runtime.update({ message: "Marching cubes..." });
   let cells = volume.grid.cells;
   if (shouldWrap(volume, props.wrap)) {
@@ -136543,14 +136543,14 @@ function getSliceParams(ctx, volume) {
   p6.isoValue = Volume.createIsoValueParam(Volume.IsoValue.absolute(volume.grid.stats.min), volume.grid.stats);
   return p6;
 }
-async function createImage(ctx, volume, key2, theme, props, image) {
+async function createImage(ctx, volume, key3, theme, props, image) {
   switch (props.mode) {
     case "frame":
-      return createFrameImage(ctx, volume, key2, theme, props, image);
+      return createFrameImage(ctx, volume, key3, theme, props, image);
     case "grid":
-      return createGridImage(ctx, volume, key2, theme, props, image);
+      return createGridImage(ctx, volume, key3, theme, props, image);
     case "plane":
-      return createPlaneImage2(ctx, volume, key2, theme, props, image);
+      return createPlaneImage2(ctx, volume, key3, theme, props, image);
     default:
       assertUnreachable(props.mode);
   }
@@ -136687,7 +136687,7 @@ function getSampledImage(volume, theme, info, isoValue, trim2, image) {
   im.setBoundingSphere(Volume.getBoundingSphere(volume));
   return im;
 }
-async function createFrameImage(ctx, volume, key2, theme, props, image) {
+async function createFrameImage(ctx, volume, key3, theme, props, image) {
   const { offset: offset4, isoValue } = props;
   const { size: size4, major, minor, normal: normal3, center: center2, trim: trim2, resolution } = getFrame2(volume, props);
   const scaleFactor = 1 / resolution;
@@ -136707,7 +136707,7 @@ async function createFrameImage(ctx, volume, key2, theme, props, image) {
   const info = { m, width, height };
   return getSampledImage(volume, theme, info, isoValue, trim2, image);
 }
-async function createPlaneImage2(ctx, volume, key2, theme, props, image) {
+async function createPlaneImage2(ctx, volume, key3, theme, props, image) {
   const { plane: { point, normal: normal3 }, isoValue } = props;
   const m = Mat4.fromPlane(Mat4(), normal3, point);
   const gridToCartn = Grid.getGridToCartesianTransform(volume.grid);
@@ -136734,7 +136734,7 @@ async function createPlaneImage2(ctx, volume, key2, theme, props, image) {
   const info = { m, width, height };
   return getSampledImage(volume, theme, info, isoValue, trim2, image);
 }
-async function createGridImage(ctx, volume, key2, theme, props, image) {
+async function createGridImage(ctx, volume, key3, theme, props, image) {
   const { dimension: { name: dim }, isoValue } = props;
   const { cells: { space, data }, stats } = volume.grid;
   const { min: min5, max: max5 } = stats;
@@ -136874,7 +136874,7 @@ function getLoci2(volume, props) {
   const instances = Interval.ofLength(volume.instances.length);
   return getObjectLoci(volume, instances, props);
 }
-function getSliceLoci(pickingId, volume, key2, props, id) {
+function getSliceLoci(pickingId, volume, key3, props, id) {
   const { objectId, groupId, instanceId } = pickingId;
   if (id === objectId) {
     const granularity = Volume.PickingGranularity.get(volume);
@@ -136891,7 +136891,7 @@ function getSliceLoci(pickingId, volume, key2, props, id) {
   }
   return EmptyLoci;
 }
-function eachSlice(loci, volume, key2, props, apply) {
+function eachSlice(loci, volume, key3, props, apply) {
   return eachVolumeLoci(loci, volume, void 0, apply);
 }
 function SliceVisual(materialId) {
@@ -136984,7 +136984,7 @@ function createDirectVolume3d(ctx, webgl, volume, props, directVolume) {
   const axisOrder = volume.grid.cells.space.axisOrderSlowToFast;
   return DirectVolume.create(bbox, gridDimension, transform3, unitToCartn, cellDim, texture, volume.grid.stats, false, axisOrder, dataType, directVolume);
 }
-async function createDirectVolume(ctx, volume, key2, theme, props, directVolume) {
+async function createDirectVolume(ctx, volume, key3, theme, props, directVolume) {
   const { runtime, webgl } = ctx;
   if (webgl === void 0)
     throw new Error("DirectVolumeVisual requires `webgl` in VisualContext");
@@ -136994,7 +136994,7 @@ function getLoci3(volume, props) {
   const instances = Interval.ofLength(volume.instances.length);
   return Volume.Loci(volume, instances);
 }
-function getDirectVolumeLoci(pickingId, volume, key2, props, id) {
+function getDirectVolumeLoci(pickingId, volume, key3, props, id) {
   const { objectId, groupId, instanceId } = pickingId;
   if (id === objectId) {
     const instances = OrderedSet2.ofSingleton(instanceId);
@@ -137003,7 +137003,7 @@ function getDirectVolumeLoci(pickingId, volume, key2, props, id) {
   }
   return EmptyLoci;
 }
-function eachDirectVolume(loci, volume, key2, props, apply) {
+function eachDirectVolume(loci, volume, key3, props, apply) {
   return eachVolumeLoci(loci, volume, void 0, apply);
 }
 var DirectVolumeParams = {
@@ -137071,7 +137071,7 @@ function getSegmentTransform(grid, segmentBox) {
   const translate = Mat4.fromTranslation(_translate, segmentBox.min);
   return Mat4.mul(Mat4(), transform3, translate);
 }
-function SegmentVisual(materialId, volume, key2, props, webgl) {
+function SegmentVisual(materialId, volume, key3, props, webgl) {
   if (props.tryUseGpu && webgl && gpuSupport3(webgl) && suitableForGpu3(volume, webgl)) {
     return SegmentTextureMeshVisual(materialId);
   }
@@ -137082,7 +137082,7 @@ function getLoci4(volume, props) {
   const instances = Interval.ofLength(volume.instances.length);
   return Volume.Segment.Loci(volume, [{ segments: segments2, instances }]);
 }
-function getSegmentLoci(pickingId, volume, key2, props, id) {
+function getSegmentLoci(pickingId, volume, key3, props, id) {
   const { objectId, groupId, instanceId } = pickingId;
   if (id === objectId) {
     const granularity = Volume.PickingGranularity.get(volume);
@@ -137090,7 +137090,7 @@ function getSegmentLoci(pickingId, volume, key2, props, id) {
     if (granularity === "volume") {
       return Volume.Loci(volume, instances);
     } else if (granularity === "object" || groupId === PickingId.Null) {
-      const segments2 = OrderedSet2.ofSingleton(key2);
+      const segments2 = OrderedSet2.ofSingleton(key3);
       return Volume.Segment.Loci(volume, [{ segments: segments2, instances }]);
     } else {
       const indices3 = Interval.ofSingleton(groupId);
@@ -137099,8 +137099,8 @@ function getSegmentLoci(pickingId, volume, key2, props, id) {
   }
   return EmptyLoci;
 }
-function eachSegment(loci, volume, key2, props, apply) {
-  const segments2 = SortedArray.ofSingleton(key2);
+function eachSegment(loci, volume, key3, props, apply) {
+  const segments2 = SortedArray.ofSingleton(key3);
   return eachVolumeLoci(loci, volume, { segments: segments2 }, apply);
 }
 function getSegmentCells(set4, bbox, cells) {
@@ -137134,14 +137134,14 @@ function getSegmentCells(set4, bbox, cells) {
   }
   return segmentCells;
 }
-async function createVolumeSegmentMesh(ctx, volume, key2, theme, props, mesh) {
+async function createVolumeSegmentMesh(ctx, volume, key3, theme, props, mesh) {
   const segmentation = Volume.Segmentation.get(volume);
   if (!segmentation)
     throw new Error("missing volume segmentation");
   ctx.runtime.update({ message: "Marching cubes..." });
-  const bbox = Box3D.clone(segmentation.bounds[key2]);
+  const bbox = Box3D.clone(segmentation.bounds[key3]);
   Box3D.expand(bbox, bbox, Vec3.create(2, 2, 2));
-  const set4 = Array.from(segmentation.segments.get(key2).values());
+  const set4 = Array.from(segmentation.segments.get(key3).values());
   const cells = getSegmentCells(set4, bbox, volume.grid.cells);
   const ids = fillSerial(new Int32Array(cells.data.length));
   const surface = await computeMarchingCubesMesh({
@@ -137158,7 +137158,7 @@ async function createVolumeSegmentMesh(ctx, volume, key2, theme, props, mesh) {
     ValueCell.updateIfChanged(surface.varyingGroup, true);
   }
   const instances = Interval.ofLength(volume.instances.length);
-  const segments2 = OrderedSet2.ofSingleton(key2);
+  const segments2 = OrderedSet2.ofSingleton(key3);
   surface.setBoundingSphere(Volume.Segment.getBoundingSphere(volume, [{ segments: segments2, instances }]));
   return surface;
 }
@@ -137173,8 +137173,8 @@ function SegmentMeshVisual(materialId) {
   return VolumeVisual({
     defaultProps: ParamDefinition.getDefaultValues(SegmentMeshParams),
     createGeometry: createVolumeSegmentMesh,
-    createLocationIterator: (volume, key2) => {
-      const l = Volume.Segment.Location(volume, key2);
+    createLocationIterator: (volume, key3) => {
+      const l = Volume.Segment.Location(volume, key3);
       return LocationIterator(volume.grid.cells.data.length, volume.instances ? volume.instances.length : 1, 1, () => l);
     },
     getLoci: getSegmentLoci,
@@ -137312,7 +137312,7 @@ var VolumeSphereParams = {
   tryUseImpostor: ParamDefinition.Boolean(true),
   detail: ParamDefinition.Numeric(0, { min: 0, max: 3, step: 1 }, BaseGeometry.CustomQualityParamInfo)
 };
-function VolumeSphereVisual(materialId, volume, key2, props, webgl) {
+function VolumeSphereVisual(materialId, volume, key3, props, webgl) {
   return props.tryUseImpostor && webgl && webgl.extensions.fragDepth && webgl.extensions.textureFloat ? VolumeSphereImpostorVisual(materialId) : VolumeSphereMeshVisual(materialId);
 }
 function VolumeSphereImpostorVisual(materialId) {
@@ -137363,7 +137363,7 @@ function getRandomOffsetFromBasis({ x, y, z, maxScale }) {
   Vec3.scaleAndAdd(offset2, offset2, z, rz);
   return offset2;
 }
-function createVolumeSphereImpostor(ctx, volume, key2, theme, props, spheres2) {
+function createVolumeSphereImpostor(ctx, volume, key3, theme, props, spheres2) {
   const { cells: { space, data }, stats } = volume.grid;
   const gridToCartn = Grid.getGridToCartesianTransform(volume.grid);
   const isoVal = Volume.IsoValue.toAbsolute(props.isoValue, stats).absoluteValue;
@@ -137397,7 +137397,7 @@ function createVolumeSphereImpostor(ctx, volume, key2, theme, props, spheres2) {
   s.setBoundingSphere(Volume.Isosurface.getBoundingSphere(volume, props.isoValue));
   return s;
 }
-function createVolumeSphereMesh(ctx, volume, key2, theme, props, mesh) {
+function createVolumeSphereMesh(ctx, volume, key3, theme, props, mesh) {
   const { detail, sizeFactor } = props;
   const { cells: { space, data }, stats } = volume.grid;
   const gridToCartn = Grid.getGridToCartesianTransform(volume.grid);
@@ -137455,7 +137455,7 @@ function VolumePointVisual(materialId) {
     geometryUtils: Points.Utils
   }, materialId);
 }
-function createVolumePoint(ctx, volume, key2, theme, props, points3) {
+function createVolumePoint(ctx, volume, key3, theme, props, points3) {
   const { cells: { space, data }, stats } = volume.grid;
   const gridToCartn = Grid.getGridToCartesianTransform(volume.grid);
   const isoVal = Volume.IsoValue.toAbsolute(props.isoValue, stats).absoluteValue;
@@ -137493,7 +137493,7 @@ function getLoci5(volume, props) {
   const instances = Interval.ofLength(volume.instances.length);
   return Volume.Isosurface.Loci(volume, props.isoValue, instances);
 }
-function getDotLoci(pickingId, volume, key2, props, id) {
+function getDotLoci(pickingId, volume, key3, props, id) {
   const { objectId, groupId, instanceId } = pickingId;
   if (id === objectId) {
     const granularity = Volume.PickingGranularity.get(volume);
@@ -137509,7 +137509,7 @@ function getDotLoci(pickingId, volume, key2, props, id) {
   }
   return EmptyLoci;
 }
-function eachDot(loci, volume, key2, props, apply) {
+function eachDot(loci, volume, key3, props, apply) {
   return eachVolumeLoci(loci, volume, { isoValue: props.isoValue }, apply);
 }
 var DotVisuals = {
@@ -137813,8 +137813,8 @@ var TaskManager = class {
 
 // node_modules/molstar/lib/mol-plugin/util/toast.js
 var PluginToastManager = class extends StatefulPluginComponent {
-  findByKey(key2) {
-    return this.state.entries.find((e) => !!e && e.key === key2);
+  findByKey(key3) {
+    return this.state.entries.find((e) => !!e && e.key === key3);
   }
   show(toast) {
     let entries3 = this.state.entries;
@@ -140306,13 +140306,13 @@ function createLocalUiModel(initial = {}, onSave) {
   values2.viewer_mode = normalizeViewerMode(values2.viewer_mode);
   const listeners = /* @__PURE__ */ new Map();
   return {
-    get: (key2) => values2[key2],
-    set(key2, value) {
-      if (key2 === "controls_mode") value = normalizeControlsMode(value);
-      if (key2 === "viewer_mode") value = normalizeViewerMode(value);
-      if (values2[key2] === value) return;
-      values2[key2] = value;
-      for (const listener of [...listeners.get(`change:${key2}`) || []]) listener();
+    get: (key3) => values2[key3],
+    set(key3, value) {
+      if (key3 === "controls_mode") value = normalizeControlsMode(value);
+      if (key3 === "viewer_mode") value = normalizeViewerMode(value);
+      if (values2[key3] === value) return;
+      values2[key3] = value;
+      for (const listener of [...listeners.get(`change:${key3}`) || []]) listener();
     },
     on(event, callback) {
       if (!listeners.has(event)) listeners.set(event, /* @__PURE__ */ new Set());
@@ -140460,12 +140460,12 @@ function makeSection(heading, rows) {
   h.className = "molsysviewer-help-section-title";
   h.textContent = heading;
   section.appendChild(h);
-  for (const [key2, desc] of rows) {
+  for (const [key3, desc] of rows) {
     const row3 = document.createElement("div");
     row3.className = "molsysviewer-help-row";
     const keyEl = document.createElement("span");
     keyEl.className = "molsysviewer-help-key";
-    keyEl.textContent = key2;
+    keyEl.textContent = key3;
     const descEl = document.createElement("span");
     descEl.className = "molsysviewer-help-desc";
     descEl.textContent = desc;
@@ -140650,8 +140650,8 @@ var ControlsVisibility = class {
       this.refresh();
     });
     listen(hotspot, "keydown", (event) => {
-      const key2 = event.key;
-      if (key2 !== "Enter" && key2 !== " ") return;
+      const key3 = event.key;
+      if (key3 !== "Enter" && key3 !== " ") return;
       event.preventDefault();
       event.stopPropagation();
       this.keyboardFocus = true;
@@ -142421,10 +142421,10 @@ ImagePass.prototype.render = async function(...args) {
 var Params = { ...Text.Params, ...Lines.Params };
 var textLayouts = /* @__PURE__ */ new WeakMap();
 function textShape(_ctx, data, props, previous) {
-  const key2 = JSON.stringify(props);
+  const key3 = JSON.stringify(props);
   let geometry = previous?.geometry;
   const layout = geometry && textLayouts.get(geometry);
-  if (geometry && layout?.text === data.text && layout.props === key2) {
+  if (geometry && layout?.text === data.text && layout.props === key3) {
     const centers = geometry.centerBuffer.ref.value;
     for (let offset4 = 0; offset4 < geometry.charCount * 12; offset4 += 3) {
       centers[offset4] = data.position[0];
@@ -142436,7 +142436,7 @@ function textShape(_ctx, data, props, previous) {
     const builder = TextBuilder.create(props, 32, 32, geometry);
     builder.add(data.text, data.position[0], data.position[1], data.position[2], 0, 1, 0);
     geometry = builder.getText();
-    textLayouts.set(geometry, { text: data.text, props: key2 });
+    textLayouts.set(geometry, { text: data.text, props: key3 });
   }
   return Shape.create(data.tag, data, geometry, () => Color(data.color), () => data.size, () => data.tag);
 }
@@ -143267,7 +143267,7 @@ var MeasurementHandlers = class {
       this.representativeAtoms = {
         ...this.representativeAtoms,
         ...Object.fromEntries(
-          Object.entries(options.representative_atoms).map(([key2, value]) => [key2, String(value ?? "").trim()])
+          Object.entries(options.representative_atoms).map(([key3, value]) => [key3, String(value ?? "").trim()])
         )
       };
     }
@@ -144848,25 +144848,25 @@ function expandToList(value, count4, cast, fallback) {
   }
   return Array(count4).fill(cast(value ?? fallback));
 }
-function normalizeCategoryKey(key2) {
-  if (key2 === void 0) return void 0;
-  return String(key2);
+function normalizeCategoryKey(key3) {
+  if (key3 === void 0) return void 0;
+  return String(key3);
 }
 function prepareColorLookup(keys3, fallback, colorTable) {
   if (colorTable) {
-    return (key2) => {
-      const normalized2 = normalizeCategoryKey(key2);
+    return (key3) => {
+      const normalized2 = normalizeCategoryKey(key3);
       return normalized2 !== void 0 ? colorTable[normalized2] ?? fallback : fallback;
     };
   }
   const paletteCount = DefaultLinkPalette.length;
   const colorByKey = /* @__PURE__ */ new Map();
-  keys3.forEach((key2, idx) => {
-    if (!colorByKey.has(key2)) {
-      colorByKey.set(key2, DefaultLinkPalette[idx % paletteCount]);
+  keys3.forEach((key3, idx) => {
+    if (!colorByKey.has(key3)) {
+      colorByKey.set(key3, DefaultLinkPalette[idx % paletteCount]);
     }
   });
-  return (key2) => key2 !== void 0 ? colorByKey.get(key2) ?? fallback : fallback;
+  return (key3) => key3 !== void 0 ? colorByKey.get(key3) ?? fallback : fallback;
 }
 function buildUnitLookup(structure) {
   const map4 = /* @__PURE__ */ new Map();
@@ -145381,8 +145381,8 @@ function collectTetraFaces(data) {
     const tetra = data.tetrahedra[i];
     for (const [a8, b8, c8] of combos) {
       const vertices2 = [tetra.vertices[a8], tetra.vertices[b8], tetra.vertices[c8]];
-      const key2 = faceKey(vertices2);
-      const entry = faceMap.get(key2);
+      const key3 = faceKey(vertices2);
+      const entry = faceMap.get(key3);
       if (entry) {
         entry.count += 1;
         if (entry.otherTetraIndex === void 0) entry.otherTetraIndex = i;
@@ -145393,7 +145393,7 @@ function collectTetraFaces(data) {
           vertexAtoms = [tetra.atomIndices[a8], tetra.atomIndices[b8], tetra.atomIndices[c8]];
           atomKey = vertexAtoms.slice().sort((x, y) => x - y).join(",");
         }
-        faceMap.set(key2, { tetraIndex: i, vertices: vertices2, count: 1, atomKey, vertexAtoms });
+        faceMap.set(key3, { tetraIndex: i, vertices: vertices2, count: 1, atomKey, vertexAtoms });
       }
     }
   }
@@ -145429,10 +145429,10 @@ function collectTetraEdges(faces) {
     for (const [i, j] of positions) {
       const p13 = face.vertices[i];
       const p24 = face.vertices[j];
-      const key2 = `${p13[0]},${p13[1]},${p13[2]}|${p24[0]},${p24[1]},${p24[2]}`;
+      const key3 = `${p13[0]},${p13[1]},${p13[2]}|${p24[0]},${p24[1]},${p24[2]}`;
       const revKey = `${p24[0]},${p24[1]},${p24[2]}|${p13[0]},${p13[1]},${p13[2]}`;
-      if (seen.has(key2) || seen.has(revKey)) continue;
-      seen.add(key2);
+      if (seen.has(key3) || seen.has(revKey)) continue;
+      seen.add(key3);
       const atoms2 = face.vertexAtoms ? [face.vertexAtoms[i], face.vertexAtoms[j]] : void 0;
       edges.push({ p1: p13, p2: p24, atoms: atoms2 });
     }
@@ -145527,8 +145527,8 @@ function getTetrahedraShape(_ctx, data, _props, shape) {
   const edgeLabel = (edge) => {
     if (edge?.atoms) {
       const [a8, b8] = edge.atoms;
-      const key2 = [a8, b8].slice().sort((x, y) => x - y).join(",");
-      const meta = data.edgeMeta?.get(key2);
+      const key3 = [a8, b8].slice().sort((x, y) => x - y).join(",");
+      const meta = data.edgeMeta?.get(key3);
       if (meta && meta.edge_id !== void 0 && meta.edge_id !== null) {
         return `Edge id ${meta.edge_id}: atoms ${a8}-${b8}`;
       }
@@ -145617,8 +145617,8 @@ function getTetrahedraShape(_ctx, data, _props, shape) {
   if (edgesEnabled) {
     for (let k = 0; k < edgeCount; k++) {
       groupAtoms[decorBase + k] = edgeList[k].atoms ? [...edgeList[k].atoms] : void 0;
-      const key2 = edgeList[k].atoms ? edgeList[k].atoms.slice().sort((x, y) => x - y).join(",") : void 0;
-      groupEntityRefs[decorBase + k] = key2 ? data.edgeMeta?.get(key2)?.entity_ref : void 0;
+      const key3 = edgeList[k].atoms ? edgeList[k].atoms.slice().sort((x, y) => x - y).join(",") : void 0;
+      groupEntityRefs[decorBase + k] = key3 ? data.edgeMeta?.get(key3)?.entity_ref : void 0;
     }
   }
   data.__groupAtoms = groupAtoms;
@@ -145788,8 +145788,8 @@ function prepareTetrahedraData(plugin, options) {
     faceMeta = /* @__PURE__ */ new Map();
     for (const entry of options.face_meta) {
       if (!entry || !Array.isArray(entry.atoms) || entry.atoms.length !== 3) continue;
-      const key2 = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
-      faceMeta.set(key2, {
+      const key3 = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
+      faceMeta.set(key3, {
         face_id: entry.face_id,
         permeability: entry.permeability,
         owner_id: entry.owner_id,
@@ -145804,8 +145804,8 @@ function prepareTetrahedraData(plugin, options) {
     edgeMeta = /* @__PURE__ */ new Map();
     for (const entry of options.edge_meta) {
       if (!entry || !Array.isArray(entry.atoms) || entry.atoms.length !== 2) continue;
-      const key2 = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
-      edgeMeta.set(key2, { edge_id: entry.edge_id, entity_ref: entry.entity_ref });
+      const key3 = entry.atoms.map(Number).slice().sort((x, y) => x - y).join(",");
+      edgeMeta.set(key3, { edge_id: entry.edge_id, entity_ref: entry.entity_ref });
     }
   }
   return {
@@ -146112,6 +146112,14 @@ var InteractionHandlers = class {
   async setSeries(message) {
     this.series.set(message.tag, message);
     await this.apply({ ...message, ...message.frames[this.frame], op: "set_interaction_frame" });
+  }
+  /** Portable Movie changes only rendering style; occurrences remain shared. */
+  async setMovieStyle(tag2, values2) {
+    const message = this.series.get(tag2);
+    if (!message) throw new Error(`Movie interaction series ${tag2} is missing.`);
+    const next = { ...message, style: { ...message.style, ...values2 } };
+    this.series.set(tag2, next);
+    await this.apply({ ...next, ...next.frames[this.frame], op: "set_interaction_frame" });
   }
   async apply(message) {
     if ((message.projection_revision ?? this.latestRevision) < this.latestRevision) return;
@@ -148125,22 +148133,22 @@ var StateHandlers = class {
     const resolvedRef = StateObjectRef.resolveRef(ref);
     if (!resolvedRef) return;
     if (!tag2) return;
-    const key2 = this.taggedKey(kind, tag2);
-    if (!this.tagIndex.has(key2)) this.tagIndex.set(key2, /* @__PURE__ */ new Set());
-    this.tagIndex.get(key2).add(resolvedRef);
-    if (!this.layerMeta.has(key2)) {
-      this.layerMeta.set(key2, { kind, meta: {} });
+    const key3 = this.taggedKey(kind, tag2);
+    if (!this.tagIndex.has(key3)) this.tagIndex.set(key3, /* @__PURE__ */ new Set());
+    this.tagIndex.get(key3).add(resolvedRef);
+    if (!this.layerMeta.has(key3)) {
+      this.layerMeta.set(key3, { kind, meta: {} });
       this.callbacks.notify({ event: "layer_ack", tag: tag2, kind, meta: {} });
     }
-    if (this.pendingLayerVisibility.has(key2)) {
-      const hide = this.pendingLayerVisibility.get(key2);
-      this.pendingLayerVisibility.delete(key2);
+    if (this.pendingLayerVisibility.has(key3)) {
+      const hide = this.pendingLayerVisibility.get(key3);
+      this.pendingLayerVisibility.delete(key3);
       setSubtreeVisibility(this.plugin.state.data, resolvedRef, hide);
     }
   }
   unregisterTaggedRef(ref, tag2, kind) {
-    const key2 = this.taggedKey(kind, tag2);
-    this.tagIndex.get(key2)?.delete(ref);
+    const key3 = this.taggedKey(kind, tag2);
+    this.tagIndex.get(key3)?.delete(ref);
   }
   registerShapeRef(ref, tag2) {
     this.registerTaggedRef(ref, tag2, "shape");
@@ -148160,12 +148168,12 @@ var StateHandlers = class {
    */
   findShapeOwner(sourceData) {
     if (sourceData === void 0 || sourceData === null) return null;
-    for (const [key2, refs] of this.tagIndex) {
+    for (const [key3, refs] of this.tagIndex) {
       for (const ref of refs) {
         const cells = this.plugin.state.data.select(StateSelection.Generators.byRef(ref).subtree());
         if (cells.some((cell) => cell.obj?.data?.sourceData === sourceData)) {
-          const separator = key2.indexOf("\0");
-          return { kind: key2.slice(0, separator), tag: key2.slice(separator + 1) };
+          const separator = key3.indexOf("\0");
+          return { kind: key3.slice(0, separator), tag: key3.slice(separator + 1) };
         }
       }
     }
@@ -148183,7 +148191,7 @@ var StateHandlers = class {
           if (!shape) continue;
           const data = shape.sourceData;
           const interaction = data?.interaction;
-          if (entityRef?.kind === "interaction" && (!interaction || ["analysis_name", "analysis_revision", "query_revision", "frame"].some((key2) => entityRef[key2] !== interaction[key2]))) continue;
+          if (entityRef?.kind === "interaction" && (!interaction || ["analysis_name", "analysis_revision", "query_revision", "frame"].some((key3) => entityRef[key3] !== interaction[key3]))) continue;
           if (!groups?.length) return Shape.Loci(shape);
           const valid = groups.map((group) => ({
             instance: group.instance,
@@ -149011,12 +149019,12 @@ var StateHandlers = class {
   }
   async deleteLayer(msg, retire) {
     const tag2 = msg.tag ?? "layer";
-    const key2 = this.taggedKey(msg.kind, tag2);
-    const refs = Array.from(this.tagIndex.get(key2) ?? []);
+    const key3 = this.taggedKey(msg.kind, tag2);
+    const refs = Array.from(this.tagIndex.get(key3) ?? []);
     retire?.();
     await Promise.all(refs.map((ref) => this.removeStateObject(ref)));
-    this.tagIndex.delete(key2);
-    this.layerMeta.delete(key2);
+    this.tagIndex.delete(key3);
+    this.layerMeta.delete(key3);
     this.callbacks.notify({ event: "layer_deleted", tag: tag2, kind: msg.kind });
   }
   async setLayerTag(msg) {
@@ -149080,11 +149088,11 @@ var StateHandlers = class {
   /** Params compared to decide whether only the color changed. */
   representationParamsFingerprint(params) {
     const rest2 = {};
-    for (const [key2, value] of Object.entries(params ?? {})) {
-      if (key2 === "color_scheme" || key2 === "molstar_color_theme") continue;
-      rest2[key2] = value;
+    for (const [key3, value] of Object.entries(params ?? {})) {
+      if (key3 === "color_scheme" || key3 === "molstar_color_theme") continue;
+      rest2[key3] = value;
     }
-    return JSON.stringify(Object.keys(rest2).sort().map((key2) => [key2, rest2[key2]]));
+    return JSON.stringify(Object.keys(rest2).sort().map((key3) => [key3, rest2[key3]]));
   }
   /**
    * True when this message keeps the same representation, preset and params,
@@ -149531,21 +149539,21 @@ var StateHandlers = class {
   }
   async toggleLayerVisibility(tag2, hide, kind) {
     const layerTag = tag2 ?? "layer";
-    const key2 = this.taggedKey(kind, layerTag);
-    const managedKind = this.layerMeta.get(key2)?.kind ?? kind;
+    const key3 = this.taggedKey(kind, layerTag);
+    const managedKind = this.layerMeta.get(key3)?.kind ?? kind;
     if ((managedKind === "annotation" || managedKind === "measurement") && this.callbacks.setManagedLayerVisibility) {
       const handled = await this.callbacks.setManagedLayerVisibility(layerTag, managedKind, !hide);
       if (handled) {
-        this.pendingLayerVisibility.delete(key2);
+        this.pendingLayerVisibility.delete(key3);
         return;
       }
     }
-    const refs = this.tagIndex.get(key2);
+    const refs = this.tagIndex.get(key3);
     if (!refs || refs.size === 0) {
-      this.pendingLayerVisibility.set(key2, hide);
+      this.pendingLayerVisibility.set(key3, hide);
       return;
     }
-    this.pendingLayerVisibility.delete(key2);
+    this.pendingLayerVisibility.delete(key3);
     refs.forEach((ref) => setSubtreeVisibility(this.plugin.state.data, ref, hide));
   }
   async ensureDefaultGlobalRepresentation() {
@@ -150409,7 +150417,7 @@ function record2(value) {
 }
 function validateMovieEnvironment(value) {
   const environment = record2(value);
-  if (Object.keys(environment).some((key2) => key2 !== "background" && key2 !== "lighting")) throw new Error("Unsupported scene environment.");
+  if (Object.keys(environment).some((key3) => key3 !== "background" && key3 !== "lighting")) throw new Error("Unsupported scene environment.");
   if ("background" in environment) {
     const background = record2(environment.background);
     if (Object.keys(background).length !== 1) throw new Error("Invalid scene background.");
@@ -150418,7 +150426,7 @@ function validateMovieEnvironment(value) {
   }
   if ("lighting" in environment) {
     const lighting = record2(environment.lighting);
-    if (!Object.keys(lighting).length || Object.keys(lighting).some((key2) => key2 !== "ambient" && key2 !== "diffuse")) {
+    if (!Object.keys(lighting).length || Object.keys(lighting).some((key3) => key3 !== "ambient" && key3 !== "diffuse")) {
       throw new Error("Invalid scene lighting.");
     }
     for (const value2 of Object.values(lighting)) appearanceValue(value2, "alpha");
@@ -150478,14 +150486,14 @@ function appearanceBaseline(scene, domain, tag2, property2) {
     if (property2 === "lighting" && (!value2 || Object.keys(value2).length !== 2 || !("ambient" in value2) || !("diffuse" in value2))) value2 = void 0;
     return value2 == null ? void 0 : appearanceValue(value2, property2);
   }
-  const collection = { region: "regions", shape: "shapes", interaction: "interactions", annotation: "annotations" };
-  const target = record2(domain === "whole" ? scene.whole : scene[collection[domain]]?.find((row3) => row3.tag === tag2));
+  const collection2 = { region: "regions", shape: "shapes", interaction: "interactions", annotation: "annotations" };
+  const target = record2(domain === "whole" ? scene.whole : scene[collection2[domain]]?.find((row3) => row3.tag === tag2));
   let value;
   if (domain === "whole" || domain === "region") {
     if (target.preset != null || !movieRepresentationTypes.includes(target.representation)) {
       throw new Error("Movie structural appearance requires an explicit simple baseline representation.");
     }
-    if (property2 === "color" && target.color_layer) {
+    if (property2 === "color" && target.color_layer && Object.keys(target.color_layer).length > 0) {
       throw new Error("Movie uniform colour requires no per-atom colour layer on its target.");
     }
     const params = record2(target.params ?? {});
@@ -150525,7 +150533,7 @@ function interpolateAppearance(a8, b8, fraction, property2) {
 // src/managers/movie-import-provenance.ts
 var domains = /* @__PURE__ */ new Set(["annotation", "interaction", "layer", "measurement", "region", "shape"]);
 function record3(value, fields) {
-  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length !== fields.length || fields.some((key2) => !Object.hasOwn(value, key2))) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length !== fields.length || fields.some((key3) => !Object.hasOwn(value, key3))) {
     throw new Error("Invalid Movie import provenance record.");
   }
   return value;
@@ -150601,8 +150609,8 @@ function validateMovieImportProvenance(value, destinationCount) {
     if (legacy && (!associations.has(JSON.stringify([sourceRef, targetRef])) || !target.source_identity || typeof target.source_identity !== "object" || Array.isArray(target.source_identity) || Object.keys(target.source_identity).length !== 0)) {
       throw new Error("Legacy Movie association requires a declared target and unknown source identity.");
     }
-    for (const key2 of ["source_identity", "target_identity"]) {
-      const identity3 = target[key2];
+    for (const key3 of ["source_identity", "target_identity"]) {
+      const identity3 = target[key3];
       if (!identity3 || typeof identity3 !== "object" || Array.isArray(identity3) || Object.entries(identity3).some(([field2, value2]) => !["uid", "definition_sha256", "analysis_name", "analysis_revision", "op"].includes(field2) || value2 !== null && typeof value2 !== "string")) throw new Error("Invalid Movie import identity.");
       const definition = identity3.definition_sha256;
       if (definition != null) digest(definition);
@@ -150683,9 +150691,9 @@ function camera(value) {
 }
 function checkCartesianSegments(baseline, keys3) {
   let previous = baseline;
-  for (const key2 of keys3) {
-    const current2 = key2.value;
-    if (key2.time === 0) {
+  for (const key3 of keys3) {
+    const current2 = key3.value;
+    if (key3.time === 0) {
       previous = current2;
       continue;
     }
@@ -150769,19 +150777,19 @@ function keys2(value, duration, read, continuous = false) {
   if (!Array.isArray(value) || !value.length) throw new Error("A Movie track requires at least one key.");
   const result2 = [];
   for (const item2 of value) {
-    const key2 = record4(item2, "Movie key");
-    if (Object.keys(key2).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
+    const key3 = record4(item2, "Movie key");
+    if (Object.keys(key3).some((field2) => field2 !== "time_ms" && field2 !== "value" && field2 !== "easing")) {
       throw new Error("Movie keys accept time_ms, value and optional easing.");
     }
-    const at = time(key2.time_ms, duration);
+    const at = time(key3.time_ms, duration);
     if (result2.length && at <= result2[result2.length - 1].time) {
       throw new Error("Movie keys in one track must be strictly increasing.");
     }
-    const easing = owns(key2, "easing") ? key2.easing : "linear";
+    const easing = owns(key3, "easing") ? key3.easing : "linear";
     if (easing !== "linear" && (!continuous || easing !== "ease-in" && easing !== "ease-out" && easing !== "ease-in-out")) {
       throw new Error("Only continuous Movie properties admit a non-linear easing.");
     }
-    result2.push({ time: at, value: read(key2.value), easing });
+    result2.push({ time: at, value: read(key3.value), easing });
   }
   return result2;
 }
@@ -150857,7 +150865,7 @@ function compileMovieTimeline(value, { trackedVisibility = false } = {}) {
       "Movie source binding",
       ["n_atoms", "n_structures", "fingerprint"]
     );
-    if (Object.keys(binding).some((key2) => binding[key2] !== source[key2])) {
+    if (Object.keys(binding).some((key3) => binding[key3] !== source[key3])) {
       throw new Error("Movie baseline source records do not match its molecular binding.");
     }
   }
@@ -151812,7 +151820,7 @@ var ViewerContextMenu = class {
     if (["inspect_picked_interaction", "select_picked_interaction", "focus_picked_interaction"].includes(action)) {
       const target = this.currentTarget;
       const identity3 = target?.kind === "interaction" ? target.entity_ref : void 0;
-      const valid = !!identity3 && ["frame", "query_offset", "occurrence_index"].every((key2) => Number.isSafeInteger(identity3[key2]) && Number(identity3[key2]) >= 0) && ["analysis_name", "analysis_revision", "query_revision"].every((key2) => typeof identity3[key2] === "string" && !!identity3[key2]);
+      const valid = !!identity3 && ["frame", "query_offset", "occurrence_index"].every((key3) => Number.isSafeInteger(identity3[key3]) && Number(identity3[key3]) >= 0) && ["analysis_name", "analysis_revision", "query_revision"].every((key3) => typeof identity3[key3] === "string" && !!identity3[key3]);
       if (!valid) {
         button2.disabled = true;
         button2.setAttribute("aria-disabled", "true");
@@ -153479,7 +153487,7 @@ var TrajectoryPlotOverlay = class {
   }
   clear(tag2) {
     if (!tag2) {
-      for (const key2 of Array.from(this.entries.keys())) this.clear(key2);
+      for (const key3 of Array.from(this.entries.keys())) this.clear(key3);
       return;
     }
     const entry = this.entries.get(tag2);
@@ -154133,9 +154141,9 @@ function lociToGroupItems(rawLoci, restrictToAtomIndices) {
       const groupIndex = residueIndexByAtom[atomIndex];
       const chainIndex2 = chainIndexByAtom[atomIndex];
       const entityIndex2 = modelIndex.getEntityFromChain(chainIndex2);
-      const key2 = `${model.id}:${chainIndex2}:${groupIndex}`;
-      if (seen.has(key2)) continue;
-      seen.add(key2);
+      const key3 = `${model.id}:${chainIndex2}:${groupIndex}`;
+      if (seen.has(key3)) continue;
+      seen.add(key3);
       const atomIndices = [];
       for (let j = residueOffsets[groupIndex], jl = residueOffsets[groupIndex + 1]; j < jl; j++) {
         const source = sourceAtomIndex(model, j);
@@ -154417,8 +154425,8 @@ var ActiveSelectionController = class {
     const next = [...this.items];
     const indexByKey = new Map(next.map((item2, index) => [signature(item2), index]));
     for (const item2 of items) {
-      const key2 = signature(item2);
-      const existingIndex = indexByKey.get(key2);
+      const key3 = signature(item2);
+      const existingIndex = indexByKey.get(key3);
       if (existingIndex !== void 0) {
         if (item2.source_kind === "element" && !isRange2) {
           next.splice(existingIndex, 1);
@@ -154428,7 +154436,7 @@ var ActiveSelectionController = class {
         continue;
       }
       next.push(item2);
-      indexByKey.set(key2, next.length - 1);
+      indexByKey.set(key3, next.length - 1);
     }
     this.applyItems(next);
   }
@@ -154472,9 +154480,9 @@ var ActiveSelectionController = class {
 };
 
 // src/ui/panels/ui-helpers.ts
-function workflowHelp(key2, tips) {
+function workflowHelp(key3, tips) {
   const details = document.createElement("details");
-  details.setAttribute("data-molsysviewer-workflow-help", key2);
+  details.setAttribute("data-molsysviewer-workflow-help", key3);
   const summary = document.createElement("summary");
   summary.textContent = "Examples and tips";
   Object.assign(summary.style, { cursor: "pointer", fontSize: "11px", padding: "4px 0" });
@@ -154878,8 +154886,8 @@ var PanelDisclosures = class {
   capture() {
     if (!this.host?.querySelectorAll) return;
     for (const item2 of this.host.querySelectorAll("details[data-molsysviewer-disclosure]")) {
-      const key2 = item2.dataset.molsysviewerDisclosure;
-      if (this.states.has(key2) || item2.open !== this.mounted.get(key2)) this.states.set(key2, item2.open);
+      const key3 = item2.dataset.molsysviewerDisclosure;
+      if (this.states.has(key3) || item2.open !== this.mounted.get(key3)) this.states.set(key3, item2.open);
     }
   }
   mount(host, defaultOpen) {
@@ -154910,9 +154918,9 @@ var PanelDisclosures = class {
     }
   }
 };
-function advancedFields(key2, ...children) {
+function advancedFields(key3, ...children) {
   const details = document.createElement("details");
-  details.setAttribute("data-molsysviewer-disclosure", key2);
+  details.setAttribute("data-molsysviewer-disclosure", key3);
   const summary = document.createElement("summary");
   summary.textContent = "Advanced options";
   Object.assign(summary.style, { fontSize: "11px", cursor: "pointer", padding: "5px 0" });
@@ -154926,7 +154934,7 @@ var EditorDrafts = class {
     this.values = /* @__PURE__ */ new Map();
   }
   pruneTargets(current2) {
-    for (const [key2, value] of this.values) if (!current2.has(value.tag)) this.values.delete(key2);
+    for (const [key3, value] of this.values) if (!current2.has(value.tag)) this.values.delete(key3);
   }
   mount(host) {
     if (typeof host.querySelectorAll !== "function") return;
@@ -154935,15 +154943,15 @@ var EditorDrafts = class {
       if (field2.type !== "text" && field2.tagName !== "TEXTAREA") continue;
       const attr = Array.from(field2.attributes).find((item2) => item2.name.startsWith("data-molsysviewer-") && /-(rename(?:-input)?|layer(?:-input)?)$/.test(item2.name));
       if (!attr) continue;
-      const key2 = `${attr.name}:${attr.value}`;
-      current2.add(key2);
+      const key3 = `${attr.name}:${attr.value}`;
+      current2.add(key3);
       const canonical = field2.value;
-      const saved = this.values.get(key2);
+      const saved = this.values.get(key3);
       if (saved?.canonical === canonical) field2.value = saved.draft;
-      else this.values.delete(key2);
-      field2.addEventListener("input", () => this.values.set(key2, { tag: attr.value, canonical, draft: field2.value }));
+      else this.values.delete(key3);
+      field2.addEventListener("input", () => this.values.set(key3, { tag: attr.value, canonical, draft: field2.value }));
     }
-    for (const key2 of this.values.keys()) if (!current2.has(key2)) this.values.delete(key2);
+    for (const key3 of this.values.keys()) if (!current2.has(key3)) this.values.delete(key3);
   }
 };
 
@@ -155916,7 +155924,7 @@ var MoviePanel = class extends BasePanel {
     button2.disabled = !this.hasAuthority || !enabled;
     return button2;
   }
-  field(label2, key2, value, change, type3 = "text", disabled = false) {
+  field(label2, key3, value, change, type3 = "text", disabled = false) {
     const row3 = document.createElement("label");
     row3.textContent = label2;
     Object.assign(row3.style, { display: "flex", flexDirection: "column", gap: "4px", fontSize: "11px" });
@@ -155924,7 +155932,7 @@ var MoviePanel = class extends BasePanel {
     input.type = type3;
     input.value = value;
     input.disabled = disabled;
-    input.setAttribute(`data-molsysviewer-movie-${key2}`, "true");
+    input.setAttribute(`data-molsysviewer-movie-${key3}`, "true");
     Object.assign(input.style, {
       width: "100%",
       minWidth: "0",
@@ -156015,7 +156023,7 @@ var MoviePanel = class extends BasePanel {
   }
   updateProgress() {
     const el = this.host?.querySelector("[data-molsysviewer-movie-progress]");
-    if (el) el.textContent = this.state?.progress ? `Exporting frame ${this.state.progress.frames_written} of ${this.state.progress.total_frames}` : this.state?.busy === "movie_play" ? "Preview is running. Pause to inspect the last drawn moment." : "Waiting for the operation to finish\u2026";
+    if (el) el.textContent = this.state?.progress ? this.state.progress.format === "html" ? "Saving offline presentation\u2026" : `Exporting frame ${this.state.progress.frames_written} of ${this.state.progress.total_frames}` : this.state?.busy === "movie_play" ? "Preview is running. Pause to inspect the last drawn moment." : "Waiting for the operation to finish\u2026";
   }
   get editable() {
     return !!this.state && !this.state.busy && this.pending === null && !this.staleDraft;
@@ -156191,19 +156199,19 @@ var MoviePanel = class extends BasePanel {
     }, this.editable && (this.property !== "pose" || !!this.state?.live_available)));
     if (this.track) {
       form.appendChild(makeSectionHeader("Saved keys"));
-      for (const key2 of this.track.keys) {
+      for (const key3 of this.track.keys) {
         const row3 = document.createElement("div");
-        row3.appendChild(this.button(`Edit ${(key2.time_ms / 1e3).toFixed(3)} s`, () => {
+        row3.appendChild(this.button(`Edit ${(key3.time_ms / 1e3).toFixed(3)} s`, () => {
           this.markDraft();
-          this.at = String(key2.time_ms / 1e3);
-          this.easing = key2.easing ?? "linear";
+          this.at = String(key3.time_ms / 1e3);
+          this.easing = key3.easing ?? "linear";
           this.replace = true;
-          this.shown = !!key2.value;
-          this.value = ["color", "background"].includes(this.property) ? `#${Number(key2.value).toString(16).padStart(6, "0")}` : this.property === "lighting" ? String(key2.value.ambient) : String(key2.value);
-          if (this.property === "lighting") this.secondValue = String(key2.value.diffuse);
+          this.shown = !!key3.value;
+          this.value = ["color", "background"].includes(this.property) ? `#${Number(key3.value).toString(16).padStart(6, "0")}` : this.property === "lighting" ? String(key3.value.ambient) : String(key3.value);
+          if (this.property === "lighting") this.secondValue = String(key3.value.diffuse);
           this.scheduleRender();
         }));
-        if (this.track.n_keys > 1) row3.appendChild(this.button("Remove key", () => this.submit("movie_remove_key", { tag: this.selected, time_ms: key2.time_ms }), this.editable));
+        if (this.track.n_keys > 1) row3.appendChild(this.button("Remove key", () => this.submit("movie_remove_key", { tag: this.selected, time_ms: key3.time_ms }), this.editable));
         form.appendChild(row3);
       }
       if (this.keyOffset > 0) form.appendChild(this.button("Previous keys", () => {
@@ -156265,7 +156273,7 @@ var MoviePanel = class extends BasePanel {
   }
   export() {
     const root = card3();
-    root.appendChild(this.field("Output path in Python session (.mp4, .webm or .zip)", "path", this.path, (value) => {
+    root.appendChild(this.field("Output path in Python session (.mp4, .webm, .zip or .html)", "path", this.path, (value) => {
       this.path = value;
     }));
     root.appendChild(this.field("Frames per second", "fps", this.fps, (value) => {
@@ -156284,6 +156292,7 @@ var MoviePanel = class extends BasePanel {
       this.includeOverlays = value;
     }));
     root.appendChild(note("Native labels are included. Visible plot/legend composition is not yet available: hide those overlays or explicitly exclude them. Output is written in the Python session, including when that session runs remotely."));
+    root.appendChild(note("HTML is an offline interactive presentation with Play, Pause and Seek. It uses the same recipe without a Python session; frame rate and image sampling do not apply. Static regions are required."));
     root.appendChild(this.button("Export Movie", () => this.submit("movie_export", {
       path: this.path,
       fps: this.fps,
@@ -157991,15 +158000,15 @@ var RegionsPanel = class extends BasePanel {
     }
     const center2 = details.center_nm.map((value) => Number(value).toFixed(3)).join(", ");
     panel.setAttribute("data-molsysviewer-region-inspect-frame", String(details.structure_index));
-    for (const [key2, value] of [
+    for (const [key3, value] of [
       ["atoms", String(details.atom_count)],
       ["groups", String(details.group_count)],
       ["chains", String(details.chain_count)],
       ["frame", String(details.structure_index)]
     ]) {
       const metric = document.createElement("div");
-      metric.setAttribute("data-molsysviewer-region-inspect-metric", key2);
-      metric.textContent = `${key2}: ${value}`;
+      metric.setAttribute("data-molsysviewer-region-inspect-metric", key3);
+      metric.textContent = `${key3}: ${value}`;
       panel.appendChild(metric);
     }
     const centerRow = document.createElement("div");
@@ -158884,13 +158893,13 @@ var SelectionPanel = class _SelectionPanel extends BasePanel {
   handleSelectionPanelKeydown(event) {
     if (!(event.ctrlKey || event.metaKey)) return;
     if (this.isEditableTarget(event.target)) return;
-    const key2 = event.key.toLowerCase();
-    if (key2 === "z" && !event.shiftKey) {
+    const key3 = event.key.toLowerCase();
+    if (key3 === "z" && !event.shiftKey) {
       if (!this.selectionCanUndo) return;
       event.preventDefault();
       event.stopPropagation();
       this.ctx.onAction("undo_active_selection");
-    } else if (key2 === "y" || key2 === "z" && event.shiftKey) {
+    } else if (key3 === "y" || key3 === "z" && event.shiftKey) {
       if (!this.selectionCanRedo) return;
       event.preventDefault();
       event.stopPropagation();
@@ -159684,11 +159693,11 @@ var GroupStrip = class {
     const atomIndices = Array.isArray(msg.options?.atom_indices) ? msg.options.atom_indices : [];
     const tag2 = msg.tag ?? msg.options?.tag ?? "annotation";
     if (!text2 || atomIndices.length === 0 || this.groupItems.length === 0) return;
-    const key2 = this.findSelectionKeyFromAtomIndices(atomIndices);
-    if (!key2) return;
-    const records = this.annotationRecords.get(key2) ?? [];
+    const key3 = this.findSelectionKeyFromAtomIndices(atomIndices);
+    if (!key3) return;
+    const records = this.annotationRecords.get(key3) ?? [];
     records.push({ tag: tag2, text: text2 });
-    this.annotationRecords.set(key2, records);
+    this.annotationRecords.set(key3, records);
     this.render();
   }
   clearAnnotationOverlays() {
@@ -159702,27 +159711,27 @@ var GroupStrip = class {
       return;
     }
     let changed = false;
-    for (const [key2, records] of this.annotationRecords.entries()) {
+    for (const [key3, records] of this.annotationRecords.entries()) {
       const next = records.filter((record6) => record6.tag !== tag2);
       if (next.length === records.length) continue;
       changed = true;
       if (next.length === 0) {
-        this.annotationRecords.delete(key2);
+        this.annotationRecords.delete(key3);
       } else {
-        this.annotationRecords.set(key2, next);
+        this.annotationRecords.set(key3, next);
       }
     }
     if (changed) this.render();
   }
   retagAnnotationOverlays(oldTag, newTag) {
     let changed = false;
-    for (const [key2, records] of this.annotationRecords.entries()) {
+    for (const [key3, records] of this.annotationRecords.entries()) {
       const next = records.map((record6) => {
         if (record6.tag !== oldTag) return record6;
         changed = true;
         return { ...record6, tag: newTag };
       });
-      this.annotationRecords.set(key2, next);
+      this.annotationRecords.set(key3, next);
     }
     if (changed) this.render();
   }
@@ -159909,14 +159918,14 @@ var GroupStrip = class {
           continue;
         }
         for (const item2 of items) {
-          const key2 = selectionKey(item2);
+          const key3 = selectionKey(item2);
           const button2 = document.createElement("button");
           button2.type = "button";
           button2.setAttribute("data-molsysviewer-group-item", "true");
           button2.setAttribute("data-chain-name", item2.chain_name ?? "");
           button2.setAttribute("data-group-name", item2.group_name ?? "");
-          const selected = this.selectedElementKeys.has(key2);
-          const contextSelected = this.currentContextTarget?.kind === "structure" && Array.isArray(this.currentContextTarget.atom_indices) && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key2;
+          const selected = this.selectedElementKeys.has(key3);
+          const contextSelected = this.currentContextTarget?.kind === "structure" && Array.isArray(this.currentContextTarget.atom_indices) && this.findSelectionKeyFromAtomIndices(this.currentContextTarget.atom_indices) === key3;
           const firstAtomIndex = item2.atom_indices[0];
           const customColorInt = firstAtomIndex !== void 0 ? getPerAtomColor(firstAtomIndex) : void 0;
           let colorHex = null;
@@ -159947,11 +159956,11 @@ var GroupStrip = class {
           const text2 = document.createElement("span");
           text2.textContent = item2.group_name ?? `${item2.group_indices[0] ?? "?"}`;
           button2.appendChild(text2);
-          const annotationRecords = this.annotationRecords.get(key2) ?? [];
+          const annotationRecords = this.annotationRecords.get(key3) ?? [];
           if (annotationRecords.length > 0) {
             const badge = document.createElement("span");
             const primary = annotationRecords[0];
-            const annotationSelected = this.selectedAnnotationKeys.has(`${key2}:annotation:${primary.tag ?? ""}`);
+            const annotationSelected = this.selectedAnnotationKeys.has(`${key3}:annotation:${primary.tag ?? ""}`);
             const annotationContextSelected = this.currentContextTarget?.kind === "annotation" && this.currentContextTarget.tag === primary.tag;
             badge.textContent = annotationRecords.length > 1 ? ` ${annotationRecords.length}L` : " L";
             Object.assign(badge.style, {
@@ -160341,9 +160350,9 @@ var SystemPanel = class {
       ["Shift", "Add/toggle"],
       ["Shift+Alt", "Range"]
     ];
-    for (const [key2, label2] of entries3) {
+    for (const [key3, label2] of entries3) {
       const item2 = document.createElement("span");
-      item2.setAttribute("data-molsysviewer-selection-modifier-legend-item", key2);
+      item2.setAttribute("data-molsysviewer-selection-modifier-legend-item", key3);
       Object.assign(item2.style, {
         display: "inline-flex",
         alignItems: "center",
@@ -160359,7 +160368,7 @@ var SystemPanel = class {
         color: "rgba(244,244,245,0.82)",
         fontWeight: "700"
       });
-      keyEl.textContent = key2;
+      keyEl.textContent = key3;
       const labelEl = document.createElement("span");
       labelEl.textContent = label2;
       item2.appendChild(keyEl);
@@ -160700,18 +160709,18 @@ var SystemLoadControls = class {
     this.rows.forEach((row3, index) => {
       const card9 = makeSettingsCard(`Source ${index + 1}`);
       card9.setAttribute("data-molsysviewer-load-source", String(index));
-      const field2 = (parent, key2, label2) => {
+      const field2 = (parent, key3, label2) => {
         const wrap = document.createElement("label");
         wrap.textContent = label2;
         Object.assign(wrap.style, { display: "flex", flexDirection: "column", gap: "3px", minWidth: "0", flex: "1 1 auto" });
         const control = document.createElement("input");
         control.type = "text";
-        control.value = row3[key2];
-        control.setAttribute("data-molsysviewer-load-field", key2);
-        if (key2 === "source") this.sourceInputs.set(row3, control);
+        control.value = row3[key3];
+        control.setAttribute("data-molsysviewer-load-field", key3);
+        if (key3 === "source") this.sourceInputs.set(row3, control);
         Object.assign(control.style, { width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", color: "#f4f4f5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "4px", padding: "4px" });
         control.addEventListener("input", () => {
-          row3[key2] = control.value;
+          row3[key3] = control.value;
           this.refreshState();
         });
         wrap.appendChild(control);
@@ -161053,11 +161062,11 @@ var WholePanel = class {
     }
     if (contains) {
       const presentItems = [];
-      for (const [key2, val] of Object.entries(contains)) {
+      for (const [key3, val] of Object.entries(contains)) {
         if (val === true) {
-          presentItems.push(`1 ${key2}`);
+          presentItems.push(`1 ${key3}`);
         } else if (typeof val === "number" && val > 0) {
-          const label2 = val === 1 ? key2 : `${key2}s`;
+          const label2 = val === 1 ? key3 : `${key3}s`;
           presentItems.push(`${val} ${label2}`);
         }
       }
@@ -163347,7 +163356,7 @@ var AnnotationsPanel = class extends BasePanel {
 };
 
 // src/ui/panels/interaction-calculation-controls.ts
-var length = (key2, label2, required = false, allowZero = false) => ({ key: key2, label: label2, type: "length", required, allowZero });
+var length = (key3, label2, required = false, allowZero = false) => ({ key: key3, label: label2, type: "length", required, allowZero });
 var angle = (label2, required = false) => ({ key: "angle_threshold", label: label2, type: "angle", required });
 var distance = length("distance_threshold", "Distance cutoff");
 var offset3 = length("offset_threshold", "Lateral offset cutoff", false, true);
@@ -163525,20 +163534,20 @@ function calculationCriteria(kind) {
         help: `Geometric candidates; topology is unchanged. ${modern}`
       }];
     case "water_bridge":
-      return ["baker_hubbard", "wernet_nilsson", "elemental_fon", "smarts_donor_acceptor"].map((key2) => ({
-        key: key2,
-        label: `Water-path H-bonds \xB7 ${key2 === "baker_hubbard" ? "Baker\u2013Hubbard" : key2 === "wernet_nilsson" ? "Wernet\u2013Nilsson" : key2 === "elemental_fon" ? "donor\u2013acceptor, elemental F/O/N" : "donor\u2013acceptor, SMARTS"}`,
+      return ["baker_hubbard", "wernet_nilsson", "elemental_fon", "smarts_donor_acceptor"].map((key3) => ({
+        key: key3,
+        label: `Water-path H-bonds \xB7 ${key3 === "baker_hubbard" ? "Baker\u2013Hubbard" : key3 === "wernet_nilsson" ? "Wernet\u2013Nilsson" : key3 === "elemental_fon" ? "donor\u2013acceptor, elemental F/O/N" : "donor\u2013acceptor, SMARTS"}`,
         parameters: {
-          hbond_method: ["elemental_fon", "smarts_donor_acceptor"].includes(key2) ? "donor_acceptor_distance_angle" : key2,
-          ...["elemental_fon", "smarts_donor_acceptor"].includes(key2) ? { hbond_profile: key2 } : {}
+          hbond_method: ["elemental_fon", "smarts_donor_acceptor"].includes(key3) ? "donor_acceptor_distance_angle" : key3,
+          ...["elemental_fon", "smarts_donor_acceptor"].includes(key3) ? { hbond_profile: key3 } : {}
         },
         controls: [
           waterOrder,
           distance,
-          ...key2 === "wernet_nilsson" ? [] : [angle("Minimum donor\u2013H\u2013acceptor angle for each leg")]
+          ...key3 === "wernet_nilsson" ? [] : [angle("Minimum donor\u2013H\u2013acceptor angle for each leg")]
         ],
         chemistry: true,
-        help: `One occurrence retains every directed H-bond leg. ${key2 === "wernet_nilsson" ? "The leg criterion uses its distance\u2013angle curve. " : ""}${modern}`
+        help: `One occurrence retains every directed H-bond leg. ${key3 === "wernet_nilsson" ? "The leg criterion uses its distance\u2013angle curve. " : ""}${modern}`
       }));
     default:
       return [];
@@ -163546,7 +163555,7 @@ function calculationCriteria(kind) {
 }
 function initialCalculationCriterion(kind, defaults2 = {}) {
   const criteria = calculationCriteria(kind);
-  return (criteria.find((item2) => Object.entries(defaults2).every(([key2, value]) => item2.parameters[key2] === value)) ?? criteria[0])?.key ?? "";
+  return (criteria.find((item2) => Object.entries(defaults2).every(([key3, value]) => item2.parameters[key3] === value)) ?? criteria[0])?.key ?? "";
 }
 function finiteNumber(text2, label2) {
   const value = Number(text2);
@@ -163564,8 +163573,8 @@ function angleValue(text2, unit2, label2) {
   if (value < 0 || value > (unit2 === "degrees" ? 180 : Math.PI)) throw new Error(`${label2}: angle must be between 0 and 180 degrees.`);
   return value;
 }
-function scientificParameters(kind, key2, values2) {
-  const criterion = calculationCriteria(kind).find((item2) => item2.key === key2);
+function scientificParameters(kind, key3, values2) {
+  const criterion = calculationCriteria(kind).find((item2) => item2.key === key3);
   if (!criterion) throw new Error("Select an available interaction criterion.");
   const parameters = { ...criterion.parameters };
   for (const control of criterion.controls) {
@@ -163584,7 +163593,7 @@ function scientificParameters(kind, key2, values2) {
       if (control.type === "length" && (value < 0 || !control.allowZero && value === 0)) throw new Error(`${control.label}: enter a ${control.allowZero ? "nonnegative" : "positive"} length.`);
       parameters[control.key] = `${text2} ${unit2}`;
     } else if (control.type === "choice") {
-      if (!control.choices?.some(([key3]) => key3 === text2)) throw new Error(`${control.label}: select an available value.`);
+      if (!control.choices?.some(([key4]) => key4 === text2)) throw new Error(`${control.label}: select an available value.`);
       parameters[control.key] = control.key === "order" ? Number(text2) : text2;
     } else {
       const names = text2.split(",").map((name) => name.trim());
@@ -163599,8 +163608,8 @@ function changeScientificUnit(values2, control, next) {
   const allowed = control.type === "length" ? ["nm", "angstroms"] : ["degrees", "radians"];
   if (!allowed.includes(next)) throw new Error("Unsupported scientific control unit.");
   const scale = control.type === "length" ? previous === "nm" ? 10 : 0.1 : previous === "degrees" ? Math.PI / 180 : 180 / Math.PI;
-  if (previous !== next) for (const key2 of control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key]) {
-    if (values2[key2]?.trim() && Number.isFinite(Number(values2[key2]))) values2[key2] = String(Number(values2[key2]) * scale);
+  if (previous !== next) for (const key3 of control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key]) {
+    if (values2[key3]?.trim() && Number.isFinite(Number(values2[key3]))) values2[key3] = String(Number(values2[key3]) * scale);
   }
   values2[`${control.key}-unit`] = next;
 }
@@ -163633,14 +163642,14 @@ var note3 = (text2) => {
   Object.assign(el.style, { fontSize: "11px", color: "rgba(244,244,245,0.65)", overflowWrap: "anywhere" });
   return el;
 };
-function field(parent, label2, value, key2, change, type3 = "text", identity3) {
+function field(parent, label2, value, key3, change, type3 = "text", identity3) {
   const wrap = document.createElement("label");
   wrap.appendChild(note3(label2));
   const input = document.createElement("input");
   input.type = type3;
   input.value = value;
   if (identity3) input.setAttribute("data-molsysviewer-interaction-control", identity3);
-  input.setAttribute("data-molsysviewer-interaction-field", key2);
+  input.setAttribute("data-molsysviewer-interaction-field", key3);
   Object.assign(input.style, {
     width: "100%",
     boxSizing: "border-box",
@@ -163909,16 +163918,16 @@ var InteractionsPanel = class extends BasePanel {
     this.emit("inspect_interaction", { tag: tag2, frame: this.frame, offset: offset4, request_id: ++this.requestId });
   }
   criterion() {
-    const key2 = this.criteria.get(this.kind) ?? initialCalculationCriterion(
+    const key3 = this.criteria.get(this.kind) ?? initialCalculationCriterion(
       this.kind,
       this.families.find((item2) => item2.kind === this.kind)?.default_parameters
     );
-    return calculationCriteria(this.kind).find((item2) => item2.key === key2);
+    return calculationCriteria(this.kind).find((item2) => item2.key === key3);
   }
   scientificDraft() {
-    const key2 = `${this.kind}:${this.criterion()?.key}`;
-    if (!this.scientificDrafts.has(key2)) this.scientificDrafts.set(key2, {});
-    return this.scientificDrafts.get(key2);
+    const key3 = `${this.kind}:${this.criterion()?.key}`;
+    if (!this.scientificDrafts.has(key3)) this.scientificDrafts.set(key3, {});
+    return this.scientificDrafts.get(key3);
   }
   paintScientificControls(parent) {
     const criteria = calculationCriteria(this.kind), criterion = this.criterion();
@@ -163969,7 +163978,7 @@ var InteractionsPanel = class extends BasePanel {
         const unit2 = draft[`${control.key}-unit`] || (control.type === "length" ? "nm" : "degrees");
         const keys3 = control.type === "angle-range" ? [`${control.key}-min`, `${control.key}-max`] : [control.key];
         if (control.type === "angle-range") group.prepend(note3(control.label));
-        keys3.forEach((key2, index) => {
+        keys3.forEach((key3, index) => {
           const cell = document.createElement("div");
           cell.style.flex = "1";
           cell.style.minWidth = "0";
@@ -163977,11 +163986,11 @@ var InteractionsPanel = class extends BasePanel {
           const input = field(
             cell,
             control.type === "angle-range" ? index === 0 ? "Minimum" : "Maximum" : control.label,
-            draft[key2] || "",
-            `parameter-${key2}`,
-            (value) => draft[key2] = value,
+            draft[key3] || "",
+            `parameter-${key3}`,
+            (value) => draft[key3] = value,
             "number",
-            `${this.kind}:${criterion.key}:${key2}:${unit2}`
+            `${this.kind}:${criterion.key}:${key3}:${unit2}`
           );
           input.step = "any";
           input.min = "0";
@@ -165582,10 +165591,10 @@ var PanelShell = class {
       gridTemplateColumns: mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)"
     });
     this.workspaceMenuElement.replaceChildren();
-    const appendSection = (key2, label2) => {
+    const appendSection = (key3, label2) => {
       if (!mosaic) return;
       const section = document.createElement("div");
-      section.setAttribute("data-molsysviewer-panel-workspace-section", key2);
+      section.setAttribute("data-molsysviewer-panel-workspace-section", key3);
       section.textContent = label2;
       Object.assign(section.style, {
         gridColumn: "1 / -1",
@@ -166590,10 +166599,10 @@ var FloatingPanelShell = class {
       gridTemplateColumns: mosaic ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)"
     });
     this.workspaceMenuElement.replaceChildren();
-    const appendSection = (key2, label2) => {
+    const appendSection = (key3, label2) => {
       if (!mosaic) return;
       const section = document.createElement("div");
-      section.setAttribute("data-molsysviewer-panel-workspace-section", key2);
+      section.setAttribute("data-molsysviewer-panel-workspace-section", key3);
       section.textContent = label2;
       Object.assign(section.style, {
         gridColumn: "1 / -1",
@@ -166991,20 +167000,20 @@ var GroupPanel = class {
           const retained = parsed.filter((k) => defaultOrder.includes(k));
           tabOrder = [...retained, ...defaultOrder.filter((k) => !retained.includes(k))];
           if (this.hasAuthority && !parsed.includes("load")) {
-            tabOrder = tabOrder.filter((key2) => key2 !== "load");
+            tabOrder = tabOrder.filter((key3) => key3 !== "load");
             tabOrder.splice(Math.max(0, tabOrder.indexOf("system")), 0, "load");
           }
         }
       } catch (e) {
       }
     }
-    for (const key2 of tabOrder) {
-      const entry = registryMap.get(key2);
+    for (const key3 of tabOrder) {
+      const entry = registryMap.get(key3);
       if (entry) {
         const [title, badge, section, panel] = entry;
-        this.addTab(key2, title, badge);
+        this.addTab(key3, title, badge);
         panel.mount(section);
-        this.panels.set(key2, { section, panel });
+        this.panels.set(key3, { section, panel });
       }
     }
     this.compactNavigation = new CompactPanelNavigation(
@@ -167057,9 +167066,9 @@ var GroupPanel = class {
     notice.appendChild(link);
     return notice;
   }
-  createSection(key2) {
+  createSection(key3) {
     const section = document.createElement("div");
-    section.setAttribute("data-molsysviewer-group-panel-section", key2);
+    section.setAttribute("data-molsysviewer-group-panel-section", key3);
     Object.assign(section.style, {
       display: "none",
       flexDirection: "column",
@@ -167071,9 +167080,9 @@ var GroupPanel = class {
     this.rightColumn.appendChild(section);
     return section;
   }
-  addTab(key2, title, initialBadge) {
+  addTab(key3, title, initialBadge) {
     const button2 = document.createElement("button");
-    button2.setAttribute("data-molsysviewer-group-panel-tab", key2);
+    button2.setAttribute("data-molsysviewer-group-panel-tab", key3);
     const tooltips = {
       load: "Load molecular systems, combine complementary files, or add trajectory structures.",
       system: "Molecular hierarchy, chain sequence, and group-level selections.",
@@ -167089,7 +167098,7 @@ var GroupPanel = class {
       movie: "Author, preview and export a Movie from the current scene (experimental).",
       export: "Download PNG images and HTML views; save or restore scene states and experimental sessions."
     };
-    const tooltip = tooltips[key2];
+    const tooltip = tooltips[key3];
     if (tooltip) {
       button2.title = tooltip;
     }
@@ -167111,7 +167120,7 @@ var GroupPanel = class {
     button2.draggable = true;
     button2.addEventListener("dragstart", (e) => {
       if (e.dataTransfer) {
-        e.dataTransfer.setData("text/plain", key2);
+        e.dataTransfer.setData("text/plain", key3);
         e.dataTransfer.effectAllowed = "move";
       }
       button2.style.opacity = "0.4";
@@ -167147,32 +167156,32 @@ var GroupPanel = class {
       button2.style.borderTop = "0";
       button2.style.borderBottom = "0";
       const draggedKey = e.dataTransfer ? e.dataTransfer.getData("text/plain") : "";
-      if (!draggedKey || draggedKey === key2) return;
+      if (!draggedKey || draggedKey === key3) return;
       const order = this.getTabOrder();
       const draggedIdx = order.indexOf(draggedKey);
-      let targetIdx = order.indexOf(key2);
+      let targetIdx = order.indexOf(key3);
       if (draggedIdx === -1 || targetIdx === -1) return;
       order.splice(draggedIdx, 1);
       const rect = button2.getBoundingClientRect();
       const midpoint = rect.top + rect.height / 2;
       if (e.clientY >= midpoint) {
-        targetIdx = order.indexOf(key2);
+        targetIdx = order.indexOf(key3);
         order.splice(targetIdx + 1, 0, draggedKey);
       } else {
-        targetIdx = order.indexOf(key2);
+        targetIdx = order.indexOf(key3);
         order.splice(targetIdx, 0, draggedKey);
       }
       writeTabOrderStorage(order);
       this.reorderTabsDOM(order);
     });
     button2.addEventListener("mouseenter", () => {
-      if (this.activeTab !== key2) {
+      if (this.activeTab !== key3) {
         button2.style.background = "rgba(255,255,255,0.04)";
         button2.style.color = "rgba(244,244,245,0.9)";
       }
     });
     button2.addEventListener("mouseleave", () => {
-      if (this.activeTab !== key2) {
+      if (this.activeTab !== key3) {
         button2.style.background = "transparent";
         button2.style.color = "rgba(244,244,245,0.68)";
       }
@@ -167180,7 +167189,7 @@ var GroupPanel = class {
     button2.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.switchTab(key2);
+      this.switchTab(key3);
     });
     const titleDiv = document.createElement("div");
     Object.assign(titleDiv.style, {
@@ -167197,23 +167206,23 @@ var GroupPanel = class {
     button2.appendChild(titleDiv);
     button2.appendChild(badge);
     this.tabsContainer.appendChild(button2);
-    this.tabs.set(key2, { button: button2, badge });
+    this.tabs.set(key3, { button: button2, badge });
   }
   /** Open an existing Studio section without changing scene or selection. */
-  openSection(key2) {
-    if (!this.tabs.has(key2)) return false;
-    this.switchTab(key2);
+  openSection(key3) {
+    if (!this.tabs.has(key3)) return false;
+    this.switchTab(key3);
     if (this.compactNavigation?.select.style.display === "block") this.compactNavigation.select.focus();
-    else this.tabs.get(key2)?.button.focus();
+    else this.tabs.get(key3)?.button.focus();
     return true;
   }
-  switchTab(key2, explicit = true) {
+  switchTab(key3, explicit = true) {
     if (explicit) this.navigationChosen = true;
-    this.activeTab = key2;
-    if (this.compactNavigation) this.compactNavigation.select.value = key2;
+    this.activeTab = key3;
+    if (this.compactNavigation) this.compactNavigation.select.value = key3;
     for (const [tabKey, { button: button2, badge }] of this.tabs.entries()) {
-      button2.setAttribute("aria-current", tabKey === key2 ? "page" : "false");
-      if (tabKey === key2) {
+      button2.setAttribute("aria-current", tabKey === key3 ? "page" : "false");
+      if (tabKey === key3) {
         Object.assign(button2.style, {
           background: "rgba(255,255,255,0.08)",
           color: "#f4f4f5",
@@ -167232,12 +167241,12 @@ var GroupPanel = class {
       }
     }
     for (const [tabKey, entry] of this.panels.entries()) {
-      const isActive = tabKey === key2;
+      const isActive = tabKey === key3;
       entry.section.style.display = isActive ? "flex" : "none";
       entry.panel.setVisible(isActive);
     }
-    this.settingsSection.style.display = key2 === "settings" ? "flex" : "none";
-    if (key2 === "settings") {
+    this.settingsSection.style.display = key3 === "settings" ? "flex" : "none";
+    if (key3 === "settings") {
       this.renderSettingsSection();
     }
   }
@@ -167385,7 +167394,7 @@ var GroupPanel = class {
     this.layersPanel.setLayers(items);
   }
   /** Build the narrow context injected into a migrated subpanel. */
-  makePanelContext(key2) {
+  makePanelContext(key3) {
     return {
       onAction: (action, details) => {
         if (!this.hasAuthority && action !== "download_image" && action !== "reset_view") {
@@ -167409,7 +167418,7 @@ var GroupPanel = class {
         this.onAction?.(action, details);
       },
       setBadge: (text2) => {
-        const badge = this.tabs.get(key2)?.badge;
+        const badge = this.tabs.get(key3)?.badge;
         if (badge) badge.textContent = text2;
       }
     };
@@ -167610,16 +167619,16 @@ var GroupPanel = class {
     const order = [];
     for (let i = 0; i < this.tabsContainer.children.length; i++) {
       const child = this.tabsContainer.children[i];
-      const key2 = child.getAttribute("data-molsysviewer-group-panel-tab");
-      if (key2) {
-        order.push(key2);
+      const key3 = child.getAttribute("data-molsysviewer-group-panel-tab");
+      if (key3) {
+        order.push(key3);
       }
     }
     return order;
   }
   reorderTabsDOM(order) {
-    for (const key2 of order) {
-      const tab = this.tabs.get(key2);
+    for (const key3 of order) {
+      const tab = this.tabs.get(key3);
       if (tab) {
         this.tabsContainer.appendChild(tab.button);
       }
@@ -168705,14 +168714,14 @@ var AddonsPanel = class {
   }
   // ── Operation / Section Visibility Filter (Nivel 3) ──────────────
   applySectionVisibilityFilter() {
-    const key2 = this.activeSectionKey;
-    if (!key2) return;
+    const key3 = this.activeSectionKey;
+    if (!key3) return;
     const sections = this.addonsWidgetHost.querySelectorAll("[data-molsysviewer-addon-section]");
     if (sections.length === 0) return;
     for (let i = 0; i < sections.length; i++) {
       const el = sections[i];
       const secKey = el.getAttribute("data-molsysviewer-addon-section");
-      if (secKey === key2) {
+      if (secKey === key3) {
         el.style.display = "";
       } else {
         el.style.display = "none";
@@ -169108,14 +169117,14 @@ function registerInteractionObservers(plugin, notify, openContextMenu, onPrimary
       }
       if (!notify) return;
       const payload = normalizeInteractionEvent("hover", ev);
-      let key2;
+      let key3;
       try {
-        key2 = JSON.stringify(payload);
+        key3 = JSON.stringify(payload);
       } catch {
-        key2 = "";
+        key3 = "";
       }
-      if (key2 !== "" && key2 === lastHoverKey) return;
-      lastHoverKey = key2;
+      if (key3 !== "" && key3 === lastHoverKey) return;
+      lastHoverKey = key3;
       notify(payload);
     });
   }
@@ -170869,14 +170878,14 @@ var MolSysViewerController = class _MolSysViewerController {
       return;
     }
     const item2 = items[0];
-    const key2 = `${item2.chain_indices.join(",")}:${item2.group_indices.join(",")}`;
+    const key3 = `${item2.chain_indices.join(",")}:${item2.group_indices.join(",")}`;
     const time2 = Date.now();
-    if (this.lastPrimaryGroupClick && this.lastPrimaryGroupClick.key === key2 && time2 - this.lastPrimaryGroupClick.time <= 400) {
+    if (this.lastPrimaryGroupClick && this.lastPrimaryGroupClick.key === key3 && time2 - this.lastPrimaryGroupClick.time <= 400) {
       this.lastPrimaryGroupClick = null;
       this.focusTarget({ atom_indices: item2.atom_indices });
       return;
     }
-    this.lastPrimaryGroupClick = { key: key2, time: time2 };
+    this.lastPrimaryGroupClick = { key: key3, time: time2 };
   }
   atomIndicesToLoci(atomIndices) {
     const structure = this.getStructureData();
@@ -171720,9 +171729,9 @@ var MolSysViewerController = class _MolSysViewerController {
               if (event === "msg:custom") {
                 msgListeners.push(cb2);
               } else if (event.startsWith("change:")) {
-                const key2 = event.split(":")[1];
-                if (key2) {
-                  (changeListeners[key2] || (changeListeners[key2] = [])).push(cb2);
+                const key3 = event.split(":")[1];
+                if (key3) {
+                  (changeListeners[key3] || (changeListeners[key3] = [])).push(cb2);
                 }
               } else if (event.startsWith("viewer:")) {
                 const viewerEvent = event.split(":")[1];
@@ -171736,10 +171745,10 @@ var MolSysViewerController = class _MolSysViewerController {
                 const idx = msgListeners.indexOf(cb2);
                 if (idx >= 0) msgListeners.splice(idx, 1);
               } else if (event.startsWith("change:")) {
-                const key2 = event.split(":")[1];
-                if (key2 && changeListeners[key2]) {
-                  const idx = changeListeners[key2].indexOf(cb2);
-                  if (idx >= 0) changeListeners[key2].splice(idx, 1);
+                const key3 = event.split(":")[1];
+                if (key3 && changeListeners[key3]) {
+                  const idx = changeListeners[key3].indexOf(cb2);
+                  if (idx >= 0) changeListeners[key3].splice(idx, 1);
                 }
               } else if (event.startsWith("viewer:")) {
                 const viewerEvent = event.split(":")[1];
@@ -171748,13 +171757,13 @@ var MolSysViewerController = class _MolSysViewerController {
                 }
               }
             },
-            get: (key2) => {
+            get: (key3) => {
               if (this.model) {
                 const states = this.model.get("addon_states") || {};
                 const addonState = states[mAddon] || {};
-                return addonState[key2];
+                return addonState[key3];
               }
-              return addonStateLocal[key2];
+              return addonStateLocal[key3];
             },
             set: (keyOrObj, val) => {
               if ((this.systemSyncState ?? "synchronized") !== "synchronized") return;
@@ -171799,11 +171808,11 @@ var MolSysViewerController = class _MolSysViewerController {
             onModelChange = () => {
               const states = this.model.get("addon_states") || {};
               const addonState = states[mAddon] || {};
-              for (const key2 of Object.keys(changeListeners)) {
-                const v4 = addonState[key2];
-                if (addonStateLocal[key2] !== v4) {
-                  addonStateLocal[key2] = v4;
-                  for (const cb2 of changeListeners[key2]) {
+              for (const key3 of Object.keys(changeListeners)) {
+                const v4 = addonState[key3];
+                if (addonStateLocal[key3] !== v4) {
+                  addonStateLocal[key3] = v4;
+                  for (const cb2 of changeListeners[key3]) {
                     try {
                       cb2(panelModel, v4);
                     } catch (e) {
@@ -173412,26 +173421,26 @@ var VisualStateCaptureRequests = class {
     this.closed = false;
   }
   reserve(message) {
-    const key2 = captureKey(message);
-    if (!key2 || this.closed || this.pending.has(key2) || this.retired.has(key2)) return null;
+    const key3 = captureKey(message);
+    if (!key3 || this.closed || this.pending.has(key3) || this.retired.has(key3)) return null;
     const controller = new AbortController();
     if (this.pending.size >= 32) {
-      this.retire(key2);
+      this.retire(key3);
       return { signal: controller.signal, refused: true, release() {
       } };
     }
-    this.pending.set(key2, controller);
+    this.pending.set(key3, controller);
     return { signal: controller.signal, release: () => {
-      if (this.pending.get(key2) === controller) this.pending.delete(key2);
-      this.retire(key2);
+      if (this.pending.get(key3) === controller) this.pending.delete(key3);
+      this.retire(key3);
     } };
   }
   cancel(message) {
-    const key2 = captureKey(message);
-    if (!key2 || this.closed) return;
-    const controller = this.pending.get(key2);
-    this.pending.delete(key2);
-    this.retire(key2);
+    const key3 = captureKey(message);
+    if (!key3 || this.closed) return;
+    const controller = this.pending.get(key3);
+    this.pending.delete(key3);
+    this.retire(key3);
     controller?.abort();
   }
   dispose() {
@@ -173440,9 +173449,9 @@ var VisualStateCaptureRequests = class {
     this.pending.clear();
     this.retired.clear();
   }
-  retire(key2) {
+  retire(key3) {
     if (this.closed) return;
-    this.retired.add(key2);
+    this.retired.add(key3);
     while (this.retired.size > 64) this.retired.delete(this.retired.values().next().value);
   }
 };
@@ -174474,8 +174483,8 @@ var CameraSync = class {
     const cameraRevision = this.completedRevision;
     this.drawn = { snapshot, revision: cameraRevision };
     if (this.state.revision !== void 0 && cameraRevision !== this.state.revision) return;
-    const key2 = this.fingerprint(snapshot, cameraRevision);
-    if (!this.options.enabled() || key2 === this.key) return;
+    const key3 = this.fingerprint(snapshot, cameraRevision);
+    if (!this.options.enabled() || key3 === this.key) return;
     if (this.timer === void 0) this.timer = setTimeout(() => {
       this.timer = void 0;
       if (this.disposed || !this.options.enabled() || !this.drawn) return;
@@ -175612,12 +175621,12 @@ var presentationSurface = {
       if (disposed) return;
       const items = (model.get("items") || []).filter((item2) => item2.client_id === clientId);
       const live = new Set(items.map((item2) => item2.id));
-      for (const [key2, entry] of entries3) if (!live.has(key2)) {
+      for (const [key3, entry] of entries3) if (!live.has(key3)) {
         entry.retired = true;
         entry.view.remove();
         entry.element.remove();
         entry.win?.close();
-        entries3.delete(key2);
+        entries3.delete(key3);
       }
       for (const item2 of items) {
         if (disposed) return;
@@ -175737,9 +175746,9 @@ function syncTrajectoryFrames(controller, enabled, send) {
     const box5 = controller.boxDisplay?.projection;
     const playback = controller.trajectory?.getPlaybackSnapshot();
     const revision2 = controller.trajectory?.feedbackRevision;
-    const key2 = JSON.stringify([state.currentFrame, box5, playback, revision2]);
-    const changed = previous !== key2;
-    previous = key2;
+    const key3 = JSON.stringify([state.currentFrame, box5, playback, revision2]);
+    const changed = previous !== key3;
+    previous = key3;
     if (changed && enabled()) send({
       op: "set_trajectory_frame",
       index: state.currentFrame,
@@ -176000,6 +176009,282 @@ function ownMovieIntent(message, owner, canvas) {
   return message?.event === "interaction_context_action" && typeof message.action === "string" && message.action.startsWith("movie_") ? { ...message, _studio_owner_endpoint_id: owner, _capture_endpoint_id: canvas } : message;
 }
 
+// src/managers/movie-web-player.ts
+var collection = {
+  region: "regions",
+  shape: "shapes",
+  annotation: "annotations",
+  interaction: "interactions",
+  measurement: "measurements",
+  layer: "layers"
+};
+var key2 = (domain, tag2) => JSON.stringify([domain, tag2]);
+function movieWebVisibility(scene, sample) {
+  const desired = new Map(sample.visibility.map((row3) => [key2(row3.domain, row3.tag), { ...row3 }]));
+  for (const { domain, tag: tag2 } of sample.appearance ?? []) {
+    if (domain === "scene" || desired.has(key2(domain, tag2))) continue;
+    const row3 = domain === "whole" ? scene.whole : scene[collection[domain]].find((row4) => row4.tag === tag2);
+    desired.set(key2(domain, tag2), { domain, tag: tag2, visible: domain === "whole" ? row3.visible : !row3.hidden });
+  }
+  for (const gate of sample.visibility.filter((row3) => row3.domain === "layer")) {
+    const baselineGate = scene.layers.find((row3) => row3.tag === gate.tag);
+    for (const [domain, name] of Object.entries(collection)) {
+      if (domain === "layer") continue;
+      for (const row3 of scene[name] ?? []) {
+        if ((row3.layer_tag ?? row3.options?.layer_tag ?? row3.layer) !== gate.tag) continue;
+        const id = key2(domain, row3.tag);
+        const own = desired.get(id)?.visible ?? (baselineGate.hidden ? true : !row3.hidden);
+        desired.set(id, { domain, tag: row3.tag, visible: gate.visible && own });
+      }
+    }
+    desired.delete(key2("layer", gate.tag));
+  }
+  return Array.from(desired.values());
+}
+var MovieWebPlayer = class {
+  constructor(controller, host, presentation) {
+    this.controller = controller;
+    this.host = host;
+    this.previous = /* @__PURE__ */ new Map();
+    this.frame = -1;
+    this.queue = Promise.resolve();
+    this.generation = 0;
+    this.closed = false;
+    this.drawing = new AbortController();
+    this.playing = false;
+    this.time = 0;
+    this.origin = 0;
+    if (presentation?.schema !== "molsysviewer.movie_web@1" || presentation?.assets?.policy !== "embedded-offline") {
+      throw new Error("Unsupported Movie web presentation.");
+    }
+    this.recipe = structuredClone(presentation.recipe);
+    this.timeline = compileMovieTimeline(this.recipe, { trackedVisibility: true });
+    this.scene = this.recipe.baseline.scene;
+    const bar = document.createElement("div");
+    this.surface = bar;
+    bar.dataset.molsysviewerMoviePlayer = "true";
+    bar.setAttribute("role", "group");
+    bar.setAttribute("aria-label", "Movie playback");
+    Object.assign(bar.style, {
+      position: "absolute",
+      bottom: "12px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      width: "min(540px, calc(100% - 32px))",
+      padding: "9px",
+      borderRadius: "12px",
+      background: "rgba(24,28,34,.94)",
+      color: "#fff",
+      zIndex: "900",
+      boxSizing: "border-box",
+      font: "13px system-ui, sans-serif"
+    });
+    const button2 = (text2, action) => {
+      const value = document.createElement("button");
+      value.type = "button";
+      value.textContent = text2;
+      Object.assign(value.style, { cursor: "pointer", color: "#fff", background: "#363d48", border: "1px solid #707782", borderRadius: "6px", padding: "5px 8px" });
+      value.addEventListener("click", action);
+      bar.appendChild(value);
+      return value;
+    };
+    this.playButton = button2("Play", () => {
+      if (this.playing) this.pause();
+      else this.play();
+    });
+    button2("Restart", () => {
+      void this.seek(0).catch((error2) => this.fail(error2));
+    });
+    this.range = document.createElement("input");
+    this.range.type = "range";
+    this.range.min = "0";
+    this.range.max = String(this.timeline.duration_ms);
+    this.range.step = "any";
+    this.range.value = "0";
+    this.range.setAttribute("aria-label", "Movie time in milliseconds");
+    Object.assign(this.range.style, { flex: "1", minWidth: "40px" });
+    this.range.addEventListener("input", () => {
+      void this.seek(Number(this.range.value)).catch((error2) => this.fail(error2));
+    });
+    bar.appendChild(this.range);
+    this.status = document.createElement("output");
+    this.status.setAttribute("aria-live", "off");
+    bar.appendChild(this.status);
+    for (const event of ["pointerdown", "click", "wheel", "keydown"]) bar.addEventListener(event, (e) => e.stopPropagation());
+    host.appendChild(bar);
+    this.interact = () => this.pause();
+    host.addEventListener("pointerdown", this.interact);
+    host.addEventListener("wheel", this.interact, { passive: true });
+    this.update();
+  }
+  async initialize() {
+    await this.seek(0);
+    this.host.dataset.molsysviewerMovieReady = "true";
+  }
+  get state() {
+    return { time_ms: this.time, playing: this.playing, closed: this.closed };
+  }
+  pause() {
+    this.playing = false;
+    this.generation++;
+    if (this.raf !== void 0) cancelAnimationFrame(this.raf);
+    this.raf = void 0;
+    this.update();
+    return this.queue;
+  }
+  async seek(time2) {
+    const sample = this.timeline.evaluate(time2);
+    this.pause();
+    const generation = this.generation;
+    const work = this.queue.then(async () => {
+      if (this.closed || generation !== this.generation) return;
+      this.previous.clear();
+      await this.apply(sample);
+    });
+    this.queue = work.catch(() => {
+    });
+    return work;
+  }
+  play() {
+    if (this.closed || this.playing) return;
+    const generation = ++this.generation;
+    this.playing = true;
+    this.update();
+    const start4 = this.time >= this.timeline.duration_ms ? 0 : this.time;
+    const work = this.queue.then(async () => {
+      if (this.closed || generation !== this.generation) return;
+      this.previous.clear();
+      this.origin = performance.now() - start4;
+      await this.tick(generation);
+    });
+    this.queue = work.catch((error2) => this.fail(error2));
+  }
+  async tick(generation) {
+    if (this.closed || !this.playing || generation !== this.generation) return;
+    const at = Math.min(this.timeline.duration_ms, Math.max(0, performance.now() - this.origin));
+    await this.apply(this.timeline.evaluate(at));
+    if (this.closed || !this.playing || generation !== this.generation) return;
+    if (at >= this.timeline.duration_ms) {
+      this.playing = false;
+      this.update();
+      return;
+    }
+    this.raf = requestAnimationFrame(() => {
+      this.raf = void 0;
+      const work = this.queue.then(() => this.tick(generation));
+      this.queue = work.catch((error2) => this.fail(error2));
+    });
+  }
+  async send(message) {
+    if (this.closed) throw new Error("Movie web player is closed.");
+    await this.controller.handleMessage(message, { throwOnError: true });
+  }
+  async changed(id, value, operation2) {
+    const encoded = JSON.stringify(value);
+    if (this.previous.get(id) === encoded) return;
+    await operation2();
+    this.previous.set(id, encoded);
+  }
+  async apply(sample) {
+    await this.send({ op: "set_trajectory_playback", action: "pause" });
+    await this.send({ op: "toggle_spin", enable: false });
+    if (sample.structure_index !== this.frame) {
+      await this.send({ op: "set_trajectory_frame", index: sample.structure_index });
+      this.frame = sample.structure_index;
+    }
+    const grouped = /* @__PURE__ */ new Map();
+    const appearance = [...sample.appearance ?? []];
+    if (this.recipe.baseline.environment_capture) {
+      const environment = this.scene.environment;
+      for (const property2 of ["background", "lighting"]) {
+        if (!appearance.some((row3) => row3.domain === "scene" && row3.property === property2)) {
+          appearance.push({ domain: "scene", tag: null, property: property2, value: property2 === "background" ? environment.background.color : environment.lighting });
+        }
+      }
+    }
+    for (const row3 of appearance) {
+      const id = key2(row3.domain, row3.tag);
+      grouped.set(id, [...grouped.get(id) ?? [], row3]);
+    }
+    for (const [id, rows] of grouped) await this.changed(id, rows, async () => {
+      const { domain, tag: tag2 } = rows[0];
+      const values2 = Object.fromEntries(rows.map((row3) => [row3.property, row3.value]));
+      const record6 = domain === "whole" ? this.scene.whole : this.scene[collection[domain]]?.find((row3) => row3.tag === tag2);
+      if (domain === "whole" || domain === "region") {
+        const params = structuredClone(record6.params ?? {});
+        if ("color" in values2) {
+          delete params.color_scheme;
+          params.molstar_color_theme = { name: "uniform", params: { value: values2.color } };
+        }
+        if ("alpha" in values2) params.alpha = values2.alpha;
+        await this.send({
+          op: domain === "whole" ? "set_whole_representation" : "set_region_representation",
+          tag: tag2,
+          order: record6.order,
+          representation: values2.representation ?? record6.representation,
+          preset: null,
+          params
+        });
+      } else if (domain === "shape") {
+        await this.send({ op: "update_sphere", tag: tag2, options: {
+          ...structuredClone(record6.options),
+          ...values2,
+          tag: tag2,
+          layer_tag: record6.layer_tag ?? record6.options?.layer_tag
+        } });
+      } else if (domain === "annotation") await this.send({ op: "update_label", tag: tag2, options: { tag: tag2, ...values2 } });
+      else if (domain === "interaction") await this.controller.interactions.setMovieStyle(tag2, values2);
+      else for (const [property2, value] of Object.entries(values2)) {
+        await this.send(property2 === "background" ? { op: "set_background_color", color: value } : { op: "set_lighting", ...value });
+      }
+    });
+    const visibility2 = movieWebVisibility(this.scene, sample);
+    const layerRows = this.scene.layers.map((row3) => ({
+      ...row3,
+      hidden: sample.visibility.find((item2) => item2.domain === "layer" && item2.tag === row3.tag)?.visible === false || (sample.visibility.some((item2) => item2.domain === "layer" && item2.tag === row3.tag) ? false : row3.hidden)
+    }));
+    await this.send({ op: "set_layer_summaries", layers: layerRows });
+    for (const row3 of visibility2) await this.send(row3.domain === "whole" ? { op: row3.visible ? "show_whole" : "hide_whole" } : row3.domain === "region" ? { op: row3.visible ? "show_region" : "hide_region", tag: row3.tag } : { op: row3.visible ? "show_layer" : "hide_layer", tag: row3.tag, kind: row3.domain });
+    await this.send({ op: "set_camera_snapshot", snapshot: sample.camera, duration_ms: 0 });
+    const canvas = this.controller.plugin.canvas3d;
+    if (!canvas) throw new Error("Movie presentation has no canvas.");
+    await readCanvasDraw(
+      canvas,
+      () => void 0,
+      15e3,
+      this.drawing.signal,
+      () => !!this.controller.readMovingVisualState()
+    );
+    this.time = sample.time_ms;
+    this.update();
+  }
+  update() {
+    this.playButton.textContent = this.playing ? "Pause" : "Play";
+    this.range.value = String(this.time);
+    this.status.value = `${(this.time / 1e3).toFixed(2)} / ${(this.timeline.duration_ms / 1e3).toFixed(2)} s`;
+  }
+  fail(error2) {
+    if (this.closed) return;
+    void this.pause();
+    this.status.value = error2 instanceof Error ? error2.message : String(error2);
+    this.status.setAttribute("role", "alert");
+    console.error("[MolSysViewer] Movie presentation failed", error2);
+  }
+  dispose() {
+    if (this.closed) return;
+    void this.pause();
+    this.closed = true;
+    this.drawing.abort();
+    this.host.removeEventListener("pointerdown", this.interact);
+    this.host.removeEventListener("wheel", this.interact);
+    this.surface.remove();
+    delete this.host.dataset.molsysviewerMovieReady;
+  }
+};
+
 // ../remote_protocol.json
 var remote_protocol_default = {
   protocol_version: 1,
@@ -176069,16 +176354,16 @@ function common2(value, expected) {
   if (packet.protocolVersion !== REMOTE_PROTOCOL_VERSION) {
     return rejected("protocol-mismatch", `Unsupported protocol ${packet.protocolVersion}`);
   }
-  for (const key2 of ["viewerId", "sessionId", "endpointId", "kind"]) {
-    if (!nonEmpty2(packet[key2])) {
-      return rejected("malformed-packet", `${key2} must be a non-empty string`);
+  for (const key3 of ["viewerId", "sessionId", "endpointId", "kind"]) {
+    if (!nonEmpty2(packet[key3])) {
+      return rejected("malformed-packet", `${key3} must be a non-empty string`);
     }
   }
-  for (const key2 of ["viewerId", "sessionId", "endpointId"]) {
-    if (expected[key2] !== void 0 && packet[key2] !== expected[key2]) {
+  for (const key3 of ["viewerId", "sessionId", "endpointId"]) {
+    if (expected[key3] !== void 0 && packet[key3] !== expected[key3]) {
       return rejected(
         "identity-mismatch",
-        `${key2} belongs to ${String(packet[key2])}, expected ${expected[key2]}`
+        `${key3} belongs to ${String(packet[key3])}, expected ${expected[key3]}`
       );
     }
   }
@@ -176149,8 +176434,8 @@ function validateInputPayload(kind, payload) {
   if (!modifiers3 || typeof modifiers3 !== "object" || Array.isArray(modifiers3)) {
     return rejected("malformed-payload", "modifiers must be an object");
   }
-  for (const [key2, value] of Object.entries(modifiers3)) {
-    if (!["alt", "ctrl", "meta", "shift"].includes(key2) || typeof value !== "boolean") {
+  for (const [key3, value] of Object.entries(modifiers3)) {
+    if (!["alt", "ctrl", "meta", "shift"].includes(key3) || typeof value !== "boolean") {
       return rejected("malformed-payload", "modifiers must contain only boolean modifier keys");
     }
   }
@@ -177038,12 +177323,12 @@ var RemoteSurfaceControls = class {
     this.onKeyDown = (event) => {
       if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
       if (!this.host.contains(event.target)) return;
-      const key2 = event.key.toLowerCase();
-      if (key2 === "h" && !this.help.isVisible()) {
+      const key3 = event.key.toLowerCase();
+      if (key3 === "h" && !this.help.isVisible()) {
         event.preventDefault();
         event.stopPropagation();
         this.help.show();
-      } else if (key2 === "n" || key2 === "w") {
+      } else if (key3 === "n" || key3 === "w") {
         event.preventDefault();
         event.stopPropagation();
         this.options.togglePanel();
@@ -178489,7 +178774,7 @@ async function bootDocsView(opts) {
       "controls_position_fullscreen",
       "addon_states"
     ];
-    notifyHost({ event: "qt_ui_state", values: Object.fromEntries(keys3.filter((key2) => key2 in values2).map((key2) => [key2, values2[key2]])) });
+    notifyHost({ event: "qt_ui_state", values: Object.fromEntries(keys3.filter((key3) => key3 in values2).map((key3) => [key3, values2[key3]])) });
   });
   let initialMessages = Array.isArray(opts.initialMessages) ? opts.initialMessages : [];
   if (typeof ui.messages_url === "string" && ui.messages_url) {
@@ -178551,7 +178836,7 @@ async function bootDocsView(opts) {
         }
         const controller = await controllerPromise;
         if (hasAuthority && msg?.op === "set_host_ui") {
-          for (const [key2, value] of Object.entries(msg.values || {})) model.set(key2, value);
+          for (const [key3, value] of Object.entries(msg.values || {})) model.set(key3, value);
         } else if (hasAuthority && msg?.op === "commit_scene") {
           const canvas = controller.plugin.canvas3d;
           if (!canvas) throw new Error("The Qt host has no WebGL canvas.");
@@ -178813,6 +179098,13 @@ async function bootDocsView(opts) {
     const canvas = controller.plugin.canvas3d;
     if (!canvas) throw new Error("Exported scene has no WebGL canvas.");
     await waitForCanvasDraw(canvas);
+    if (ui.movie_presentation !== void 0) {
+      if (hasAuthority) throw new Error("A portable Movie cannot own a live Python host.");
+      const player = new MovieWebPlayer(controller, target, ui.movie_presentation);
+      window.__molsysviewerDocsMovie = player;
+      window.addEventListener("pagehide", () => player.dispose(), { once: true });
+      await player.initialize();
+    }
     notifyHost({ event: "ready", capabilities: {
       array_native_molsys_ref: [1],
       visual_state_capture: [1, 2],

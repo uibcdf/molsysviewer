@@ -8,7 +8,7 @@ type Track = { tag: string; target: { domain: string; tag?: string }; property: 
 export type MoviePanelState = {
     op: "set_movie_state"; revision: number; version: number | null; duration_ms: number; n_tracks: number;
     system_loaded: boolean; live_available: boolean; busy: string | null; job_id: string | null;
-    progress?: { frames_written: number; total_frames: number; time_ms: number } | null;
+    progress?: { frames_written?: number; total_frames?: number; time_ms?: number; format?: string; phase?: string } | null;
     last_output?: { path: string; bytes: number } | null; request_id?: string;
     editor?: { offset: number; tracks: Track[]; track: (Track & { keys: Key[]; key_offset: number }) | null;
         representations?: string[]; targets?: Array<{ domain: string; tag?: string }>; target_count?: number };
@@ -212,7 +212,8 @@ export class MoviePanel extends BasePanel {
     private updateProgress(): void {
         const el = this.host?.querySelector('[data-molsysviewer-movie-progress]');
         if (el) el.textContent = this.state?.progress
-            ? `Exporting frame ${this.state.progress.frames_written} of ${this.state.progress.total_frames}`
+            ? this.state.progress.format === "html" ? "Saving offline presentation…"
+                : `Exporting frame ${this.state.progress.frames_written} of ${this.state.progress.total_frames}`
             : this.state?.busy === "movie_play" ? "Preview is running. Pause to inspect the last drawn moment." : "Waiting for the operation to finish…";
     }
     private get editable(): boolean { return !!this.state && !this.state.busy && this.pending === null && !this.staleDraft; }
@@ -349,13 +350,14 @@ export class MoviePanel extends BasePanel {
     }
     private export(): void {
         const root = card();
-        root.appendChild(this.field("Output path in Python session (.mp4, .webm or .zip)", "path", this.path, value => { this.path = value; }));
+        root.appendChild(this.field("Output path in Python session (.mp4, .webm, .zip or .html)", "path", this.path, value => { this.path = value; }));
         root.appendChild(this.field("Frames per second", "fps", this.fps, value => { this.fps = value; }));
         root.appendChild(this.field("Width (pixels)", "width", this.width, value => { this.width = value; }, "number"));
         root.appendChild(this.field("Height (pixels)", "height", this.height, value => { this.height = value; }, "number"));
         root.appendChild(this.check("Allow replacing an existing output file", this.overwrite, value => { this.overwrite = value; }));
         root.appendChild(this.check("Include visible plots and legends; refuse unsupported composition", this.includeOverlays, value => { this.includeOverlays = value; }));
         root.appendChild(note("Native labels are included. Visible plot/legend composition is not yet available: hide those overlays or explicitly exclude them. Output is written in the Python session, including when that session runs remotely."));
+        root.appendChild(note("HTML is an offline interactive presentation with Play, Pause and Seek. It uses the same recipe without a Python session; frame rate and image sampling do not apply. Static regions are required."));
         root.appendChild(this.button("Export Movie", () => this.submit("movie_export", { path: this.path, fps: this.fps,
             width_px: Number(this.width), height_px: Number(this.height), overwrite: this.overwrite,
             include_overlays: this.includeOverlays }), this.editable && this.state?.version === 2 && !!this.state?.live_available));

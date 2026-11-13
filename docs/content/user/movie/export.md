@@ -1,5 +1,45 @@
 (User_Movie_Export)=
-# Video export
+# Exporting movies
+
+## Sharing an offline interactive movie (experimental)
+
+To share a playable story without a Python session, export a version-2 Movie
+as HTML:
+
+```python
+result = await view.movie.export_async("movie.html")
+print(result["path"])
+```
+
+Send that single file, open it from disk, or host it on your website. It embeds
+the installed runtime, molecular coordinates, selected interaction geometry and
+the complete recipe. Playback needs WebGL2, but no network, Python kernel,
+server or image codec. Play, Pause, Restart and a time slider use the same
+timeline evaluator as preview. Playback starts paused. Seeking restores the
+animated channels; it does not edit the original Python view.
+
+You can embed the exported file in an ordinary iframe:
+
+```html
+<iframe src="movie.html" title="Molecular movie"
+        style="width:100%;height:540px;border:0"></iframe>
+```
+
+This first presentation profile supports static regions and the admitted
+camera, structure, visibility and appearance channels. Dynamic regions and
+incomplete or unsupported interaction projections are refused. Visible plots
+and legends require hiding them or explicitly passing `include_overlays=False`;
+the manifest records exclusions. Canvas popups and authoring are unavailable
+in this profile. Keep the `.msv` session for later scientific inspection and
+editing: HTML contains visual projections, not a replacement H5MSM archive of
+the complete named analyses. Source receiving is separate from published
+package and native-host qualification.
+
+HTML playback is continuous and responsive. `fps` and `sample_level` apply to
+media, not HTML; pixel dimensions are nominal viewport hints in its manifest.
+The returned manifest records the recipe, runtime version and SHA-256,
+embedded-asset policy and composition. Existing outputs are preserved unless
+you pass `overwrite=True`; publication is atomic after validation.
 
 ## Exporting independent tracks (experimental)
 
@@ -26,7 +66,7 @@ environment:
 conda install -c conda-forge imageio imageio-ffmpeg
 ```
 
-MP4/H.264 and WebM/VP9 use `imageio-ffmpeg>=0.6.0`; all formats use ImageIO for
+MP4/H.264 and WebM/VP9 use `imageio-ffmpeg>=0.6.0`; media formats use ImageIO for
 PNG decoding. A missing renderer or encoder raises an error.
 
 This implementation exports camera, structure, visibility and the
@@ -53,7 +93,7 @@ Keep your molecular session to edit the story later.
 | `fps` | `25` | Positive frames per second, up to 240; rational strings are accepted. |
 | `width_px`, `height_px` | `1280`, `720` | Exact resolution. Video dimensions must be even. |
 | `sample_level` | `2` | Mol* multisampling level, from 0 to 5; the interactive canvas keeps its settings. |
-| `format` | inferred | `"mp4"`, `"webm"` or `"pngs"`. |
+| `format` | inferred | `"mp4"`, `"webm"`, `"pngs"` or `"html"`. |
 | `overwrite` | `False` | Replace an existing output only after successful completion. |
 | `include_overlays` | `True` | Require support for visible scientific overlays. |
 | `timeout` | `15.0` | Renderer/encoder wait budget in seconds, up to 300. |

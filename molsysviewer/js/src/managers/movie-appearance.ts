@@ -101,7 +101,7 @@ export function appearanceBaseline(scene: Record<string, any>, domain: string, t
         if (target.preset != null || !movieRepresentationTypes.includes(target.representation)) {
             throw new Error("Movie structural appearance requires an explicit simple baseline representation.");
         }
-        if (property === "color" && target.color_layer) {
+        if (property === "color" && target.color_layer && Object.keys(target.color_layer).length > 0) {
             throw new Error("Movie uniform colour requires no per-atom colour layer on its target.");
         }
         const params = record(target.params ?? {});
