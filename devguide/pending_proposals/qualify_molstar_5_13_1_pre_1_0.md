@@ -285,6 +285,36 @@ failure. Its two remaining popup moving cases and final cancellation/expiry
 remain unreceived. Own cgroup memory peaks near 2.35 GiB under its 4 GiB limit;
 about 12.81 GiB remains globally available, without OOM or owned survivors.
 
+After a fresh observation finds zero swap activity/pressure and 15.19 GiB
+available, `774` receives the complete actual-Jupyter full profile on published
+`26f935f0`: all eight moving cases, six stopped captures, six strong restores,
+four Studio captures and final cancellation/expiry, including the exact live
+documentation cell. Native exits are zero, selected inputs are unchanged and
+cleanup has no survivor/error or resource stop. Actual cgroup memory peaks
+at 3.04 GiB under the unchanged 4 GiB bound; summed process RSS is recorded
+separately. This completes that host scope while preserving `772`.
+
+The single Windows diagnostic `43521107544` uses the same published commit
+and provider. It selects the real encoder module only and retains bounded
+native stderr/identity plus its original logs. Its result cannot qualify the
+full three-platform matrix; the original `43513962722` remains failed.
+
+Windows diagnostic `43521107544` terminates with one failure / 23 passes
+and no skips. Its original stderr identifies absent `libvpx-vp9` in the
+selected FFmpeg 9.0.2; the exact native digest and original artifact ZIPs are
+retained under #385. The inspected conda-forge recipe explicitly excludes
+libvpx on Windows. Codec policy/availability needs an explicit decision and
+native receiving; no new Mol* regression is established by this result.
+
+Full-core local `775` receives one complete context-menu suite, then global
+swap activity (95,244,288 bytes over about five seconds) crosses the safety
+threshold during controls/popup receiving. All own processes are retired,
+inputs remain unchanged and the original attempt stays interrupted. Its
+4 GiB cgroup peaks near 1.84 GiB, with about 10.04 GiB globally available
+and no OOM. Do not infer full or two-suite acceptance from partial controls
+logs. A fresh extensive local run is postponed while this shared-resource
+pressure recurs; final full-core and hosted platform gates remain required.
+
 Actual Movie notebook `770` separately passes all eight cases after the #383
 field-label correction. Retain its original failed `767` attempt and exact
 owner inputs. Neither this successful host nor local checks make the failed

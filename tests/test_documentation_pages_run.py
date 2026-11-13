@@ -36,6 +36,7 @@ EXECUTABLE_PAGES = (
 )
 
 BLOCK = re.compile(r"^```python\n(.*?)^```", re.MULTILINE | re.DOTALL)
+DIRECTIVE_BLOCK = re.compile(r"^```\{code-block\} python\n(?::[^\n]+\n)*\n(.*?)^```", re.MULTILINE | re.DOTALL)
 
 
 def test_live_state_example_has_an_explicit_host_and_actual_kernel_owner():
@@ -48,6 +49,10 @@ def test_live_state_example_has_an_explicit_host_and_actual_kernel_owner():
     receiving = owner.read_text(encoding="utf-8")
     assert "_documented_live_state(root)!r" in receiving
     assert "await eval(code, {'view': view, 'path': path})" in receiving
+    assert any(
+        relative == "docs/content/user/export/state.md" and block == source
+        for relative, _, block in _documentation_blocks()
+    ), "Live-cell examples must still participate in the global deprecated-API guard."
     # Keep every ordinary page block in the headless gate; only the explicitly
     # named live cell travels to the real Jupyter/kernel/browser owner.
     assert source not in _blocks(ROOT / "docs/content/user/export/state.md")
@@ -183,7 +188,9 @@ def _documentation_blocks() -> list[tuple[str, int, str]]:
     blocks = []
     for page in sorted((ROOT / "docs" / "content").rglob("*.md")):
         relative = str(page.relative_to(ROOT))
-        for number, match in enumerate(BLOCK.finditer(page.read_text(encoding="utf-8")), 1):
+        text = page.read_text(encoding="utf-8")
+        matches = sorted([*BLOCK.finditer(text), *DIRECTIVE_BLOCK.finditer(text)], key=lambda match: match.start())
+        for number, match in enumerate(matches, 1):
             blocks.append((relative, number, match.group(1)))
     for notebook in sorted((ROOT / "docs" / "content").rglob("*.ipynb")):
         relative = str(notebook.relative_to(ROOT))

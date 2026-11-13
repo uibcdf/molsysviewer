@@ -967,8 +967,26 @@ cell and completes six stopped/strong restores, four Studio captures and six
 moving cases, then the supervisor retires our processes after global swap
 activity exceeds its conservative bound. Its whole-profile result remains
 incomplete; no OOM, owned survivor or resource-usage limit violation occurs.
-A bounded Windows encoder diagnostic will recover native
-stderr before another full matrix; the failed checkpoint remains failed.
+Once measured swap activity returns to zero, full actual-Jupyter `774`
+completes all eight moving cases plus every stopped/strong restore and
+Studio/cancellation/expiry control with unchanged inputs and clean cleanup.
+The original `772` resource interruption remains recorded independently.
+The single bounded Windows encoder diagnostic
+[43521107544](https://github.com/uibcdf/molsysviewer/actions/runs/43521107544)
+uses published `26f935f0` and the unchanged exact provider; it will recover
+native stderr before another full matrix. This encoder-only run is not full
+source qualification; the failed original checkpoint remains failed.
+The diagnostic reproduces one failure / 23 passes: FFmpeg 9.0.2 on Windows
+does not provide `libvpx-vp9`. The inspected native distribution recipe
+confirms that exclusion. #385 now owns the codec-availability/contract choice;
+the maintainer's preference is pending, with no silent codec substitution.
+
+Local full-core `775` completes context-menu and part of controls/popup
+receiving before global swap activity triggers clean resource retirement.
+Only one of 61 complete suites is received in that attempt. Preserve it as
+interrupted, not passing or a newly established product failure; postpone
+another extensive local run while that pressure recurs. The 61-suite gate
+and the next full platform checkpoint remain open.
 #379/#380/#382 are closed with their source guards. No publication is authorized.
 
 Actual Jupyter Movie `770` completes all eight authoring/export/session and

@@ -74,7 +74,7 @@
       "docs/content/user/export/state.md": "821e5d903771e90f1e6db623a4c766de3ff8e45b3d3ad2e015e6c2096f96ffa2",
       "molsysviewer/viewer/panel_actions/__init__.py": "3a67552ebc28ff4698d408860ddae7a10f59a7cd61fb60d4de0fdc2d10c1cc60",
       "tests/_jupyter_movie.mjs": "1d85c2d92d6318cb986c24b0a2acb8ac741545b5e6e027ae54d26b2390c5b8fa",
-      "tests/test_documentation_pages_run.py": "157d7a758268f847476ce8f9ab01c117be662ca19a8395a9f1f7fb241dc6a7a0",
+      "tests/test_documentation_pages_run.py": "ad7e986651f6751f8f59474a95cce3a3dc1514d11aeb92b231592a0b3d3efea4",
       "tests/test_js_source_coverage.py": "377fe41461d3856d40c042acd6810d444470c036b95bf30228dd3759d0abed2a",
       "tests/test_movie_export.py": "6fc453db160010c56139df64160ddda880511c11ea3edd0ab4f2606bf3d0d23e",
       "tests/test_movie_studio.py": "8874995c62bd86b1a532a65ad68d345d3723f5a963e65bfde80c3d64e0c79ba1",
@@ -738,7 +738,7 @@
         169,
         385
       ],
-      "native_windows_encoder_cause": "unknown; bounded diagnostic prepared, not yet dispatched.",
+      "native_windows_encoder_cause": "Unknown encoder 'libvpx-vp9'",
       "final_record_checks": {
         "profile": "773",
         "passed": 448,
@@ -751,7 +751,60 @@
           "ram_gib": 1
         },
         "scope": "Offline record/selector validation after archiving #383 and adding the #169/#385 queues. Separate, overlapping with 771."
-      }
+      },
+      "native_windows_diagnostic": {
+        "run_id": 43521107544,
+        "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43521107544",
+        "head_sha": "26f935f0e03586320869bb9ec09de05187096db6",
+        "source_provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+        "status": "completed",
+        "conclusion": "failure",
+        "passed": 23,
+        "failed": 1,
+        "skipped": 0,
+        "cause": "Unknown encoder 'libvpx-vp9'",
+        "encoder": {
+          "provider": "imageio-ffmpeg",
+          "provider_version": "0.8.1",
+          "version": "FFmpeg 9.0.2",
+          "executable_sha256": "5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7"
+        },
+        "verified_original_artifacts": [
+          {
+            "id": 14083088189,
+            "name": "source-receiving-Windows-py3.14",
+            "bytes": 2375,
+            "sha256": "a79cc8045dc73829e535249d9a95307dba028f0920fca9604e5033454c9219f4",
+            "github_digest_matches": true
+          },
+          {
+            "id": 14082774065,
+            "name": "movie-encoder-native-Windows",
+            "bytes": 2074,
+            "sha256": "0f0dc739af8a37a24212f8164bb50c71d0181b5f31c24be82b29782872734167",
+            "github_digest_matches": true
+          }
+        ],
+        "upstream_recipe": {
+          "repository": "conda-forge/ffmpeg-feedstock",
+          "commit": "9820e152b533a05e4c3fc01b33a933652e6751a7",
+          "files": [
+            "recipe/meta.yaml",
+            "recipe/build.sh"
+          ],
+          "finding": "libvpx explicitly excluded on Windows; AOM/SVT AV1 declared. This is inspected source, not an executed Windows AV1 qualification."
+        },
+        "codec_policy": "Maintainer preference requested for explicit codec plus documented auto-selection versus requiring a VP9-enabled FFmpeg; no codec substitution implemented.",
+        "scope": "Single Windows source-only encoder diagnostic, not a complete source/installed/platform claim; native failure retained."
+      },
+      "board_reconciliation": {
+        "documents": 52,
+        "drift": 0,
+        "after_issue_383_closed": true,
+        "issue_169_reopened": true,
+        "issue_385_open": true
+      },
+      "code_commit": "26f935f0e03586320869bb9ec09de05187096db6"
     },
     "documented_live_cell": {
       "profile": "772",
@@ -764,7 +817,59 @@
         "ram_gib": 4,
         "swap_gib": 0
       },
-      "remaining": "Two popup moving cases and final cancellation/expiry in this attempt are not received. Original full 739 remains its own earlier source observation."
+      "remaining": "Two popup moving cases and final cancellation/expiry in this attempt are not received. Original full 739 remains its own earlier source observation.",
+      "completed_followup": "774 completes the whole existing full notebook profile without resource stops; original 772 remains interrupted.",
+      "global_deprecation_guard": {
+        "profile": "776",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "scope": "All state-page headless examples plus named live-cell registration and the complete global deprecated-API scan, including MyST Python directives. The actual full live cell is separately received in 774."
+      }
+    },
+    "actual_jupyter_full_current": {
+      "profile": "774",
+      "source_commit": "26f935f0e03586320869bb9ec09de05187096db6",
+      "native_exit": 0,
+      "seconds": 229.44535671873018,
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "moving_capture_cases": 8,
+      "exact_live_documented_cell_executed": true,
+      "cancellation_and_expiry_no_late_write": true,
+      "inputs_unchanged": true,
+      "own_process_cleanup": "No errors/survivors",
+      "resource_stop": null,
+      "limits": {
+        "cpu": 8,
+        "ram_gib": 4,
+        "swap_gib": 0
+      },
+      "peak_cgroup_gib": 3.04345703125,
+      "scope": "Actual Jupyter/kernel/anywidget/Mol* source receiving; not native Qt, full hosted matrix, installed or postponed human acceptance.",
+      "original_interruption_preserved": "772 retained separately, with global swap resource stop."
+    },
+    "current_full_core_attempt": {
+      "profile": "775",
+      "state": "incomplete_resource_stop",
+      "completed_suites": [
+        "context-menu"
+      ],
+      "partially_received_suite": "controls-visibility",
+      "declared_core_suites": 61,
+      "source_inputs_unchanged": true,
+      "reason": "Global swap-out 95,244,288 bytes over about five seconds triggered the conservative safety stop.",
+      "resources": {
+        "cpu": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "peak_cgroup_gib": 1.8383255004882812,
+        "globally_available_gib_at_stop": 10.04,
+        "own_oom_events": 0
+      },
+      "cleanup": "No survivors/errors",
+      "next": "Postpone another extensive local run while shared swap pressure recurs; complete the full core gate in a suitable local window or reviewed hosted checkpoint."
     }
   },
   "controlled_profiles": [
@@ -2869,6 +2974,90 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "df70714b7837a645bcd9b22060603bf55d728cac45b5e48956d0de52ae15471b"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 229.44535671873018,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-774-jupyter-doc-cell",
+      "peak_summed_owned_rss_mib": 4250.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "f12ee4c6d970d8c1c0ccdc77da468b857d9a8d67033e602ec00b62cf7af02ecf"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 8.403272982221097,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "ci-final-records-773",
+      "peak_summed_owned_rss_mib": 197.6,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "cdcadf6a639b7fa230a51ce8fe96d51acf7728ca2ee7df3d6daf956f3b690251"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "seconds": 336.2464047460817,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 29,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "prolonged-core-molstar-513-775",
+      "peak_summed_owned_rss_mib": 2759.4,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "119939c1664e9f3009cad054c4f7c2372bf8d69ac53a732f46b92bb9a36251dc"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 13.875438105780631,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "ci-doc-parity-776",
+      "peak_summed_owned_rss_mib": 424.6,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "be21bbe7db78f5fd09ed742b95d5d8ac99421d77462666221856bfd01f9565b4"
     }
   ],
   "remaining": [
@@ -2960,6 +3149,21 @@
         "covering-molstar-513-772-jupyter-doc-cell"
       ],
       "manifest_sha256": "2d40ce9a614368f8a0633dd637e2efd6f6cb4a4b4c7b4fd6b77f0ce6b7e532c9",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 0
+    },
+    "full_host_encoder_followup": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-full-host-encoder-20261113",
+      "files": 69,
+      "bytes": 17526881,
+      "profiles": [
+        "ci-final-records-773",
+        "covering-molstar-513-774-jupyter-doc-cell",
+        "prolonged-core-molstar-513-775",
+        "ci-doc-parity-776"
+      ],
+      "manifest_sha256": "ff5e911cd2ce88d9ace035a48655a0da52b85d60d02631235b8a384fa0c67e7c",
       "originals_retained": true,
       "credential_shaped_files_excluded": 0
     }

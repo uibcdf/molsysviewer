@@ -34,3 +34,25 @@ Parent boundaries are #372 (source qualification) and #320 (Movie readiness).
 The all-state duplicate review acquired all four pages / 355 non-PR issues;
 no equivalent focused failure was found. Original native outcomes remain
 failed even if later receiving succeeds.
+
+## Native diagnosis
+
+The single source-only Windows diagnostic `43521107544`, on published
+`26f935f0`, reproduces **one failure / 23 passes / zero skips**. Original
+native stderr is `Unknown encoder 'libvpx-vp9'`. ImageIO-FFmpeg is 0.8.1;
+the selected executable is FFmpeg 9.0.2 with SHA-256
+`5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7`.
+Both original ZIPs match GitHub's sizes and digests. This is a concrete
+codec-availability boundary, not an established Mol* rendering regression.
+
+The inspected conda-forge recipe at
+[`9820e152b533a05e4c3fc01b33a933652e6751a7`](https://github.com/conda-forge/ffmpeg-feedstock/blob/9820e152b533a05e4c3fc01b33a933652e6751a7/recipe/meta.yaml)
+excludes libvpx on Windows, while declaring AOM/SVT AV1. The corresponding
+build script enables libvpx only on Linux/macOS and enables libaom on all
+platforms. This explains the observed absence; a recipe declaration alone
+does not qualify actual AV1 encoding or browser playback.
+
+Before changing the advertised WebM/VP9 contract, discuss an explicit codec
+choice and documented automatic selection versus requiring a separately
+qualified VP9-enabled FFmpeg. The maintainer's preference is requested;
+no codec is silently substituted and no format assertion is removed.

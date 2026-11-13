@@ -297,5 +297,50 @@
     "windows": "Local checks do not qualify the native Windows repair.",
     "live_example": "The explicit live-state-capture block is handed unchanged to the actual Jupyter kernel, separately from sequential headless blocks."
   },
-  "next": "Receive the live documented cell, commit reviewed corrections, and use a source-only Windows encoder diagnostic before deciding the new full source checkpoint. No failed original outcome is reclassified."
+  "next": "Resolve the explicit WebM codec/availability contract (#385), retain reopened UTF-8 receiving (#169), and complete full core/platform source qualification. Actual-Jupyter 774 is complete; local core 775 is resource-interrupted. No publication or installed candidate is authorized.",
+  "encoder_diagnostic": {
+    "run_id": 43521107544,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43521107544",
+    "head_sha": "26f935f0e03586320869bb9ec09de05187096db6",
+    "source_provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "status": "completed",
+    "conclusion": "failure",
+    "passed": 23,
+    "failed": 1,
+    "skipped": 0,
+    "cause": "Unknown encoder 'libvpx-vp9'",
+    "encoder": {
+      "provider": "imageio-ffmpeg",
+      "provider_version": "0.8.1",
+      "version": "FFmpeg 9.0.2",
+      "executable_sha256": "5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7"
+    },
+    "verified_original_artifacts": [
+      {
+        "id": 14083088189,
+        "name": "source-receiving-Windows-py3.14",
+        "bytes": 2375,
+        "sha256": "a79cc8045dc73829e535249d9a95307dba028f0920fca9604e5033454c9219f4",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14082774065,
+        "name": "movie-encoder-native-Windows",
+        "bytes": 2074,
+        "sha256": "0f0dc739af8a37a24212f8164bb50c71d0181b5f31c24be82b29782872734167",
+        "github_digest_matches": true
+      }
+    ],
+    "upstream_recipe": {
+      "repository": "conda-forge/ffmpeg-feedstock",
+      "commit": "9820e152b533a05e4c3fc01b33a933652e6751a7",
+      "files": [
+        "recipe/meta.yaml",
+        "recipe/build.sh"
+      ],
+      "finding": "libvpx explicitly excluded on Windows; AOM/SVT AV1 declared. This is inspected source, not an executed Windows AV1 qualification."
+    },
+    "codec_policy": "Maintainer preference requested for explicit codec plus documented auto-selection versus requiring a VP9-enabled FFmpeg; no codec substitution implemented.",
+    "scope": "Single Windows source-only encoder diagnostic, not a complete source/installed/platform claim; native failure retained."
+  }
 }
