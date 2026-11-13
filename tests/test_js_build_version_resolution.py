@@ -74,13 +74,13 @@ def test_build_routes_refuse_unreviewed_molstar_cache_inputs(tmp_path, target, u
     (js / "node_modules" / "esbuild").symlink_to(JS / "node_modules" / "esbuild")
     provider = js / "node_modules" / "molstar"
     provider.mkdir()
-    metadata = json.loads((JS / "node_modules" / "molstar" / "package.json").read_text())
+    metadata = json.loads((JS / "node_modules" / "molstar" / "package.json").read_text(encoding="utf-8"))
     if unreviewed == "version":
         metadata["version"] = "99.0.0"
-    (provider / "package.json").write_text(json.dumps(metadata))
+    (provider / "package.json").write_text(json.dumps(metadata), encoding="utf-8")
     # Keep the independent image-readiness boundary qualified so this fault
     # still reaches the component-cache bytes it is meant to exercise.
-    assets = json.loads((JS / "scripts/reviewed-image-assets.json").read_text())
+    assets = json.loads((JS / "scripts/reviewed-image-assets.json").read_text(encoding="utf-8"))
     for name in assets["files"]:
         target_file = provider / name
         target_file.parent.mkdir(parents=True, exist_ok=True)
@@ -88,8 +88,10 @@ def test_build_routes_refuse_unreviewed_molstar_cache_inputs(tmp_path, target, u
     relative = Path("lib/mol-model-formats/structure/basic/properties.js")
     source = provider / relative
     source.parent.mkdir(parents=True)
-    native = (JS / "node_modules" / "molstar" / relative).read_text()
-    source.write_text(native + "\n// Unreviewed provider bytes.\n" if unreviewed == "bytes" else native)
+    native = (JS / "node_modules" / "molstar" / relative).read_text(encoding="utf-8")
+    source.write_text(
+        native + "\n// Unreviewed provider bytes.\n" if unreviewed == "bytes" else native, encoding="utf-8"
+    )
 
     entry = {
         "runtime": "src/index.ts",
@@ -98,7 +100,8 @@ def test_build_routes_refuse_unreviewed_molstar_cache_inputs(tmp_path, target, u
     }[target]
     (js / entry).parent.mkdir(parents=True, exist_ok=True)
     (js / entry).write_text(
-        'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n'
+        'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n',
+        encoding="utf-8",
     )
     command = [NODE, str(js / "scripts" / "build-runtime.mjs")]
     if target != "runtime":
@@ -125,13 +128,16 @@ def test_build_routes_keep_installed_molstar_when_a_source_checkout_exists(tmp_p
     }[target]
     (js / entry).parent.mkdir(parents=True, exist_ok=True)
     (js / entry).write_text(
-        'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n'
+        'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n',
+        encoding="utf-8",
     )
     # Deliberate source-origin fault input. The real installed Mol* and its
     # byte-reviewed repair remain untouched, rather than replacing their code.
     shadow = js.parent / "src_molstar/src/mol-model-formats/structure/basic/properties.ts"
     shadow.parent.mkdir(parents=True)
-    shadow.write_text('export const getChemicalComponentMap = "UNQUALIFIED_SIBLING_SOURCE_SELECTED";\n')
+    shadow.write_text(
+        'export const getChemicalComponentMap = "UNQUALIFIED_SIBLING_SOURCE_SELECTED";\n', encoding="utf-8"
+    )
     command = [NODE, str(js / "scripts" / "build-runtime.mjs")]
     if target != "runtime":
         command = [NODE, str(js / "scripts" / "build-test-bundles.mjs"), target]
@@ -142,7 +148,7 @@ def test_build_routes_keep_installed_molstar_when_a_source_checkout_exists(tmp_p
         "unit": js / "tests/unit/dist-index.js",
         "harness": js / "tests/e2e/harness.bundle.js",
     }[target]
-    bundle = output.read_text()
+    bundle = output.read_text(encoding="utf-8")
     assert "UNQUALIFIED_SIBLING_SOURCE_SELECTED" not in bundle
     assert "uniqueComponentNamesCache" in bundle, "the native cache repair was bypassed"
 

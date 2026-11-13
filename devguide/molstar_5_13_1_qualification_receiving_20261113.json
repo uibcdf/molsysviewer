@@ -25,7 +25,7 @@
       "molsysviewer/js/tests/e2e/context-menu.e2e.ts": "d4b5dd38d5fa10c16b616bbf81e964e331534087b2f8da109b4697c73c1b6584",
       "molsysviewer/js/tests/fixtures/molstar-font-probe.ts": "e81c3f018ae8181ec46359d1d9c262929d5e99300c256ef34348535880bb09c2",
       "molsysviewer/js/tests/fixtures/molstar-component-cache.mjs": "041811c188fb961d81ec75060cd100aa7a0f1b7cafbbc57858a0218f2e773f28",
-      "tests/test_molstar_compatibility.py": "972b3aa0cd994a62a8bb9ffe0597aa4529529de6f5806f8bc78da131d3aa44ba",
+      "tests/test_molstar_compatibility.py": "ff411dbc398e6afc4150c16f1d0460d8a57b330978a7914925cca051073b12bb",
       "tests/test_e2e_reliability.py": "df39dc823dc0ea1aecc84f0db822531d13a258d7ac2205b373937367a5dc0395",
       "devtools/conda-envs/build_env.yaml": "7acf9013b68f739205d264c2311e3daa1074cc90c3aa704ff276c9c4e6408f28",
       "devtools/conda-build/meta.yaml": "371781bcc62fe36977a45be3d34092372b4e72f504a7aa6c378009d34e29fc21",
@@ -50,7 +50,7 @@
       "molsysviewer/js/src/managers/viewer-controller.ts": "8234fc5762fb3c5bf9f5963613897009077290259944acbf77c5a417ef4d8872",
       "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts": "09dfa8811fdaf45f385b1954c681ce532525692f1191e237ec5b0a2cc5fbd5c8",
       "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "338b8b3fd28b9584b62e60ee250f2ebac1a7b3ebeca856505b4cd9db6f64421f",
-      "tests/_jupyter_live_capture.py": "566309f2f695481b9b4554583afc72de850ccf07b220b2ba3854010c1f45e864",
+      "tests/_jupyter_live_capture.py": "9c81fc0bfdf567fb67a314ed4696811ca273caa528c8eaebe8c7649d4dfe2043",
       "tests/_jupyter_moving_capture.py": "91a1b94c2cc2f53fa5a50770aae00da0557cf5f7886757798be2d2806aace196",
       "tests/_jupyter_moving_capture.mjs": "d534935136d56ebd659ff06a6d23832cb8f769e2eb15f8465b3a7c47e3121100",
       "tests/test_jupyter_live_capture.py": "685ab8737ce4f82f86a3740734926eafb65355d07dcaacd20c318b0d81b1a308",
@@ -63,14 +63,23 @@
       "molsysviewer/js/src/ui/panels/types.ts": "c547d1c519acd2bcc4f0a9777cc4a6263a052e45b7d4e9063ac941afb160a38b",
       "molsysviewer/js/tests/unit/frontend-requests.test.ts": "6e25a1d1299993132bfba5e2b284309a592b733b7853c50e7827a7638e182526",
       "molsysviewer/js/tests/unit/index.test.ts": "ce59c2c218ebb2df28c3418fdb13aa69b6c862a1dde3a0ccc5a25e21723f1569",
-      "tests/test_js_build_version_resolution.py": "f66b0274c63302ffcf2340bc31b3f9e35eeeef0db1b45351322866db1def0509",
-      "tests/test_reporting_protocol.py": "f07c3b56bcc57b5888ed313ef90476dc5109729165f0f44d81a78ffdaadbe2e5",
+      "tests/test_js_build_version_resolution.py": "1a47937c30653c79fa69c8e2f38ab00532f07a0635f4d29967a54a3cb3a80154",
+      "tests/test_reporting_protocol.py": "cc682ba0fe6fcb58a1e351fc0839856c86372f7e5c968f79ff8f43577c30900c",
       "molsysviewer/js/scripts/reviewed-image-assets.json": "03ff0eaafed1f0cae678bb00b8012033856299332062d9ae743ce1eae6003746",
       "molsysviewer/js/src/managers/studio-image-exports.ts": "6a0c82aa25d8b559bd4663bb4b90254f523108c5bbfab396e5c08ca18dc8499a",
       "molsysviewer/js/src/plugin/image-assets.ts": "e3c1b6bedd1aea001d21d89c15ddbd61d71f4272b033d8074acc3e7ca30d859d",
       "molsysviewer/js/tests/e2e/studio-image-export.e2e.ts": "cb2b42e3ffec489c5831ff728f5f92252e20d3d54e3f6af62279158a5d129e32",
       "molsysviewer/js/tests/unit/image-assets.test.ts": "7bf80a824932194501c29354cc2a3d96cb4dde34d9a9c0a3e4967d8e6b7c2e13",
-      "molsysviewer/js/tests/unit/studio-image-exports.test.ts": "a14d976e9ab4da67c2c5ebbba4348161253eafcf47361e2f4057fc67fd6a22be"
+      "molsysviewer/js/tests/unit/studio-image-exports.test.ts": "a14d976e9ab4da67c2c5ebbba4348161253eafcf47361e2f4057fc67fd6a22be",
+      "docs/content/user/export/state.md": "821e5d903771e90f1e6db623a4c766de3ff8e45b3d3ad2e015e6c2096f96ffa2",
+      "molsysviewer/viewer/panel_actions/__init__.py": "3a67552ebc28ff4698d408860ddae7a10f59a7cd61fb60d4de0fdc2d10c1cc60",
+      "tests/_jupyter_movie.mjs": "1d85c2d92d6318cb986c24b0a2acb8ac741545b5e6e027ae54d26b2390c5b8fa",
+      "tests/test_documentation_pages_run.py": "157d7a758268f847476ce8f9ab01c117be662ca19a8395a9f1f7fb241dc6a7a0",
+      "tests/test_js_source_coverage.py": "377fe41461d3856d40c042acd6810d444470c036b95bf30228dd3759d0abed2a",
+      "tests/test_movie_export.py": "6fc453db160010c56139df64160ddda880511c11ea3edd0ab4f2606bf3d0d23e",
+      "tests/test_movie_studio.py": "8874995c62bd86b1a532a65ad68d345d3723f5a963e65bfde80c3d64e0c79ba1",
+      "tests/test_source_text_encoding.py": "dcd5768e9a7a074172effc6a3f3e0c61c652e736003f270347f631823fe3ed65",
+      "tests/test_source_workflow_coverage.py": "e5baab5621cab43483ff872023e9f41348aa28cc078ac26d33738d11017006be"
     },
     "scientific_provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
     "pyunitwizard_source": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
@@ -693,6 +702,69 @@
       "760": "Complete PNG flow passes; exact placeholder/dimension rejection is strengthened and received in 761/762.",
       "764": "Native cache-fault fixture incompleteness, corrected in 765/766.",
       "notice": "All original native exits/outputs are retained; successful preparation and reproduction are not whole-product acceptance."
+    },
+    "actual_jupyter_movie": {
+      "profile": "770",
+      "owner_native_exit": 0,
+      "movie_cases": 8,
+      "image_archive": {
+        "frames": 2,
+        "width_px": 320,
+        "height_px": 180
+      },
+      "independent_session_restore": true,
+      "real_cancelled_reply_no_late_mutation": true,
+      "shared_python_studio_pause": true,
+      "source_unchanged": true,
+      "prior_failure": "767 locates an obsolete export label after five successful cases; export has not started.",
+      "guard_issue": "uibcdf/molsysviewer#383",
+      "current_offline_receiving": "769 exact label guard; 771 whole corrected Movie module within 860 scoped passes.",
+      "scope": "Actual Jupyter/kernel/anywidget/Mol* source receiving with its recorded exact owners; not a complete current core/platform/installed/human result."
+    },
+    "source_checkpoint_recovery": {
+      "run_id": 43513962722,
+      "status": "completed",
+      "conclusion": "failure",
+      "record": "molstar_source_checkpoint_20261113.json",
+      "verified_original_zip_artifacts": 4,
+      "scoped_recovery": {
+        "profile": "771",
+        "passed": 860,
+        "failed": 0,
+        "skipped": 4,
+        "skips_are_unselected_actual_hosts": true
+      },
+      "open_issues": [
+        169,
+        385
+      ],
+      "native_windows_encoder_cause": "unknown; bounded diagnostic prepared, not yet dispatched.",
+      "final_record_checks": {
+        "profile": "773",
+        "passed": 448,
+        "failed": 0,
+        "skipped": 0,
+        "ruff_files": 1063,
+        "indexes_current": true,
+        "limits": {
+          "cpu": 1,
+          "ram_gib": 1
+        },
+        "scope": "Offline record/selector validation after archiving #383 and adding the #169/#385 queues. Separate, overlapping with 771."
+      }
+    },
+    "documented_live_cell": {
+      "profile": "772",
+      "scope": "The exact named documentation block is awaited inside the real Jupyter kernel for ordinary state captures. Six stopped roundtrips, six strong restores, four Studio captures and six moving cases complete before resource retirement.",
+      "whole_profile": "incomplete_resource_stop",
+      "reason": "Global swap activity 28,307,456 bytes / about five seconds exceeds the conservative supervisor bound. About 12.81 GiB remains globally available; own cgroup has no OOM or swap allowance.",
+      "browser_termination": "The observed closed-browser error follows the resource supervisor retiring owned processes; do not attribute it to the product.",
+      "limits": {
+        "cpu": 8,
+        "ram_gib": 4,
+        "swap_gib": 0
+      },
+      "remaining": "Two popup moving cases and final cancellation/expiry in this attempt are not received. Original full 739 remains its own earlier source observation."
     }
   },
   "controlled_profiles": [
@@ -2671,6 +2743,132 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "57835850ab6158a233cc15642ce84ad8b469bafaae6d2598658d0c27d7d15e99"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 110.023561084643,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-767-jupyter-movie",
+      "peak_summed_owned_rss_mib": 3092.9,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "089a55f65de9c1c77f9de316818bacfb3ad2721b3d694579afe512b7c44ef94a"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 25.344697643071413,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-host-field-768",
+      "peak_summed_owned_rss_mib": 513.5,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "6cf6f0685e8dc76dc9e7d9ba33dea26b5de3e6170d08ba48ea11947e5aa87798"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 4.164739950094372,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-host-field-769",
+      "peak_summed_owned_rss_mib": 179.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "0e8f480fae87561aff7f287a94c73c6a76450ca04951bf9298456c09cc6cd7f9"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 78.4944070870988,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-770-jupyter-movie",
+      "peak_summed_owned_rss_mib": 3095.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "ec0ba93483d3eee2b5938d5a200dc863a21b7946c506150404ef1bc96b33cf68"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 82.11890807095915,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 84,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "ci-repair-771",
+      "peak_summed_owned_rss_mib": 910.2,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "ee0f874160ae66908d4f523ef5db767e1986d141bcca0d7ad881753ab620ad59"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "seconds": 157.73389100283384,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-molstar-513-772-jupyter-doc-cell",
+      "peak_summed_owned_rss_mib": 3521.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "df70714b7837a645bcd9b22060603bf55d728cac45b5e48956d0de52ae15471b"
     }
   ],
   "remaining": [
@@ -2747,7 +2945,24 @@
         "originals_retained": true,
         "scope": "26 completed controlled profiles, original PNGs/native controls, current source/builds and diagnostic owner; originals retained. The custody reference is appended after the immutable payload copy."
       }
-    ]
+    ],
+    "ci_source_followup": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-ci-source-20261113",
+      "files": 109,
+      "bytes": 25825368,
+      "profiles": [
+        "covering-molstar-513-767-jupyter-movie",
+        "movie-host-field-768",
+        "movie-host-field-769",
+        "covering-molstar-513-770-jupyter-movie",
+        "ci-repair-771",
+        "covering-molstar-513-772-jupyter-doc-cell"
+      ],
+      "manifest_sha256": "2d40ce9a614368f8a0633dd637e2efd6f6cb4a4b4c7b4fd6b77f0ce6b7e532c9",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 0
+    }
   },
   "preflight_rejections": [
     {
@@ -2779,7 +2994,21 @@
       ],
       "current_source_checks": "761: 490 units; 766: 521 Python controls",
       "broader_qualification": "pending",
-      "remote_closure": "Follows reviewed source publication; GitHub is authoritative for issue state."
+      "remote_closure": "Closed after verified source publication with fix/guard/record comments.",
+      "code_commit": "6e13bd26d191a1f81388e89391dae1effb7e921a",
+      "remote_closed_issues": [
+        379,
+        380,
+        382
+      ],
+      "source_checkpoint": {
+        "run_id": 43513962722,
+        "record": "molstar_source_checkpoint_20261113.json",
+        "status_at_initial_receiving": "in_progress",
+        "conclusion_at_initial_receiving": null,
+        "terminal_status": "completed",
+        "terminal_conclusion": "failure"
+      }
     }
   }
 }

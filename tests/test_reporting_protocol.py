@@ -696,16 +696,19 @@ def test_unit_guard_rejects_a_shared_build_route_that_loses_its_owner(tmp_path, 
     for relative in files:
         destination = target / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text((js_root / relative).read_text())
+        destination.write_text((js_root / relative).read_text(encoding="utf-8"), encoding="utf-8")
     assert validate_guard(tmp_path, STATE_HANDLER_UNIT_GUARD) == []
     if broken == "entry":
         path = target / "scripts/build-test-bundles.mjs"
-        path.write_text(path.read_text().replace("tests/unit/index.test.ts", "tests/unit/other.test.ts"))
+        path.write_text(
+            path.read_text(encoding="utf-8").replace("tests/unit/index.test.ts", "tests/unit/other.test.ts"),
+            encoding="utf-8",
+        )
     elif broken == "runner":
         path = target / "package.json"
-        metadata = json.loads(path.read_text())
+        metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["scripts"]["test:js"] = "node --test tests/unit/other.js"
-        path.write_text(json.dumps(metadata))
+        path.write_text(json.dumps(metadata), encoding="utf-8")
     else:
         (target / "scripts/build-test-bundles.mjs").unlink()
     assert validate_guard(tmp_path, STATE_HANDLER_UNIT_GUARD)

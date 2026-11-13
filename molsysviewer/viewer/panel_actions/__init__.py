@@ -107,6 +107,7 @@ FRONTEND_LOCAL_PANEL_ACTIONS = frozenset(
         "begin_scene_history_coalescing",
         "end_scene_history_coalescing",
         "selection_query_preview_request",
+        "cancel_image_download",
     }
 )
 

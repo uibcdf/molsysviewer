@@ -6,6 +6,7 @@ import argparse
 import importlib.util
 import json
 import os
+import re
 import secrets
 import shutil
 import socket
@@ -16,6 +17,18 @@ import time
 from pathlib import Path
 from urllib.error import URLError
 from urllib.request import Request, urlopen
+
+
+def _documented_live_state(root: Path) -> str:
+    """Receive the exact named live-cell example through the actual kernel."""
+    page = root / "docs/content/user/export/state.md"
+    matches = re.findall(
+        r"^```\{code-block\} python\n:name: live-state-capture\n:caption: [^\n]+\n\n(.*?)^```",
+        page.read_text(encoding="utf-8"),
+        re.MULTILINE | re.DOTALL,
+    )
+    assert len(matches) == 1, "State documentation must declare one live-cell example."
+    return matches[0]
 
 
 def _safe_browser_summary(path: Path) -> dict:
@@ -295,7 +308,7 @@ def run(output: Path, *, profile: str = "full") -> int:
         cell = "\n".join(
             [
                 "from pathlib import Path",
-                "import copy, json, time, zipfile, threading",
+                "import ast, copy, json, time, zipfile, threading",
                 "import numpy as np",
                 "import molsysviewer as msv",
                 "import molsysmt as msm",
@@ -307,6 +320,7 @@ def run(output: Path, *, profile: str = "full") -> int:
                 "view.annotations.add('Capture control', atom_indices=[0], tag='capture-label')",
                 "_coordinates = msv.pyunitwizard.get_value(view.get_coordinates(), to_unit='angstrom').copy()",
                 f"_output = Path({str(output / 'notebooks')!r})",
+                f"_documented_live_state = {_documented_live_state(root)!r}",
                 "def inspect_file(name, kind):",
                 "    path = _output / name",
                 "    if kind == 'state':",
@@ -319,7 +333,8 @@ def run(output: Path, *, profile: str = "full") -> int:
                 "async def save_live(name, kind):",
                 "    path = _output / name",
                 "    if kind == 'state':",
-                "        await view.save_state_async(path)",
+                "        code = compile(_documented_live_state, 'state.md#live-state-capture', 'exec', flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)",
+                "        await eval(code, {'view': view, 'path': path})",
                 "    else:",
                 "        await view.save_session_async(path)",
                 "    return inspect_file(name, kind)",

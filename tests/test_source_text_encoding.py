@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
         "tests/loaders/test_load_from_molsysmt.py",
         "tests/test_e2e_reliability.py",
         "tests/test_reporting_protocol.py",
+        "tests/test_js_build_version_resolution.py",
+        "tests/test_molstar_compatibility.py",
+        "tests/test_js_source_coverage.py",
     ],
 )
 def test_source_guard_readers_declare_utf8(relative):

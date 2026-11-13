@@ -24,8 +24,11 @@ def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
     native = tmp_path / "node_modules/molstar"
     native.mkdir(parents=True)
     qualified = JS / "scripts/reviewed-image-assets.json"
-    manifest = json.loads(qualified.read_text())
-    assert manifest["version"] == json.loads((JS / "node_modules/molstar/package.json").read_text())["version"]
+    manifest = json.loads(qualified.read_text(encoding="utf-8"))
+    assert (
+        manifest["version"]
+        == json.loads((JS / "node_modules/molstar/package.json").read_text(encoding="utf-8"))["version"]
+    )
     assert set(manifest["files"]) == {
         "lib/mol-canvas3d/passes/image.js",
         "lib/mol-canvas3d/passes/draw.js",
@@ -44,18 +47,21 @@ def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
     shutil.copy2(qualified, scripts)
     victim = native / "lib/mol-canvas3d/passes/smaa.js"
     if fault == "digest":
-        victim.write_text(victim.read_text() + "\n// Unreviewed native modification.\n")
+        victim.write_text(
+            victim.read_text(encoding="utf-8") + "\n// Unreviewed native modification.\n", encoding="utf-8"
+        )
     elif fault == "missing":
         victim.unlink()
     entry = tmp_path / "entry.js"
-    entry.write_text("export const control = 1;\n")
+    entry.write_text("export const control = 1;\n", encoding="utf-8")
     output = tmp_path / "output.js"
     builder = tmp_path / "build.mjs"
     builder.write_text(
         f"import {{ build }} from {json.dumps((JS / 'node_modules/esbuild/lib/main.js').as_uri())};\n"
         f"import {{ molstarComponentCachePlugin }} from {json.dumps((scripts / 'molstar-component-cache.mjs').as_uri())};\n"
         f"await build({{ entryPoints: [{json.dumps(str(entry))}], outfile: {json.dumps(str(output))}, "
-        "bundle: true, plugins: [molstarComponentCachePlugin()] });\n"
+        "bundle: true, plugins: [molstarComponentCachePlugin()] });\n",
+        encoding="utf-8",
     )
     result = subprocess.run([node, str(builder)], capture_output=True, text=True, timeout=30)
     if fault == "none":
@@ -97,7 +103,7 @@ def test_component_cache_repair_preserves_native_chemistry_and_releases_inputs(t
             timeout=60,
         )
         assert build.returncode == 0, build.stdout + build.stderr
-        inputs = json.loads(Path(str(output) + ".inputs.json").read_text())
+        inputs = json.loads(Path(str(output) + ".inputs.json").read_text(encoding="utf-8"))
         native_inputs = [(JS / name).resolve() for name in inputs if "molstar/" in name]
         assert native_inputs, "The native control must actually include Mol*."
         assert all(path.is_relative_to(JS / "node_modules/molstar") for path in native_inputs)
@@ -121,17 +127,18 @@ def test_native_probe_alias_overrides_an_unqualified_ancestor(tmp_path):
     node = shutil.which("node")
     assert node is not None
     provider = JS / "node_modules/molstar"
-    version = json.loads((provider / "package.json").read_text())["version"]
+    version = json.loads((provider / "package.json").read_text(encoding="utf-8"))["version"]
     foreign = tmp_path / "node_modules/molstar"
     foreign.mkdir(parents=True)
-    (foreign / "package.json").write_text(json.dumps({"name": "molstar", "version": "99.0.0"}))
+    (foreign / "package.json").write_text(json.dumps({"name": "molstar", "version": "99.0.0"}), encoding="utf-8")
     fault = foreign / "lib/mol-model-formats/structure/basic/properties.js"
     fault.parent.mkdir(parents=True)
-    fault.write_text('throw new Error("UNQUALIFIED_NATIVE_SELECTED");\n')
+    fault.write_text('throw new Error("UNQUALIFIED_NATIVE_SELECTED");\n', encoding="utf-8")
     entry = tmp_path / "probe.mjs"
     entry.write_text(
         'import { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n'
-        "console.log(typeof getChemicalComponentMap);\n"
+        "console.log(typeof getChemicalComponentMap);\n",
+        encoding="utf-8",
     )
     output = tmp_path / "qualified.cjs"
     built = subprocess.run(
@@ -142,7 +149,7 @@ def test_native_probe_alias_overrides_an_unqualified_ancestor(tmp_path):
         timeout=60,
     )
     assert built.returncode == 0, built.stdout + built.stderr
-    evidence = json.loads(Path(str(output) + ".inputs.json").read_text())
+    evidence = json.loads(Path(str(output) + ".inputs.json").read_text(encoding="utf-8"))
     assert evidence["provider"]["root"] == str(provider.resolve())
     assert evidence["provider"]["version"] == version
     assert evidence["native_inputs"]
@@ -161,16 +168,17 @@ def test_native_probe_refuses_unqualified_inputs_before_emitting(tmp_path, fault
     node = shutil.which("node")
     assert node is not None
     provider = JS / "node_modules/molstar"
-    version = json.loads((provider / "package.json").read_text())["version"]
+    version = json.loads((provider / "package.json").read_text(encoding="utf-8"))["version"]
     foreign = tmp_path / "foreign"
     foreign.mkdir()
-    (foreign / "package.json").write_text(json.dumps({"name": "molstar", "version": "99.0.0"}))
+    (foreign / "package.json").write_text(json.dumps({"name": "molstar", "version": "99.0.0"}), encoding="utf-8")
     module = foreign / "foreign.js"
-    module.write_text('export const fault = "foreign provider";\n')
+    module.write_text('export const fault = "foreign provider";\n', encoding="utf-8")
     entry = tmp_path / "probe.mjs"
     entry.write_text(
         'export { getChemicalComponentMap } from "molstar/lib/mol-model-formats/structure/basic/properties";\n'
-        + (f"export {{ fault }} from {json.dumps(str(module))};\n" if fault == "origin" else "")
+        + (f"export {{ fault }} from {json.dumps(str(module))};\n" if fault == "origin" else ""),
+        encoding="utf-8",
     )
     output = tmp_path / "rejected.cjs"
     built = subprocess.run(

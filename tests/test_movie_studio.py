@@ -3,6 +3,7 @@
 import asyncio
 import json
 import os
+import re
 import runpy
 from concurrent.futures import Future
 from copy import deepcopy
@@ -17,6 +18,16 @@ from molsysviewer.viewer.panel_actions import dispatch_panel_action
 import molsysviewer as msv
 
 CAMERA = {"position": [0, 0, 30], "target": [0, 0, 0], "up": [0, 1, 0]}
+
+
+def test_live_movie_export_field_matches_studio():
+    """The actual-host owner must address the field exposed by the current UI."""
+    root = Path(__file__).resolve().parents[1]
+    panel = (root / "molsysviewer/js/src/ui/panels/movie-panel.ts").read_text(encoding="utf-8")
+    owner = (root / "tests/_jupyter_movie.mjs").read_text(encoding="utf-8")
+    field = re.search(r'this.field\("(Output path in Python session[^"]+)", "path"', panel)
+    assert field is not None
+    assert f"getByLabel('{field.group(1)}',{{exact:true}})" in owner
 
 
 @pytest.fixture

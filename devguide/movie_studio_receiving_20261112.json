@@ -260,5 +260,24 @@
     "original_total": 46
   },
   "publication": "Paused: no candidate, tag, package, release, promotion or 1.0 declaration.",
-  "private_evidence_root": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109"
+  "private_evidence_root": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109",
+  "actual_jupyter_followup_20261113": {
+    "profile": "770",
+    "owner_native_exit": 0,
+    "movie_cases": 8,
+    "image_archive": {
+      "frames": 2,
+      "width_px": 320,
+      "height_px": 180
+    },
+    "independent_session_restore": true,
+    "real_cancelled_reply_no_late_mutation": true,
+    "shared_python_studio_pause": true,
+    "source_unchanged": true,
+    "prior_failure": "767 locates an obsolete export label after five successful cases; export has not started.",
+    "guard_issue": "uibcdf/molsysviewer#383",
+    "current_offline_receiving": "769 exact label guard; 771 whole corrected Movie module within 860 scoped passes.",
+    "scope": "Actual Jupyter/kernel/anywidget/Mol* source receiving with its recorded exact owners; not a complete current core/platform/installed/human result."
+  },
+  "qualification_notice": "This additional actual-Jupyter source result does not replace M2 native Qt, accessibility, portable/story, full hosted, installed or postponed human receiving."
 }

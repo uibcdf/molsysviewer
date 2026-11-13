@@ -28,6 +28,11 @@ on:
         default: full
         type: choice
         options: [full, diagnostics]
+      encoder_diagnostics:
+        description: Non-qualifying Windows Movie encoder investigation only
+        required: false
+        default: false
+        type: boolean
       platform:
         description: All platforms for qualification; one platform only for scoped source recovery
         required: true
@@ -74,7 +79,7 @@ permissions:
 
 jobs:
   source-pair:
-    name: ${{ inputs.receiving_scope == 'diagnostics' && 'Source diagnostics' || 'Source pair' }} on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
+    name: ${{ inputs.encoder_diagnostics && 'Movie encoder diagnostics' || inputs.receiving_scope == 'diagnostics' && 'Source diagnostics' || 'Source pair' }} on ${{ matrix.cfg.os }}, Python ${{ matrix.cfg.python-version }}
     runs-on: ${{ matrix.cfg.os }}
     timeout-minutes: 120
     strategy:
@@ -96,9 +101,16 @@ jobs:
           SOURCE_RECEIVING: ${{ inputs.source_receiving || false }}
           PANDAS_VERSION: ${{ inputs.pandas_version || '2.3.3' }}
           RECEIVING_SCOPE: ${{ inputs.receiving_scope || 'full' }}
+          ENCODER_DIAGNOSTICS: ${{ inputs.encoder_diagnostics || false }}
         run: |
           set -euo pipefail
           RECEIVING_SCOPE="${RECEIVING_SCOPE:-full}"
+          if [[ "${ENCODER_DIAGNOSTICS:-false}" != false ]]; then
+            if [[ "$ENCODER_DIAGNOSTICS" != true || "$SOURCE_RECEIVING" != true || "$SELECTED_PLATFORM" != windows-2025 || "$RECEIVING_SCOPE" != full ]]; then
+              echo "::error::Encoder diagnostics require source_receiving=true, Windows and full scope; this narrow run does not qualify a candidate"
+              exit 1
+            fi
+          fi
           case "$RECEIVING_SCOPE" in
             full|diagnostics) ;;
             *) echo "::error::Unknown receiving scope"; exit 1 ;;
@@ -285,7 +297,23 @@ jobs:
         if: inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         working-directory: molsysviewer-source
-        run: python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/ --junitxml=source-receiving.xml
+        env:
+          ENCODER_DIAGNOSTICS: ${{ inputs.encoder_diagnostics || false }}
+        run: |
+          if [[ "$ENCODER_DIAGNOSTICS" == true ]]; then
+            python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci tests/test_movie_export.py --basetemp=.pytest_cache/movie-encoder-diagnostic --junitxml=source-receiving.xml
+          else
+            python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/ --junitxml=source-receiving.xml
+          fi
+
+      - name: Preserve native Movie encoder diagnostic logs
+        if: always() && inputs.encoder_diagnostics == true
+        uses: actions/upload-artifact@v4
+        with:
+          name: movie-encoder-native-${{ runner.os }}
+          path: molsysviewer-source/.pytest_cache/movie-encoder-diagnostic/**/encoder.log
+          include-hidden-files: true
+          if-no-files-found: warn
 
       - name: Preserve the original source-receiving JUnit
         if: always() && inputs.receiving_scope != 'diagnostics'

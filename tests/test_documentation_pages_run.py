@@ -18,7 +18,9 @@ from __future__ import annotations
 import ast
 import json
 import re
+import runpy
 import warnings
+from inspect import CO_COROUTINE
 from pathlib import Path
 
 import pytest
@@ -34,6 +36,21 @@ EXECUTABLE_PAGES = (
 )
 
 BLOCK = re.compile(r"^```python\n(.*?)^```", re.MULTILINE | re.DOTALL)
+
+
+def test_live_state_example_has_an_explicit_host_and_actual_kernel_owner():
+    """A connected-renderer cell cannot be received by a headless exec."""
+    owner = ROOT / "tests/_jupyter_live_capture.py"
+    source = runpy.run_path(str(owner))["_documented_live_state"](ROOT)
+    code = compile(source, "state.md#live-state-capture", "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+    assert code.co_flags & CO_COROUTINE
+    assert source.strip() == "await view.save_state_async(path)"
+    receiving = owner.read_text(encoding="utf-8")
+    assert "_documented_live_state(root)!r" in receiving
+    assert "await eval(code, {'view': view, 'path': path})" in receiving
+    # Keep every ordinary page block in the headless gate; only the explicitly
+    # named live cell travels to the real Jupyter/kernel/browser owner.
+    assert source not in _blocks(ROOT / "docs/content/user/export/state.md")
 
 
 def _blocks(page: Path) -> list[str]:

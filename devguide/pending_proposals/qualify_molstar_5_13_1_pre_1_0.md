@@ -257,3 +257,35 @@ units pass in 761; 763 receives panel/addon and native Movie export regressions.
 The build rejects unreviewed bytes for the read-only native readiness seam.
 Earlier failed controls remain evidence; full-core/platform/installed gates
 and the architectural review remain open.
+
+## Source checkpoint failure and scoped recovery — 2026-11-13
+
+Exact-source run `43513962722` on published `6e13bd26` fails all three Python
+3.14 jobs: Linux/macOS each have five shared guard/example failures and
+Windows has eighteen, including twelve native-source UTF-8 decoding failures
+and one real WebM encoder failure. The four original artifact ZIPs match
+GitHub's size/digest inventory. Browser and notebook gates did not execute;
+the uploaded pre-existing notebook logs do not qualify this source.
+
+The [terminal receipt](../molstar_source_checkpoint_20261113.json) records
+every failing node. Corrected source/coverage/vocabulary/encoding and page
+controls pass **860 cases**, with four unselected actual-host skips, in `771`.
+The connected-Jupyter example is explicitly named and received by the actual
+kernel, rather than executed headlessly. #169 is reopened for new unspecified
+reads; #385 owns native Windows WebM diagnosis. No format or pixel assertion
+is removed. A scoped source-only Windows diagnostic is distinct from the next
+full matrix and installed qualification.
+
+Actual Jupyter `772` executes that exact live cell and completes six stopped
+roundtrips, six strong restores, four Studio captures and six moving cases.
+Global swap activity then crosses the conservative supervisor threshold and
+our processes are retired cleanly. The resulting closed-browser observation
+is an interrupted resource-controlled attempt, not an established product
+failure. Its two remaining popup moving cases and final cancellation/expiry
+remain unreceived. Own cgroup memory peaks near 2.35 GiB under its 4 GiB limit;
+about 12.81 GiB remains globally available, without OOM or owned survivors.
+
+Actual Movie notebook `770` separately passes all eight cases after the #383
+field-label correction. Retain its original failed `767` attempt and exact
+owner inputs. Neither this successful host nor local checks make the failed
+source checkpoint green or close #369/#372.

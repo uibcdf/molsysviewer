@@ -71,7 +71,7 @@ def test_real_production_functions_are_covered_and_unmapped_runner_is_rejected(r
     mapped = _run(CHECK, reports / "mapped")
     assert mapped.returncode == 0, mapped.stderr
     assert "1 files" in mapped.stdout
-    summary = json.loads((reports / "mapped/coverage-summary.json").read_text())
+    summary = json.loads((reports / "mapped/coverage-summary.json").read_text(encoding="utf-8"))
     source = str(JS / "src/ui/local-ui-model.ts")
     assert summary[source]["functions"]["covered"] > 0
     # The uncalled on/off methods are not silently reported as executed.
@@ -92,36 +92,47 @@ def test_report_gate_rejects_broken_or_nonproduction_coverage(reports, tmp_path,
     if defect == "missing":
         lcov.unlink()
     elif defect == "empty":
-        lcov.write_text("")
+        lcov.write_text("", encoding="utf-8")
     elif defect == "harness":
-        measured = json.loads(summary.read_text())
+        measured = json.loads(summary.read_text(encoding="utf-8"))
         original = str(JS / "src/ui/local-ui-model.ts")
         harness = str(JS / "tests/unit/local-ui-model.test.ts")
         measured[harness] = measured.pop(original)
-        summary.write_text(json.dumps(measured))
-        lcov.write_text(lcov.read_text().replace("src/ui/local-ui-model.ts", "tests/unit/local-ui-model.test.ts"))
+        summary.write_text(json.dumps(measured), encoding="utf-8")
+        lcov.write_text(
+            lcov.read_text(encoding="utf-8").replace("src/ui/local-ui-model.ts", "tests/unit/local-ui-model.test.ts"),
+            encoding="utf-8",
+        )
     elif defect == "false-full":
-        measured = json.loads(summary.read_text())
+        measured = json.loads(summary.read_text(encoding="utf-8"))
         for counters in measured.values():
             counters["functions"].update(total=0, covered=0, pct=100)
-        summary.write_text(json.dumps(measured))
-        lcov.write_text(re.sub(r"^(FNF|FNH):\d+", r"\1:0", lcov.read_text(), flags=re.MULTILINE))
+        summary.write_text(json.dumps(measured), encoding="utf-8")
+        lcov.write_text(
+            re.sub(r"^(FNF|FNH):\d+", r"\1:0", lcov.read_text(encoding="utf-8"), flags=re.MULTILINE), encoding="utf-8"
+        )
     else:
-        lcov.write_text("\n".join(line for line in lcov.read_text().splitlines() if not line.startswith("DA:")))
+        lcov.write_text(
+            "\n".join(line for line in lcov.read_text(encoding="utf-8").splitlines() if not line.startswith("DA:")),
+            encoding="utf-8",
+        )
     rejected = _run(CHECK, directory)
     assert rejected.returncode != 0, rejected.stdout
     assert "Invalid JavaScript source coverage" in rejected.stderr
 
 
 def test_unit_coverage_is_required_before_python_and_upload():
-    scripts = json.loads((JS / "package.json").read_text())["scripts"]
-    assert "--sourcemap" in scripts["build:test:js"]
-    assert "tests/unit/index.test.ts" in scripts["build:test:js"]
+    scripts = json.loads((JS / "package.json").read_text(encoding="utf-8"))["scripts"]
+    assert scripts["build:test:js"] == "node scripts/build-test-bundles.mjs unit"
+    builder = (JS / "scripts/build-test-bundles.mjs").read_text(encoding="utf-8")
+    unit_target = builder.split("unit: {", 1)[1].split("harness: {", 1)[0]
+    assert 'entryPoints: [path.join(root, "tests/unit/index.test.ts")]' in unit_target
+    assert "sourcemap: true" in unit_target
     assert scripts["coverage:js"] == (
         "npm run build:test:js && c8 --config=.c8rc.json node --test tests/unit/dist-index.js"
         " && node scripts/check-source-coverage.mjs"
     )
-    workflow = yaml.safe_load((ROOT / ".github/workflows/CI.yaml").read_text())
+    workflow = yaml.safe_load((ROOT / ".github/workflows/CI.yaml").read_text(encoding="utf-8"))
     steps = workflow["jobs"]["test"]["steps"]
     unit = next(i for i, step in enumerate(steps) if step.get("name") == "JS unit tests (Node)")
     python = next(i for i, step in enumerate(steps) if step.get("name") == "Run tests")

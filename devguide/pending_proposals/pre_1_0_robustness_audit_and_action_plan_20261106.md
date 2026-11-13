@@ -1221,7 +1221,7 @@ do not silently omit an existing accepted family.
 | **D5.1 — source received, uibcdf/molsysmt#549** | Scheme-aware group labels, legacy/Amber/CCD distinctions and native builder/sequence/file consequences pass; no implicit chemical renaming |
 | **D5.2 — consumer source received, final acceptance separate** | Owner #582 delivers experimental `get_model_recipe`, its expert facade and compiled-physics/refusal guards. Draft #696 adds explicit physical inspection and labelled compiled observations in mechanical reports, retaining cheap request review, native origins, units, unsupported controls and no competing parameterization |
 | **D5.3 — source received, uibcdf/molsysmt#612** | Stable-ID alternate-site admission, whole-request atomic refusal and explicit observation/PDB-fidelity controls pass |
-| **D5.4 — uibcdf/molsysmt#615** | Unexplained initialization observation; receive a causal diagnosis or bounded evidenced disposition, retaining the original timeout |
+| **D5.4 — uibcdf/molsysviewer#384 / uibcdf/molsysmt#615** | MolSysViewer now leads the unexplained initial-canvas audit; receive a causal diagnosis or bounded evidenced disposition and return it to MolSysMT, retaining the original timeout |
 | **D5.5 — bounded source disposition received, uibcdf/molsysmt#473** | Provisional ISA area units and unverified original normalization remain explicit under ordinary/nondefault policies; owner #473 stays open |
 | **D5.6 — bounded source disposition received, uibcdf/molsysmt#475** | Legacy ECI wrapper/aggregation remains experimental and distinct from physical charge; original dimension/additivity is unverified and owner #475 stays open |
 

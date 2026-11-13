@@ -1,0 +1,301 @@
+{
+  "schema": "molsysviewer.molstar_source_checkpoint@1",
+  "observed_at": "2026-11-13T22:10:43Z",
+  "run_id": 43513962722,
+  "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43513962722",
+  "workflow": ".github/workflows/ci-python-314-source-pair.yaml",
+  "head_sha": "6e13bd26d191a1f81388e89391dae1effb7e921a",
+  "source_provider_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+  "inputs": {
+    "source_receiving": true,
+    "receiving_scope": "full",
+    "platform": "all",
+    "pandas_version": "3.1.0"
+  },
+  "historical_version_defaults": "Ignored by the source_receiving route; no candidate version/build is assigned.",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 132191041200,
+      "name": "Source pair on ubuntu-latest, Python 3.14",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run MolSysViewer Python tests"
+      ]
+    },
+    {
+      "id": 132191041682,
+      "name": "Source pair on windows-2025, Python 3.14",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run MolSysViewer Python tests"
+      ]
+    },
+    {
+      "id": 132191041687,
+      "name": "Source pair on macos-15, Python 3.14",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run MolSysViewer Python tests"
+      ]
+    }
+  ],
+  "first_receptor": {
+    "version": "1.1.1",
+    "capture": "metadata",
+    "verdict": "PENDING; three jobs in progress; no artifacts",
+    "guide_revision": "The installed published receptor remains older than the 1.5.0 guide. Its supported metadata report is retained; no global extension/environment upgrade was made."
+  },
+  "source_closed_issues": [
+    379,
+    380,
+    382
+  ],
+  "local_evidence": "490 canonical JS units; 521 scoped Python cases; actual PNG and native panel/Movie browser controls. Separate overlapping scopes.",
+  "publication": "No tag, package, promotion, installed candidate or publication authorization.",
+  "terminal_receptor": {
+    "version": "1.1.1",
+    "capture": "adaptive",
+    "verdict": "FAIL",
+    "exit": 1,
+    "scope": "All three jobs fail the Python step. Native logs and original JUnit identify causes beyond the compact process-exit diagnosis."
+  },
+  "verified_original_artifacts": [
+    {
+      "id": 14080776322,
+      "name": "source-receiving-Linux-py3.14",
+      "bytes": 84308,
+      "sha256": "eb35e2ea0cc92e8564c85bf7752bdbc08a3d367f74e664788d48c511381dcaf6",
+      "github_digest_matches": true
+    },
+    {
+      "id": 14080668199,
+      "name": "source-receiving-macOS-py3.14",
+      "bytes": 88696,
+      "sha256": "fee63c0bda0aaf2ed0eceaa82597ac7889f5657d568e2e24df7a85a38c6bb20a",
+      "github_digest_matches": true
+    },
+    {
+      "id": 14080594118,
+      "name": "source-receiving-Windows-py3.14",
+      "bytes": 89563,
+      "sha256": "ce06d4cc50d88dc6aa952bf80b88d4e41aacb1b991857d9d2e69fcd42e6573a8",
+      "github_digest_matches": true
+    },
+    {
+      "id": 14080551625,
+      "name": "source-pair-notebook-failure-logs",
+      "bytes": 12746,
+      "sha256": "5a66bd7594dae3b3bbaea653977b5a853a8fe13e9b2558e705d362da2fbf5a94",
+      "github_digest_matches": true
+    }
+  ],
+  "native_python_results": [
+    {
+      "artifact": "source-receiving-Linux-py3.14",
+      "tests": 4693,
+      "passed": 4646,
+      "failed": 5,
+      "errors": 0,
+      "skipped": 42,
+      "deselected": 17,
+      "seconds": 421.355,
+      "failures": [
+        {
+          "class": "tests.test_capability_audit",
+          "name": "test_the_generated_document_is_current",
+          "message": "AssertionError: devguide/capability_audit.md is out of date; regenerate it with `python devtools/capability_audit.py --write`\nassert '# Capability... changed.\\n\\n' == '# Capability... changed.\\n\\n'\n  \n  Skipping 3071 identical leading characters in diff, use -v to show\n  Skipping 10822 identical trailing characters in diff, use -v to show\n  - movie.` | 31 | 31 | MolSys\n  ?            -    -\n  + movie.` | 23 | 23 | MolSys\n  ?           +    +"
+        },
+        {
+          "class": "tests.test_documentation_pages_run",
+          "name": "test_the_page_runs_as_written[docs/content/user/export/state.md]",
+          "message": "Failed: docs/content/user/export/state.md, python block 2 failed:\nawait view.save_state_async(\"scene.json\")\n\nSyntaxError: 'await' outside function (state.md#2, line 1)"
+        },
+        {
+          "class": "tests.test_js_source_coverage",
+          "name": "test_unit_coverage_is_required_before_python_and_upload",
+          "message": "AssertionError: assert '--sourcemap' in 'node scripts/build-test-bundles.mjs unit'"
+        },
+        {
+          "class": "tests.test_panel_action_dispatch",
+          "name": "test_python_handlers_cover_the_closed_panel_action_vocabulary_exactly",
+          "message": "AssertionError: assert {'activate_se...objects', ...} == {'activate_se...objects', ...}\n  \n  Extra items in the left set:\n  'cancel_image_download'\n  \n  Full diff: (-: missing in left side, +: extra in left side)\n    {\n        'activate_selection',\n        'add_label_from_selection',\n        'add_member_to_layer',\n        'addon_register_module',\n        'apply_selection_query',\n        'batch_scene_objects',\n        'browse_load_files',\n  +     'cancel_image_download',\n[+127 more lines; full report in element text]"
+        },
+        {
+          "class": "tests.test_source_text_encoding",
+          "name": "test_source_guard_readers_declare_utf8[tests/test_reporting_protocol.py]",
+          "message": "AssertionError: tests/test_reporting_protocol.py:699\nassert (False)\n +  where False = isinstance(None, <class 'ast.Constant'>)\n +    where <class 'ast.Constant'> = ast.Constant"
+        }
+      ]
+    },
+    {
+      "artifact": "source-receiving-macOS-py3.14",
+      "tests": 4693,
+      "passed": 4615,
+      "failed": 5,
+      "errors": 0,
+      "skipped": 73,
+      "deselected": 17,
+      "seconds": 821.424,
+      "failures": [
+        {
+          "class": "tests.test_capability_audit",
+          "name": "test_the_generated_document_is_current",
+          "message": "AssertionError: devguide/capability_audit.md is out of date; regenerate it with `python devtools/capability_audit.py --write`\nassert '# Capability... changed.\\n\\n' == '# Capability... changed.\\n\\n'\n  \n  Skipping 3071 identical leading characters in diff, use -v to show\n  Skipping 10822 identical trailing characters in diff, use -v to show\n  - movie.` | 31 | 31 | MolSys\n  ?            -    -\n  + movie.` | 23 | 23 | MolSys\n  ?           +    +"
+        },
+        {
+          "class": "tests.test_documentation_pages_run",
+          "name": "test_the_page_runs_as_written[docs/content/user/export/state.md]",
+          "message": "Failed: docs/content/user/export/state.md, python block 2 failed:\nawait view.save_state_async(\"scene.json\")\n\nSyntaxError: 'await' outside function (state.md#2, line 1)"
+        },
+        {
+          "class": "tests.test_js_source_coverage",
+          "name": "test_unit_coverage_is_required_before_python_and_upload",
+          "message": "AssertionError: assert '--sourcemap' in 'node scripts/build-test-bundles.mjs unit'"
+        },
+        {
+          "class": "tests.test_panel_action_dispatch",
+          "name": "test_python_handlers_cover_the_closed_panel_action_vocabulary_exactly",
+          "message": "AssertionError: assert {'activate_se...objects', ...} == {'activate_se...objects', ...}\n  \n  Extra items in the left set:\n  'cancel_image_download'\n  \n  Full diff: (-: missing in left side, +: extra in left side)\n    {\n        'activate_selection',\n        'add_label_from_selection',\n        'add_member_to_layer',\n        'addon_register_module',\n        'apply_selection_query',\n        'batch_scene_objects',\n        'browse_load_files',\n  +     'cancel_image_download',\n[+127 more lines; full report in element text]"
+        },
+        {
+          "class": "tests.test_source_text_encoding",
+          "name": "test_source_guard_readers_declare_utf8[tests/test_reporting_protocol.py]",
+          "message": "AssertionError: tests/test_reporting_protocol.py:699\nassert (False)\n +  where False = isinstance(None, <class 'ast.Constant'>)\n +    where <class 'ast.Constant'> = ast.Constant"
+        }
+      ]
+    },
+    {
+      "artifact": "source-receiving-Windows-py3.14",
+      "tests": 4693,
+      "passed": 4606,
+      "failed": 18,
+      "errors": 0,
+      "skipped": 69,
+      "deselected": 17,
+      "seconds": 854.034,
+      "failures": [
+        {
+          "class": "tests.test_capability_audit",
+          "name": "test_the_generated_document_is_current",
+          "message": "AssertionError: devguide/capability_audit.md is out of date; regenerate it with `python devtools/capability_audit.py --write`\nassert '# Capability... changed.\\n\\n' == '# Capability... changed.\\n\\n'\n  \n  Skipping 3071 identical leading characters in diff, use -v to show\n  Skipping 10822 identical trailing characters in diff, use -v to show\n  - movie.` | 31 | 31 | MolSys\n  ?            -    -\n  + movie.` | 23 | 23 | MolSys\n  ?           +    +"
+        },
+        {
+          "class": "tests.test_documentation_pages_run",
+          "name": "test_the_page_runs_as_written[docs/content/user/export/state.md]",
+          "message": "Failed: docs/content/user/export/state.md, python block 2 failed:\nawait view.save_state_async(\"scene.json\")\n\nSyntaxError: 'await' outside function (docs/content/user/export/state.md#2, line 1)"
+        },
+        {
+          "class": "tests.test_js_build_version_resolution",
+          "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[version-runtime]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_js_build_version_resolution",
+          "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[version-unit]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_js_build_version_resolution",
+          "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[version-harness]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_js_build_version_resolution",
+          "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[bytes-runtime]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_js_build_version_resolution",
+          "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[bytes-unit]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_js_build_version_resolution",
+          "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[bytes-harness]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_js_source_coverage",
+          "name": "test_unit_coverage_is_required_before_python_and_upload",
+          "message": "AssertionError: assert '--sourcemap' in 'node scripts/build-test-bundles.mjs unit'"
+        },
+        {
+          "class": "tests.test_molstar_compatibility",
+          "name": "test_image_assets_build_guard_rejects_changed_native_bytes[none]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_molstar_compatibility",
+          "name": "test_image_assets_build_guard_rejects_changed_native_bytes[digest]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_molstar_compatibility",
+          "name": "test_image_assets_build_guard_rejects_changed_native_bytes[missing]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_molstar_compatibility",
+          "name": "test_native_probe_alias_overrides_an_unqualified_ancestor",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_molstar_compatibility",
+          "name": "test_native_probe_refuses_unqualified_inputs_before_emitting[version]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_molstar_compatibility",
+          "name": "test_native_probe_refuses_unqualified_inputs_before_emitting[origin]",
+          "message": "UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 3750: character maps to <undefined>"
+        },
+        {
+          "class": "tests.test_movie_export",
+          "name": "test_real_encoder_outputs_are_readable_and_match_sample_count[webm]",
+          "message": "RuntimeError: Movie encoder failed to finish the output."
+        },
+        {
+          "class": "tests.test_panel_action_dispatch",
+          "name": "test_python_handlers_cover_the_closed_panel_action_vocabulary_exactly",
+          "message": "AssertionError: assert {'activate_se...objects', ...} == {'activate_se...objects', ...}\n  \n  Extra items in the left set:\n  'cancel_image_download'\n  \n  Full diff: (-: missing in left side, +: extra in left side)\n    {\n        'activate_selection',\n        'add_label_from_selection',\n        'add_member_to_layer',\n        'addon_register_module',\n        'apply_selection_query',\n        'batch_scene_objects',\n        'browse_load_files',\n  +     'cancel_image_download',\n[+127 more lines; full report in element text]"
+        },
+        {
+          "class": "tests.test_source_text_encoding",
+          "name": "test_source_guard_readers_declare_utf8[tests/test_reporting_protocol.py]",
+          "message": "AssertionError: tests/test_reporting_protocol.py:699\nassert (False)\n +  where False = isinstance(None, <class 'ast.Constant'>)\n +    where <class 'ast.Constant'> = ast.Constant"
+        }
+      ]
+    }
+  ],
+  "diagnosis": {
+    "common": [
+      "Generated capability audit not regenerated after Movie API expansion.",
+      "A connected-Jupyter top-level-await example is executed by the headless markdown runner.",
+      "The coverage guard expects obsolete inline esbuild options instead of the current external unit builder.",
+      "Frontend-local cancel_image_download missing from the Python closed-vocabulary exclusion.",
+      "New source guard fixture reads omit explicit UTF-8."
+    ],
+    "windows_additional": [
+      "Twelve native-source cases decode UTF-8 as cp1252 (#169 reopened).",
+      "Real WebM encoder exits nonzero; stderr absent from original artifacts; cause unknown (#385)."
+    ],
+    "browser_notebooks": "Required Linux core browser and notebook receiving did not execute after Python failed; existing tracked notebook logs in the artifact do not establish a new notebook execution."
+  },
+  "local_correction_receiving": {
+    "profile": "ci-repair-771",
+    "passed": 860,
+    "failed": 0,
+    "skipped": 4,
+    "skips": "Four explicit unselected actual-Jupyter tests; not received by this headless scope.",
+    "native_exit": 0,
+    "production_delta": "Only the frontend-local vocabulary classification changes Python production metadata; no scientific/encoder/runtime algorithm is changed.",
+    "windows": "Local checks do not qualify the native Windows repair.",
+    "live_example": "The explicit live-state-capture block is handed unchanged to the actual Jupyter kernel, separately from sequential headless blocks."
+  },
+  "next": "Receive the live documented cell, commit reviewed corrections, and use a source-only Windows encoder diagnostic before deciding the new full source checkpoint. No failed original outcome is reclassified."
+}

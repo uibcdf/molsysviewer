@@ -39,6 +39,7 @@ def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets()
         "SOURCE_RECEIVING": "${{ inputs.source_receiving || false }}",
         "PANDAS_VERSION": "${{ inputs.pandas_version || '2.3.3' }}",
         "RECEIVING_SCOPE": "${{ inputs.receiving_scope || 'full' }}",
+        "ENCODER_DIAGNOSTICS": "${{ inputs.encoder_diagnostics || false }}",
     }
 
 
@@ -71,6 +72,42 @@ def test_source_recovery_guard_executes_without_waiving_candidate_platforms(plat
     if receiving_scope != "full":
         accepted = receiving_scope == "diagnostics" and receiving and platform == "ubuntu-latest"
     assert result.returncode == (0 if accepted else 1), result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("platform", ["all", "ubuntu-latest", "macos-15", "windows-2025"])
+@pytest.mark.parametrize("receiving", [False, True])
+@pytest.mark.parametrize("scope", ["full", "diagnostics"])
+def test_encoder_diagnostic_cannot_qualify_or_broaden_a_candidate(platform, receiving, scope):
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("Bash is required for the actual workflow guard")
+    result = subprocess.run(
+        [bash],
+        input=steps[0]["run"],
+        capture_output=True,
+        text=True,
+        env=dict(
+            os.environ,
+            SELECTED_PLATFORM=platform,
+            SOURCE_RECEIVING=str(receiving).lower(),
+            PANDAS_VERSION="3.1.0",
+            RECEIVING_SCOPE=scope,
+            ENCODER_DIAGNOSTICS="true",
+        ),
+    )
+    assert (result.returncode == 0) is (platform == "windows-2025" and receiving and scope == "full")
+    tests = next(step for step in steps if step.get("name") == "Run MolSysViewer Python tests")
+    diagnostic, full = tests["run"].split("else", 1)
+    assert "tests/test_movie_export.py" in diagnostic
+    assert '-m "not qt_runtime" tests/' in full
+    receipt = next(step for step in steps if step.get("name") == "Preserve native Movie encoder diagnostic logs")
+    assert receipt["if"] == "always() && inputs.encoder_diagnostics == true"
+    assert receipt["with"]["path"].endswith("/**/encoder.log")
 
 
 @pytest.mark.parametrize(

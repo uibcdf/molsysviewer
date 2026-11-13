@@ -953,6 +953,30 @@ Current native `762` passes all PNG/owner controls with exact decoded reference
 pixels; `763` passes the complete panel/addon and Movie export/cancellation
 regressions. `761` receives project/builds and all 490 units. Original failures,
 the independent native first-use control and private evidence remain preserved.
+The single [full source checkpoint](molstar_source_checkpoint_20261113.json)
+was dispatched as run [43513962722](https://github.com/uibcdf/molsysviewer/actions/runs/43513962722)
+on published source `6e13bd26`, with exact MolSysMT `aee7aa65` and all three
+Python 3.14 platforms. All three jobs fail the Python step: Linux/macOS have
+five failures each; Windows has eighteen. The four original artifact ZIPs
+match GitHub's sizes and SHA-256. Five shared guard/example synchronization
+faults are diagnosed; Windows also exposes twelve UTF-8 decoding failures
+(reopened #169) and a native WebM encoder failure (#385, cause unknown).
+The corrected focused scope passes 860 cases with four explicitly unselected
+live-host skips in `771`. Actual Jupyter `772` executes the documented live
+cell and completes six stopped/strong restores, four Studio captures and six
+moving cases, then the supervisor retires our processes after global swap
+activity exceeds its conservative bound. Its whole-profile result remains
+incomplete; no OOM, owned survivor or resource-usage limit violation occurs.
+A bounded Windows encoder diagnostic will recover native
+stderr before another full matrix; the failed checkpoint remains failed.
+#379/#380/#382 are closed with their source guards. No publication is authorized.
+
+Actual Jupyter Movie `770` completes all eight authoring/export/session and
+cancel/late-reply controls. Its earlier `767` failure is the old field-label
+selector, not an attempted encoder operation; #383 corrects the selector and
+adds a cross-owner label guard. This is source/actual-host receiving, not
+current full-core, platform, installed or postponed human acceptance.
+
 Complete current-runtime browser/host/platform/installed gates remain open;
 earlier completed entries retain their recorded runtime identities.
 Current real Wayland/NVIDIA Qt receiving and actual-Jupyter controller/buffer

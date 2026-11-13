@@ -23,7 +23,8 @@ view.measurements.add_distance(
     tag="d1",
 )
 
-view.save_state("scene.json")
+path = "scene.json"
+view.save_state(path)
 ```
 
 The write is atomic: the file appears complete or not at all, so an interrupted save
@@ -33,8 +34,11 @@ cannot leave you with half a scene.
 
 For the camera you see now, display `view` first. In a later Jupyter cell, use:
 
-```python
-await view.save_state_async("scene.json")
+```{code-block} python
+:name: live-state-capture
+:caption: Jupyter cell with a connected, displayed view
+
+await view.save_state_async(path)
 ```
 
 This waits for an acknowledged draw before writing. The current runtime captures

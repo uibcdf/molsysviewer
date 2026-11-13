@@ -543,3 +543,5 @@ Completed work, kept for the reasoning:
 - [Panel-only rendering](panel_only_native_loop.md) — #379 keeps the hidden Studio loop stopped through initialization, work-file flows and actual PNG export.
 - [Detached Studio PNG](detached_studio_png_uses_empty_canvas.md) — #380 delegates to the associated canvas with exact native pixels, requester isolation and bounded cancellation/closure.
 - [Native image readiness](native_image_asset_readiness.md) — #382 waits for qualified SMAA uploads before first PNG/Movie rendering, preserving requested quality and cancellation.
+
+- [Actual-Jupyter Movie export field](jupyter_movie_export_field_label.md) — #383 aligns the exact field selector and receives all eight actual-host authoring/export/session/cancellation cases.

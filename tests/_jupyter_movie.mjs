@@ -109,7 +109,7 @@ export async function receiveJupyterMovie({page,kernel,config,report,openCanvas,
 
   phase('Movie detached export');const path=config.output+'/notebooks/studio.zip';
   await panel.getByRole('tab',{name:'Export',exact:true}).click();
-  await panel.getByLabel('Output path in Python session (.mp4, .webm or .zip)',{exact:true}).fill(path);
+  await panel.getByLabel('Output path in Python session (.mp4, .webm, .zip or .html)',{exact:true}).fill(path);
   await panel.getByLabel('Frames per second',{exact:true}).fill('2');
   await panel.getByLabel('Width (pixels)',{exact:true}).fill('320');
   await panel.getByLabel('Height (pixels)',{exact:true}).fill('180');

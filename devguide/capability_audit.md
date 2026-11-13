@@ -26,7 +26,7 @@ behaviour, delegates it, or merely hosts it.
 | Interactions | `view.interactions.`, `view.interactions[…].` | 48 | 48 | MolSysMT (scientific authority) | [page](../docs/content/user/overlays/interactions.md) | contract-tested, browser-observed, benchmarked | experimental | 0.24.0 |
 | Trajectories and frames | `view.player.` | 11 | 11 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/playback.md) | contract-tested, browser-observed, benchmarked | stable | 0.18.0 |
 | Trajectory plot | `view.trajectory_plot.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | contract-tested, browser-observed | experimental | 0.19.0 |
-| Movie | `view.movie.` | 23 | 23 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | contract-tested, browser-observed | experimental | 0.18.0 |
+| Movie | `view.movie.` | 31 | 31 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | contract-tested, browser-observed | experimental | 0.18.0 |
 | Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | [page](../docs/content/user/viewer/camera_and_controls.ipynb) | contract-tested, browser-observed | stable | 0.18.0 |
 | save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | contract-tested | stable | 0.19.0 |
 | save_session / load_session | `view.save_session`, `molsysviewer.load_session` | 3 | 3 | MolSysViewer (Python authority) | [page](../docs/content/user/export/session.md) | contract-tested | experimental | 0.22.0 |

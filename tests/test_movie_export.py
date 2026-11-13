@@ -94,6 +94,16 @@ def test_real_encoder_outputs_are_readable_and_match_sample_count(tmp_path, form
                 await sink.append(_frame(colour), index, 10)
             await sink.finish(10)
             return sink.path
+        except Exception as error:
+            # Native stderr belongs to this tiny, non-user-data control. Retain
+            # it on the original exception instead of masking a platform fault.
+            diagnostics = tmp_path / "encoder.log"
+            if diagnostics.is_file():
+                with diagnostics.open("rb") as stream:
+                    stream.seek(max(0, diagnostics.stat().st_size - 8192))
+                    error.add_note(stream.read(8192).decode("utf-8", errors="replace"))
+            error.add_note(f"Encoder identity: {encoder!r}")
+            raise
         finally:
             await sink.close()
 
