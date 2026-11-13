@@ -2,7 +2,7 @@
   "schema": "molsysviewer.molstar_integration_review_receiving@1",
   "date": "2026-11-12",
   "parent": "uibcdf/molsysviewer#369",
-  "status": "source_assessment_and_repairs_received; dependency_decision_pending",
+  "status": "source_assessment_amended; qualification_5.13.1_adopted_pending_remaining_gates",
   "scope": "Eight-area source/capability assessment, original-package type/State/font comparisons, current native GPU teardown, actual build-resolution repair and real project check. Not a new Molstar/installed/hosted/human qualification.",
   "source": {
     "molsysviewer_base": "56b39d045bb773a252fbc93a44c5393bc99d5cc2",
@@ -89,7 +89,7 @@
     ],
     "conclusion": "Native rendering/model/geometry/state reuse is appropriate; Python/scientific/scene ownership adapters are justified. Two bounded build/type-check defects are corrected. A wholesale UI/API/Movie rewrite is not supported.",
     "recommendation": "Qualify public 5.13.1 before 1.0 freeze, only after explicit revision of #115 timing. Keep v6 separate.",
-    "current_decision": "No dependency upgrade authorized or made by this receiving; #115 existing post-1.0 scope still applies.",
+    "current_decision": "Maintainer adopted public 5.13.1 qualification before 1.0 on 2026-11-12 under #372. Future v6/evolution stays under #115. Migration source/hosted/installed acceptance remains separately required.",
     "issues": {
       "370": {
         "guard": "tests/test_js_build_version_resolution.py::test_build_routes_keep_installed_molstar_when_a_source_checkout_exists",
@@ -111,7 +111,8 @@
       "#44 advanced table-driven MVS annotations",
       "#315/E2 and MolSysMT #723 broader host/prolonged metrology",
       "#320 complete Movie/host qualification"
-    ]
+    ],
+    "decision_at_original_receiving": "No dependency upgrade authorized or made by this receiving; #115 existing post-1.0 scope still applies."
   },
   "comparisons": {
     "types": {
@@ -176,7 +177,8 @@
           ],
           "label": "latest"
         }
-      ]
+      ],
+      "original_installed_side_status": "Withdrawn as a 5.4.1 measurement: ancestor origin; preserved only as original evidence. Use corrected_comparisons_20261113."
     },
     "current_physical_teardown": {
       "scope": "Actual pentalanine controller/representations with observed real WebGL handles and isBuffer/isTexture/etc on completed draw and disposal. Native counters are retained but not treated as physical liveness after global destruction. Not universal CPU/GPU lifetime, actual Jupyter/Qt or installed qualification.",
@@ -243,7 +245,8 @@
           "glyph_mapped": true
         }
       ],
-      "errors": []
+      "errors": [],
+      "original_installed_side_status": "Withdrawn as a 5.4.1 measurement: ancestor origin; preserved only as original evidence. Use corrected_comparisons_20261113."
     }
   },
   "validation": {
@@ -648,5 +651,268 @@
     "bytes": 124789656,
     "manifest_sha256": "62fc0d37c5ab8ba5e9747c3e78f8852ae669cea648a0405b6afb11e0e67308ae",
     "originals_retained": true
-  }
+  },
+  "correction_20261113": {
+    "issue": "uibcdf/molsysviewer#374",
+    "status": "Original installed-side State/font provenance withdrawn; repeated with checked provider aliases and original-tarball byte matching.",
+    "original_receipt_sha256": "c12a323667b5c043afb170717aac15abba891d3e2cd7c517691c1699c5fd5791",
+    "original_receipt_custody": "molstar-review-assessment-20261112; original bytes and raw evidence retained unchanged",
+    "affected_original_profiles": [
+      "673 installed-state",
+      "676 installed-font"
+    ],
+    "observed_original_origin": "/home/diego/node_modules/molstar; currently inspected metadata 3.38.3; original probes did not retain that package identity",
+    "unaffected": "The production import inventory, actual original runtime/harness, strict type comparison and aliased latest controls retain their separate correct scope.",
+    "replacement_profile": "693",
+    "guard": "tests/test_molstar_compatibility.py",
+    "decision_update": "The maintainer accepted public 5.13.1 qualification under #372 after this original receiving. Future v6 remains under #115; source/installed/hosted/human gates remain distinct."
+  },
+  "corrected_comparisons_20261113": {
+    "profile": "693",
+    "native_state": [
+      {
+        "label": "installed",
+        "version": "5.4.1",
+        "native_state_controls": [
+          {
+            "remove_first": false,
+            "created": 2,
+            "callbacks": []
+          },
+          {
+            "remove_first": true,
+            "created": 2,
+            "callbacks": [
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "label": "latest",
+        "version": "5.13.1",
+        "native_state_controls": [
+          {
+            "remove_first": false,
+            "created": 2,
+            "callbacks": [
+              1,
+              2
+            ]
+          },
+          {
+            "remove_first": true,
+            "created": 2,
+            "callbacks": [
+              1,
+              2
+            ]
+          }
+        ]
+      }
+    ],
+    "native_font": {
+      "scope": "Actual original native FontAtlas allocations and glyph writer in Chromium Canvas2D. Not whole-process/GPU allocation or human perceived readability.",
+      "browser": "157.0.8103.38",
+      "playwright_origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/js/node_modules/playwright/index.js",
+      "cases": [
+        {
+          "label": "installed",
+          "requested": null,
+          "props": {
+            "fontFamily": "sans-serif",
+            "fontQuality": 3,
+            "fontStyle": "normal",
+            "fontVariant": "normal",
+            "fontWeight": "normal"
+          },
+          "width": 3287,
+          "height": 3286,
+          "array_bytes": 10801082,
+          "glyphs": [
+            "\ufffd",
+            "H",
+            "\u2082",
+            "O",
+            " ",
+            "\u00c5",
+            "\u03b1",
+            "\u03b2"
+          ]
+        },
+        {
+          "label": "installed",
+          "requested": {
+            "fontQuality": 1
+          },
+          "props": {
+            "fontFamily": "sans-serif",
+            "fontQuality": 1,
+            "fontStyle": "normal",
+            "fontVariant": "normal",
+            "fontWeight": "normal"
+          },
+          "width": 1640,
+          "height": 1639,
+          "array_bytes": 2687960,
+          "glyphs": [
+            "\ufffd",
+            "H",
+            "\u2082",
+            "O",
+            " ",
+            "\u00c5",
+            "\u03b1",
+            "\u03b2"
+          ]
+        },
+        {
+          "label": "installed",
+          "requested": {
+            "fontQuality": 3,
+            "fontStyle": "italic",
+            "fontWeight": "bold"
+          },
+          "props": {
+            "fontFamily": "sans-serif",
+            "fontQuality": 3,
+            "fontStyle": "italic",
+            "fontVariant": "normal",
+            "fontWeight": "bold"
+          },
+          "width": 3287,
+          "height": 3286,
+          "array_bytes": 10801082,
+          "glyphs": [
+            "\ufffd",
+            "H",
+            "\u2082",
+            "O",
+            " ",
+            "\u00c5",
+            "\u03b1",
+            "\u03b2"
+          ]
+        },
+        {
+          "label": "latest",
+          "requested": null,
+          "props": {
+            "fontFamily": "sans-serif",
+            "fontQuality": 3,
+            "fontStyle": "normal",
+            "fontVariant": "normal",
+            "fontWeight": "normal"
+          },
+          "width": 6565,
+          "height": 6564,
+          "array_bytes": 43092660,
+          "glyphs": [
+            "\ufffd",
+            "H",
+            "\u2082",
+            "O",
+            " ",
+            "\u00c5",
+            "\u03b1",
+            "\u03b2"
+          ]
+        },
+        {
+          "label": "latest",
+          "requested": {
+            "fontQuality": 1
+          },
+          "props": {
+            "fontFamily": "sans-serif",
+            "fontQuality": 1,
+            "fontStyle": "normal",
+            "fontVariant": "normal",
+            "fontWeight": "normal"
+          },
+          "width": 3287,
+          "height": 3286,
+          "array_bytes": 10801082,
+          "glyphs": [
+            "\ufffd",
+            "H",
+            "\u2082",
+            "O",
+            " ",
+            "\u00c5",
+            "\u03b1",
+            "\u03b2"
+          ]
+        },
+        {
+          "label": "latest",
+          "requested": {
+            "fontQuality": 3,
+            "fontStyle": "italic",
+            "fontWeight": "bold"
+          },
+          "props": {
+            "fontFamily": "sans-serif",
+            "fontQuality": 3,
+            "fontStyle": "italic",
+            "fontVariant": "normal",
+            "fontWeight": "bold"
+          },
+          "width": 6565,
+          "height": 6564,
+          "array_bytes": 43092660,
+          "glyphs": [
+            "\ufffd",
+            "H",
+            "\u2082",
+            "O",
+            " ",
+            "\u00c5",
+            "\u03b1",
+            "\u03b2"
+          ]
+        }
+      ],
+      "errors": []
+    },
+    "integrity": {
+      "installed": {
+        "version": "5.4.1",
+        "provider": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/baseline-5.4.1/molsysviewer/js/node_modules/molstar",
+        "tarball_sha256": "73065c9cd8d14a59ff7e3f0b494cf805c7f656c28817daeb2eece0d6e0f0dbc5",
+        "cases": [
+          {
+            "case": "state",
+            "native_files_matched_to_original_tarball": 90,
+            "manifest_sha256": "83af6ba1076ef73d9fa280e784b78b839caa76c7fd97ccff7e50f9eadc76b3c4"
+          },
+          {
+            "case": "font",
+            "native_files_matched_to_original_tarball": 103,
+            "manifest_sha256": "a7d605cf424647040950fe041b2f93ae98c65079015a056aa742b6c3503d6208"
+          }
+        ]
+      },
+      "latest": {
+        "version": "5.13.1",
+        "provider": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/js/node_modules/molstar",
+        "tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+        "cases": [
+          {
+            "case": "state",
+            "native_files_matched_to_original_tarball": 71,
+            "manifest_sha256": "8392368c98e90ef16ab85cf508f615a3706e23624125c0aaf3e181740cd1e7bf"
+          },
+          {
+            "case": "font",
+            "native_files_matched_to_original_tarball": 96,
+            "manifest_sha256": "2ecc6b4d77fe2d406947320581cbbf9a04b22edcfc5e0bde665958c27da197b8"
+          }
+        ]
+      }
+    },
+    "scope": "Original native 5.4.1/5.13.1 code, all consumed native files hash-matched to preserved original npm tarballs; explicit style/quality and glyph mapping. Not full host memory, installed artifact, perceived image quality or human acceptance."
+  },
+  "current_scope_notice": "Amended 2026-11-13 after #374. Original source/hash/custody fields retain their original receiving scope; corrected comparisons are separately recorded below. #372 owns the adopted ongoing dependency qualification."
 }

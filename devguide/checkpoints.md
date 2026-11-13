@@ -934,10 +934,29 @@ comparisons are not compatibility receiving. The
 eight-area matrix and measured type, lifecycle, font-allocation and physical
 WebGL controls. #370 corrects the implicit build-source override with a
 three-route regression; #371 aligns the real project's standard-library
-declarations without changing emitted syntax. The recommended next step is controlled 5.13.1
-qualification before freeze; #115's existing deferral remains until the
-maintainer explicitly decides. #369 stays open for that disposition and
-adopted qualification. No dependency or runtime bundle has changed.
+declarations without changing emitted syntax. The maintainer explicitly advances controlled 5.13.1 qualification before
+freeze under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md).
+#115 retains later v6/evolution work. #369 stays open through adopted
+qualification. The timing decision is not runtime or installed acceptance.
+
+The [current migration receipt](molstar_5_13_1_qualification_receiving_20261113.json)
+records exact 5.13.1 working sources, 475 units and separately scoped native
+receiving. [#378](archive/popup_pending_capture_close.md) receives exact owner
+retirement and the complete pending-capture lifecycle in canonical native run
+`725`. [#379](archive/panel_only_native_loop.md) stops the unused panel-only
+render loop; hierarchy/addon/shape-only controls pass in `724` and the current
+complete persistent Studio scope passes in `729`.
+[#380](pending_bugs/detached_studio_png_uses_empty_canvas.md) separately records
+the reproduced blank PNG from detached Studio; its associated-canvas routing
+must be corrected before 1.0.
+Complete current-runtime browser/host/platform/installed gates remain open;
+earlier completed entries retain their recorded runtime identities.
+Current real Wayland/NVIDIA Qt receiving and actual-Jupyter controller/buffer
+lifecycle pass in `731`/`732`. Full Jupyter `733` fails a moving Python save's
+unchanged five-second deadline after its stopped cases; diagnosis remains in
+#372. Current scoped source checks pass 519 cases in `735`, with the original
+`734` temporary-quota failure retained. The receiving record names verified
+private custody for all 56 controlled profiles and the preflight rejection.
 
 The [Studio Movie tranche](movie_studio_receiving_20261112.json) receives the
 first Timeline/Preview/Export editor over the shared Python API: typed keys,

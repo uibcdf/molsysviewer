@@ -91,6 +91,8 @@ async function run() {
 
         return {
             panelCards, viewerCards, panelReady: !!panel, viewerReady: !!viewer,
+            panelAnimating: panel.plugin.animationLoop.isAnimating,
+            viewerAnimating: viewer.plugin.animationLoop.isAnimating,
             relayedCount: Array.isArray(relayed) ? relayed.length : -1,
             panelShowsHierarchy: panelText.includes("MET") && panelText.includes("ALA"),
             panelStudioVisible: (panel as any).groupPanel?.isVisible?.() ?? null,
@@ -133,6 +135,8 @@ async function run() {
     );
     console.log(`[E2E panel-popup-welcome]   panel window opens with ${opened.panel.features}`);
 
+    assert.strictEqual(result.panelAnimating, false, "a UI-only panel must not run a native render loop");
+    assert.strictEqual(result.viewerAnimating, true, "the molecular canvas must retain its native render loop");
     assert.strictEqual(
         result.panelCards,
         0,

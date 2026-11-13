@@ -57,6 +57,7 @@ export class PopupHostManager {
     private readonly bootstrapping = new Set<PopupMode>();
     private readonly failedBootstraps = new Set<PopupMode>();
     private readonly bootstrapQueues = new Map<PopupMode, Array<{ type: string; data: any }>>();
+    private readonly closureObservers = new Map<PopupMode, () => void>();
 
     /** Endpoint id of the live popup for `mode`, or null when none is open. */
     popupEndpointId(mode: PopupMode): string | null {
@@ -144,6 +145,9 @@ export class PopupHostManager {
             this.close(mode);
             return;
         }
+        // A closed native window may be replaced before its fallback poll.
+        // Retire that endpoint and its observer before assigning a new owner.
+        if (this.channels.has(mode)) this.close(mode);
 
         let resolvedModuleUrl: string | null = null;
         if (this.viewerModuleUrl) {
@@ -235,6 +239,7 @@ export class PopupHostManager {
 </html>
         `);
         doc.close();
+        this.observeClosure(mode, win, channel, panelOptions.restoreHostPanel !== false);
 
         try {
             const scriptEl = doc.createElement("script");
@@ -257,6 +262,7 @@ export class PopupHostManager {
                 `;
             } else {
                 const viewerJsSource = await this.resolveViewerJsSource();
+                if (win.closed || this.channels.get(mode)?.popupEndpointId !== channel.popupEndpointId) return;
                 if (!viewerJsSource) {
                     throw new Error("No viewer source code provided to PopupHostManager");
                 }
@@ -289,54 +295,74 @@ export class PopupHostManager {
         } catch (err) {
             console.error("[MolSysViewer Host] Failed to inject viewer to popup:", err);
         }
+    }
 
-        // Monitor closure
-        const interval = window.setInterval(() => {
+    private observeClosure(mode: PopupMode, win: Window, channel: PopupChannelIdentity, restoreHostPanel: boolean) {
+        // Native pagehide arrives before potentially expensive renderer teardown.
+        // A timer alone can leave a capture owned by an already closing popup.
+        // Keep polling as a fallback for disappearance without a lifecycle event.
+        let interval: number | undefined;
+        const onPageHide = () => checkClosed(true);
+        const stopObserving = () => {
+            win.removeEventListener("pagehide", onPageHide);
+            if (interval !== undefined) window.clearInterval(interval);
+            interval = undefined;
+            if (this.closureObservers.get(mode) === stopObserving) this.closureObservers.delete(mode);
+        };
+        const checkClosed = (pageHidden = false) => {
             // A newer window may already own this mode. An old monitor must
             // never clear its channel or continue polling its replacement.
             if (this.channels.get(mode)?.popupEndpointId !== channel.popupEndpointId) {
                 this.router.unregisterEndpoint(channel.popupEndpointId);
-                window.clearInterval(interval);
+                stopObserving();
                 return;
             }
             if (mode === "canvas") {
-                if (!this.popoutWin || this.popoutWin.closed) {
+                if (pageHidden || !this.popoutWin || this.popoutWin.closed) {
                     const current = this.channels.get("canvas");
                     this.popoutWin = null;
                     this.isReady = false;
                     this.channels.delete("canvas");
                     this.router.unregisterEndpoint(channel.popupEndpointId);
-                    window.clearInterval(interval);
+                    stopObserving();
                     this.bootstrapping.delete("canvas");
+                    this.failedBootstraps.delete("canvas");
                     this.bootstrapQueues.delete("canvas");
                     if (current?.popupEndpointId === channel.popupEndpointId) {
                         this.onEndpointClosed?.("canvas", channel.popupEndpointId);
                     }
                 }
             } else {
-                if (!this.panelWin || this.panelWin.closed) {
+                if (pageHidden || !this.panelWin || this.panelWin.closed) {
                     const current = this.channels.get("panel");
                     this.panelWin = null;
                     this.isPanelReady = false;
                     this.channels.delete("panel");
                     this.router.unregisterEndpoint(channel.popupEndpointId);
-                    window.clearInterval(interval);
+                    stopObserving();
                     this.bootstrapping.delete("panel");
+                    this.failedBootstraps.delete("panel");
                     this.bootstrapQueues.delete("panel");
                     if (current?.popupEndpointId === channel.popupEndpointId) {
                         this.onEndpointClosed?.("panel", channel.popupEndpointId);
                     }
                     // A preopened panel can belong to a different canvas endpoint.
                     // That endpoint owns restoring its shell, not this notebook.
-                    if (this.controller && panelOptions.restoreHostPanel !== false) {
+                    if (this.controller && restoreHostPanel) {
                         this.controller.restoreHostPanelState();
                     }
                 }
             }
-        }, 1000);
+        };
+        this.closureObservers.set(mode, stopObserving);
+        win.addEventListener("pagehide", onPageHide, { once: true });
+        interval = window.setInterval(() => checkClosed(), 1000);
     }
 
     close(mode: "canvas" | "panel" = "canvas") {
+        // Explicit host closure owns the verdict. Remove the native listener
+        // first so a synchronous pagehide cannot report this endpoint twice.
+        this.closureObservers.get(mode)?.();
         if (mode === "canvas") {
             if (this.popoutWin) {
                 const channel = this.channels.get("canvas");

@@ -1,7 +1,7 @@
 import { FontAtlas } from "molstar/lib/mol-geo/geometry/text/font-atlas";
 import type { WebGLContext } from "molstar/lib/mol-gl/webgl/context";
 
-// Mol* 5.4.1 appends atlas pixels through this public writer, but its Text
+// Mol* 5.13.1 appends atlas pixels through this public writer, but its Text
 // geometry advances tFont even when only glyph positions change. Keep a weak
 // content token at the writer, not a copy/hash of its multi-megabyte image.
 // This seam is local to the owning bundle, before any controller creates fonts.
@@ -22,7 +22,8 @@ FontAtlas.prototype.get = function (this: FontAtlas, char: string) {
 
 /** Consume the native atlas writer while retaining native GPU resource ownership.
  * Unknown images, sub-image writes and retired/lost resources always use Mol*.
- * #344 owns this 5.4.1 compatibility seam; #115 owns its eventual retirement.
+ * #344 owns this compatibility seam; #372 receives it against 5.13.1.
+ * #115 owns retirement after a qualified native replacement is published.
  */
 export function installFontAtlasUploads(context: WebGLContext): () => void {
     const resources = context.resources, create = resources.texture, reset = resources.reset;

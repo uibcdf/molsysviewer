@@ -14,8 +14,9 @@ supersedes: []
 
 # Mol* integration and capability review before 1.0
 
-**Technical assessment delivered; dependency decision and qualification remain
-open before the documentation-review handoff.** The
+**Technical assessment delivered; 5.13.1 qualification adopted before 1.0
+under [#372](qualify_molstar_5_13_1_pre_1_0.md), still open before the
+documentation-review handoff.** The
 [dated review](../molstar_integration_review_20261112.md) contains the eight-area
 matrix, measured comparisons, dispositions and a concrete migration proposal.
 The principal maintainer adopted this requirement on 2026-11-12:
@@ -80,9 +81,9 @@ The first source reading identifies these consequential comparisons to make:
 
 These were the baseline-stage hypotheses and migration boundaries. The dated
 assessment below now addresses them, including the demonstrated #370 build
-defect and its source correction. #369 stays open for the dependency disposition
-and adopted work; #115 retains its existing deferral and the original 46-outcome
-counter is unchanged.
+defect and its source correction. #369 stays open through adopted work; the maintainer has now advanced the
+5.13.1 qualification under #372. #115 retains future v6/evolution scope and
+the original 46-outcome counter is unchanged.
 
 ## Execution plan
 
@@ -94,10 +95,10 @@ physical WebGL teardown from stale counters. Source build regression passes
 13 cases in its original receiving; the final gate adds #371's ordinary
 project type check and library-declaration correction. A new runtime or
 installed qualification has not been claimed.
-The recommendation is controlled 5.13.1 qualification before freeze. That
-requires an explicit revision of #115's accepted timing; until the maintainer
-decides, the dependency remains 5.4.1 and #115's deferral still applies.
-Step 6 and parent closure remain pending that disposition and adopted work.
+The principal maintainer accepted controlled 5.13.1 qualification before
+freeze on 2026-11-12. [#372](qualify_molstar_5_13_1_pre_1_0.md) owns execution
+and exact receiving; #115 retains later v6/evolution scope. Step 6 and parent
+closure remain pending adopted qualification, not a timing decision.
 
 1. Freeze the exact MolSysViewer source and resolved Mol* dependency/artifact.
    Refresh `~/repos@others/molstar` while preserving local work. Independently
@@ -153,10 +154,10 @@ one GUI flow easier.
 
 ## Existing decisions and evidence
 
-- [#115](post_1.0/update_molstar_dependency.md) retains the previously deferred
-  general dependency upgrade. This issue makes the **review** mandatory before
-  1.0. It does not silently approve an upgrade. If evidence supports changing
-  that timing, present and record the decision explicitly.
+- The maintainer explicitly advanced public 5.13.1 qualification before 1.0
+  on 2026-11-12; [#372](qualify_molstar_5_13_1_pre_1_0.md) owns that migration.
+  [#115](post_1.0/update_molstar_dependency.md) retains future v6/evolution
+  scope. Acceptance of timing is separate from passing migration gates.
 - [#363](molstar_component_cache_upstream_followup.md) tracks the published
   component-cache correction and eventual local-repair retirement; #356 keeps
   its consumer lifetime requirements. #344 and the font/capture investigations

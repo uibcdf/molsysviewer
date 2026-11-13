@@ -3,19 +3,21 @@ import test from "node:test";
 import { attachRenderPresentation, registerRenderPresentation } from "../../src/plugin/render-presentation";
 
 test("presentation runs before rendering and is attached once per renderer", () => {
-    const context: any = {}, camera: any = {}, scene: any = {};
+    const context: any = {}, camera: any = {}, scene: any = {}, frame = { variant: "color" };
     const order: string[] = [];
-    const renderer: any = { update(receivedCamera: unknown, receivedScene: unknown) {
-        assert.equal(receivedCamera, camera); assert.equal(receivedScene, scene); order.push("draw");
+    const renderer: any = { update(receivedCamera: unknown, receivedScene: unknown, receivedFrame: unknown) {
+        assert.equal(this, renderer);
+        assert.equal(receivedCamera, camera); assert.equal(receivedScene, scene);
+        assert.equal(receivedFrame, frame); order.push("draw");
     } };
     const release = registerRenderPresentation(context, camera, (current, world) => {
         assert.equal(current, camera); assert.equal(world, scene); order.push("present");
     });
     attachRenderPresentation(renderer, context);
     attachRenderPresentation(renderer, context);
-    renderer.update(camera, scene);
+    renderer.update(camera, scene, frame);
     assert.deepEqual(order, ["present", "draw"]);
-    release(); renderer.update(camera, scene);
+    release(); renderer.update(camera, scene, frame);
     assert.deepEqual(order, ["present", "draw", "draw"]);
 });
 

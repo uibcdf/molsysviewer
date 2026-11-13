@@ -1,7 +1,8 @@
 # Mol* integration review — 2026-11-12
 
-**Technical assessment delivered; dependency decision and complete qualification
-remain open under [#369](https://github.com/uibcdf/molsysviewer/issues/369).**
+**Technical assessment delivered; public 5.13.1 qualification adopted before
+1.0 under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md), still
+open under [#369](https://github.com/uibcdf/molsysviewer/issues/369).**
 The current integration makes substantial, appropriate use of Mol* rather than
 reimplementing a renderer. Python-owned molecular meaning and scene state
 justify most of the adapters. Two demonstrated build/type-check defects,
@@ -12,11 +13,14 @@ menu or Movie architecture is not supported by this review.
 
 There are useful improvements in published 5.13.1 and significant architectural
 changes in v6 development. They are different migration choices. The
-recommendation is to **qualify a controlled 5.13.1 migration before freezing
-MolSysViewer 1.0**, subject to an explicit change of #115's existing deferral.
+maintainer adopted **controlled 5.13.1 qualification before freezing
+MolSysViewer 1.0** on 2026-11-12; #115 retains future v6/evolution scope.
 This is a recommendation to test and receive a concrete migration, not a claim
 that 5.13.1 is already compatible or that v6 should enter the same release.
-No dependency has been changed by this assessment.
+The assessment itself changed no dependency. Subsequent controlled migration
+under #372 selects exact 5.13.1; its
+[receiving plan](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md) owns current
+source changes, incomplete native qualification and the remaining release gates.
 
 ## Sources and evidence
 
@@ -111,8 +115,12 @@ change the currently received runtime speculatively.
 
 ### R3 — lifecycle: real native difference, bounded consumer control
 
-Run `673` builds original native `State`/`StateTransformer` code. Two live
-child objects receive **zero** dispose callbacks from 5.4.1 `State.dispose()`
+**Corrected receiving — 2026-11-13, #374:** run `693` builds original native
+`State`/`StateTransformer` code with explicit provider aliases and consumed-file
+hashes matching both original npm tarballs. Original `673` resolved its
+installed side through an ancestor package, so its 5.4.1 attribution is
+withdrawn; original logs/custody remain unchanged. In the corrected control,
+two live child objects receive **zero** dispose callbacks from 5.4.1 `State.dispose()`
 and **two** from 5.13.1. Explicitly removing those children before disposing
 invokes both callbacks in both versions. This receives the native behavior
 change documented upstream. It does not prove a MolSysViewer memory leak or
@@ -136,9 +144,12 @@ existing lifetime work.
 
 ### R4 — label quality has a measured allocation cost
 
-Run `676` constructs the actual default `FontAtlas` in real Chromium Canvas2D
-using each original public package, requests a glyph and observes its native
-pixel array. Both use the named quality **3**:
+**Corrected receiving — 2026-11-13, #374:** run `693` constructs native
+`FontAtlas` objects in Chromium Canvas2D, with every consumed native input
+matched to its original npm tarball. Original `676`'s installed-side 5.4.1
+attribution is withdrawn because its entry resolved an ancestor installation;
+its raw evidence remains preserved. Corrected default results retain quality
+**3**, with additional explicit quality-1 and bold/italic controls:
 
 | Native package | Width × height | Pixel-array bytes |
 | --- | --- | ---: |
@@ -184,22 +195,40 @@ declares the actual standard and DOM libraries, keeping the ES2019 emission
 target. Its regression compiles the real project with no target/lib override.
 This changes neither runtime source nor browser/polyfill availability.
 
+### R7 — native motion requires its complete parameter schema
+
+The migrated core run `694` and stack-preserving `695` find an additional
+compatibility boundary: native Spin and Rock now read a camera-space `axis`.
+MolSysViewer formerly supplied only speed (and Swing angle), producing repeated
+errors in native `spin()`. The source adaptation consumes the complete native
+parameter defaults and clones their mutable vectors, preserving explicit speed
+and the existing 20-degree Swing contract. Unit and actual completed-draw
+receiving are required; booleans alone do not establish real camera movement.
+#372 owns this migration finding.
+
 ## Disposition ledger
 
 | ID | Decision/status | Owning follow-up |
 | --- | --- | --- |
 | R1 | Required pre-1.0; source correction and real-build regression received. | #370; this review's receipt and applicable hosted/candidate gates remain separately scoped. |
-| R2 | A controlled 5.13.1 qualification before freeze is recommended; changing the existing migration timing is pending the maintainer's decision. No dependency change yet. | #369 decision; #115 migration scope/lifecycle. |
-| R3 | Include native callback/lifetime behavior in that qualification. Current physical WebGL control passes; broader acceptance stays open. No universal leak/performance claim. | #115, #315/E2, #356. |
-| R4 | Measure and decide default/explicit font quality during migration; retain native glyph/upload/context-restoration controls. | #115 and #344's qualified adapter/retirement contract. |
+| R2 | Controlled public 5.13.1 qualification before freeze adopted by the maintainer on 2026-11-12; execution/acceptance pending. | #372 migration; #369 parent; #115 retains future v6/evolution. |
+| R3 | Include native callback/lifetime behavior in that qualification. Current physical WebGL control passes; broader acceptance stays open. No universal leak/performance claim. | #372, #315/E2, #356. |
+| R4 | Measure and decide default/explicit font quality during migration; retain native glyph/upload/context-restoration controls. | #372 and #344's qualified adapter; #115 retains future native retirement. |
 | R5 | Defer v6 engine, explicit-registry/backend and periodic-transform migration. Do not bundle it into a v5 dependency change. | #115's separately scoped future evolution; #363 owns cache-fix monitoring. |
 | R6 | Required pre-1.0; align ordinary project library declarations and protect the real project check. | #371; final validation in the review receipt. |
+| R7 | Required 5.13.1 compatibility: complete independent Spin/Rock parameters and actual completed-draw camera motion. | #372; source units and native Start/Stop/camera controls pass; broader qualification remains pending. |
 | O1 | Keep the current native-backed shape, measurement, occurrence and scene owners; no wholesale replacement is justified. | Existing scene/interaction contracts, #320 and #264. |
 | O2 | Table-driven MVS labels/colours/tooltips remain useful future interoperability, without replacing present callouts. | #44 retains its explicit post-1.0 scope. |
 | O3 | New native presets, volumes, procedural motion and optional focus profiles need an explicit user-facing contract before adoption; none is silently advertised by this review. | #115 capability review; science/preparation remain with the owning library/add-on. |
 | O4 | Keep Python-first host integration and MolSysViewer's shared UI; no Prism/framework/AI dependency is adopted. | Core/add-on boundary and existing host contracts; remote preview remains #100. |
 
-## Concrete migration proposal for the maintainer
+## Concrete migration proposal and accepted timing
+
+**Decision — 2026-11-12:** the principal maintainer adopts the first option:
+qualify public 5.13.1 before 1.0. [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md)
+owns execution and receiving. The rationale and original alternatives below
+remain recorded; #115 retains future v6/evolution scope. Acceptance of timing
+is not passing migration, installed or publication evidence.
 
 The existing #115 decision is **"The migration stays post-1.0."** The new
 evidence supports reviewing that timing, rather than changing it implicitly.

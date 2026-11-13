@@ -818,6 +818,10 @@ export class MolSysViewerController {
             MolSysViewerController.showInitFailureOverlay(target, message);
             notify?.({ event: "viewer_init_failed", reason: "webgl", message });
         }
+        // Studio-only endpoints keep native parameter state, but their hidden
+        // canvas has no molecular scene to animate. The associated visible
+        // canvas owns drawing, playback and correlated scientific captures.
+        if (options?.isPanelOnly) plugin.animationLoop.stop({ noDraw: true });
         MolSysViewerController.takeCameraAuthority(plugin);
         // Visible translucent geometry must remain addressable. Keep a positive
         // threshold so ownership masks (zero opacity) are still excluded.

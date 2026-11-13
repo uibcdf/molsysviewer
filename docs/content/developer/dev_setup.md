@@ -13,7 +13,7 @@ system Node.js installation when it meets the requirements below.
 Use these tools (the Conda recipe supplies Python, Node.js and npm):
 
 - Python 3.14 for development; the package supports Python 3.11–3.14
-- Node.js >= 18
+- Node.js >= 22 (use the qualified Node 22 line for builds and CI parity)
 - npm >= 9
 - Git
 
@@ -26,8 +26,9 @@ Use these tools (the Conda recipe supplies Python, Node.js and npm):
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.bashrc
 
-# Install Node.js LTS
-nvm install --lts
+# Select the qualified build-toolchain line
+nvm install 22
+nvm use 22
 ```
 
 ### Windows
@@ -87,7 +88,7 @@ All JS/TS work happens under `molsysviewer/js/`:
 
 ```bash
 cd molsysviewer/js
-npm install
+npm ci
 ```
 
 Build the widget bundle when you need to test TypeScript changes locally:

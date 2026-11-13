@@ -548,6 +548,14 @@ and checks PNG dimensions/alpha, requester-only HTML delivery, native labels,
 compact navigation, floating bounds, observer/drag disposal and the discovered addon catalogue.
 Its `studio-live-capture-scenarios.ts` owner uses a persistent real Python
 authority, actual rendered replies and the production widget/popup transport.
+Core executes the original entry with `--layout-only` and separately requires
+`studio-live-capture.e2e.ts`, which invokes that unchanged persistent owner.
+Layout retains a 360-second aggregate budget; persistent capture has a separate
+600-second budget after its real primary/popup/detached roundtrips exceeded
+360 seconds with the upgraded provider. Every operation deadline is unchanged.
+The direct historical Studio CLI
+above still includes live capture by default; the explicit core partition does
+not narrow this guard. #377 records the timed-out combined run and partition.
 It receives state/session Save and restore after camera perturbation from
 primary, canvas popup and detached Studio, plus cancellation/late replies and
 same-ID owner isolation. The async fixture keeps its host loop alive between

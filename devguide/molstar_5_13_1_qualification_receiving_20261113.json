@@ -1,0 +1,1700 @@
+{
+  "schema": "molsysviewer.molstar_5_13_1_qualification_receiving@1",
+  "date": "2026-11-13",
+  "started": "2026-11-12",
+  "parent": "uibcdf/molsysviewer#372",
+  "review": "uibcdf/molsysviewer#369",
+  "status": "source_controls_received; covering_browser_host_candidate_qualification_pending",
+  "decision": "The principal maintainer advances public Mol* 5.13.1 qualification before 1.0; future v6/evolution remains post-1.0. No public tag/package/promotion authorization.",
+  "source": {
+    "base_commit": "185b0ed7fdfc75dd20306edf8c989a7c87ac9f2b",
+    "provider_version": "5.13.1",
+    "provider_commit": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+    "provider_tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+    "lock_sha256": "50c7479234a994bf7aefb31ce264ac5f4f323a6c3b6666a538279844a619e476",
+    "working_sha256": {
+      "AGENTS.md": "8cd7d1fd8964216fa03a788cff95b30fd4a5aab8505b12c8c8f8b0eec19260d2",
+      "molsysviewer/js/package.json": "7afb7852890a10542d1e4bd1f06170766fb29b854941783b93fb7c82a8589358",
+      "molsysviewer/js/package-lock.json": "50c7479234a994bf7aefb31ce264ac5f4f323a6c3b6666a538279844a619e476",
+      "molsysviewer/js/scripts/molstar-component-cache.mjs": "ae8558fde56050456c99c212562e363e601e7aa253f3f3474e258959c32a76cb",
+      "molsysviewer/js/scripts/build-molstar-probe.mjs": "8fa02034d88f5456514dff964604ab9ef2d6cdf050fbec1c43718a1341dc200a",
+      "molsysviewer/js/src/plugin/render-presentation.ts": "1cd9b6a97fd6fa8ea53cd422b897f4c3691b32eca395a517eaeee1e25ae06e14",
+      "molsysviewer/js/src/plugin/font-atlas-uploads.ts": "5dbaf9b6f4ee93a0b3984555f910be9839faea0ee444ef9b8f4234dece183f99",
+      "molsysviewer/js/src/managers/handlers/scene-handlers.ts": "a1aed947247a37d15eabb091b8fc102634feedd136c9e576dbb08b0cabcc594a",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "8c02c7ff388ccc84ab69f3abc66578f51df56d5d51f7a5fbaaa0ffd9abf793e3",
+      "molsysviewer/js/tests/e2e/context-menu.e2e.ts": "d4b5dd38d5fa10c16b616bbf81e964e331534087b2f8da109b4697c73c1b6584",
+      "molsysviewer/js/tests/fixtures/molstar-font-probe.ts": "e81c3f018ae8181ec46359d1d9c262929d5e99300c256ef34348535880bb09c2",
+      "molsysviewer/js/tests/fixtures/molstar-component-cache.mjs": "041811c188fb961d81ec75060cd100aa7a0f1b7cafbbc57858a0218f2e773f28",
+      "tests/test_molstar_compatibility.py": "2837357e671145390f0f1055d12693df4a2760975a17b3d03b2fd6b515239044",
+      "tests/test_e2e_reliability.py": "17415f6dd76be0e94440993ebbf022ba60d680e2831215101b9cfa71fafe221a",
+      "devtools/conda-envs/build_env.yaml": "7acf9013b68f739205d264c2311e3daa1074cc90c3aa704ff276c9c4e6408f28",
+      "devtools/conda-build/meta.yaml": "371781bcc62fe36977a45be3d34092372b4e72f504a7aa6c378009d34e29fc21",
+      "molsysviewer/viewer.js": "26a905820bb4834599cd67e6d2e363dd195b6fbc7808b72fe29e94028c8a1a78",
+      "molsysviewer/js/tests/e2e/harness.bundle.js": "9288527c85d8264fcd36c53769d462658dd290a339f133f8ddcbabb72da103e3",
+      "molsysviewer/js/tests/e2e/studio-usability.e2e.ts": "27b771fc79ad37a0ac436cc3751124599f33f968d3c98cfa307ff6aa5bd981d5",
+      "molsysviewer/js/tests/e2e/studio-live-capture.e2e.ts": "f0fb11587c79543b57e0f69ecf13779dfc583baaa67f9b6fb63605306b6776d6",
+      "molsysviewer/js/tests/unit/render-presentation.test.ts": "4b5e538fbc065298712988b7b1d29c31c1286f590bd92c791f6d7f5cd1a87c22",
+      "molsysviewer/js/tests/unit/scene-handler.test.ts": "dcb25e804dfdb387a45a0874ac2399d3ebd13744b4827851e33cc80a1485f2be",
+      "molsysviewer/js/src/managers/popup-host.ts": "7c308f9a97fd14ade9b46f3b7dab4d6866d6edace80baea214c93adf89aae50a",
+      "molsysviewer/js/tests/unit/popup-host.test.ts": "3434fe271aa80524f0e24f7d0911cf2480f7c8dd5360ff96781b2964baa227d9",
+      "molsysviewer/js/tests/e2e/moving-capture-bridge.py": "b33773ee261cc0990a5a5723fca2e79910f58c3b697e82acaf2ea8688d1f39b1",
+      "molsysviewer/js/tests/e2e/moving-capture-lifecycle-scenarios.ts": "7c09a4edcde2563df082efd4ab96530207351fbd55d012a2fc4d6a57632c8b4e",
+      "molsysviewer/js/tests/e2e/source-atom-indices.e2e.ts": "4a2734987fc5aa434badbcad2bd05ba27f62cd2cff1a9f05a469b3b32560a76c",
+      "molsysviewer/js/tests/e2e/movie-appearance.e2e.ts": "60e628b572d90214ddae34cc66fa8ae3f0c1137bdef65f147fbd25a2b46be64e",
+      "molsysviewer/js/tests/e2e/movie-composition.e2e.ts": "134e2bbf616fa72c5acbd1f773239797be17c16839cf1d8a3ed5314e32e7b513",
+      "molsysviewer/js/tests/e2e/movie-export.e2e.ts": "82e90ae7a0735fa1330d86192a3d9ba68330dd98552f2511d72a0bbd34c2b284",
+      "molsysviewer/js/tests/e2e/movie-legacy.e2e.ts": "0f2bbaf39757956afeb9ec10bddd451de342390feb928071283287f3dbde0f7f",
+      "molsysviewer/js/tests/e2e/movie-seek.e2e.ts": "1ddea8c03058aee88e2cec561a18477cf2bd6451d16eccf7fded580e84f1023b",
+      "molsysviewer/js/tests/e2e/movie-story.e2e.ts": "8665be98a59f613e592a65e76954b67c2af807991e4e535d95f75f665a7b6e7a",
+      "molsysviewer/js/tests/e2e/movie-web.e2e.ts": "8e76add85108f86781a6511611b14583bc4cac2d6aaa8a2411b9acb60aff18c5",
+      "molsysviewer/js/src/managers/viewer-controller.ts": "6d9a0f349e870e2924d5243837fa6db0be5fdf69afd0503c8e42c18d4f0e90ab",
+      "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts": "09dfa8811fdaf45f385b1954c681ce532525692f1191e237ec5b0a2cc5fbd5c8",
+      "molsysviewer/js/tests/e2e/studio-live-capture-scenarios.ts": "338b8b3fd28b9584b62e60ee250f2ebac1a7b3ebeca856505b4cd9db6f64421f"
+    },
+    "scientific_provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "pyunitwizard_source": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+    "scientific_route_notice": "Frozen source receiving with cached published support, not clean installed/public artifact qualification."
+  },
+  "received": {
+    "canonical_units": {
+      "profile": "723",
+      "passed": 475,
+      "skipped": 0,
+      "node": "22.23.4",
+      "project_types": "native tsc --noEmit --project tsconfig.json passes",
+      "includes": "Complete renderer tuple, independent native motion defaults, exactly-once popup retirement and late-source refusal; current panel-loop production correction is built."
+    },
+    "native_cache": {
+      "profile": "683",
+      "native_and_repaired_chemistry_equal": true,
+      "unrepaired_retained_input_sets": 5,
+      "repaired_retained_input_sets": 0,
+      "notice": "Actual native tables/readers; bounded cache lifetime, not complete host memory."
+    },
+    "provenance_and_runner_guards": {
+      "profile": "693",
+      "passed": 11,
+      "skipped": 0,
+      "issues": [
+        "373",
+        "374",
+        "375"
+      ]
+    },
+    "corrected_native_comparisons": {
+      "profile": "693",
+      "state_files_matched": {
+        "5.4.1": 90,
+        "5.13.1": 71
+      },
+      "font_files_matched": {
+        "5.4.1": 103,
+        "5.13.1": 96
+      },
+      "original_invalid_controls": "673/676 installed-side attribution withdrawn; original raw custody preserved."
+    },
+    "font_default": {
+      "keep_native_quality": 3,
+      "old_array_bytes": 10801082,
+      "new_array_bytes": 43092660,
+      "explicit_quality_and_bold_italic": "native semantics preserved",
+      "scope": "Atlas pixel-array allocation only; not per label, GPU, host peak or perceived image-quality equivalence."
+    },
+    "motion": {
+      "profile": "699",
+      "camera_moves_on_completed_draw": true,
+      "start_stop_and_python_echoes": true,
+      "complete_independent_native_axes": true,
+      "swing_angle_degrees": 20
+    },
+    "geometry_diagnostic": {
+      "profile": "691",
+      "families": 10,
+      "original_and_recovered": true,
+      "native_test_seconds": 236.11,
+      "suite_timeout_override_ms": 360000,
+      "notice": "Diagnostic success, not the old 180-second canonical gate. Original failures and 5.4.1 control retained."
+    },
+    "canonical_geometry_budget_ms": 360000,
+    "individual_operation_deadlines_changed": false,
+    "whole_native_library_original_match": {
+      "profile": "701",
+      "files": 6356,
+      "seconds": 1.237,
+      "notice": "Before core execution; the interrupted attempt is not a full-core pass."
+    },
+    "runner_partition": {
+      "profile": "705",
+      "passed": 8,
+      "total_entries": 63,
+      "core_entries": 60,
+      "all_entries_built": true
+    },
+    "studio_layout": {
+      "profile": "704",
+      "native_test_seconds": 156.305,
+      "layout_downloads_labels_lifetime_catalogue_and_trajectory_geometry": true,
+      "notice": "The later capture scope timed out; only the completed layout entry is received from this profile."
+    },
+    "studio_live_capture": {
+      "profile": "729",
+      "native_test_seconds": 350.124,
+      "suite_timeout_override_ms": null,
+      "aggregate_budget_ms": 600000,
+      "individual_deadlines_changed": false,
+      "primary_popup_detached_state_session_roundtrips": true,
+      "camera_intents_on_real_draws": true,
+      "same_id_owner_isolation": true,
+      "cancellation_no_late_write": true,
+      "native_exit": 0,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup_survivors": [],
+      "cleanup_errors": [],
+      "notice": "Complete current-runtime persistent source workflow, including real nested controller observation and stopped-panel/active-canvas loops; not an actual notebook, Qt, installed package, hosted or human observation."
+    },
+    "partitioned_core_status": {
+      "completed_current_runtime_entries": [
+        "panel-popup-welcome",
+        "moving-capture-lifecycle",
+        "studio-usability",
+        "studio-live-capture"
+      ],
+      "profiles": [
+        "724",
+        "725",
+        "726",
+        "729"
+      ],
+      "total_core_entries": 60,
+      "remaining_current_runtime_entries": 56,
+      "single_uninterrupted_full_core_pass": false,
+      "notice": "726 completes its layout entry then fails the newly added observation handle in the later live entry. Corrected complete live receiving is 729. Earlier pre-378 context/menu/box/moving-state scopes retain their independent recorded identities; they are not a current full-core pass."
+    },
+    "scoped_source_checks": {
+      "profile": "735",
+      "passed": 519,
+      "skipped": 0,
+      "ruff_check": "passed",
+      "ruff_format_files": 1063,
+      "queue_indexes": "passed",
+      "scope": "Current build provenance, real native compatibility, E2E inventory, distribution and reporting/static-view contracts. This scoped source gate does not replace full current-head CI."
+    },
+    "npm_audit": {
+      "profile": "735",
+      "native_exit": 0,
+      "known_vulnerabilities": 0,
+      "lock_sha256": "50c7479234a994bf7aefb31ce264ac5f4f323a6c3b6666a538279844a619e476",
+      "scope": "Registry observation for this exact unchanged lock; not a future security guarantee."
+    },
+    "popup_closure": {
+      "issue": "uibcdf/molsysviewer#378",
+      "status": "complete_canonical_native_guard_received",
+      "profile": "725",
+      "native_test_seconds": 161.151,
+      "native_exit": 0,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup_survivors": [],
+      "cleanup_errors": [],
+      "received": [
+        "unavailable-canvas refusal and recovery",
+        "actual canvas and detached Studio owner closure within original five-second assertion",
+        "no late file resurrection",
+        "transport-loss cancellation and autonomous deadline",
+        "cross-frame static freezing",
+        "pending Python View closure"
+      ],
+      "notice": "Original incomplete/failed runs and diagnostic ablations retain their actual outcomes; this is not full-core, actual-host, installed or human qualification."
+    },
+    "panel_only_loop": {
+      "issue": "uibcdf/molsysviewer#379",
+      "profile": "724",
+      "native_test_seconds": 45.812,
+      "native_exit": 0,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "received": [
+        "stopped real panel-only loop",
+        "active associated molecular loop",
+        "hierarchy and real addon protocol",
+        "shape-only Render/Clear and remount",
+        "both popup modes and subsequent molecular loading"
+      ],
+      "persistent_current_studio": "729 completes the entire persistent scope with native exit 0, unchanged inputs, no resource stop and clean own-process cleanup.",
+      "notice": "Real native parameter state is retained; no renderer-free architecture or complete resource release is claimed."
+    },
+    "studio_current_layout": {
+      "profile": "726",
+      "native_test_seconds": 150.632,
+      "notice": "Completed layout entry in the later failed two-entry run; not a complete Studio/current-core pass.",
+      "entry_native_exit": 0,
+      "whole_profile_native_exit": 1
+    },
+    "studio_observer_failure": {
+      "profile": "726",
+      "native_exit": 1,
+      "cause": "The newly added detached-panel loop assertion used a controller observation handle that the nested native window.open had not instrumented. Product state/session roundtrips completed before this assertion.",
+      "correction": "Observe real nested controller creation through captureCanvasPopupControllers(popup, false); no product reply/rendering is replaced. Runner controls and entries build in 727; complete persistent receiving passes in 729."
+    },
+    "detached_png_defect": {
+      "issue": "uibcdf/molsysviewer#380",
+      "profile": "728",
+      "verification": "reproduced",
+      "primary": {
+        "atoms": 62,
+        "representations": 5,
+        "drawing_buffer": [
+          850,
+          600
+        ]
+      },
+      "panel": {
+        "atoms": 0,
+        "representations": 0,
+        "drawing_buffer": [
+          1,
+          1
+        ]
+      },
+      "downloaded_png": {
+        "width": 2,
+        "height": 2,
+        "nonzero_alpha_pixels": 0
+      },
+      "notice": "Reproduction succeeds; PNG acceptance fails. Main-canvas export is separately received. No Mol* regression/version causality is asserted."
+    },
+    "physical_native_teardown": {
+      "profile": "730",
+      "atoms": 62,
+      "representations": 5,
+      "disposed": true,
+      "physical_before": [
+        {
+          "context_lost": false,
+          "created": 618,
+          "alive": 541
+        }
+      ],
+      "physical_after": [
+        {
+          "context_lost": true,
+          "created": 619,
+          "alive": 0
+        }
+      ],
+      "scope": "Actual pentalanine controller/representations with observed real WebGL handles and isBuffer/isTexture/etc on completed draw and disposal. Native counters are retained but not treated as physical liveness after global destruction. Not universal CPU/GPU lifetime, actual Jupyter/Qt or installed qualification.",
+      "native_exit": 0,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup_survivors": [],
+      "cleanup_errors": []
+    },
+    "actual_native_qt": {
+      "profile": "731",
+      "pytest_passed": 1,
+      "pytest_skipped": 0,
+      "native_exit": 0,
+      "platform": "wayland",
+      "rendering": {
+        "canvas": true,
+        "webgl2": true,
+        "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+      },
+      "work_file_cases": 4,
+      "moving_cases": 4,
+      "background_cases": 4,
+      "providers": {
+        "viewer_module": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "viewer_version": "0.24.0+97.gdf4bf477.dirty",
+        "qt_binding": "PySide6",
+        "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]"
+      },
+      "closed": true,
+      "scope": "Automated selected real Wayland/QtWebEngine host with observed NVIDIA Quadro M2000/ANGLE WebGL2. Includes the guard-defined moving, background, cancellation and constructor/close controls; not a human or installed-artifact observation."
+    },
+    "actual_jupyter_lifecycle": {
+      "profile": "732",
+      "native_exit": 0,
+      "outcome": "passed",
+      "native_collected": {
+        "structure": true,
+        "model": true,
+        "axis": true,
+        "buffer": true
+      },
+      "notice": "Actual notebook/widget/runtime retirement and independent witness receiving. The outer frozen provider route is recorded; no separate actual-kernel Rust/source commit assertion or full scientific-pair qualification is inferred from this lifecycle profile."
+    },
+    "actual_jupyter_full": {
+      "profile": "733",
+      "native_exit": 1,
+      "outcome": "failed",
+      "phase": "Moving Python notebook state",
+      "reason": "FrontendRequestError(request_timeout) at unchanged public five-second deadline",
+      "completed_subcases": {
+        "capture_restore": 6,
+        "strong_restore": 6,
+        "studio": 4,
+        "moving": 1
+      },
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup_survivors": [],
+      "cleanup_errors": [],
+      "notice": "Kernel heartbeat progresses and comm remains open; native moving dependencies have not converged before expiry. Cause/upstream relation remain unestablished. Preserve failed whole receiving; do not count successful subcases as a complete gate."
+    },
+    "temporary_quota_failure": {
+      "profile": "734",
+      "native_exit": 1,
+      "passed": 513,
+      "failed": 6,
+      "cause": "All six failures report Errno 122 under /tmp tmpfs usrquota, including the source archive backend. No product assertion failure is established.",
+      "resolution": "Retain original logs/JUnit; delete only the positively identified completed pytest-3022 workspace (4,926 files / 205,601,105 bytes); rerun unchanged assertions in owned repository temporary storage and explicit basetemp. Complete 519 cases pass in 735."
+    },
+    "current_ast_inventory": {
+      "scanned_typescript_files": 117,
+      "importing_files": 30,
+      "declarations": 222,
+      "unique_module_paths": 77,
+      "sha256": "c6eaf9c8dd6b6f7c720649728d1289ba6aef252149ac5b7de6356716e8016d76",
+      "notice": "Complete direct literal import/export scan, not a complete transitive or nonliteral-loader inventory."
+    }
+  },
+  "controlled_profiles": [
+    {
+      "profile": "molstar-513-679-acquire",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 4.815481786150485,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 117.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "af55b4910a5fef1cbaf5ce021e0766a141358da60ff3eead8954934cd5b2ffed",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-680-acquire",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 16.127049994189292,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 278.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "33d9bbd93e649815a46ff441e9e5a5c59ea8ac62f9de0cc7710199d19e911024",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-681",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "manual_stop": false,
+      "seconds": 6.595652932301164,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 277.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "d81c4694832a0da7e4d2ff3156937580f0742ed8057cace282e32d78379e637c",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-682",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 18.894205159973353,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 620.5,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "f09dc69015897850dc77f0f5f260c4fc9fc1b1bbd1533822fb6e2b5d0e424cab",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-683",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 23.880918502807617,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 507.7,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 30,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "c9d02f7b06ecc949af5288ea729f7a3f0d3d9912155e1ea3c3124d9b81c60e71",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-684-affected",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 429.0034986101091,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2590.6,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 43,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "f5f2db76c655da75aab32c2428087a8849e972e9c280447f4ca6da437c3eb9f7",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-685-baseline",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 2.106137101072818,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 98.8,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "943c688c0b6a0d19b5ff3edf9fe5a78246b7051f5fd7996d5ca7d8aa87c26053",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-686-baseline",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 21.37980793789029,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 279.4,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "379b9c8b7673360c8dbddc82a27eceb98f80953449fa310d7fb6936b4b3a8ec0",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-687-baseline",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 187.72496269876137,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2686.9,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 27,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "5645ef6c1d10163d4eb0d51675b28e65f637309b7d5d20d51a6dfbdc5c468017",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "covering-molstar-513-688-geometry",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 182.65265596006066,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2609.9,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "d6c4ee50488b98664c57d57e420212d4f7a910656c335832b79b705921ac2e3e",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-689-geometry8",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 183.39842677302659,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2659.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "ea15189ab930b8d2aac53a0021b33c79d6d4973db713cb78ce68b3c0bcbcc0d2",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-690-inventory",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 4.087948640808463,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 180.5,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "1d8919249ce6a33f92330e9c0ba14b01f0d92824ff96bdb2a0c29608eba8bf7d",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-691-geometry-diagnostic",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 239.230624595657,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2708.8,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "1aba95a6c359dea1766f9146267f7a882cab2cc49d098d731916eac4d75ba876",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "build-molstar-513-692-comparisons",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 8.0305927391164,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 270.2,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "dfeac9f662a0e572463af8b5087e618b58509846e69182dc8b92b3b4eb27932e",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-693-comparisons",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 31.212379836943,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 1098.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 40,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "12961ea415f0feeea88869e26d7172b44ea76057ffbd0d7c4f1bd9699c03a4d6",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "full-core-molstar-513-694",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 83.68312306702137,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2426.3,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "927c4b3561320db2c421b51eeaceba11e1eb77af68e00a0006e236dc3b97c31c",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-695-context",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 84.36078682495281,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2467.4,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "c3b85a891fa5ae437f9f7b9020d34bc9f301304c87d0546214ef342ae032587b",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-696-motion",
+      "state": "completed",
+      "native_exit": 2,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 11.792743703816086,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 451.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "6d9f13d7ef6bab60de1498002ee85f86ba2ee2beb4bf7426b575f00f2e036645",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-697-motion",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 29.254549948032945,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 468.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "8326f4cc0328a583148998f2b113aadb0bbd5be13abd015502dbd1de7124f916",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-698-context",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 173.88359680213034,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2545.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "4e801e0a070ad0b38545afed58dca4875d007514e4a1acb1100a73464d4aea2e",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "build-molstar-513-699-context-stop",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 83.24929505307227,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2561.5,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "c4f0565243392d7a134547656357f9d8fd809c69b466d391ac18f0d94b21a9b2",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "full-core-molstar-513-700",
+      "state": "completed",
+      "native_exit": -15,
+      "resource_stop": null,
+      "manual_stop": true,
+      "seconds": 233.84875283716246,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 38.4,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "9272eac3e03ea5ca7db211912f5b9d1f2c9a6c1002ebcb354647146a80b00140",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "full-core-molstar-513-701",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "manual_stop": false,
+      "seconds": 428.37676915712655,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3112.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 34,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "fe3509fb22d1d8973051eb8df14ca78915c22faeb349e02df65c4a3a6c17938f",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-702-remaining",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 366.4742332920432,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3754.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "1e6442f19d3ed54ce81bbb422f1704939e311ded048770b9aa8c19150123ba1f",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-703-studio",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 6.96140931872651,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 204.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "9894426c10475e5d855a5ff90f167148bfa230dcebb9e339d14a8b7c532f45b7",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-704-studio",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 521.4939370071515,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3255.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 23,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "e3f1dbedf0e959417a40f2d2d7e64eca39320e7b57444c528b4fda3d6ee901a9",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-705-studio-budget",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 4.823203704785556,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 197.4,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "893a33332cd000b87213cc73117500722739b57fbbfebc016e113579e548db23",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-706-studio-live",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 368.5296676498838,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3019.9,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "c822f6070e5ffb92ca6703afb0d4a366e25039e4d7009710d75a3ba29642c058",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "covering-molstar-513-707-rest",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 307.17255015671253,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3821.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 27,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "50da1d88dffe5e27ad16d3307fad4c429123ee8c533301b59f311453305256a7",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-708-lifecycle-diagnostic",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 5.981104408856481,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 207.6,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "b6e55d19e701d366cb69c703f7518ac6572fda214c2488635779eb6ea899da8d",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-709-lifecycle",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 97.07456710515544,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3246.5,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "c7b69a58a82aeb0a1e621fe806acc68bc9e6b6e6053b724a4486b08b83809327",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-710-native-close",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 77.42297515133396,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3024.9,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "f13ad8f645d68b7480dfc3b5ccb5d5e77e7f5d2d75c267ef31d3e462953bcfc9",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-711-window-close",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 3.410701904911548,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 1014.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "ccc44f0fec06f21f5f2690b60de1d439c3181bb00f6181c4c41774036228e1b1",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-712-pagehide",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 41.53373352298513,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 507.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "fa1e98edc0f786c8358bba436936c1c0fa383837d9d361a3eb33d0aa058753bb",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-714-lifecycle-fixed",
+      "state": "completed",
+      "native_exit": 2,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 2.1817179429344833,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 7.1,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "d2057f251e243cbd517eeb66bceb54d58166b3903b2c1f4000971a958569c24d",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-715-lifecycle-fixed",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 204.2865249090828,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3126.0,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "7ac4ce16a1ded1e3ec924f533e371390c7cf1378f078a883e72d875eec9c9bc7",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-716-final-checks",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 57.520020951051265,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 615.7,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 50,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "b2d7dbeb7c545a72787b01dfc16d1d37595f5601749194d33b0b4df29f443fb0",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-717-lifecycle-wait",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 5.90070380596444,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 195.1,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "a0b2ae6349572d9d98735592627a8bd95395c8ac361ce7d704cd6fc5b49b91b5",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-718-pagehide-owner",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 38.31204250268638,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 471.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "93275054124dc7fc42b9bd426dd7fa696da51eeddbbd72cff6ddf8aa21e94bc4",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-719-lifecycle-owner",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 209.65447643119842,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3306.5,
+      "limits": {
+        "logical_cpus": 6,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "d24d9d01dccee20f75609fa766816ec640144d3264ee257f0a4798e56fb0050a",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-720-panel-diagnostic",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 126.18610261194408,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3067.5,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "4342766ea11fecb48f6643a6cb74f517cd93a24cabfe0e2b0a536a9765cc90c4",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-721-render-profile",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 113.99810994695872,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3259.7,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "387f7a99787ecd2b4e41229033d415e6ac3874e2be3c5d4ba2a31a7cca6a04bf",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-722-render-profile",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 88.4482580460608,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3181.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "3959eba44bef91aa3a85a85f53a3a92b0bc49f69f1dd784d07fe8f49ebfb8e88",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-723-panel-loop",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 38.17351601133123,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 506.2,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "d9d2c2cb70fea7cea77ed44c7548a944505c7b2d583a353eca69fc381cea9541",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-724-panel-loop",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 68.40354887628928,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2349.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "669dafcf07cde9d33d28cbe9597a1ab4d1b028f642399d41074885c0b1f0cd93",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "covering-molstar-513-725-lifecycle-current",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 165.5179657409899,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3466.6,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "4d2afe3c9db4b22a0fb882acce7d5e7fe01187e2496d7f05d7ca041deabf786e",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "covering-molstar-513-726-studio-current",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 349.72456104913726,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3271.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 23,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "65dbf1500f9eaa330b61b1e0f9a693bb04d203f9dce9006ce3c0250ff6e4f514",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "build-molstar-513-727-studio-observer",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 5.279909612145275,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 180.6,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "a3b91b4d721227ec9b2f2463a2f2c37c4864e564d77717648ffc9b50b164048e",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-728-detached-png",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 18.486775505822152,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2162.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "5631b1fa374ed4d7174249d1a82c70150d7b57492352f50a105d343751422a64",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-729-studio-live-observer",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 353.7985315392725,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2923.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "9647f9b938a0a1998ca5cdb4b899d427d964152ed5a5eb335994f4a014dcaa69",
+      "terminal_core_claims": [
+        "1/1 suites passed"
+      ]
+    },
+    {
+      "profile": "molstar-513-730-native-teardown",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 30.85849530994892,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2911.6,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "34ba8d7b58e8e69b42412f118a8598ac0d4f6c50b00d0294ed9e9fd9bce7833c",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-731-native-qt",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 105.11568545689806,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2181.6,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "a226100f55d0a031db66f51e66ca12606a573bccc8eeb7d5aca15e3bfd86f874",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-732-jupyter-lifecycle",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 38.06520508695394,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 2308.5,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "072aabeb26c8c89a850854b6ee7cc68d7a2e6cccb3141de25c53edc27fa96b01",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "covering-molstar-513-733-jupyter-full",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 130.92354667605832,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 3190.5,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "8234bdca025370054c1c015397732e97646b8459a201c4d7cf1ac5d9986a7610",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-734-final-source-checks",
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 33.62484597368166,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 616.4,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 45,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "280722be0f1829e6dee69c6f69ee8a0e80a7a1767926c9b360ed9d6cc440ad4b",
+      "terminal_core_claims": []
+    },
+    {
+      "profile": "molstar-513-735-source-checks-own-temp",
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "manual_stop": false,
+      "seconds": 35.019978262949735,
+      "inputs_unchanged": true,
+      "peak_summed_owned_rss_mib": 621.2,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 41,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "3a1360007d7a05db1fe8171a589bf1f4498ca0399fab38b6c489e15559814299",
+      "terminal_core_claims": []
+    }
+  ],
+  "remaining": [
+    "Complete current core browser receiving and retain interruptions/partial coverage honestly.",
+    "Receive actual Jupyter/native Qt and relevant lifecycle/output routes.",
+    "Consolidate source/platform CI, installed candidate and compatibility documentation at the agreed freeze.",
+    "Preserve postponed human observations separately; do not count them as passing.",
+    "Resolve uibcdf/molsysviewer#380: detached Studio PNG must use its associated molecular canvas; the reproduced empty local export is not an upstream defect claim.",
+    "Diagnose actual-Jupyter moving-capture failure 733 without weakening the public five-second deadline; compare #344 history before refiling or rerunning."
+  ],
+  "counter_notice": "The original 38/46 source-delivered and 1/46 finally accepted audit counters are unchanged; this is a separate adopted stream.",
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-5.13.1-qualification-20261113-complete",
+    "controlled_profiles": 56,
+    "preflight_rejections": 1,
+    "files": 539,
+    "bytes": 347342816,
+    "manifest_sha256": "df7110a0d7a44e541eaac7b73601520daae92f2cf07fc18938c05217328dbd34",
+    "originals_retained": true,
+    "approved_parent": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106",
+    "custodian": "Diego Prada Gracia",
+    "scope": "539 owner-private files covering all 56 controlled profiles, one preflight rejection, original provider artifacts, drivers and current build. Copies and originals are independently hash-checked; no original is removed.",
+    "initial_copy_notice": "An earlier 34-file drivers/build-only preparation copy is retained unchanged; it is not the complete execution-record custody. The manifest named here covers the complete declared tranche."
+  },
+  "preflight_rejections": [
+    {
+      "profile": "713",
+      "reason": "Shared CPU preflight: 45.1 percent already used plus the requested 8/20 logical CPU ceiling exceeds the unchanged 75 percent start criterion. No command launched.",
+      "resources_before_sha256": "53833086dba31bfa0d82a04e1cb9b4f8ba81396569d0e3d5ebe5d84c5f53f9d8"
+    }
+  ]
+}

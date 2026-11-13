@@ -80,11 +80,22 @@ export async function checkCaptureLifetimes(context: Context) {
             let owner = popup;
             if (close === "panel") {
                 await openMovingWorkFile(popup);
+                await popup.evaluate(() => {
+                    const w = window as any;
+                    w.__captureLifetimeCanvas = w.__mirrorController;
+                });
                 const opened = popup.waitForEvent("popup");
-                await popup.getByTitle("Popout panel to external window", { exact: true }).click();
+                // This action adopts a separate window. Wait for that actual
+                // panel below, rather than an unrelated navigation of its owner.
+                await popup.getByTitle("Popout panel to external window", { exact: true }).click({ noWaitAfter: true });
                 panel = await opened;
                 panel.on("pageerror", error => errors.push(String(error)));
                 await panel.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
+                assert.equal(await popup.evaluate(() => {
+                    const w = window as any, original = w.__captureLifetimeCanvas;
+                    delete w.__captureLifetimeCanvas;
+                    return w.__mirrorController === original && original.getStructureData()?.elementCount > 0;
+                }), true, "opening detached Studio must preserve its originating molecular canvas");
                 owner = panel;
             }
             const endpoint = await movingEndpointIdentity(owner);
@@ -95,10 +106,12 @@ export async function checkCaptureLifetimes(context: Context) {
             await armMovingDependencyHold(save); await save.click();
             await until(inspect, value => value.held > 0 && value.pending_studio_saves === 1 && value.pending_captures === 1,
                 "genuine pending scientific capture");
+            console.log(`[E2E capture lifecycle] closing ${close} owner ${endpoint}`);
             await owner.close();
             if (close === "canvas") popup = undefined; else panel = undefined;
             await until(inspect, value => !(endpoint in value.endpoint_modes)
                 && value.pending_studio_saves === 0 && value.pending_captures === 0, "closed owner cleanup");
+            console.log(`[E2E capture lifecycle] retired ${close} owner ${endpoint}`);
             await assert.rejects(readFile(path), { code: "ENOENT" });
             await command("release");
             await until(inspect, value => value.held === 0 && value.pending_studio_saves === 0 && value.pending_captures === 0,

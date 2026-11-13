@@ -16,9 +16,10 @@ export function attachRenderPresentation(renderer: Pick<Renderer, "update">, con
     if (attached.has(renderer)) return;
     attached.add(renderer);
     const update = renderer.update;
-    renderer.update = (camera, scene) => {
+    renderer.update = (...args) => {
+        const [camera, scene] = args;
         for (const entry of presentations.get(context) ?? []) entry.present(camera, scene);
-        update.call(renderer, camera, scene);
+        update.apply(renderer, args);
     };
 }
 
@@ -34,9 +35,10 @@ export function registerRenderPresentation(context: WebGLContext, camera: ICamer
     };
 }
 
-// Molstar 5.4.1 uses the same Renderer.update boundary for normal drawing,
-// picking, image passes and illumination. Per-draw asynchronous state updates
-// cannot provide this ordering. The wrapper stays local to this runtime bundle.
+// Mol* 5.13.1 uses this boundary for normal drawing, picking, image passes and
+// illumination. Forward its complete native tuple, including Frame. Per-draw
+// asynchronous state updates cannot provide this ordering. The wrapper stays
+// local to this runtime bundle.
 const createRenderer = Renderer.create;
 Renderer.create = (...args) => {
     const renderer = createRenderer(...args);

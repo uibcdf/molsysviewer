@@ -17,8 +17,12 @@ supersedes: []
 **Reported:** 2026-09-28, while defining the minimal pre-1.0 Interactions
 slice in `uibcdf/molsysviewer#114`.
 
-**Status:** Post-1.0 proposal. No target release has been selected or
-installed by this report.
+**Current scope, revised 2026-11-12:** the maintainer advanced public 5.13.1
+qualification before 1.0 under [#372](../qualify_molstar_5_13_1_pre_1_0.md),
+following #369. This record now retains later v6/ESM/workspace migration,
+new native capabilities and adapter-retirement review. The original blanket
+deferral no longer applies to the adopted 5.13.1 qualification. No published
+MolSysViewer package is qualified by that timing decision.
 
 **Inspected 2026-11-08:** #344's font-upload investigation receives an
 independent real-WebGL probe of current upstream master
@@ -33,10 +37,10 @@ failures; a source mechanism is not installed Viewer compatibility.
 
 ## What
 
-Update the npm Mol* dependency to a published, tested release after 1.0.
-The current package lock installs 5.4.1; the local upstream source checkout
-is newer but is not the viewer's installed dependency. Newer Mol* capabilities
-must not silently become 1.0 promises.
+Evaluate later published Mol* releases, particularly the v6 ESM/workspace
+transition, after 1.0. The independently tracked 5.13.1 migration is now
+pre-1.0 under #372; it does not select v6 or adopt unqualified capabilities.
+A local upstream source checkout is distinct from the declared dependency.
 
 The separate [component-cache follow-up](../molstar_component_cache_upstream_followup.md)
 under uibcdf/molsysviewer#363 tracks the already known upstream
@@ -71,7 +75,8 @@ now includes this acceptance checklist. At dependency/release review checkpoints
 - Remove any temporary Viewer compatibility adaptation only after those native
   controls pass; otherwise record why it still remains necessary.
 
-The migration stays post-1.0. The separate pre-1.0 #344 consumer adapter is
+The future v6 migration stays post-1.0; #372 owns the adopted 5.13.1 receiving.
+The separate pre-1.0 #344 consumer adapter is
 received in source, with its bounded review/retirement contract in
 `devguide/transport_state_ownership.md`. This follow-up changes neither the
 dependency nor the publication scope.
@@ -92,4 +97,5 @@ upgrade to be useful.
 
 ## Resolution
 
-Deferred until after 1.0.
+Future v6/evolution work remains deferred until after 1.0. The maintainer
+explicitly advanced 5.13.1 qualification under #372 on 2026-11-12.

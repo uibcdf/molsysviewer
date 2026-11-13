@@ -25,12 +25,13 @@ archived documents link there; its location does not reopen its release scope.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (4)
+### Being worked on (5)
 
 - [`migrate_standalone_qt_to_canonical_pyside6_6_11_2.md`](migrate_standalone_qt_to_canonical_pyside6_6_11_2.md) — [#109](https://github.com/uibcdf/molsysviewer/issues/109) — Migrate the optional standalone Qt host to canonical PySide6 6.11.2. *(measured)*
 - [`pre_1_0_molstar_integration_review.md`](pre_1_0_molstar_integration_review.md) — [#369](https://github.com/uibcdf/molsysviewer/issues/369) — Reassess Mol* integration against current releases and development before 1.0. *(measured)*
 - [`pre_1_0_movie_authoring_export_and_agent_timeline.md`](pre_1_0_movie_authoring_export_and_agent_timeline.md) — [#320](https://github.com/uibcdf/molsysviewer/issues/320) — Complete movie authoring and useful export before 1.0, with a timeline future agents can consume. *(measured)*
 - [`pre_1_0_robustness_audit_and_action_plan_20261106.md`](pre_1_0_robustness_audit_and_action_plan_20261106.md) — [#315](https://github.com/uibcdf/molsysviewer/issues/315) — Track the November robustness audit and pre-1.0 action plan. *(measured)*
+- [`qualify_molstar_5_13_1_pre_1_0.md`](qualify_molstar_5_13_1_pre_1_0.md) — [#372](https://github.com/uibcdf/molsysviewer/issues/372) — Qualify public Mol* 5.13.1 before the 1.0 freeze. *(measured)*
 
 ### Partially done (2)
 

@@ -38,8 +38,9 @@ list.
 - [`trajectory_plot_seek_skips_python_authority.md`](trajectory_plot_seek_skips_python_authority.md) — [#314](https://github.com/uibcdf/molsysviewer/issues/314) — Trajectory plot navigation changes the canvas without updating Python structure state. *(high, reproduced)*
 - [`view_close_failure_blocks_cleanup.md`](view_close_failure_blocks_cleanup.md) — [#318](https://github.com/uibcdf/molsysviewer/issues/318) — A provider panel close error prevents remaining View resources from closing. *(medium, reproduced)*
 
-### Open (2)
+### Open (3)
 
+- [`detached_studio_png_uses_empty_canvas.md`](detached_studio_png_uses_empty_canvas.md) — [#380](https://github.com/uibcdf/molsysviewer/issues/380) — Route detached Studio PNG export to its associated molecular canvas. *(medium, reproduced)*
 - [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*
 

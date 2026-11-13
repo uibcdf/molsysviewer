@@ -23,8 +23,10 @@ this local tracking issue instead of opening another upstream report. The
 the independently verified public-package and current-source evidence.
 
 This follow-up does not replace uibcdf/molsysviewer#356's pre-1.0 lifetime
-correction or its prolonged-session acceptance. The general dependency
-migration retains uibcdf/molsysviewer#115's separately agreed post-1.0 scope.
+correction or its prolonged-session acceptance. Public 5.13.1 qualification
+is now adopted pre-1.0 under uibcdf/molsysviewer#372; future v6/evolution
+retains uibcdf/molsysviewer#115's post-1.0 scope. The selected 5.13.1 source
+still requires the exact-version/byte-checked repair.
 
 ## How
 

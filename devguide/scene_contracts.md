@@ -2384,10 +2384,14 @@ and it is not ours.
 [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) → commit
 `4807179` (2026-08-07): `commitScene` now guards on
 `scene.boundingSphere.radius > 0`, and the `autoAdjustMinMaxDistance` block moved
-inside `resolveCameraReset`'s `if (radius > 0)`. **It changes nothing here yet** —
-the fix is unreleased and we are pinned at `^5.4.1`. Everything below stays
-normative until a release ships it, the floor is raised deliberately, and the
-third vector is re-verified against it; the sequence is in
+inside `resolveCameraReset`'s `if (radius > 0)`. The original 5.4.1 receiving
+did not consume those guards. The deliberately selected public 5.13.1 package
+contains them; #372 qualifies that migration. MolSysViewer retains
+`takeCameraAuthority`: it also prevents opportunistic reframing that is
+independent of this corrected empty-scene cause. No receipt establishes that
+the third `syncVisibility` path is safe without that configuration. The
+authority, its detection and the contracts below therefore remain in force;
+the original separation of upgrade and authority decisions is recorded in
 `archive/report_molstar_empty_scene_camera_bounds.md`.
 
 **Do not "repair" the camera afterwards.** That was the first fix attempted and it

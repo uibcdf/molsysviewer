@@ -4,8 +4,8 @@ import { createRequire } from "node:module";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
-const reviewedVersion = "5.4.1";
-const reviewedDigest = "071245677951027360bad1926107349d3a67a043d142baace1f218b0f9b3fb0a";
+const reviewedVersion = "5.13.1";
+const reviewedDigest = "21f1c7480f359e11a06321d2b83d9f037226018ca2b5e38fb0402ac586ea8e34";
 
 /**
  * Compatibility repair for #356, until a qualified Mol* release fixes its

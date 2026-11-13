@@ -311,9 +311,14 @@ async function run() {
         }));
         assert.equal(await page.evaluate(() => (window as any).__disposedPanel.getAttribute("style")), disposed);
         assert.deepEqual(errors, []);
-        const livePage = await page.context().newPage();
-        try { await checkStudioLiveCapture(livePage, dir, downloadDir); }
-        finally { await livePage.close(); }
+        // The direct historical entry retains complete receiving by default.
+        // Core selects layout explicitly and runs the same persistent capture
+        // owner in its separately bounded mandatory entry.
+        if (!process.argv.includes("--layout-only")) {
+            const livePage = await page.context().newPage();
+            try { await checkStudioLiveCapture(livePage, dir, downloadDir); }
+            finally { await livePage.close(); }
+        }
         await checkTrajectoryShapeRefresh(page, dir);
         assert.deepEqual(errors, []);
         console.log("[E2E Studio] real PNG/HTML downloads, transparency, native labels, compact navigation, floating bounds, disposal and discovered addon catalogue passed");

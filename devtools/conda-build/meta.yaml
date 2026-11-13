@@ -33,7 +33,7 @@ requirements:
     - setuptools >=77.0.3
     - versioningit >=3
     - wheel
-    - nodejs  # for npm and building viewer.js
+    - nodejs >=22,<23  # qualified npm/runtime build toolchain
   run:
     # Bounded above on purpose. Publishing one artefact per interpreter used to bound the
     # claim implicitly -- py311, py312, py313 and nothing else. A noarch package with an

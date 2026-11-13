@@ -534,3 +534,9 @@ Completed work, kept for the reasoning:
 - [Curated representation parameters](curated_representation_parameter_digestion.md) — #357 validates advertised renderer options before mutation and receives real native forwarding.
 - [Movie camera guard precondition](movie_baseline_camera_guard_precondition.md) — #361 uses the production snapshot authority after a native queued-reset adverse control, preserving exact capture assertions.
 - [Consolidated Jupyter capture](jupyter_capture_receiving_recurrence.md) — #344 receives follower presentation and contended scientific-query handoffs through complete actual-Jupyter captures, cancellation and deadlines.
+- [E2E Movie inventory](e2e_movie_inventory_guard.md) — #373 restores the deliberately frozen count while preserving exact source/build/runner equality.
+- [Auxiliary Mol* probe origin](molstar_auxiliary_probe_origin.md) — #374 makes native comparisons require an explicit provider and corrects the two withdrawn baseline attributions.
+- [Terminal E2E failure exits](e2e_terminal_failure_exit.md) — #375 restores fail-fast catches after existing awaited cleanup in eight entries.
+- [Bounded Studio receiving](studio_browser_receiving_partition.md) — #377 retains complete historical coverage through mandatory layout and persistent-capture core entries, received in real Mol*/Python.
+- [Pending popup captures](popup_pending_capture_close.md) — #378 retires actual closed popup owners promptly, preserving cancellation, late-reply refusal and the originating canvas.
+- [Panel-only native loop](panel_only_native_loop.md) — #379 stops unused native panel rendering while preserving real UI state and associated-canvas state/session workflows.

@@ -11,6 +11,7 @@ const SUITES = [
     "context-menu",
     "controls-visibility",
     "studio-usability",
+    "studio-live-capture",
     "box-trajectory",
     "moving-state-capture",
     "moving-capture-lifecycle",
@@ -89,19 +90,29 @@ function suitesForLane(argument: string | undefined): readonly string[] {
 function runSuite(name: string, endpoint: string, workspace: string): Promise<void> {
     const defaultTimeoutMs = Number(process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000);
     // These integrated entries receive several independent real Python/Mol*
-    // workflows. Studio's complete local receiving takes 198.54s, beyond the
-    // former 180s outer budget. Keep each operation's own deadlines, all other
-    // suite budgets and any explicit caller override unchanged.
+    // workflows. Keep each operation's own deadlines, all other suite budgets
+    // and any explicit caller override unchanged.
     const integratedBudgets: Readonly<Record<string, number>> = {
         "controls-visibility": 300_000,
         "studio-usability": 360_000,
+        // The unchanged persistent owner completes its primary, popup and
+        // detached state/session roundtrips in 321s with Mol* 5.13.1 at 8 CPU/
+        // 4 GiB, before its final camera/cancellation controls. Bound that whole
+        // workflow separately from PNG/layout; retain every operation deadline.
+        "studio-live-capture": 600_000,
+        // Ten calculated families, original/recovered scenes and periodic
+        // controls create 22 real controllers. Mol* 5.13.1/SwiftShader takes
+        // 236s at 8 CPU/4 GiB; the prior 5.4.1 control already took 179s.
+        // This bounds the integrated suite, without changing any operation TTL.
+        "interactions-geometry": 360_000,
         // Three real encoders, independent recovery and complete offline seeks.
         "movie-story": 360_000,
     };
     const timeoutMs = process.env.E2E_SUITE_TIMEOUT_MS === undefined
         ? integratedBudgets[name] ?? defaultTimeoutMs : defaultTimeoutMs;
     return new Promise((resolveSuite, rejectSuite) => {
-        const child = spawn(process.execPath, [resolve(__dirname, `${name}.e2e.js`)], {
+        const scopedArguments = name === "studio-usability" ? ["--layout-only"] : [];
+        const child = spawn(process.execPath, [resolve(__dirname, `${name}.e2e.js`), ...scopedArguments], {
             env: { ...fixtureEnvironment(workspace), E2E_WS_ENDPOINT: endpoint },
             stdio: "inherit",
         });

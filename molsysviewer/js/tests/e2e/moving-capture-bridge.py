@@ -132,6 +132,8 @@ def main():
             "request_interaction_frame",
             "trajectory_frame_changed",
             "visual_state_snapshot",
+            "popup_endpoint_opened",
+            "popup_endpoint_closed",
         }:
             pending = owner._frontend_requests._pending.get(payload.get("request_id"))
             observe(
@@ -144,6 +146,7 @@ def main():
                 ok=payload.get("ok"),
                 ticket_remaining_ms=(pending.deadline - time.monotonic()) * 1000 if pending is not None else None,
                 ticket_pending=pending is not None,
+                popup_endpoint_id=payload.get("popup_endpoint_id"),
             )
         if payload.get("action") == "save_work_file":
             observe("save_work_file", request_id=payload.get("request_id"), holding=holding)
@@ -239,6 +242,10 @@ def main():
                 "pending_studio_saves": len(owner._work_file_saves._pending),
                 "pending_captures": len(owner._frontend_requests._pending),
                 "endpoint_modes": dict(owner._endpoint_transfers.modes),
+                "save_owners": [
+                    {"owner": operation.key[0], "renderer": operation.endpoint, "phase": operation.phase}
+                    for operation in owner._work_file_saves._pending.values()
+                ],
                 "region_mode": near.mode,
                 "region_atoms": near.atom_indices,
                 "same_molsys": owner.molsys is original,

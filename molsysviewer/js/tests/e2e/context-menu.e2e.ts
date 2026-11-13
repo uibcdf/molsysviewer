@@ -63,7 +63,9 @@ view.widget.send = sent.append
 echoes = {}
 for name, action, parameters in [
     ("spin", "toggle_spin", {"enabled": True}),
+    ("stop_spin", "toggle_spin", {"enabled": False}),
     ("swing", "toggle_swing", {"enabled": True}),
+    ("stop_swing", "toggle_swing", {"enabled": False}),
     ("dark", "toggle_background", {"mode": "dark"}),
     ("light", "toggle_background", {"mode": "light"}),
 ]:
@@ -90,7 +92,11 @@ view.close()
     try {
         const page = await browser.newPage();
         const errors: string[] = [];
-        page.on("pageerror", error => errors.push(String(error)));
+        const recordPageError = (error: Error) => {
+            errors.push(String(error));
+            if (errors.length === 1) console.error("[E2E context menu] first native error", error.stack ?? String(error));
+        };
+        page.on("pageerror", recordPageError);
         await page.setContent('<div id="root" style="position:relative;width:700px;height:520px"></div>');
         await page.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
         await page.evaluate(async wire => {
@@ -345,6 +351,7 @@ view.close()
         // so their acknowledgement cannot accidentally flip a local toggle.
         await page.locator('[data-molsysviewer-group-panel-tab="system"]').click();
         for (const [name, label, action] of [["spin", "Start Automatic Rotation", "toggle_spin"], ["swing", "Start Swing", "toggle_swing"]]) {
+            const previousPosition = await page.evaluate(() => Array.from((window as any).__controller.plugin.canvas3d.camera.position));
             await firstGroup.click({ button: "right" });
             await context.locator('[data-molsysviewer-context-submenu="View"]').click();
             await context.getByRole("menuitem", { name: label, exact: true }).click();
@@ -354,6 +361,33 @@ view.close()
                 for (const message of wire) await (window as any).__controller.handleMessage(message, { throwOnError: true });
             }, echoes[name]);
             assert.equal(await page.evaluate(field => (window as any).__controller.scene[field], name === "spin" ? "isSpinActive" : "isSwingActive"), true);
+            const motion = await page.evaluate(async previous => {
+                const canvas = (window as any).__controller.plugin.canvas3d;
+                await new Promise<void>((resolve, reject) => {
+                    let listening = false;
+                    const deadline = setTimeout(() => { subscription.unsubscribe(); reject(new Error("Native camera did not move on a completed draw.")); }, 5000);
+                    const subscription = canvas.didDraw.subscribe(() => {
+                        if (!listening) return;
+                        const position = Array.from(canvas.camera.position) as number[];
+                        if (position.every(Number.isFinite) && position.some((value, axis) => Math.abs(value - Number(previous[axis])) > 1e-4)) {
+                            clearTimeout(deadline); subscription.unsubscribe(); resolve();
+                        }
+                    });
+                    listening = true; canvas.requestDraw();
+                });
+                return { name: canvas.props.trackball.animate.name, axis: Array.from(canvas.props.trackball.animate.params.axis) };
+            }, previousPosition);
+            assert.equal(motion.name, name === "spin" ? "spin" : "rock");
+            assert.deepEqual(motion.axis, [0, -1, 0]);
+            await firstGroup.click({ button: "right" });
+            await context.locator('[data-molsysviewer-context-submenu="View"]').click();
+            await context.getByRole("menuitem", { name: name === "spin" ? "Stop Automatic Rotation" : "Stop Swing", exact: true }).click();
+            const stopRequest = await page.evaluate(a => [...(window as any).__messages].reverse().find((m: any) => m.action === a), action);
+            assert.equal(stopRequest.enabled, false);
+            await page.evaluate(async wire => {
+                for (const message of wire) await (window as any).__controller.handleMessage(message, { throwOnError: true });
+            }, echoes[`stop_${name}`]);
+            assert.equal(await page.evaluate(() => (window as any).__controller.plugin.canvas3d.props.trackball.animate.name), "off");
         }
         await firstGroup.click({ button: "right" });
         await context.locator('[data-molsysviewer-context-submenu="View"]').click();
@@ -584,7 +618,7 @@ view.close()
         const popupReady = page.waitForEvent("popup");
         await page.evaluate(() => window.open("about:blank", "menu-layout-review", "width=720,height=560"));
         const popup = await popupReady;
-        popup.on("pageerror", error => errors.push(String(error)));
+        popup.on("pageerror", recordPageError);
         await popup.setViewportSize({ width: 720, height: 560 });
         await popup.setContent('<style>body{margin:0}</style><div id="popup-root" style="position:relative;width:100vw;height:100vh"></div>');
         await popup.addScriptTag({ path: resolve(dir, "harness.bundle.js") });

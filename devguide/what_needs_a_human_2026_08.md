@@ -1,5 +1,9 @@
 # What needs a human
 
+**Historical August/September screen ledger.** Current pre-1.0 human acceptance
+and its actual pauses are tracked in [the documentation-review handoff](path_to_1_0.md).
+The dated observations below retain their original providers and host scope.
+
 **Written 2026-08-06, reconciled 2026-09-28.** **Two items remain**, and neither is
 blocked on implementation effort in this repository: they need a screen or a judgement.
 Items 3, 4, 5 and 7 are closed and struck below rather than deleted, so a reader can tell
@@ -139,7 +143,15 @@ Both handovers were received. The source-form proposal was accepted into
 `molsysmt/devguide/pending_proposals/` and the declared-selection-syntax report answered,
 in their `d5b066a35`. Nothing of ours sits uncommitted in their tree.
 
-## 6. Mol\* accepted the fix — *the decision is now ours*
+## 6. Mol\* version decision — **adopted under #372**
+
+The maintainer adopted exact public 5.13.1 qualification before 1.0 on
+2026-11-12 under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md).
+Camera authority remains an intentional MolSysViewer behavior; the native fix
+does not by itself authorize retiring it. See the current
+[scene contract S9](scene_contracts.md).
+
+### Historical rationale — August 2026
 
 [molstar/molstar#1903](https://github.com/molstar/molstar/issues/1903) was
 **accepted on 2026-08-07**: both changes landed verbatim in

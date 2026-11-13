@@ -138,7 +138,7 @@ authority.
   browser profile. DevTools is bound to loopback and is only a private health
   channel; it never becomes a client protocol or another scene authority.
 
-## Mol* 5.4.1 font-upload compatibility
+## Mol* font-upload compatibility
 
 The native writer remains authoritative for glyph rasterization and layout.
 Its public `FontAtlas.get` adds a weak content token only when it maps a new
@@ -155,13 +155,16 @@ invalidate reuse; native factories still own GPU allocation and release.
 Arbitrary writes into native font/GL internals are not an observed writer.
 This is content-upload reuse, not v6's shared GPU storage or row-upload design.
 
-This bounded compatibility measure is owned by #344, with migration/removal
-under #115. Current upstream `6682cc94a` already implements native versioned
+This bounded compatibility measure is owned by #344. #372 receives the seam
+against public 5.13.1; #115 retains future native-replacement/removal review.
+The 5.13.1 writer still lacks content-aware upload reuse, so a newer version
+number does not remove the need for this seam. Current upstream `6682cc94a`
+already implements native versioned
 atlases; no duplicate new-defect report is published there. The Viewer
 maintainer owns review by **2026-12-08**. Remove the seam after a published
 native replacement passes its exact dependency, glyph/pixel, lifecycle and
-capture gates; until then preserve native fallbacks and the explicit 5.4.1
-scope. The actual native browser guard is
+capture gates; until then preserve native fallbacks and the separately recorded
+5.4.1 and 5.13.1 receiving scopes. The actual native browser guard is
 `molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts`; real host qualification
 retains its independent scope.
 

@@ -44,6 +44,7 @@ function popupWire(
 function makePopupWindow() {
     const appended: any[] = [];
     const blobs: any[] = [];
+    const lifecycle = new EventTarget();
     const doc = {
         html: "",
         open() {},
@@ -63,6 +64,9 @@ function makePopupWindow() {
     };
 
     const popup: any = {
+        addEventListener: lifecycle.addEventListener.bind(lifecycle),
+        removeEventListener: lifecycle.removeEventListener.bind(lifecycle),
+        dispatchEvent: lifecycle.dispatchEvent.bind(lifecycle),
         closed: false,
         document: doc,
         Blob: class {
@@ -84,6 +88,7 @@ function makePopupWindow() {
         },
         close() {
             this.closed = true;
+            lifecycle.dispatchEvent(new Event("pagehide"));
         },
     };
 
@@ -484,7 +489,7 @@ test("popup lifecycle bypasses bootstrap and removes only its exact queued captu
     }
 });
 
-test("closing a popup reports its exact endpoint once", async () => {
+for (const close of ["host", "pagehide"]) test(`closing a popup via ${close} reports its exact endpoint once`, async () => {
     const previousWindow = (globalThis as any).window;
     const { popup } = makePopupWindow();
     (globalThis as any).window = {
@@ -503,6 +508,7 @@ test("closing a popup reports its exact endpoint once", async () => {
     try {
         await manager.open("canvas");
         const endpointId = manager.popupEndpointId("canvas");
+        if (close === "pagehide") popup.dispatchEvent(new Event("pagehide"));
         manager.close("canvas");
         manager.close("canvas");
         assert.deepStrictEqual(closed, [{ mode: "canvas", endpointId }]);
@@ -512,6 +518,36 @@ test("closing a popup reports its exact endpoint once", async () => {
     }
 });
 
+
+test("closing before popup source resolves retires its owner without late injection", async () => {
+    const previousWindow = (globalThis as any).window;
+    const { popup, appended } = makePopupWindow();
+    (globalThis as any).window = {
+        location: { href: "https://notebook.example.dev/lab", origin: "https://notebook.example.dev" },
+        open: () => popup,
+        setInterval: () => 1,
+        clearInterval: (_id: number) => {},
+    };
+    let release!: (source: string) => void;
+    const source = new Promise<string>(resolve => { release = resolve; });
+    const closed: string[] = [];
+    const manager = new PopupHostManager({ sourceProvider: () => source,
+        onEndpointClosed: (_mode, endpoint) => closed.push(endpoint) });
+    try {
+        const opening = manager.open("canvas");
+        const endpoint = manager.popupEndpointId("canvas");
+        manager.close("canvas");
+        release("viewer-source");
+        await opening;
+        assert.deepEqual(closed, [endpoint]);
+        assert.equal(appended.length, 0, "a late source reply cannot initialize the retired window");
+        assert.equal(manager.popupEndpointId("canvas"), null);
+    } finally {
+        release("viewer-source");
+        manager.dispose();
+        (globalThis as any).window = previousWindow;
+    }
+});
 
 test("the host refuses to emit an action the manifest does not declare", async () => {
     const previousWindow = (globalThis as any).window;

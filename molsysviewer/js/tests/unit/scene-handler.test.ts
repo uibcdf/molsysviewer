@@ -95,6 +95,15 @@ test("scene toggles spin and swing with mutual exclusion", async () => {
         .filter((x) => typeof x === "string");
     assert.ok(animateNames.includes("spin"));
     assert.ok(animateNames.includes("rock"));
+    const spin = setPropsCalls.find(p => p.trackball.animate.name === "spin").trackball.animate.params;
+    const rock = setPropsCalls.find(p => p.trackball.animate.name === "rock").trackball.animate.params;
+    assert.deepEqual(spin.axis, [0, -1, 0]);
+    assert.deepEqual(rock.axis, [0, -1, 0]);
+    assert.equal(rock.angle, 20);
+    spin.axis[0] = 42;
+    await handler.toggleSpin(true);
+    assert.deepEqual(setPropsCalls.at(-1).trackball.animate.params.axis, [0, -1, 0],
+        "A caller's native vector must not mutate the defaults of a later motion.");
 });
 
 test("scene toggleBackground flips dark mode and reuses cached renderer snapshots", async () => {

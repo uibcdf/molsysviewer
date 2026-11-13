@@ -38,9 +38,13 @@ adopted pre-1.0 findings. This requirement does not by itself upgrade Mol*.
 
 The [Mol* technical assessment](molstar_integration_review_20261112.md) now
 delivers #369's matrix and bounded comparisons; #370/#371's build-source and
-project-library corrections have scoped source receiving. Its recommendation to qualify public 5.13.1 before
-freeze awaits an explicit change to #115's existing timing. The current
-dependency remains 5.4.1; this is not installed or covering CI qualification.
+project-library corrections have scoped source receiving. The maintainer has explicitly adopted public 5.13.1 qualification before
+freeze under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md).
+#115 retains later v6/evolution scope. The timing decision is not installed
+or covering CI qualification; adopted migration gates remain open.
+The independently reproduced [detached Studio PNG defect #380](pending_bugs/detached_studio_png_uses_empty_canvas.md)
+must also close before the handoff; a successful main-canvas image test does
+not cover the associated-canvas routing of a detached panel.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
@@ -84,9 +88,9 @@ Do not silently drop mandatory Movie or accepted addon families to reach this
 milestone. B3.6/E3 retain their explicit scope decisions rather than becoming
 automatic implementation requirements. Experimental Qt keeps its own stated
 qualification; this goal does not require promoting it to a supported core
-host. The comprehensive Mol* review is pre-1.0 under #369; the general
-dependency upgrade retains #115's post-1.0 scope unless that review leads to
-an explicitly accepted change of plan. Deferred remotes and agent-language
+host. The comprehensive Mol* review is pre-1.0 under #369; public 5.13.1
+qualification is now adopted pre-1.0 under #372, while later v6/evolution
+work retains #115's post-1.0 scope. Deferred remotes and agent-language
 integration retain their post-1.0 scope.
 
 ### After the handoff

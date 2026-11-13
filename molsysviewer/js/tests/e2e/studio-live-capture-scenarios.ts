@@ -441,6 +441,9 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         }
         progress("popup correlated batch hide/show received only its owning verdicts");
         await openWork(popup);
+        // This canvas reserves the adopted panel through its own window.open.
+        // Observe that window's real controller creation as well as the host's.
+        await captureCanvasPopupControllers(popup, false);
         const detached = popup.waitForEvent("popup");
         await popup.getByTitle("Popout panel to external window", { exact: true }).click();
         panel = await detached;
@@ -448,6 +451,10 @@ export async function checkStudioLiveCapture(page: Page, dir: string, workspace:
         await panel.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
         await panel.locator('[data-molsysviewer-group-panel-tab="export"]').waitFor({ state: "attached" });
         assert.equal(await panel.locator("canvas").isVisible(), false);
+        assert.equal(await panel.evaluate(() => (window as any).__mirrorController.plugin.animationLoop.isAnimating), false,
+            "Studio-only native rendering stays stopped");
+        assert.equal(await popup.evaluate(() => (window as any).__mirrorController.plugin.animationLoop.isAnimating), true,
+            "the originating molecular canvas keeps rendering");
         let detachedSaved: any;
         for (const kind of ["state", "session"] as const) {
             const file = resolve(workspace, `detached-review.${kind === "state" ? "json" : "msv"}`);

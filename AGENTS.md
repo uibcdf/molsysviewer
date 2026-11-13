@@ -203,6 +203,12 @@ and the corresponding upstream tag when comparing implementations. Ordinary
 builds and type checks must resolve the declared installed package; never add an
 implicit `src_molstar` path override. #370 guards all three build routes against
 a leftover source checkout changing their native input.
+For auxiliary version comparisons whose entries live outside the JS package,
+use `molsysviewer/js/scripts/build-molstar-probe.mjs` with an explicit provider
+directory and expected version. Review its consumed native-input manifest and
+match those bytes to the selected artifact before attributing a measurement.
+A working directory alone does not select the requesting module's dependency;
+#374 guards the distinct ancestor-resolution failure.
 This means:
 
 - You should NOT treat Mol* as a black box.

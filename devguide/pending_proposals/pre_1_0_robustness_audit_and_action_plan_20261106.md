@@ -34,8 +34,12 @@ original 46 outcomes and does not increase their delivery percentage. The
 general dependency upgrade under #115 retains its separate scope decision.
 The [technical assessment](../molstar_integration_review_20261112.md) now
 receives the matrix and bounded comparisons, with #370/#371's build-resolution
-and project-library corrections. The 5.13.1 pre-freeze qualification recommendation awaits an explicit
-revision of #115's timing; #369 and all adopted migration gates remain open.
+and project-library corrections. The maintainer explicitly adopts 5.13.1 pre-freeze qualification under
+[#372](qualify_molstar_5_13_1_pre_1_0.md). #115 retains later v6/evolution
+work; #369 and all adopted migration gates remain open.
+[#380](../pending_bugs/detached_studio_png_uses_empty_canvas.md) is an additional
+pre-1.0 export defect: detached Studio must render PNG through its associated
+molecular canvas. It changes neither original 46-outcome counter.
 
 **Current consolidation — 2026-11-11:** the original counter remains
 **38/46 (82.6%) source-delivered**, with **1/46** final applicable acceptance.
@@ -1480,7 +1484,8 @@ the publication lifecycle. Both 1.0 releases remain paused.
 
 ## Already deferred or separate work
 
-Retain the accepted post-1.0 placement of Mol* upgrade #115, remote certification
+Retain the post-1.0 placement of future Mol* v6/evolution #115; public 5.13.1
+qualification is now adopted pre-1.0 under #372. Retain remote certification
 #100, alternate desktop shells #276, lazy materialization/performance architecture
 #54/#55, split-screen #49, generated mixin typing #57, and copying Python from
 Studio #226. Existing #48/#56 own advanced Interactions growth, not an absent
