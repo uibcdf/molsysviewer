@@ -228,6 +228,51 @@ core browser CI. An unselected skip is not receiving. This bounded source
 profile does not complete M4/M5, actual Jupyter/Qt composition, accessibility,
 installed/hosted or postponed human acceptance, and does not close #320.
 
+## Integrated molecular story: first M5 source profile
+
+The [integrated receipt](movie_story_receiving_20261112.json) receives a single
+Python-authored story refined through the actual Studio Timeline/Preview forms.
+Camera approach and rotation, pocket/ligand visibility, ligand representation,
+labels, a distance measurement, lighting, interaction projection and scientific
+plot/legend overlays travel together through forward/reverse seeks, preview,
+PNG ZIP, H.264 MP4, VP9 WebM, independent session recovery and offline HTML.
+The native guard is
+`tests/test_movie_story.py::test_native_integrated_molecular_movie`, selected
+with `MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`; `movie-story` also runs in the core
+browser lane. Its 360-second suite budget covers three encoders, an independent
+Python recovery and offline seeking/playback; individual product deadlines are
+unchanged. An unselected skip or registration is not executed receiving.
+
+The control uses MolSysMT's supplied prepared T4 lysozyme L99A/HED example,
+not implicit Movie preparation. Two analyses are calculated explicitly before
+playback. The default Buch 0.23 nm H–A criterion gives no ligand/protein
+candidates; the explicit relaxed 0.40 nm criterion gives one at approximately
+0.349757 nm. A second structure is a declared synthetic HED translation of
+10 nm along x, evaluated with no results. A third supplied-pose copy is left
+unevaluated. These are rendering/integration controls, not a molecular dynamics
+trajectory, binding prediction or validation of hydrogen-bond strength.
+Original source hashes, atom mappings, calculation parameters, units and control
+descriptions accompany the plot and exported manifest.
+
+Independent coordinate distances protect measurement values; native interaction
+occurrence indices and link endpoints protect projection across structures.
+Assertions inspect actual render-object visibility, since source/baseline
+summary flags need not reflect a Movie visibility override. Both named analyses
+and all coordinates remain unchanged. Native call observation rejects new Buch
+or molecular-preparation calls during the received operations. Decoded media
+are compared against six separately captured native reference images, rather
+than only checking output existence. Another Python authority restores the
+saved session; the exported HTML then seeks and plays after Python closes,
+with no HTTP requests. Final source receiving also includes a visual review of
+the camera-facing phase caption and the scientific overlays.
+
+This receives M5's first complete source story in the transport-adapted browser
+host. It does not qualify this integrated story in actual Jupyter, native Qt,
+installed artifacts, covering hosted CI or postponed human observations.
+M2 host/accessibility review, richer accepted profiles and consolidated #320
+acceptance remain open. The original audit counters and publication pauses do
+not change.
+
 ## One model, several consumers
 
 A Movie is a detached scene baseline, molecular/scene correspondence, a finite

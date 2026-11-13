@@ -69,6 +69,17 @@ resource limits, byte/source scopes and remaining host/integrated acceptance
 are explicit in the receipt. Continue #320 with M5 and M2 host/accessibility;
 this additional work changes neither original 46-outcome counter.
 
+**Integrated Movie story — 2026-11-12:** the
+[M5 source receipt](../movie_story_receiving_20261112.json) receives one shared
+Python/Studio pocket-and-ligand story through preview, forward/reverse seeks,
+PNG/MP4/WebM, independent session recovery and offline HTML playback. Native
+geometry and measurements retain occurrence identities, sparse coverage and
+units; the prepared chemistry, relaxed candidate criterion and synthetic
+controls remain explicit. Playback leaves both named analyses and coordinates
+unchanged. M2 host/accessibility, complete-story actual Jupyter/Qt, covering CI,
+installed and postponed human acceptance remain. This additional #320 stream
+changes neither original 46-outcome counter.
+
 **Actual-notebook Movie tranche — 2026-11-12:** the
 [shared receiving](../movie_jupyter_receiving_20261112.json) closes source
 defects #365/#366 and receives the complete notebook/popup flow, including

@@ -135,6 +135,21 @@ The sibling offline guard receives live plots after Python closes, reverse
 seek and responsive playback/card separation. Unselected skips and build/core
 registration are not executed receiving or installed/native-host acceptance.
 
+Integrated molecular-story receiving uses
+`tests/test_movie_story.py::test_native_integrated_molecular_movie` with
+`MOLSYSVIEWER_MOVIE_BROWSER_TEST=1`. Build the runtime/harness and browser
+entries as above, then select that guard. Its `movie-story` entry belongs to
+the mandatory core lane, with a 360-second suite budget for three actual
+encoders, independent Python recovery and offline seeks/playback; this does
+not extend individual product-operation deadlines. Real prepared
+lysozyme/HED controls retain explicit calculation parameters and synthetic
+structure meanings. Actual Studio form edits, native geometry, occurrence
+identities, measurement units, both named analyses, unchanged coordinates,
+decoded media versus independent reference pixels and offline playback are
+checked. The accompanying ordinary headless test receives session/recipe/context
+preservation. An unselected skip or build/core registration is not actual-host,
+installed, covering hosted or human acceptance.
+
 For rendered Movie camera completion and interruption, the bounded frontend profile
 also accepts exactly `molsysviewer/js/tests/e2e/movie-playback.e2e.ts`. From
 `molsysviewer/js/`, build with `npm run build:harness` and

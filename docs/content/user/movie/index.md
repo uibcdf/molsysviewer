@@ -75,8 +75,12 @@ host. Unsupported hosts show an explanation and disable those actions. The
 ordinary experimental Qt host still needs that loop integration. Automated
 development receiving covers actual Jupyter, canvas popups and detached Studio;
 native Qt and human acceptance remain separate. The first
-[offline HTML playback profile](export.md) supports static regions; visible
-plot/legend composition and richer portable profiles remain in development.
+[offline HTML playback profile](export.md) supports static regions and live
+plot/legend overlays. Development media exports can also include expanded
+in-canvas plots and legends, with their supplied scientific context. The
+export contract describes the layout restrictions and explicit exclusions;
+these features are not in the public 0.24.0 package. Richer portable profiles
+remain in development.
 
 Python and Studio share the running Movie: either can pause a preview started
 by the other. Studio also shows when a capture or export was started from

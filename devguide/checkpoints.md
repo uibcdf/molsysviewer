@@ -961,6 +961,17 @@ scientific story and remaining host/accessibility receiving; current source,
 installed, hosted and postponed human scopes stay separate. Both original
 audit counters and publication pauses remain unchanged.
 
+The [integrated Movie story](movie_story_receiving_20261112.json) now receives
+M5's first source profile: actual Studio editing and preview of a Python plan,
+native forward/reverse seeks, PNG/MP4/WebM reference pixels, independent session
+recovery and offline HTML seeking/continuous playback. Prepared chemistry,
+relaxed geometric candidates, evaluated-empty synthetic separation and an
+unevaluated copy are explicit controls. Native geometry, occurrence identities,
+measurements, plots and legends agree without modifying molecular data or
+recalculating during playback. Continue #320 with the remaining M2
+host/accessibility work and complete-story host/installed/hosted/human receiving;
+the required #369 review and both original audit counters remain unchanged.
+
 The [capture presentation receipt](moving_capture_presentation_receiving_20261112.json)
 receives #344's source recurrence: followers retain coherent prefixes until a
 native draw; scientific frame queries survive foreign scene ownership and

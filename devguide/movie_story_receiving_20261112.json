@@ -1,0 +1,1054 @@
+{
+  "schema": "molsysviewer.movie_story_receiving@1",
+  "date": "2026-11-12",
+  "parent": "uibcdf/molsysviewer#320",
+  "status": "source_received",
+  "scope": "First complete integrated molecular Movie source story: actual Studio refinement of a Python plan, native preview/seeks, three media encoders, independent session recovery and offline seeks/continuous playback. Transport-adapted real browser; not actual Jupyter/Qt, installed, covering hosted or human acceptance.",
+  "sources": {
+    "molsysviewer_base": "f9f6952bcf068419d54241e869c661ee1bb53485",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "pyunitwizard": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
+    "native_binary_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "actual_producer": {
+      "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+      "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+      "modules": {
+        "molsysviewer": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "molsysmt": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/__init__.py",
+        "pyunitwizard": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+        "molsysmt._rust": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/_rust.abi3.so"
+      },
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "restored": false,
+      "analysis_signature": "sha256:839276696562334fead9f004d22c445c6534939393b3e8f316f1b8f2bfe5c42b",
+      "analysis_signatures": {
+        "story-buch-default": "sha256:0686dbaa340ea8709eea2f8be5e960351f97916ae58ee49329750219734edc4d",
+        "story-buch-candidates": "sha256:839276696562334fead9f004d22c445c6534939393b3e8f316f1b8f2bfe5c42b"
+      }
+    },
+    "actual_restored_authority": {
+      "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+      "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+      "modules": {
+        "molsysviewer": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "molsysmt": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/__init__.py",
+        "pyunitwizard": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+        "molsysmt._rust": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/receiving/molsysmt/_rust.abi3.so"
+      },
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "restored": true,
+      "analysis_signature": "sha256:839276696562334fead9f004d22c445c6534939393b3e8f316f1b8f2bfe5c42b",
+      "analysis_signatures": {
+        "story-buch-candidates": "sha256:839276696562334fead9f004d22c445c6534939393b3e8f316f1b8f2bfe5c42b",
+        "story-buch-default": "sha256:0686dbaa340ea8709eea2f8be5e960351f97916ae58ee49329750219734edc4d"
+      }
+    },
+    "runtime_bundle_sha256": "9d1892b4a92fe36e9daabdc9d8a2c823666ad144fbcb6c075b06313ef2606c89",
+    "runtime_notice": "Runtime unchanged in this tranche; frozen owner/support sources in the explicit Python 3.14 environment. Distribution version metadata is not candidate identity or installed qualification. No environment modification.",
+    "working_code_sha256": {
+      "molsysviewer/js/package.json": "cbb237886e592ce3a50f71749db0413bf30465e98eb858740ebee80aab7dd0c1",
+      "molsysviewer/js/tests/e2e/e2e-runner.ts": "c371b4aca0347b418bc70571596a90de5c17eebec8ca2b5a4c2ed830daaa7cfc",
+      "molsysviewer/js/tests/e2e/movie-story-bridge.py": "136b2036ebb1eab28ea13290d14c911a0e638391d8d4fbdefc360aa25d2dc32e",
+      "molsysviewer/js/tests/e2e/movie-story.e2e.ts": "58ca59e09b74c75c6056bfeaf69f31d5b931a76b3c68cad98e98c1755777b621",
+      "tests/_movie_story.py": "d68f7a5672b899ab6f837512c46e53ec1a72e2548853e6c43a4ab164653ca9d5",
+      "tests/test_movie_story.py": "a05d2c74f847a92674bdee0c915e01d4ad3fd2952c49bb2fe7e616e72051c42f"
+    },
+    "documentation_sha256": {
+      "devguide/checkpoints.md": "23b9dd361c86aaed39592d35173888e67c20f34e525195ef6995f33a8bc5abd2",
+      "devguide/movie_timeline_design.md": "695c37f894cf2171e54bf8c3cf959bb84c592d3e7f989135cc5803a4c653a409",
+      "devguide/pending_proposals/pre_1_0_movie_authoring_export_and_agent_timeline.md": "74ba60211a3a816d61dfd4f4f702c4f922c469a75e690a5a1b1f280ac091d618",
+      "devguide/pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md": "f75b45ed7da0e9e1df9cc13fd675d44b0d1a3871101f53ebb89ebcd33f7931a3",
+      "devguide/reporting_protocol.md": "12d609d141c9b404960729afd5e634a368ff81d4cb4df2ca2c01e515fcfc5a08",
+      "docs/content/user/movie/index.md": "eb22cfe4a4534562523bb91f8eae110fa383bcf094584c2d3b04e27241bf6ea6"
+    }
+  },
+  "control": {
+    "source": {
+      "system": "T4 lysozyme L99A",
+      "file": "t4_lysozyme_L99A.h5msm",
+      "sha256": "6139eb7f24f610fd82a67c4e202bcfa17e6057b071b36fce66d9be831aadb0d6",
+      "preparation": "supplied MolSysMT prepared example; no preparation run by Movie"
+    },
+    "atom_count": 2620,
+    "source_structure_indices": [
+      0,
+      0,
+      0
+    ],
+    "structures": [
+      "supplied pose",
+      "synthetic HED translation +10 nm along x",
+      "supplied copy; not evaluated"
+    ],
+    "calculation": {
+      "method": "molsysmt.interactions.hbonds.get_buch_hbonds",
+      "distance_threshold_nm": 0.4,
+      "pbc": false,
+      "interpretation": "relaxed geometric candidates; not a binding or hydrogen-bond-strength claim",
+      "default_0_23_nm_ligand_protein_result": "empty"
+    },
+    "coordinate_distances_nm": [
+      0.34975678142446703,
+      10.13236760177044,
+      0.34975678142446703
+    ],
+    "evaluated_structures": [
+      0,
+      1
+    ],
+    "occurrences_by_structure": {
+      "0": 1,
+      "1": 0,
+      "2": null
+    },
+    "units": {
+      "distance": "nm",
+      "coordinates": "angstrom",
+      "movie_time": "ms"
+    },
+    "interpretation": "Rendering/integration control, not MD, a binding prediction, a hydrogen-bond-strength claim or independent validation of the detector. Default 0.23 nm Buch result is empty; relaxed 0.40 nm H-A criterion is explicit in labels and context.",
+    "mapping": "All original atom indices and repeated source structure indices are in the retained observation/manifest; no chemistry was inferred to force a result."
+  },
+  "validation": {
+    "native": {
+      "profile": "movie-story-664-native-callout-play",
+      "selector": "tests/test_movie_story.py::test_native_integrated_molecular_movie",
+      "required_environment": "MOLSYSVIEWER_MOVIE_BROWSER_TEST=1",
+      "pytest": {
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "checks": [
+        "actual Studio Timeline caption edit and Preview seek",
+        "native forward/reverse seeks and continuous Python preview",
+        "camera/structure, ligand/pocket visibility, ligand representation, labels and lighting",
+        "native measurement against independent coordinate distances; explicit nm/angstrom conversion",
+        "native occurrence indices, link endpoints and physical visibility across evaluated/nonempty, evaluated/empty and unevaluated controls",
+        "both named analyses/object identities and coordinates unchanged; no observed Buch/preparation calls during playback/export",
+        "actual 1280x720 PNG ZIP, H.264 MP4, VP9 WebM: six decoded frames versus separately captured native reference images",
+        "new Python authority restores the same session, both named analyses and recipe; native seeks agree",
+        "offline HTML native seeks and actual Play completion, no HTTP requests or page errors"
+      ],
+      "media": [
+        {
+          "encoder": {
+            "name": "PNG/ZIP",
+            "threads": 1
+          },
+          "reference_mean_rgb_errors": [
+            0.00026765046296296297,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "sampling": {
+            "rule": "constant-rate-half-open@1",
+            "fps": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "duration_ms": 3000,
+            "frame_count": 6,
+            "first_time_ms": 0,
+            "last_time_ms": 2500,
+            "encoded_duration_seconds": {
+              "numerator": 3,
+              "denominator": 1
+            }
+          },
+          "scientific_unchanged": true,
+          "observed_scientific_calls": []
+        },
+        {
+          "encoder": {
+            "name": "FFmpeg",
+            "provider": "imageio-ffmpeg",
+            "provider_version": "0.6.0",
+            "executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+            "version": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers",
+            "codec": "libx264",
+            "pixel_format": "yuv420p",
+            "threads": 1,
+            "color": {
+              "input": "srgb",
+              "primaries": "bt709",
+              "transfer": "iec61966-2-1",
+              "matrix": "bt709",
+              "range": "limited"
+            },
+            "crf": 18,
+            "preset": "medium",
+            "faststart": true
+          },
+          "reference_mean_rgb_errors": [
+            0.2810431134259259,
+            0.6170656105324074,
+            0.6602687355324074,
+            0.4667288773148148,
+            0.36904441550925926,
+            0.29301613136574073
+          ],
+          "sampling": {
+            "rule": "constant-rate-half-open@1",
+            "fps": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "duration_ms": 3000,
+            "frame_count": 6,
+            "first_time_ms": 0,
+            "last_time_ms": 2500,
+            "encoded_duration_seconds": {
+              "numerator": 3,
+              "denominator": 1
+            }
+          },
+          "scientific_unchanged": true,
+          "observed_scientific_calls": []
+        },
+        {
+          "encoder": {
+            "name": "FFmpeg",
+            "provider": "imageio-ffmpeg",
+            "provider_version": "0.6.0",
+            "executable_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+            "version": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers",
+            "codec": "libvpx-vp9",
+            "pixel_format": "yuv420p",
+            "threads": 1,
+            "color": {
+              "input": "srgb",
+              "primaries": "bt709",
+              "transfer": "iec61966-2-1",
+              "matrix": "bt709",
+              "range": "limited"
+            },
+            "crf": 30,
+            "target_bitrate": 0,
+            "row_multithreading": false
+          },
+          "reference_mean_rgb_errors": [
+            0.2767306857638889,
+            0.9034971788194445,
+            0.9732085503472222,
+            0.6847677951388889,
+            0.469765625,
+            0.395082103587963
+          ],
+          "sampling": {
+            "rule": "constant-rate-half-open@1",
+            "fps": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "duration_ms": 3000,
+            "frame_count": 6,
+            "first_time_ms": 0,
+            "last_time_ms": 2500,
+            "encoded_duration_seconds": {
+              "numerator": 3,
+              "denominator": 1
+            }
+          },
+          "scientific_unchanged": true,
+          "observed_scientific_calls": []
+        }
+      ],
+      "reference_tolerances": {
+        "lossless_mean_rgb_absolute_error": 0.5,
+        "lossy_mean_rgb_absolute_error": 6,
+        "camera_absolute_error": 1e-05,
+        "measurement_angstrom_absolute_error": 0.0001,
+        "interaction_endpoint_angstrom_absolute_error": 1e-05
+      },
+      "visual_review": "Final decoded phase-2 PNG: full camera-facing caption, molecular pocket/HED/contact/measurement and plot/legend present. This is an automated fixture export reviewed locally, not postponed human-host acceptance."
+    },
+    "python_regression": {
+      "profile": "movie-story-665-regression",
+      "pytest": {
+        "passed": 795,
+        "skipped": 9,
+        "failed": 0,
+        "errors": 0
+      },
+      "selection": "All test_movie*.py plus public API contract/docs and reporting protocol; explicit browser/host skips remain unqualified."
+    },
+    "quality": {
+      "profile": "movie-story-666-records",
+      "pytest": {
+        "passed": 29,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "checks": "Full Ruff check/format, strict runtime/story TypeScript, generated index check and scoped static-doc guards. No full Sphinx build or hosted dispatch in this tranche."
+    },
+    "registration": "movie-story is built by build:e2e:all and mandatory core E2E. The 360-second test budget covers three encoders, independent recovery and offline playback; product operation deadlines remain unchanged.",
+    "reused_evidence": "No production runtime/JS-unit changes. Prior composition receipt retains its original 473 JS cases and full scope; not relabeled as newly executed here."
+  },
+  "runs": [
+    {
+      "native_exit": 1,
+      "seconds": 5.682321683038026,
+      "peak_owned_rss_mib": 372.8,
+      "selected_inputs": 9921,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-647-probe",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.45,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "28311be23a0ed58b6a98a0dc45a430faaa19a370780ef01f85d7a0d0da2807b1",
+        "inputs-before.json": "28311be23a0ed58b6a98a0dc45a430faaa19a370780ef01f85d7a0d0da2807b1",
+        "invocation.json": "69c6600782c944af68484dcb410c1724f584442860e7531e2fb1ddad121d0175",
+        "resources-before.json": "d5d164dc4861eb141d2f0ed170ae3f36e2c0c38eacb367f78abd6ec01f17287e",
+        "stdout.log": "d8026f02d1e7ed12183bcb0783d627e336f2202e36dcfaffec87923d94162631"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 5.726009808015078,
+      "peak_owned_rss_mib": 373.7,
+      "selected_inputs": 9921,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-648-probe",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.42,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "c08af8e90bd3aedd8a3000b3498ca21474edc0cda19998211beb9f2c3602df46",
+        "inputs-before.json": "c08af8e90bd3aedd8a3000b3498ca21474edc0cda19998211beb9f2c3602df46",
+        "invocation.json": "15b9656df0d778fce52b62a49f2c3a1af8fe4299aca4e483a9f9911952bd436d",
+        "resources-before.json": "dde79905f539757d79e962e4d0a34e17b468b3a53bb8a7bb99cfda5fd6aedcc1",
+        "stdout.log": "860e43859cd32ad498b55565ce143656f8e0eaade24ad1f7fe9969e300d01b1c"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 5.723383430857211,
+      "peak_owned_rss_mib": 373.9,
+      "selected_inputs": 9921,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-649-explicit-chemistry-probe",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.44,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "ba862feda004dfb6f9a16d7b8ece80a9f374223e7d73acae727693584ee37117",
+        "inputs-before.json": "ba862feda004dfb6f9a16d7b8ece80a9f374223e7d73acae727693584ee37117",
+        "invocation.json": "f95c656ea9bbe8e7ebf438481aaedb2b8c496cee37e2fd2369d0f7b294e81d50",
+        "resources-before.json": "22f0025a656c1ce0fe95025b4725f3c81a92846beffeba41781ab12ba810a422",
+        "stdout.log": "5cb798f053b9ee3931fec020e8f48de732dd3bc682abaaf235ed495ba531ba1d"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 6.346893802983686,
+      "peak_owned_rss_mib": 384.4,
+      "selected_inputs": 9921,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-650-prepared-hbond-probe",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.42,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "bf95de07c93d6523ab51ed56a999446100c5293a67d2e9e53e6afc3011c849c0",
+        "inputs-before.json": "bf95de07c93d6523ab51ed56a999446100c5293a67d2e9e53e6afc3011c849c0",
+        "invocation.json": "4ae513773aaff5badf095240b70606b5c90e9d349db8c0b54930b4428217f740",
+        "resources-before.json": "8accfe4a99234a4fad3affd0c7a9de503dd9a83d1d15ba0e1f1c1e583121c5c4",
+        "stdout.log": "67b8b44d5551f7ca96d6899864d62bf75c45fffcc51f4343135e2ff37b0e46a4"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 6.213456182042137,
+      "peak_owned_rss_mib": 384.5,
+      "selected_inputs": 9921,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-651-prepared-hbond-control",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.43,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "c6286c5d18ccb7bb3e41f699453f0758b4a4552d05e69604a262a4bd08d5ac82",
+        "inputs-before.json": "c6286c5d18ccb7bb3e41f699453f0758b4a4552d05e69604a262a4bd08d5ac82",
+        "invocation.json": "e9527faf09e6e002b8942045be0a0afc4c76140f337c107b8d44f852d8a3a379",
+        "probe.json": "89b50342b0e8332dfe5311483049807ce29a8bf79578660b0d6bdda5bb0a5e43",
+        "resources-before.json": "3855b43b1965cb48c756432aed1834271d04ac5217d4d5b73a1114486fef1b71",
+        "stdout.log": "c609274cac0a6f5444e5c41318b0271d66361e14559f68f3b802fd55c59dba9d"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 6.173277667025104,
+      "peak_owned_rss_mib": 384.6,
+      "selected_inputs": 9921,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-652-explicit-cutoff",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.46,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "818a99f132ec739a6066244b5c53a5619311dfc2b99f45c3aa4821dcea0dbb4f",
+        "inputs-before.json": "818a99f132ec739a6066244b5c53a5619311dfc2b99f45c3aa4821dcea0dbb4f",
+        "invocation.json": "07d21311e42de8aae936dd305231101f4f5f32af2c1d70c2a274d62ae3affff0",
+        "probe.json": "1b8742c5762f1584f46c74a517c76ea2fe1c5db5015612884251c525964e0afe",
+        "resources-before.json": "c7edc94736142c8d69a7fdec6f57f40d6842f68c5bb004dd81c0d3ceedd8f5f6",
+        "stdout.log": "3cb4f90f41adae82846580f1d5480129264d69d503807c1ef37650906c424884"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 5.939459754852578,
+      "peak_owned_rss_mib": 338.7,
+      "selected_inputs": 9924,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-653-backend",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.41,
+      "observed_cgroup_peak_bytes": 0,
+      "evidence": {
+        "inputs-after.json": "ab4aca30ff08204f748c87abd3a41ed57c172a0ac15c8d70cfebe119221612c8",
+        "inputs-before.json": "ab4aca30ff08204f748c87abd3a41ed57c172a0ac15c8d70cfebe119221612c8",
+        "invocation.json": "591690bb246db63312375f3d82e36bc52f474e7185a8a2018a5fdd6d8ab05918",
+        "junit.xml": "aa26250e80a283955bb998c8e0a9347bad8ce3142e3b34411f52b42cde79d0ca",
+        "resources-before.json": "66ebead3e9362a6dab6ef545557380d16fd1e1bf2fd573bd835d869fcff30703",
+        "stdout.log": "473ecfe8db596f98ec2ef91bd01c81b41135fc7866c200b9faeab3ca233fdc50"
+      },
+      "pytest": {
+        "passed": 0,
+        "skipped": 1,
+        "failed": 1,
+        "errors": 0
+      },
+      "skips": {
+        "Select the real molecular-story browser receiving explicitly.": 1
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 8.612189174862579,
+      "peak_owned_rss_mib": 450.4,
+      "selected_inputs": 9924,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-654-backend",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.15,
+      "observed_cgroup_peak_bytes": 314789888,
+      "evidence": {
+        "inputs-after.json": "a9c99ce224317d31fb114b7528184279b6aa0054a0b47b3f7c789c475e6fea41",
+        "inputs-before.json": "a9c99ce224317d31fb114b7528184279b6aa0054a0b47b3f7c789c475e6fea41",
+        "invocation.json": "f3aa4e8da3d31929c9be3bf93cbcc683d2299cac672d5f0fddd30c8506efcc48",
+        "junit.xml": "46cbe7058a4762806cc14418c0739820330a6ac7b4ca9705b0d6d10b2767da07",
+        "resources-before.json": "ee2514db8f4d668a0c3c8998858a2aee05a20a4e79e474732e9e507b671763a4",
+        "stdout.log": "da1e175b93f979be9347081fc6c6dfe138fb547cd4f5da9e798034233b78de7d"
+      },
+      "pytest": {
+        "passed": 1,
+        "skipped": 1,
+        "failed": 0,
+        "errors": 0
+      },
+      "skips": {
+        "Select the real molecular-story browser receiving explicitly.": 1
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 9.63034754106775,
+      "peak_owned_rss_mib": 545.8,
+      "selected_inputs": 9925,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-656-movie-story-guard",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.14,
+      "observed_cgroup_peak_bytes": 484265984,
+      "evidence": {
+        "inputs-after.json": "41153fb367f285c5be2ddeca0ca86a7aebf68f71f6db6faf93492ee9d6691117",
+        "inputs-before.json": "41153fb367f285c5be2ddeca0ca86a7aebf68f71f6db6faf93492ee9d6691117",
+        "invocation.json": "a71ed6a6c4303baf85810a5a5c2610967b11e7fbfbee84019ba1657653c56636",
+        "resources-before.json": "3266e15cf236ebd68d323fd63c433114e962236304372f7558743b7c70fa0cf3",
+        "stdout.log": "dbf1cdc4acd82c954aaffcc2e6256a77afe64b51afbe2a77e1560767f6813bce"
+      }
+    },
+    {
+      "native_exit": 1,
+      "seconds": 130.46771292295307,
+      "peak_owned_rss_mib": 2597.7,
+      "selected_inputs": 9927,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-657-native",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 12.78,
+      "observed_cgroup_peak_bytes": 1580707840,
+      "evidence": {
+        "decoded-0.mp4.png": "67d2b6b5876e541c0ad16ea4434616b0e6608621f55956a199aa666515b2c14b",
+        "decoded-0.webm.png": "3952a121be5edb9cb3cb875de03454b814553c675ce1bd5fe48693649c531e16",
+        "decoded-0.zip.png": "d7da35c75060146502326d8ea6eb69719546856de3f2a8ad0924d753f58ca631",
+        "decoded-2.mp4.png": "8c8b9eef0b4584546f813e36bacd70c118100d2c6a1457f0510c33a5cabc9f1d",
+        "decoded-2.webm.png": "5e69d5fbdb9d3caf8bcd0435b0d0ee43fbbab1bcb00fa60f333e6bc551650656",
+        "decoded-2.zip.png": "50832b393154fb7cd1c14fbe94e11c02b1d7c58c175c8871490ea5418bd61078",
+        "decoded-4.mp4.png": "7a086d473aa39d2fd83cccea665c36fa99c766bfcd7cc91290f201b3d6fffdfe",
+        "decoded-4.webm.png": "803aaef161e1fbb2a9a4a30cdfd147ee2127e8c1ef2626fc162cac834c4952ea",
+        "decoded-4.zip.png": "ffa72f295814e430ae6dd22a85574ff5640e26f9332f425db3970c46580e75fa",
+        "decoded-5.mp4.png": "fab289d31709a0660150891f7937ef4d6e928fe18c0e5e37227bb234c0fb0dcf",
+        "decoded-5.webm.png": "5e557f5e227d6d3a650e7e34d76671f772794c12ce54979e82d2606f37f337f9",
+        "decoded-5.zip.png": "0831754135b371d387762f9ae4fcf58646364731defb23641550e51a89e71c48",
+        "inputs-after.json": "859d3a44987b37d4a9ba7ce42c1079cb81995cc9ab80b30b14c2fac3102f9d90",
+        "inputs-before.json": "859d3a44987b37d4a9ba7ce42c1079cb81995cc9ab80b30b14c2fac3102f9d90",
+        "invocation.json": "a77b9573d950b7a755167102ea6e36d65b6631c49d9e393ec5c726f2cb444784",
+        "junit.xml": "09f860fae69da5c02b8de1e2b000fe432f49edee8308ccf2e0e454ac533248eb",
+        "live-story.png": "f0057f13120064e3e0c3e830d3c2e7822ae6c5a262bb6ab3a6476c9f9d1054e4",
+        "native-snapshots.json": "f16cc54011356758a2ac5fd8e23b8adc72e15b410ae8533aec09aa9095920544",
+        "producer-origin.json": "4e504f5e16de273f1150b4de35857759d7a19574fdba42f0a9ea609afee0c679",
+        "resources-before.json": "3d3494ad75c6cb5f26df3e0ac91eb53b040443d92f40fedadb9b58d54c2cbb3d",
+        "restored-origin.json": "057b6cf6679497b379f51963696789ab3350e203baffd03ce22a86483304181f",
+        "stdout.log": "90c7359988749248da9b988559795145ec96070054b6432c8657b3cf9cdccf3b",
+        "story.html": "d7803f3cb57c0369fb54eed463db46a7ec840b670abbfd65fd11d101caf1e0bf",
+        "story.mp4": "42473d1da9428ade041fb8fcb8919c908032cb3f09734cbe5d10b2bf0aaf6ab1",
+        "story.msv": "48e53e939d9d57b973a75c2594f413d582e752672928988b825907554a7e64c8",
+        "story.webm": "72afa280467c4dc84a336998d794ad1d4e894a96a75e26fc0b50dbaff3e8139c",
+        "story.zip": "c5bd9fed383440440116e18f16d5c5922e969fd4e3692d26a960b5aea20bd15d"
+      },
+      "pytest": {
+        "passed": 0,
+        "skipped": 0,
+        "failed": 1,
+        "errors": 0
+      },
+      "skips": {}
+    },
+    {
+      "native_exit": 0,
+      "seconds": 18.893991201883182,
+      "peak_owned_rss_mib": 1595.9,
+      "selected_inputs": 9928,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-658-offline-visibility",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 3,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 13.71,
+      "observed_cgroup_peak_bytes": 738537472,
+      "evidence": {
+        "inputs-after.json": "bf6f92f8b84b634d2d5361867f94efe674ff1111087a72caa3a69134ba389eb0",
+        "inputs-before.json": "bf6f92f8b84b634d2d5361867f94efe674ff1111087a72caa3a69134ba389eb0",
+        "invocation.json": "7ffbcd827ee5364b909fdd5b36c9a27cfd5b7ea3d72613220073653f5b4e8c81",
+        "offline-visibility.json": "74e9ec909889cc907ed15718c3c482682a0a51247e5dd7d371dfa19d0cd4c099",
+        "resources-before.json": "9089b9ee19bd93777281fe92c987dafa10d67f625fc2536c3d05cf5ae0f2b82f",
+        "stdout.log": "fc40fdda7000eb006814bc66e767295c2a504dfb9fede29e26cc0a7e15336de4"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 9.510491319932044,
+      "peak_owned_rss_mib": 542.2,
+      "selected_inputs": 9926,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-659-movie-story-physical-guard",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.01,
+      "observed_cgroup_peak_bytes": 480755712,
+      "evidence": {
+        "inputs-after.json": "64e79797903a09ff5242fbc528b5126d4b3f287a50724d60fc0e190d500a5cf6",
+        "inputs-before.json": "64e79797903a09ff5242fbc528b5126d4b3f287a50724d60fc0e190d500a5cf6",
+        "invocation.json": "bc136fc6f4b7caae64f62c10ec6249a778847033b40a22d31142d0d3fdc499ef",
+        "resources-before.json": "ea57eef326adaab2c80e6832c0d51dbb6edb3d1daf34df68c13ce7a881aecd32",
+        "stdout.log": "bf5570cb0f54f4edaff429dfa82ba1dd3ad5b045c73ac487f303ddd8bfad702f"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 9.644144443096593,
+      "peak_owned_rss_mib": 548.2,
+      "selected_inputs": 9926,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-660-movie-story-final-guard",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.03,
+      "observed_cgroup_peak_bytes": 485740544,
+      "evidence": {
+        "inputs-after.json": "27b4bee05d0eba75867803a5184df9cca3027f1646ef5afe0c0fbe8bfad77f54",
+        "inputs-before.json": "27b4bee05d0eba75867803a5184df9cca3027f1646ef5afe0c0fbe8bfad77f54",
+        "invocation.json": "92229a3240e21647852811aeff8ffada80aedcb745053b09a78a62656a1c1f3a",
+        "resources-before.json": "000c1c5dd254b8605d414caa3bf601519eebbbb607acfeba1c9ef2f1174f75ed",
+        "stdout.log": "1a55b8011247bc1c28a99e954eece12d58315b31dd4a1af427aa707eff888f10"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 9.581469985190779,
+      "peak_owned_rss_mib": 549.5,
+      "selected_inputs": 9926,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-661-movie-story-studio",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.04,
+      "observed_cgroup_peak_bytes": 489676800,
+      "evidence": {
+        "inputs-after.json": "12792fa6d0f7f8a92f6272e8a04ca2c6be6585b982cb41d4a162a1520e54a1c7",
+        "inputs-before.json": "12792fa6d0f7f8a92f6272e8a04ca2c6be6585b982cb41d4a162a1520e54a1c7",
+        "invocation.json": "971f225662f185a5d77974a1daff5558efb63902c9feda6815a9d79914a0f270",
+        "resources-before.json": "38b5a0524d6f3bcbc9781cc6546465e7380d58a0eb9cc6b3fafe7a7c4e43d6e2",
+        "stdout.log": "72decadc6335c2bafde441515cc360fe54ac2f9b27fa1b55aa8222130bd672da"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 144.0356212418992,
+      "peak_owned_rss_mib": 2641.6,
+      "selected_inputs": 9928,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-662-native-studio",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 12.91,
+      "observed_cgroup_peak_bytes": 1619927040,
+      "evidence": {
+        "decoded-0.mp4.png": "43ecfb4c824475f3c704ac543ebbc2f1ff133ba02e7bf327a0e431e187686374",
+        "decoded-0.webm.png": "05d3cd348b5e5bbdf9e0ab5a52aee52af61fc54bcf3dbd8641941bd66ca18363",
+        "decoded-0.zip.png": "662d8db2d9a8ffeefe4a365b9e877519e5f266367fc8821a149af1b369e54583",
+        "decoded-2.mp4.png": "1e0ca31873f2a5801de7d3b5d3b8774238b859193f8f138bf1cf028a3d5494eb",
+        "decoded-2.webm.png": "d14b9c1b7ed8c4b3e97c205b6acd44d81d4dbe42c9c1caf8c95958e5bf23e03e",
+        "decoded-2.zip.png": "aa15972db6d255a7cda035280ef13e2d579291a17d30c57ebdeeb672bdb2f882",
+        "decoded-4.mp4.png": "117023e0e03f961775a2aed88c0b8c682898e88ca10fed293ae0180398f35160",
+        "decoded-4.webm.png": "f2a5b9094752c3366e9f61fde54088272dc7a7b2c20c40960914fd6b53baf8f0",
+        "decoded-4.zip.png": "dd10912ef1a57d5074e850c3dc8a0a9ac3a056731d536ec8c501778143dd0c19",
+        "decoded-5.mp4.png": "28dd2a658c25417d6c1ab595120538e77174500525067a1d86aa0332ab676c7b",
+        "decoded-5.webm.png": "0bdaa479a874711ebd3965c2a7276ffb6f0e3845b3bedc4ed2265a9694f509a4",
+        "decoded-5.zip.png": "0b6219a5498ce60a51af61d50a42e75d28e0703a567810cbfb73cfde280976eb",
+        "inputs-after.json": "19402ce6dda04ce71f91c4f5579087ad6bb91dbc757ed4512ff032eec2abb6d1",
+        "inputs-before.json": "19402ce6dda04ce71f91c4f5579087ad6bb91dbc757ed4512ff032eec2abb6d1",
+        "invocation.json": "741a92cf49cd429f0effcb48bcc6bf5867a0f1a3853ab2f6a0be7f491a1385ee",
+        "junit.xml": "84ee2a1dd6929d8c6613106ec9530e836d0032c6270437c59b664e40a959ac7d",
+        "live-story.png": "cc22645cf94e9f72c68c90e2e22db1ec8f2158dc6403d15dda7c2353d32dccec",
+        "native-snapshots.json": "e6525d80db6b29f1724f3037c9eaab64b79574f445e92acec0be5ea110c8bb02",
+        "offline-story.png": "076aa75240a65fc68c5cc58470ac0148ca8a7a7adc4eca8c8d8adae7d12b84dd",
+        "producer-origin.json": "36317a4e33ffc3e7e1f903a5bf55fd7e1f5c1924401874477466630be32543c0",
+        "resources-before.json": "9dd7df5015b5639550b7f738ed844ad4d5dc166f1e9c17ed26d359eb4f86f0fb",
+        "restored-origin.json": "c342b40998471d2373d8fc533faeb599ce32e6de51afb9db6237b96480f936b3",
+        "stdout.log": "b1bca5cc75a4c91b2fcccace9cbbf3d37d086a374aed498f52661a207cac97fa",
+        "story.html": "741703b164fe9d51b8e138a90c66dd41357d1c87c57960b8c01f641589cce25a",
+        "story.mp4": "2faf24d8da388e87edf50aba4cfe308747f598eed37a2ea93282a76257e66e10",
+        "story.msv": "f421fbac682eb0e5cc69cc36c7854d233b9b9c4a982f4347a0d7b1bec537c123",
+        "story.webm": "46a1269a42e6d19b684ece33bbcee4615c5af5fb418b35406933a10bb152f188",
+        "story.zip": "d62230320a9c79386e71cf1c7059f1219f3f5b293a87c635eee210a6d8bfbe5a"
+      },
+      "pytest": {
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "skips": {}
+    },
+    {
+      "native_exit": 0,
+      "seconds": 9.564038607059047,
+      "peak_owned_rss_mib": 542.6,
+      "selected_inputs": 9926,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "build-663-movie-story-callout-play",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.08,
+      "observed_cgroup_peak_bytes": 479248384,
+      "evidence": {
+        "inputs-after.json": "e89f856265cee602e95c38f9b9e44fa0aa8301520b70ff7f350acb04e56eb203",
+        "inputs-before.json": "e89f856265cee602e95c38f9b9e44fa0aa8301520b70ff7f350acb04e56eb203",
+        "invocation.json": "de57b5aa0512735645193f5a862a11739ef5a40727e37e2883daac00f8379298",
+        "resources-before.json": "1c2d9cf5d34e2071872a875e73c26aa4cf56bcbdef4d50358dda3e294d1697c0",
+        "stdout.log": "ef7d865f7a5bd7425543b7468a60ce6aef780ab1cdca5063c841d3e332a1545c"
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 145.44160304497927,
+      "peak_owned_rss_mib": 2599.1,
+      "selected_inputs": 9928,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-664-native-callout-play",
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 12.99,
+      "observed_cgroup_peak_bytes": 1574064128,
+      "evidence": {
+        "decoded-0.mp4.png": "78cf7da32fcfd1edfcfca317805cee44cfdc7978b7141d5630d7cbf724101c52",
+        "decoded-0.webm.png": "136a4d5947b145ce751d5738ba11b9978cf7e62ad0488ffe9c14ec9be1c3cc74",
+        "decoded-0.zip.png": "212ce84a5e94a31008f80fd5b348054b8f177a5137bd7b9ddbffbb47b02ae37d",
+        "decoded-2.mp4.png": "d0ce629cd04661d30bc05ad7eb198f46c6a1961683a292a15a42b8329a8b56aa",
+        "decoded-2.webm.png": "56caef92e23866c5eb9f4e490f891c8bfd33a1ce60a7f2954bc9056b7b87e3a6",
+        "decoded-2.zip.png": "6dc671b897180f917a7dc752638b0406b6ed9b9649f0be967e48c754041adcf7",
+        "decoded-4.mp4.png": "fe218e6159e57cd7f7da1a040fcfbaa1f49038d7e195ca22efae5cd8389eeb73",
+        "decoded-4.webm.png": "e0b462af849dc0228d8dd2a7d6d2ea8c261e2efa0bacd71c5c2c7479b331d9b0",
+        "decoded-4.zip.png": "7a37065c860a55195c4a93f599e6a072240ca10f5299b7df9346971c2d0e8f71",
+        "decoded-5.mp4.png": "669507153a218ad28414604854318b176e889225870ac4fb5e8020f69369fd12",
+        "decoded-5.webm.png": "0bc9a4dad49e6d4c2cc8a97b2272e760846b67e0ff71296e77fd57b7602a6d89",
+        "decoded-5.zip.png": "636ebf43e327cafb0862f59413122ff9004da8a9350e01e4deed4882cf61633c",
+        "inputs-after.json": "774cc1eb1019fb957f3440a420fa7c0c71ba30c1ebde4fe6303035ebc40f13f9",
+        "inputs-before.json": "774cc1eb1019fb957f3440a420fa7c0c71ba30c1ebde4fe6303035ebc40f13f9",
+        "invocation.json": "bee799666fefdf1d98b5065ea027be406a7b26024a3bc8631dd2d911eda8bf4b",
+        "junit.xml": "f522b10018ac98db9bf5c0f5fac45302faf01bf7ea14e375474d62d828bd9cc7",
+        "live-story.png": "f89198ef222bb7d05cfcd1c371e489ba52676c2b792a738632ac560dc5fb19b1",
+        "native-snapshots.json": "147cd83993a8599890d160e3fb6c053bf46e7e2a48b071c8685be79a7c9ddd78",
+        "offline-story.png": "6c0216dd16ad1eec266bef813f2ef9eb20ae5f783a7acfe00d4b6f2659446113",
+        "producer-origin.json": "36317a4e33ffc3e7e1f903a5bf55fd7e1f5c1924401874477466630be32543c0",
+        "resources-before.json": "b26824d595b7c5ad7c810b7625f0f6c7e01a2b7f3419dfab5db03c994f8035c7",
+        "restored-origin.json": "c342b40998471d2373d8fc533faeb599ce32e6de51afb9db6237b96480f936b3",
+        "stdout.log": "9a02a186e7d985437b3748514614d569f0c4ea04b7cb59cf7a781af0f0ff9740",
+        "story.html": "61cdf8903d7287e2a3834cad1dc311fc166e8511195de6d84cb7283f0eeae786",
+        "story.mp4": "841ae587362f4c90284f2097f1c831e92b259aebeabe42a8fc4f3be6d3d0e0d8",
+        "story.msv": "3aaef8dfd33fb016fb31fd6afe972598b4b5866d8aeffb5f96ffda6da877d80f",
+        "story.webm": "f736c4ecc0c4fec979ba2f5b25230b6d3181674043d569fcd88322a842500a2a",
+        "story.zip": "d610396eccfbcf9e492c8b13abd23fbbd477b2933a240612227ba74c56785ff0"
+      },
+      "pytest": {
+        "passed": 1,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "skips": {}
+    },
+    {
+      "native_exit": 0,
+      "seconds": 98.98618217697367,
+      "peak_owned_rss_mib": 565.9,
+      "selected_inputs": 9928,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-665-regression",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.1,
+      "observed_cgroup_peak_bytes": 517009408,
+      "evidence": {
+        "inputs-after.json": "774cc1eb1019fb957f3440a420fa7c0c71ba30c1ebde4fe6303035ebc40f13f9",
+        "inputs-before.json": "774cc1eb1019fb957f3440a420fa7c0c71ba30c1ebde4fe6303035ebc40f13f9",
+        "invocation.json": "be5cdcabfefa58a1206046d8f45b429ca42b46cc03b4afb21696d897bb762705",
+        "junit.xml": "f7c2ef5fc84bc7bd5972b6e95e1d6f9ea07286dd636b694fc3d8addb24d927f5",
+        "resources-before.json": "aae1e926df8cd434d9c7e2390751b6da57cb4f7676b464e58919b780e84da1e6",
+        "stdout.log": "d167aec27257e9048c38a835cbc45e0d1ceacd352731511ab02cf87a2a177351"
+      },
+      "pytest": {
+        "passed": 795,
+        "skipped": 9,
+        "failed": 0,
+        "errors": 0
+      },
+      "skips": {
+        "imageio is installed; cannot test ImportError path": 1,
+        "Explicit real Mol*/Chromium Movie receiving is required.": 1,
+        "Explicit frontend TypeScript compiler receiving is required.": 1,
+        "Explicit real Mol*/Chromium Cartesian Movie receiving is required.": 1,
+        "Select the actual Mol*/Chromium Movie composition guard explicitly.": 1,
+        "Explicit real Mol*/Chromium legacy migration receiving is required.": 1,
+        "Select the real molecular-story browser receiving explicitly.": 1,
+        "Select MOLSYSVIEWER_JUPYTER_TEST=1 for actual Jupyter Movie receiving.": 1,
+        "Explicit real Mol*/Chromium offline Movie receiving is required.": 1
+      }
+    },
+    {
+      "native_exit": 0,
+      "seconds": 12.230847527971491,
+      "peak_owned_rss_mib": 546.7,
+      "selected_inputs": 9928,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "profile": "movie-story-666-records",
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "minimum_observed_available_gib": 14.07,
+      "observed_cgroup_peak_bytes": 537513984,
+      "evidence": {
+        "inputs-after.json": "a8cbe90e32cfa2c37cef6278caab6f3fe46d4ebfc283bd15f7d8ac1de30543a7",
+        "inputs-before.json": "a8cbe90e32cfa2c37cef6278caab6f3fe46d4ebfc283bd15f7d8ac1de30543a7",
+        "invocation.json": "ad84d3c5f5d0a6850b9e6d6e40fa6d2407109221131d9ad236c89c18cdb6f2c7",
+        "junit.xml": "fa13b2b00eced87d2153ffa71508b1daf17f2c79d65b7d32e417c9a4d84ccf5f",
+        "resources-before.json": "fa89c2bb67b288c7bb26055fd576fbd7694ea5f0029deab5d642e04a41a7d334",
+        "stdout.log": "9710d2798204f249535d52cdf460f74ad973902fa90cff2a7d0e63863140236c"
+      },
+      "pytest": {
+        "passed": 29,
+        "skipped": 0,
+        "failed": 0,
+        "errors": 0
+      },
+      "skips": {}
+    }
+  ],
+  "retained_observations": [
+    {
+      "profiles": [
+        "647",
+        "650",
+        "653"
+      ],
+      "outcome": "fixture/probe authoring errors",
+      "details": "Wrong exploratory MolSys method, wrong interaction count accessor, and list treated as ndarray; corrected to real public accessors. Not product failures."
+    },
+    {
+      "profiles": [
+        "648",
+        "649"
+      ],
+      "outcome": "valid scientific prerequisite refusals",
+      "details": "Raw 181L/BNZ hydrophobic route lacks declared complete connectivity/formal charges. No missing chemistry was invented or classifier loosened. Switched to supplied prepared HED source."
+    },
+    {
+      "profiles": [
+        "651",
+        "652"
+      ],
+      "outcome": "passed scientific input controls",
+      "details": "Default Buch 0.23 nm yields no candidates; explicit 0.40 nm gives one at 0.34975678142446703 nm. These controls establish fixture conditions only."
+    },
+    {
+      "profiles": [
+        "657",
+        "658"
+      ],
+      "outcome": "failed test oracle refuted by physical diagnostic",
+      "details": "657 completed primary/native/media/independent recovery then incorrectly equated offline baseline summary hidden with Movie-effective visibility. 658 inspects original HTML native cells/render objects and confirms effective visibility is correct. Final guard asserts physical visibility, retaining both original full failure and diagnostic. No product fix was justified."
+    },
+    {
+      "profiles": [
+        "662",
+        "663",
+        "664"
+      ],
+      "outcome": "passed integration and final visual/continuous-play refinement",
+      "details": "662 complete story passed. Local visual review found phase caption occluded. Fixture camera-relative offset and actual offline Play assertion added; 663 strict build and 664 complete receiving pass. No production runtime changes."
+    }
+  ],
+  "remaining": [
+    "M2 remaining host/accessibility review",
+    "complete integrated story in actual Jupyter and native Qt where applicable",
+    "richer accepted Movie profiles and consolidated #320 acceptance",
+    "covering exact-source/platform/hosted and installed-pair qualification",
+    "postponed human observations",
+    "complete documentation and final maintainer review",
+    "required pre-1.0 Molstar integration review #369"
+  ],
+  "audit_counters": {
+    "source": 38,
+    "final": 1,
+    "denominator": 46,
+    "changed": false
+  },
+  "publication": "paused; no candidate/tag/package/Release/1.0 authorization",
+  "completed_utc": "2026-11-13T03:35:22.004760+00:00",
+  "custody": {
+    "state": "verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-story-20261112",
+    "custodian": "Diego Prada Gracia",
+    "files": 186,
+    "bytes": 116554785,
+    "manifest_sha256": "7d1f91ab8bc67e994c377e792c172548cdf62f8ce79afa4361f7fa3adaf7af84",
+    "originals_retained": true
+  }
+}

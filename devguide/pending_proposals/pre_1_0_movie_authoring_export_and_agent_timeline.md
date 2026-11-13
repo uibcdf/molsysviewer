@@ -15,7 +15,8 @@ supersedes: []
 # Movie authoring, export and future agent planning
 
 **Active requirement; independent tracks, bounded appearance, preview and initial
-media export are source-delivered. The complete workflow remains pending.**
+media export are source-delivered. The integrated story is source-received;
+complete host and release qualification remains pending.**
 The principal maintainer explicitly requires useful movie authoring
 and export before 1.0. [#320](https://github.com/uibcdf/molsysviewer/issues/320)
 records the accepted scope and example story. Natural-language planning through
@@ -218,7 +219,7 @@ owns those rules. The admitted legacy profile below is now source-received.
 Studio has its first experimental Timeline/Preview/Export editor over the
 same Python Movie owner, including canvas-owned popup capture and detached
 Studio preview/export. Richer renderer channels, complete authoring acceptance,
-the complete integrated story and richer portable profiles remain open. The
+richer portable profiles and complete host acceptance remain open. The
 first self-contained offline HTML profile is implemented through the same
 `export_async` API. It embeds its runtime, recipe, molecular projection and
 supported interaction visual series; actual file/iframe, reverse seek,
@@ -230,7 +231,17 @@ plots/legends to offline HTML and vector composition in PNG/MP4, including
 scientific context, frame-specific indicators and guarded atomic publication.
 Expanded in-canvas cards and fixed layout/style are required for media, with
 explicit exclusions available. This bounded source profile does not complete
-M2 host/accessibility, M5 or installed/hosted/human qualification. The
+M2 host/accessibility or installed/hosted/human qualification. The
+[integrated story receipt](../movie_story_receiving_20261112.json) now receives
+M5's first source profile: actual Studio caption editing and preview over a
+Python-authored pocket/ligand/interactions/labels story, three encoded media
+formats, recovery in an independent Python authority and offline HTML seeks
+and continuous playback. Native geometry, occurrence identities, measurement
+units, source context and unchanged analyses/coordinates are checked. The
+prepared HED example, relaxed 0.40 nm Buch cutoff, evaluated-empty synthetic
+translation and unevaluated copy are explicit integration controls, not a
+binding prediction. Actual Jupyter/Qt, covering CI, installed and postponed
+human receiving of this complete story remain open. The
 receiving entries below retain their original source/date scope; earlier
 remapping/appearance gaps are not a claim about current implementation.
 

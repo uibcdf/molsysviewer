@@ -69,6 +69,7 @@ const SUITES = [
     "movie-studio",
     "movie-web",
     "movie-composition",
+    "movie-story",
 ] as const;
 const SERVER_GPU_SUITES = new Set<string>(["remote-session"]);
 const REMOTE_SUITES = new Set<string>(["remote-client-rendering", "remote-input", "remote-session"]);
@@ -94,6 +95,8 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
     const integratedBudgets: Readonly<Record<string, number>> = {
         "controls-visibility": 300_000,
         "studio-usability": 360_000,
+        // Three real encoders, independent recovery and complete offline seeks.
+        "movie-story": 360_000,
     };
     const timeoutMs = process.env.E2E_SUITE_TIMEOUT_MS === undefined
         ? integratedBudgets[name] ?? defaultTimeoutMs : defaultTimeoutMs;
