@@ -928,5 +928,30 @@
     "originals_retained": true,
     "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia"
+  },
+  "plot_stream_source_checkpoint": {
+    "run": 43654425383,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43654425383",
+    "producer": "2947c2fdc9a815f1015f0e9e2c6b3a51cd70f547",
+    "provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "status": "in_progress",
+    "conclusion": null,
+    "attempt": 1,
+    "platform": "ubuntu-latest",
+    "receiving_scope": "full",
+    "source_receiving": true,
+    "complete_exact_head_manual_inventory_before": 0,
+    "duplicate_dispatch": false,
+    "declared_core_entries": 63,
+    "declared_notebooks": 25,
+    "retained_other_platforms": "Windows/macOS Python source receiving remains on eae57346, with unchanged product/runtime/provider bytes. This selected-platform recovery is not a newly qualified complete three-platform candidate or installed pair.",
+    "initial_receptor": "Published GH Run Receptor 1.1.1: PENDING/in_progress, native exit 3, one active job; no terminal artifacts yet.",
+    "publication": "No version assignment, tag, package build, promotion or release."
+  },
+  "plot_stream_record_validation": {
+    "profile": "plot-stream-final-records-838",
+    "passed": 463,
+    "raw_receipt_sha256": "3a57399358501e50eb8beed59ae68f6b8e5f09d8372d3bb4431733ec1a771fcc",
+    "scope": "Reporting, devguide links and E2E reliability invariants; current indexes, Ruff and diff checks. Not product test cases or added to the 361 scientific cases."
   }
 }

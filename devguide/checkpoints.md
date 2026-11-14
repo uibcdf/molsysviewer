@@ -923,6 +923,12 @@ Profile `837` then receives all nine complete Movie entries in one invocation,
 including Studio, PNG/MP4/WebM, composition, offline/iframe and the scientific
 story/session. All inputs stay unchanged and all 68 owned processes retire.
 Receive a complete current core gate before claiming that acceptance.
+One full Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
+is dispatched on `2947c2fd` with unchanged scientific provider `aee7aa65`,
+pandas 3.1.0, all 63 core entries and 25 notebooks. Exact-head manual inventory
+was empty; native GitHub metadata and GH Run Receptor confirm one active job.
+Prior Windows/macOS Python evidence remains on `eae57346`; this is source
+recovery without candidate versions, tags, packages or installed qualification.
 #388's original event sequence retains its causal limit;
 #369/#372, installed candidate and postponed human exits remain separate.
 The [current receipt](molstar_qualification_followup_20261114.json) and

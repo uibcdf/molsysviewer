@@ -62,6 +62,9 @@ qualification remain required before claiming the handoff. D6.7's
 [structural-observable receiving](structural_observables_receiving_20261114.json)
 now passes its 361-case source family and six actual Jupyter cutoff decisions;
 its installed/hosted-family and postponed human scopes stay separate.
+The single complete Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
+is running on `2947c2fd`, with all 63 core entries and 25 notebooks declared;
+its terminal result is not yet received.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

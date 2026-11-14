@@ -52,3 +52,10 @@ seconds, with no resource stop or surviving owned processes. The
 source/native hashes and the earlier local npm-launcher setup failure.
 Complete current core receiving remains required; this scoped result does
 not turn the original hosted run green.
+
+**Covering source receiving dispatched:** [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
+runs the complete Linux gate on `2947c2fd`, retaining the exact scientific
+provider and all 63 core entries/25 notebooks. The opening native check is
+`in_progress`; keep this issue partial until its applicable terminal evidence
+is received. The nine complete Movie entries already pass together locally,
+without combining that suffix with the failed hosted prefix.

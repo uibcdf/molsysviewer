@@ -72,6 +72,8 @@ gate passes 30/30 cycles. Three-platform checkpoint `43646263694` on
 an already consumed reply list. [#391's receiving correction](pending_bugs/plot_authority_streamed_reply_receiving.md)
 passes the complete plot entry locally, including 15 precision controls.
 All nine Movie entries also pass together in scoped receiving `837`.
+The single full Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
+is running on `2947c2fd`; it has no terminal acceptance yet.
 The earlier #388 click sequence retains its explicit causal limit.
 Uninterrupted core and exact installed-candidate
 acceptance remain separate; #369/#372 stay open.
