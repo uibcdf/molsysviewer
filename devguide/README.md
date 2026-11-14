@@ -71,6 +71,11 @@ gate passes 30/30 cycles. One complete current three-platform checkpoint
 `43646263694` is running on `eae57346`; the earlier #388 click sequence retains
 its explicit causal limit. Uninterrupted core and exact installed-candidate
 acceptance remain separate; #369/#372 stay open.
+The [prolonged receiving closeout](prolonged_receiving_closeout_20261114.json)
+resolves #364's source-attribution correction and #356's measured retirement
+defect. #354 remains partial with its original pre-save Python frame failure
+correctly identified; MolSysMT #754 owns the receiver diagnostic gap. E2 and
+the installed/manual exits remain separate from those source closures.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

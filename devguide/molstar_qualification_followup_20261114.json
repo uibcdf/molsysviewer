@@ -732,7 +732,33 @@
     "conclusion": null,
     "scope": "One complete source-only three-platform Python 3.14 checkpoint, with 63 mandatory Linux core entries and all documented notebooks. No candidate tags, package builds or installed-artifact qualification.",
     "complete_exact_head_manual_inventory_before": 0,
-    "duplicate_dispatch": false
+    "duplicate_dispatch": false,
+    "verified_python_results": [
+      {
+        "name": "source-receiving-Linux-py3.14",
+        "tests": 4776,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 42,
+        "passed": 4734
+      },
+      {
+        "name": "source-receiving-Windows-py3.14",
+        "tests": 4776,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 69,
+        "passed": 4707
+      },
+      {
+        "name": "source-receiving-macOS-py3.14",
+        "tests": 4776,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 73,
+        "passed": 4703
+      }
+    ]
   },
   "current_native_qt": {
     "native_exit": 0,
@@ -794,5 +820,18 @@
     "links": "pass",
     "ruff": "pass",
     "scope": "Metadata/link reconciliation; no repetition or replacement of product receiving."
+  },
+  "prolonged_source_closeout": {
+    "receipt": "prolonged_receiving_closeout_20261114.json",
+    "resolved_source_issues": [
+      356,
+      364
+    ],
+    "partial_issue": 354,
+    "owner_diagnostic_issue": "uibcdf/molsysmt#754",
+    "original_354_correction": "Actual Python pre-save frame assertion failed before saving/recovery; recovered-controller attribution withdrawn. Original message ordering remains unknown.",
+    "current_lifetime_guard": "lifecycle-closeout-826: actual Jupyter pass",
+    "owner_provenance_guards": "provenance-closeout-827: five existing controls pass",
+    "full_installed_or_human_acceptance": false
   }
 }

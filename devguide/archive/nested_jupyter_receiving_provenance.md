@@ -1,14 +1,14 @@
 ---
 summary: Qualify the molecular sources actually imported by nested Jupyter receiving.
 issue: uibcdf/molsysviewer#364
-status: partial
+status: resolved
 opened: 2026-11-12
-closed:
+closed: 2026-11-14
 severity: medium
 verification: reproduced
 area: [jupyter, testing, provenance]
 guard:
-normative:
+normative: engineering_rules.md
 blocked_by: []
 supersedes: []
 ---
@@ -85,3 +85,28 @@ identity. The widget reads its hashed local runtime through the source comm
 bootstrap, independently of those labels. Original `513`/`515` claims remain
 corrected, never requalified by this later pass. The bounded historical review
 and closure guard/disposition remain separate; no installed pair is claimed.
+
+## Resolution — 2026-11-14
+
+The [bounded historical review](../prolonged_receiving_closeout_20261114.json)
+classifies 259/265, 513/515, 516, 517/519 and 807–809 separately. It does not
+propagate the nested-launcher correction to differently routed direct/host
+controls or rewrite originals. Recorded outer labels in the older prolonged
+receipt now carry a dated qualification notice; known 513/515 mismatches keep
+their earlier correction. Cached development versions never stand in for
+verified inner files. No clean installed pair is inferred.
+
+Owner PR #721 is merged as `687220ac938412bc9708f7a48e0a71c6ab601007`.
+Its actual-file observer/guard and four passive cold/lazy observer controls
+pass unchanged in `827`, using the exact canonical receiver source over the
+explicit scientific/native base. The current thirty-cycle campaign verifies
+31 inner import snapshots and freezes all actual scientific/receiver/support
+inputs before/after. This receives this report's provenance correction; E2's
+other scientific/functional and memory criteria remain separately owned.
+
+The durable consumer rule is
+[Receiving provenance and diagnostic attribution](../engineering_rules.md#receiving-provenance-and-diagnostic-attribution),
+routed from root AGENTS. It requires inner-process origins/hash comparisons
+and bounded, non-retroactive attribution. The producer behavior is guarded in
+its owning MolSysMT tests, explicitly identified in the receipt; the consumer
+does not duplicate that reusable observer or claim a local surrogate test.

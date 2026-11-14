@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [Retired notebook molecular data](retired_notebook_molecular_data.md) — #356 releases owned render closures and native strong cache keys, with causal controls, current actual-Jupyter release and qualified thirty-cycle lifetime receiving.
+
+- [Nested scientific receiving provenance](nested_jupyter_receiving_provenance.md) — #364 verifies actual inner imports, receives owner observer integration and narrows historical claims through the normative attribution rule.
+
 - [Controls/scientific receiving partition](controls_scientific_mirror_receiving_partition.md) — #244 gives the complete independent scientific mirror its own mandatory bounded core entry, retaining all assertions and operation deadlines.
 
 - [Native symmetry receiving provider](native_symmetry_receiving_provider.md) — #390 reads periodic cells through the native provider and preserves real frame, cell, box, edit and popup assertions.

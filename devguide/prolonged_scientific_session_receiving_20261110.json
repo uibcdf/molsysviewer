@@ -2115,5 +2115,17 @@
     "original_diagnostics_retained": true,
     "unused_owned_credentials_hash_retired": true,
     "off_host_backup_claimed": false
+  },
+  "qualification_correction_20261114": {
+    "record": "prolonged_receiving_closeout_20261114.json",
+    "affected_profiles": [
+      259,
+      265
+    ],
+    "inner_source_scope": "Recorded outer/contribution labels do not establish complete inner scientific source attribution. Retain original outcomes; no blanket requalification.",
+    "original_259_error": "Actual notebook Python assertion v.player.index==1 fails with 0 before save/recovery. The browser times out waiting for LONG_RECOVERED_9; its then-bound controller has not been established as the recovered controller.",
+    "withdrawn_claim": "The ninth recovered frontend was not proved stuck at zero, and ninth-cycle Python recovery was not proved successful.",
+    "still_pending": "The original pre-save frame/message ordering; consumer #354 and owner diagnostic #754.",
+    "original_payload_and_private_evidence_retained": true
   }
 }

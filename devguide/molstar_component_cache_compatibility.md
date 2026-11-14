@@ -31,6 +31,14 @@ table/buffer lifetime controls and consumed-module origin assertions in
 `tests/test_molstar_compatibility.py`. Neither scope alone qualifies the whole
 migration or an installed artifact.
 
+The source retirement defect is resolved under #356. Current 5.13.1 runtime
+receiving `826` passes that same actual-Jupyter guard; `809` separately receives
+the canonical thirty-cycle lifetime/metrology protocol. The
+[closeout](prolonged_receiving_closeout_20261114.json) retains their distinct
+inputs and host-memory limits. Native replacement monitoring remains #363;
+closing the source defect does not remove the adaptation or qualify the
+complete #372 migration/installed candidate.
+
 This is a temporary provider-compatibility adaptation owned by MolSysViewer's
 maintainers under uibcdf/molsysviewer#356. Diego requested local tracking
 instead of another upstream report; uibcdf/molsysviewer#363 owns monitoring

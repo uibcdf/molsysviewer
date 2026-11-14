@@ -920,6 +920,18 @@ core acceptance. #388's original event sequence retains its causal limit;
 The [current receipt](molstar_qualification_followup_20261114.json) and
 [#372 plan](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md) own the detail.
 
+**Prolonged receiving closeout — 2026-11-14:**
+[#364 provenance](archive/nested_jupyter_receiving_provenance.md) receives owner
+integration, actual inner-source guards and bounded historical corrections.
+[#356 retirement](archive/retired_notebook_molecular_data.md) receives its
+current actual-Jupyter release guard after the two evidenced retainer fixes.
+[#354](pending_bugs/recovered_canvas_initial_structure_observation.md) stays
+partial: the exact original notebook fails its Python frame assertion before
+save/recovery, not a recovered frontend's frame wait. MolSysMT #754 owns the
+receiver's missing Python-error/owner diagnostics. The
+[closeout receipt](prolonged_receiving_closeout_20261114.json) preserves that
+correction, the unchanged thirty-cycle source scope and outstanding E2 exits.
+
 **Current delivery objective — 2026-11-12:** follow the
 [documentation-review handoff](path_to_1_0.md#documentation-review-handoff).
 Finish Movie, scientific integration, integrated/prolonged receiving, complete
@@ -1188,7 +1200,7 @@ controls before the next comparable long campaign. E2/#356 remain partial;
 The [Jupyter receiver receipt](jupyter_popup_controls_receiving_20261112.json)
 reproduces the hidden-controls focus race and receives its correction through
 [MolSysMT PR #721](https://github.com/uibcdf/molsysmt/pull/721). Two current-support
-guards and 52 affected controls pass separately. [#364](pending_bugs/nested_jupyter_receiving_provenance.md)
+guards and 52 affected controls pass separately. [#364](archive/nested_jupyter_receiving_provenance.md)
 corrects the outer/inner provider attribution of nested attempts `513`/`515`;
 their original outcomes remain. Actual in-kernel origins and frozen inner
 scientific/addon/support bytes now identify the corrected thirty-cycle attempt:
@@ -1341,7 +1353,7 @@ remain owner work. B4's [exact-source receipt](figure_observation_receiving_2026
 separates its core/producer and live-host scopes, with producer PR #702 owner-integrated. E2's
 [scale anchors pass](performance/robustness_scale_receiving_20261110.md);
 Fifteen active cycles pass before a shared-pressure stop; the thirty-cycle
-gate remains open. Diagnose [retained logical data #356](pending_bugs/retired_notebook_molecular_data.md)
+gate remains open. Diagnose [retained logical data #356](archive/retired_notebook_molecular_data.md)
 with the reduced single-structure reproducer. The matched array-native and
 widget cleanup controls preserve the Jupyter-only observation in those cases.
 Trace the actual notebook/widget ownership before repeating the full gate.

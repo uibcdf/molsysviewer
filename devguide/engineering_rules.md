@@ -97,6 +97,27 @@ that feeds the panel), and a field was dropped at *both* on the same day. A unit
 `panel.setRegions(...)` directly bypasses them and will not catch it. **Drive the seam, not the
 destination.**
 
+### Receiving provenance and diagnostic attribution
+
+A nested kernel or launcher may replace the outer process's import routes.
+Before attributing scientific receiving to a source commit, record module
+origins and file hashes inside the process that executes the workload, and
+compare them with the declared source/native inputs frozen before and after
+execution. Keep receiver-only overlays, copied support and compiled extensions
+explicit. A cached version label, directory name or unchanged outer manifest
+does not identify an inner scientific source. Observe unloaded modules without
+activating them merely to obtain metadata. Reuse the owning receiver's import
+observer and guards rather than duplicating that tool in the consumer.
+
+Diagnose the first failed assertion and the phase actually reached. A timeout
+waiting for notebook output does not establish which Python operation failed;
+inspect the retained Python error too. Attribute a controller/frame observation
+only after proving its identity and binding to the claimed surface. Preserve
+failed originals and publish dated scope corrections; a later successful run
+does not requalify earlier inputs or reconstruct an unobserved event sequence.
+The bounded #364/#354 review is recorded in
+`prolonged_receiving_closeout_20261114.json`.
+
 ---
 
 ## 5. The audit method: mutation

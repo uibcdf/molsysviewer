@@ -1,0 +1,216 @@
+{
+  "schema": "molsysviewer.prolonged_receiving_closeout@1",
+  "date": "2026-11-14",
+  "source_base": "7aa6d5f41df509b1dd45ff43b4818f281a1f621b",
+  "issues": {
+    "uibcdf/molsysviewer#354": "partial; corrected to actual pre-save Python frame failure, cause still unestablished",
+    "uibcdf/molsysviewer#356": "source-resolved; actual controller/native-buffer causes and current guard received",
+    "uibcdf/molsysviewer#364": "resolved; owner observer integrated, bounded attribution review and normative rule delivered",
+    "uibcdf/molsysmt#754": "open; diagnostic attribution belongs to the owner receiver"
+  },
+  "historical_scope_review": [
+    {
+      "profiles": [
+        259,
+        265
+      ],
+      "scope": "Historical owner-launcher campaigns. Retain recorded outer/contribution identities and outcomes; actual inner scientific file attribution was not observed with a kernel hash manifest. They are not retroactively exact-provider qualification."
+    },
+    {
+      "profiles": [
+        513,
+        515
+      ],
+      "scope": "Known mismatching copied inner source: 24 tracked Python files differ from declared outer aee7aa65; native bytes match their recorded original. Dated 2026-11-12 scope correction remains; UI observations are real, precise source claim is withdrawn."
+    },
+    {
+      "profiles": [
+        516
+      ],
+      "scope": "Actual inner source observation and exact compared scientific bytes; copied PyUnitWizard 0.28.1 overlay is explicit, not current support."
+    },
+    {
+      "profiles": [
+        517,
+        519
+      ],
+      "scope": "Actual inner imports and frozen scientific/addon/native inputs; current copied PyUnitWizard 0.29.4+2.g9bb4f5f. 519 passes thirty functional cycles, without certifying the later qualified memory protocol."
+    },
+    {
+      "profiles": [
+        807,
+        808,
+        809
+      ],
+      "scope": "Canonical owner metrology at 429d7494 over declared aee7aa65 scientific/native inputs, with baseline, pilot and thirty cycles; 31 actual import snapshots verified. This is an explicit receiving composition, not a clean installed pair."
+    },
+    {
+      "profiles": [
+        460,
+        499,
+        503
+      ],
+      "scope": "Separate MolSysViewer-owned actual-host lifecycle route; do not generalize the owner-launcher correction to these differently routed controls. Their original source/guard identities remain."
+    }
+  ],
+  "integration": {
+    "owner_pr": "https://github.com/uibcdf/molsysmt/pull/721",
+    "merged": true,
+    "merge_commit": "687220ac938412bc9708f7a48e0a71c6ab601007",
+    "canonical_receiver": "429d7494b5ee053fd1ecdd644c1e8f71e6376062",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+  },
+  "provenance_guards": {
+    "profile": "provenance-closeout-827",
+    "native_exit": 0,
+    "seconds": 3.054626524914056,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "raw_receipt_sha256": "ed6adc5973cc5b3972c4c88402042255665fd9f0ce2429adab581098fa10fe51",
+    "passed": 5,
+    "owner_selectors": [
+      "tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_molecular_import_snapshot_uses_actual_imported_files",
+      "tests/molsysviewer_molsysmt/test_jupyter_import_observer.py"
+    ],
+    "scope": "Existing owner guards, reused without a duplicate consumer observer or owner edits."
+  },
+  "current_lifetime_guard": {
+    "profile": "lifecycle-closeout-826",
+    "native_exit": 0,
+    "seconds": 45.018172872718424,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 19,
+      "survivors": [],
+      "errors": []
+    },
+    "raw_receipt_sha256": "2f3f42a1be92a23b49450bb3bde4f4cd6609bf3ae5d67ac36cd3084c6c3eddc3",
+    "passed": 1,
+    "guard": "tests/test_jupyter_live_capture.py::test_live_jupyter_controller_release",
+    "runtime_sha256": "36c5644a534879d81562d83608153323904571a2c1b148be3438856dcf1dfb2a",
+    "scope": "Actual Jupyter/AnyWidget/Chromium source receiving; no modified host settings or installed/human/VRAM claim."
+  },
+  "current_prolonged_receiving": {
+    "receipt": "molstar_qualification_followup_20261114.json",
+    "profile": "prolonged-molstar-memory-809",
+    "cycles": 30,
+    "actual_import_snapshots": 31,
+    "one_kernel": true,
+    "lifetime_controls": "All six retired controller/structure/model/x/y/z targets and 3,720,000-byte buffers die on every created/recovered view. Independent 3,983-atom witness and its 47,796-byte buffer survive with unchanged data/camera.",
+    "scope": "Scientific/addon/native bytes aee7aa65 + exact canonical receiver 429d7494; copied support with PyUnitWizard module 0.29.4+2.g9bb4f5f. Not clean installed qualification."
+  },
+  "original_354_correction": {
+    "failure_sha256": "a618285066b0a031ca843281cd718b184cf7df527af008ee45d74789ec939f83",
+    "failure_dom_sha256": "1753a4a5e374c10a6310f12797907faab926df5cf61d7354014a8d6858573c7c",
+    "original_receiver_source": "74aeffede0b7ff35c3cc4b7513b73b3b670b5a57",
+    "original_receiver_file_sha256": "9827067a7421bf5b627282db93c1edd68bcf353ea901262fd5a09eb8c3fa4b36",
+    "exact_manifest_match": true,
+    "first_python_error": "Cell In[52], line 2: assert v.player.index==1, v.player.index; AssertionError: 0",
+    "browser_failure": "marker(LONG_RECOVERED_9), before recovered-surface wait, bind and frame checks",
+    "phase": "Before save_session_async and load_session in cycle 9",
+    "withdrawn_inference": "The original report did not establish a recovered controller stuck at frame zero or successful ninth-cycle Python recovery.",
+    "still_observed": "Eight complete cycles followed by a pre-save Python frame value of zero despite preceding UI frame checks. Actual message ordering/cause remains unobserved.",
+    "owner_diagnostic_issue": "uibcdf/molsysmt#754"
+  },
+  "normative": "engineering_rules.md#receiving-provenance-and-diagnostic-attribution",
+  "current_hosted_python": {
+    "run": 43646263694,
+    "producer": "eae573467c71e14b7f8e7216ca71d7e6b9b562c2",
+    "results": [
+      {
+        "name": "source-receiving-Linux-py3.14",
+        "tests": 4776,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 42,
+        "passed": 4734
+      },
+      {
+        "name": "source-receiving-Windows-py3.14",
+        "tests": 4776,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 69,
+        "passed": 4707
+      },
+      {
+        "name": "source-receiving-macOS-py3.14",
+        "tests": 4776,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 73,
+        "passed": 4703
+      }
+    ],
+    "original_artifacts_verified": [
+      {
+        "id": 14134925169,
+        "name": "movie-encoder-native-macOS",
+        "size_in_bytes": 14717,
+        "digest": "sha256:ed3d37b0542630626b6a6cb09bfcec8ff89bc6db779ec0e51db9ecb17a01f269"
+      },
+      {
+        "id": 14134900287,
+        "name": "source-receiving-macOS-py3.14",
+        "size_in_bytes": 85369,
+        "digest": "sha256:c0e13b866812781d29e31a3bec7a92e5ba445b56e9fbcc224ae808c99385bc4e"
+      },
+      {
+        "id": 14134815913,
+        "name": "source-receiving-Linux-py3.14",
+        "size_in_bytes": 82070,
+        "digest": "sha256:fee012b0c63840a698cd12d47918c822ef2c4096fdc6d0d39a1ab87c88ebbbee"
+      },
+      {
+        "id": 14134687951,
+        "name": "movie-encoder-native-Linux",
+        "size_in_bytes": 14696,
+        "digest": "sha256:261c82368ee7aeea4a233415cf41de686f48cd46cfd590a96132360d43886992"
+      },
+      {
+        "id": 14133898747,
+        "name": "source-receiving-Windows-py3.14",
+        "size_in_bytes": 83322,
+        "digest": "sha256:ea589209f6216a56d6317aac70a6179639c5da63ff24ce9ea58ff6c52c63f436"
+      },
+      {
+        "id": 14133719193,
+        "name": "movie-encoder-native-Windows",
+        "size_in_bytes": 14805,
+        "digest": "sha256:b5560a467df415cac762b562cdc0feba4f0c8a0a4ca5cbb9e55ef71edd869455"
+      }
+    ],
+    "scope": "All three Python steps received from original JUnit. Complete Linux core/workflow is still pending; this is a declared partial run inventory."
+  },
+  "remaining": [
+    "Resolve or explicitly dispose of the actual #354 pre-save frame disagreement with qualified evidence; #754 owns missing diagnostic identity/error classification.",
+    "Receive the complete current core gate, exact installed candidate and postponed human scopes separately."
+  ],
+  "counters": "Original 38/46 source-delivered and 1/46 final acceptance are not changed by these source/scoped closures.",
+  "publication": "No tag, package, promotion or release authorized.",
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/prolonged-source-closeout-20261114",
+    "files": 124,
+    "bytes": 19144741,
+    "manifest_sha256": "1da55b563578742e57b5e4eb8ae1442bb5a903366204f920f90112f9bc2964d0",
+    "originals_retained": true,
+    "excluded_credential_shaped": [],
+    "custodian": "Diego Prada Gracia"
+  },
+  "record_checks": {
+    "profile": "prolonged-closeout-records-828",
+    "passed": 459,
+    "indexes": "up to date",
+    "links": "pass",
+    "ruff": "pass",
+    "scope": "Scoped documentation/reporting checks; queue entry parametrization changes when records move to archive, not a dropped product test."
+  }
+}

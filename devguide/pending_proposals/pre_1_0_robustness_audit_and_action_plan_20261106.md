@@ -526,6 +526,19 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current prolonged closeout — 2026-11-14:** the
+[source closeout](../prolonged_receiving_closeout_20261114.json) receives #364's
+owner-integrated import observer, five current provenance controls, bounded
+historical attribution and normative receiving rule. #356's current durable
+actual-Jupyter release guard passes after the evidenced callback/cache fixes.
+Both source defects are resolved. #354 remains partial: original cycle 9
+fails `v.player.index==1` before saving or recovering; its browser marker
+timeout and previously bound controller were misattributed to recovery.
+MolSysMT #754 owns that diagnostic gap. The thirty-cycle campaign retains its
+own successful source scope; this correction neither explains original packet
+ordering nor completes every E2/installed/human exit. Original counters stay
+38/46 source-delivered and 1/46 final acceptance.
+
 **Required architectural review — #369, open:** complete the
 [current-release/development Mol* reassessment](pre_1_0_molstar_integration_review.md)
 and its adopted pre-1.0 follow-ups before architecture/candidate freeze and the
@@ -1352,7 +1365,7 @@ then passes fifteen consecutive cycles before a shared-pressure stop during
 cycle 16; [#356](https://github.com/uibcdf/molsysviewer/issues/356) tracks
 measured retained logical data. The [receipt](../prolonged_scientific_session_receiving_20261110.json)
 keeps both kernels and their scopes separate. The [matched array-native and
-widget cleanup controls](../pending_bugs/retired_notebook_molecular_data.md)
+widget cleanup controls](../archive/retired_notebook_molecular_data.md)
 narrow the diagnosis to the actual Jupyter/widget lifetime. The retaining path
 and the 30-cycle gate remain open. The workload definitions below
 remain the reproduction route, not a compatibility claim for future sources.

@@ -43,6 +43,12 @@ For local development with the principal maintainer, use the Conda environment
 each command; do not rely on the shell's default `python`. Separate installed
 artifact qualification environments retain their own recorded provenance.
 
+For nested scientific receiving, verify actual inner-process import origins
+and hashes against the frozen inputs before attributing a source commit.
+Diagnose the first failed assertion and confirm controller/surface identity
+before assigning a frame observation. Follow
+[the receiving rules](devguide/engineering_rules.md#receiving-provenance-and-diagnostic-attribution).
+
 Read `MOLSYSSUITE_GUIDE.md` before development. It is the synchronized, read-only
 suite-governance guide owned by `uibcdf/molsyssuite` and routes shared policies,
 cross-component feedback, and issue ownership.

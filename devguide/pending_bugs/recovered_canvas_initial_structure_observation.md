@@ -1,62 +1,71 @@
 ---
-summary: Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles.
+summary: Diagnose the pre-save Python frame assertion in prolonged Jupyter receiving.
 issue: uibcdf/molsysviewer#354
-status: active
+status: partial
 opened: 2026-11-10
 closed:
 severity: medium
 verification: measured
-area: [jupyter, trajectory, persistence, lifecycle]
+area: [jupyter, trajectory, receiving, synchronization]
 guard:
 normative:
-blocked_by: []
+blocked_by: [uibcdf/molsysmt#754]
 supersedes: []
 ---
 
-# Recovered initial structure — diagnosis active
+# Pre-save frame assertion — corrected diagnosis, still open
 
-The E2 prolonged campaign `259` completes eight cycles in one scientific kernel
-and fails during the ninth recovered frontend's 30-second wait for structure 1.
-The native Python recovery already passes exact scene, coordinates, named
-analysis, measurements/units and figure-context comparisons. The connected,
-non-disposed frontend reports structure 0 with 5,000 available structures and
-paused playback. Its canvas is entirely above the visible viewport
-(`y=-550.25`, height 480, viewport height 1,200).
+**Qualification correction — 2026-11-14:** the original report described a
+recovered frontend stuck at structure zero. Exact reinspection of the retained
+failure, notebook body and matching original receiver source disproves that
+attribution. The [closeout record](../prolonged_receiving_closeout_20261114.json)
+retains original hashes, sources and the corrected phase. The raw evidence and
+older receipt payload are unchanged; its dated annotation narrows the claim.
 
-Viewer `cb326235b3377185b18a17c7f59c71fd53cdab2a` and owner receiver
-`74aeffede` retain 10,890 unchanged inputs; the run exits 1 after 462.55 s,
-has no resource stop and retires all 26 owned processes. The failed ninth
-session and the eight successes remain original evidence. This is not thirty
-cycles or the accepted 20–30 minute observation window.
+Campaign `259` completes eight cycles, then its ninth Python recovery cell
+fails on line 2, `assert v.player.index==1, v.player.index`, with value `0`.
+This is before `save_session_async`, `load_session`, display or any ninth-cycle
+recovery comparisons. The browser times out inside `marker('LONG_RECOVERED_9')`;
+the next recovered-surface wait, `bind(page,3)` and frame-1 assertion have not
+been reached. Its catch observation reads the previously bound controller.
+That connected offscreen controller at frame zero is not established as the
+recovered View. No ninth recovered-frame loss or successful ninth-cycle Python
+recovery is proved. The original Python error also explains why its marker
+could not appear; the cause of the Python frame disagreement remains unknown.
 
-Classify harness visibility/controller identity and Viewer initial-frame
-application separately. Next receiving explicitly shows the target before
-binding, checks its unique runtime viewer identity and records initial native
-frame requests/results. Keep the exact saved/Python/frontend/geometry checks,
-unchanged deadlines and the original failure; do not send a repair seek,
-retry invisibly or assert a numerical-data defect without evidence.
+The original receiver source `74aeffede0b7ff35c3cc4b7513b73b3b670b5a57` has
+SHA-256 `9827067a7421bf5b627282db93c1edd68bcf353ea901262fd5a09eb8c3fa4b36`,
+matching the retained input manifest. Failure JSON SHA-256 is
+`a618285066b0a031ca843281cd718b184cf7df527af008ee45d74789ec939f83`.
+MolSysViewer source is `cb326235b3377185b18a17c7f59c71fd53cdab2a`; the run
+retains 10,890 unchanged selected inputs, exits 1 after 462.55 seconds, has
+no resource stop and retires all 26 owned processes. Those outer labels alone
+do not qualify every inner scientific source; #364's bounded review applies.
 
-The revised source receiver `66273e4d` observes the uniquely identified,
-visible recovered widget reaching structure 1 in fifteen consecutive complete
-cycles, including the former ninth-cycle boundary. Its scalar initial-frame
-traces retain the actual successful requests without a repair seek. A shared
-pressure stop interrupts cycle 16; [#356](retired_notebook_molecular_data.md)
-tracks separate measured logical data retention. This narrows the failure to
-the earlier unqualified hidden/binding observation, but does not prove its
-original cause; the report remains active.
+The actual unresolved observation is a pre-save Python index of zero after
+earlier canvas/popup frame-1 predicates. Original packet ordering, authority
+and timing were not captured, so do not assign it to hidden initialization,
+late feedback or a scientific-data defect. Keep related #331/#332/#314/#307/
+#224 and MolSysMT #615 distinct unless a causal comparison establishes a link.
 
-Related #331/#332/#314/#307/#224 and MolSysMT #615 concern different observed
-mechanisms. [The active audit](../pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
-keeps E2 open. Scientific-source, installed, Qt and postponed human acceptance
-remain separate; no candidate or publication is authorized.
+## Required next receiving
 
-## Current canonical campaign — 2026-11-14
+MolSysMT #754 owns the receiver's failure classification: retain the Python
+error, phase actually reached, expected widget/surface and actual controller
+identity. Its opening includes the exact original traceback and requests real
+Jupyter negative controls. Do not increase deadlines, repair-seek, suppress
+the Python precondition or silently retry to make it pass. Receive that
+instrumentation, then distinguish pending communication from a lost/newer
+frame intention under the existing scene-authority contract.
 
-The [current receiving](../molstar_qualification_followup_20261114.json)
-passes all thirty same-kernel recovery/playback cycles on `a72c92ba` and
-Mol* 5.13.1, with canonical owner receiver `429d7494` and exact declared
-scientific/native bytes. It preserves the original frame assertions and
-receives independent witness data/camera, both popups and coherent recovery.
-This successful scope does not by itself explain the original offscreen
-observation or authorize its closure. Keep that historical causal/disposition
-work separate from the newly completed functional campaign.
+## Later successful scopes
+
+Receiver `66273e4d` completes fifteen cycles with visible, uniquely matched
+recovered widgets before a shared-pressure stop. Current canonical receiver
+`429d7494` completes thirty same-kernel recovery/playback cycles on `a72c92ba`
+and Mol* 5.13.1 with exact declared scientific/native bytes, independent
+witness data/camera, both popups and unchanged scientific assertions. The
+[current receipt](../molstar_qualification_followup_20261114.json) preserves
+those successes. They qualify their inputs and do not reconstruct the original
+pre-save message ordering. #354 and broader E2 acceptance remain open;
+installed, native Qt and postponed human scopes stay separate.

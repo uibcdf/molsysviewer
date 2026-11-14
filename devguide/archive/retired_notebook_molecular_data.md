@@ -1,9 +1,9 @@
 ---
 summary: Identify why closed notebook controllers retain molecular data during repeated real work.
 issue: uibcdf/molsysviewer#356
-status: partial
+status: resolved
 opened: 2026-11-10
-closed:
+closed: 2026-11-14
 severity: medium
 verification: measured
 area: [jupyter, memory, lifecycle, performance]
@@ -289,3 +289,29 @@ resource stop or owned survivor. Raw/page/CDP metrics and known host-debugger
 errors remain distinct. This receives the current source lifetime scope;
 it does not relabel the original weak-reference observation, identify every
 historical retaining path or promise a universal RAM ceiling.
+
+## Source resolution — 2026-11-14
+
+The two evidenced retaining paths have source corrections: retired render
+popup/resize closures are released by ownership, and the exact-byte native
+component cache uses weak keys. Original before/after guards fail on the
+original mechanisms and pass on the corrected ones; every original attempt
+and residual observation is preserved. Native chemistry and independent
+active Views remain unchanged. #363 retains published-native replacement
+monitoring; the [compatibility contract](../molstar_component_cache_compatibility.md)
+retains source/version refusal, review and removal requirements.
+
+Current `826` receives the exact durable actual-Jupyter regression against
+the rebuilt 5.13.1 runtime: controller/native structure/model/axis/backing
+buffer collection, no retired callbacks, unchanged independent witness and
+fresh draw. It passes in 42.02 seconds, with unchanged inputs, no resource
+stop and no owned survivor. The [closeout record](../prolonged_receiving_closeout_20261114.json)
+links that scoped result to the prior causal controls and the current canonical
+30-cycle lifetime/metrology campaign, without merging their source identities.
+
+This resolves the measured retirement defect in source. The host-only
+Jupyter DOM/event contribution, original shared-pressure cause, universal
+RAM/VRAM bounds, #354's actual pre-save frame failure and complete installed/
+human/E2 qualification are not certified by that resolution. They remain
+explicit in the owning plan instead of keeping a demonstrated local source
+retainer unresolved indefinitely.
