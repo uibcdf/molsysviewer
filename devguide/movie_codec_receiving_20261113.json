@@ -35,7 +35,8 @@
     "notice": "Reviewed working patch on this base. Every intermediate profile retains its own exact input manifest; final hashes do not reattribute earlier evidence.",
     "scientific_provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
     "pyunitwizard": "copied 9bb4f5f source; 0.29.4+2 runtime equivalence to public 0.29.4 separately retained",
-    "molstar": "5.13.1 original published native bytes, 6356 JS/declaration files verified before/after browser receiving"
+    "molstar": "5.13.1 original published native bytes, 6356 JS/declaration files verified before/after browser receiving",
+    "code_commit": "def5f4171ebe16345d98d37f478cdf5bf2f0a547"
   },
   "policy": {
     "id": "molsysviewer.movie_codecs@1",
@@ -443,6 +444,48 @@
         "errors": 0,
         "skipped": 0
       }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 82.50887620123103,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "covering-movie-codec-jupyter-793",
+      "peak_summed_owned_rss_mib": 3065.9,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "bc290cc45eb1587f2cde11bb2db5b391122dc005f43ec6db8d1e5b042701f22c"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 5.589782234746963,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-handoff-docs-794",
+      "peak_summed_owned_rss_mib": 193.4,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "6df0f7627e31da6d7a920dc40d74766ffd535656ded4c162b78c045fcb9f3b71"
     }
   ],
   "received": {
@@ -536,6 +579,30 @@
       "reporting_passed": 449,
       "ruff": "lint and all 1066 format checks pass",
       "indexes": "current"
+    },
+    "actual_jupyter_current": {
+      "profile": "793",
+      "commit": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
+      "scope": "Actual isolated Jupyter/kernel/anywidget/Mol*; not native Qt, installed packages, hosted CI or postponed human acceptance.",
+      "movie_authoring_cases": 8,
+      "outcome": "passed",
+      "source_inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "kernel_origin_sha256": "e1391b6bb858e238203245bf70039d90b78a7ba8815794dc4a4e0bf936514e16",
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "raw_command_receipt_sha256": "3c344ea7b2efcc5ac7f29d7e470f3ab806c3963f432917f5119cfebeae12dcd5"
+    },
+    "final_handoff_records": {
+      "profile": "794",
+      "passed": 453,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Devguide links, reporting and generated indexes; not another product or hosted qualification."
     }
   },
   "retained_failures": {
@@ -638,6 +705,55 @@
     "originals_retained": true,
     "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia",
-    "scope": "Immutable original local codec profiles/source snapshots. Public receipt gains this custody pointer after the copy; it does not rewrite preserved files."
+    "scope": "Immutable original local codec profiles/source snapshots. Public receipt gains this custody pointer after the copy; it does not rewrite preserved files.",
+    "current_jupyter_checkpoint": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-codec-host-checkpoint-20261113",
+      "files": 31,
+      "bytes": 4626520,
+      "manifest_sha256": "38f71255f34ddca5234e46cc9e438dc068b77d7fca2f2ef097b3c1b6e0e5deb6",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 0,
+      "scope": "Completed actual Jupyter profile 793 plus current in-progress source-CI observation; not terminal hosted receiving.",
+      "custodian": "Diego Prada Gracia"
+    }
+  },
+  "hosted_checkpoint": {
+    "run_id": 43553954846,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
+    "head_sha": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
+    "workflow": "ci-python-314-source-pair.yaml",
+    "status": "in_progress",
+    "conclusion": null,
+    "observed_at": "2026-11-14T04:00:48.538028+00:00",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "all",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "encoder_diagnostics": "false"
+    },
+    "single_dispatch": true,
+    "inventory_before_dispatch": 0,
+    "first_receptor_outcome": "PENDING exit 3; all three jobs in progress",
+    "jobs": [
+      {
+        "name": "Source pair on macos-15, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on windows-2025, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ],
+    "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim."
   }
 }

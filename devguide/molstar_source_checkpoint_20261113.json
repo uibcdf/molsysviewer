@@ -297,7 +297,7 @@
     "windows": "Local checks do not qualify the native Windows repair.",
     "live_example": "The explicit live-state-capture block is handed unchanged to the actual Jupyter kernel, separately from sequential headless blocks."
   },
-  "next": "Review and publish the codec patch, then dispatch one full exact-source three-platform checkpoint including Linux core. #169/#385 platform receiving remains open; original failed runs retain their native outcomes. No candidate/publication.",
+  "next": "Receive terminal source-pair 43553954846: all three Python 3.14 hosts, Windows actual codec receipts and Linux full core/notebooks; preserve original failures. Current actual-Jupyter Movie 793 passes all eight cases. #169/#385 platform and #369/#372 qualification remain open. No candidate/publication.",
   "encoder_diagnostic": {
     "run_id": 43521107544,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43521107544",
@@ -342,5 +342,43 @@
     },
     "codec_policy": "Following instruction to proceed, implemented explicit codec plus documented auto-selection; actual Windows/source-core qualification pending. See movie_codec_receiving_20261113.json.",
     "scope": "Single Windows source-only encoder diagnostic, not a complete source/installed/platform claim; native failure retained."
+  },
+  "codec_recovery_checkpoint": {
+    "run_id": 43553954846,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
+    "head_sha": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
+    "workflow": "ci-python-314-source-pair.yaml",
+    "status": "in_progress",
+    "conclusion": null,
+    "observed_at": "2026-11-14T04:00:48.538028+00:00",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "all",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "encoder_diagnostics": "false"
+    },
+    "single_dispatch": true,
+    "inventory_before_dispatch": 0,
+    "first_receptor_outcome": "PENDING exit 3; all three jobs in progress",
+    "jobs": [
+      {
+        "name": "Source pair on macos-15, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on windows-2025, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ],
+    "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim."
   }
 }

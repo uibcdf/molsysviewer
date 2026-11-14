@@ -92,3 +92,10 @@ The next full three-platform source checkpoint must preserve successful encoder
 identity/receipts as well as failed stderr, so the Windows fallback can be
 verified against the actual executable. Missing media backends fail preflight
 instead of becoming skipped codec tests. Keep #385 open through that receiving.
+
+Source `def5f417` is published. Actual-Jupyter Movie `793` passes all eight
+cases on it. The single full source checkpoint `43553954846` now uses the
+same commit with MolSysMT `aee7aa65`, three Python 3.14 hosts and the Linux
+full core/notebook lane. All three jobs are in progress in the current
+receipt; terminal native evidence remains pending. Do not launch a second
+encoder-only or complete run while this one is active.

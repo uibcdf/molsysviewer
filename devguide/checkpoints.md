@@ -987,6 +987,15 @@ retains 776 final Python passes, 491 JS passes, complete native Studio AV1
 and existing Movie/popup regressions. Windows fallback and the next complete
 source/platform/core checkpoint remain pending. The compatible keyword-only
 extension and its one new digester are explicitly reviewed in F1's baselines.
+Current actual-Jupyter `793` passes all eight Movie scenarios on published
+`def5f417`, with unchanged inputs and clean owned-process retirement. The
+single full source checkpoint
+[43553954846](https://github.com/uibcdf/molsysviewer/actions/runs/43553954846)
+uses that same commit and MolSysMT `aee7aa65`; all three Python 3.14 hosts
+are in progress at the recorded observation. Linux also runs the complete
+core lane and documented notebooks. Native terminal outcomes and original
+encoder/JUnit artifacts must be received before closing #169/#385 or claiming
+covering qualification. No duplicate run, tag or package was produced.
 
 Local full-core `775` completes context-menu and part of controls/popup
 receiving before global swap activity triggers clean resource retirement.
