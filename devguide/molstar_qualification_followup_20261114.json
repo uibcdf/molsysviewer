@@ -728,8 +728,8 @@
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43646263694",
     "producer": "eae573467c71e14b7f8e7216ca71d7e6b9b562c2",
     "provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "scope": "One complete source-only three-platform Python 3.14 checkpoint, with 63 mandatory Linux core entries and all documented notebooks. No candidate tags, package builds or installed-artifact qualification.",
     "complete_exact_head_manual_inventory_before": 0,
     "duplicate_dispatch": false,
@@ -758,7 +758,25 @@
         "skipped": 73,
         "passed": 4703
       }
-    ]
+    ],
+    "successful_jobs": [
+      "Windows",
+      "macOS"
+    ],
+    "linux_failure": {
+      "suite": "trajectory-plot",
+      "position": 54,
+      "declared_core_suites": 63,
+      "completed_prefix": 53,
+      "assertion": "The real Python authority must return an explicit current-state observation",
+      "observation": "Python state messages are delivered through bridge.onMessages; inspector reads the consumed response list. No navigation assertion reached.",
+      "scope": "Receiving-contract mismatch, not an established new plot/rendering/scientific defect.",
+      "issue": "uibcdf/molsysviewer#391"
+    },
+    "documented_notebooks": {
+      "executed": 25,
+      "failed": 0
+    }
   },
   "current_native_qt": {
     "native_exit": 0,
@@ -833,5 +851,82 @@
     "current_lifetime_guard": "lifecycle-closeout-826: actual Jupyter pass",
     "owner_provenance_guards": "provenance-closeout-827: five existing controls pass",
     "full_installed_or_human_acceptance": false
+  },
+  "plot_streamed_reply_receiving": {
+    "native_exit": 0,
+    "seconds": 124.0447870711796,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 21,
+      "survivors": [],
+      "errors": []
+    },
+    "peak_owned_rss_mib": 3536.7,
+    "issue": "uibcdf/molsysviewer#391",
+    "profile": "plot-stream-source-836",
+    "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+    "raw_receipt_sha256": "3c53f88911798cfb054e6f902dfbe7e4e33f4fe7b1fe689f8987168af2f8d031",
+    "test_source_sha256": "d476f149c9b616df45d2ef91e70f345084bb1ce5b2f95acbb82aa6c134cb9558",
+    "native_integrity_files": 6356,
+    "completed_entries": 1,
+    "precision_controls": 15,
+    "scope": "Complete trajectory-plot entry: real Python/widget stream, actual source/popup SVG and keyboard navigation, callbacks, coordinates and distance, independent static HTML, 15 Decimal/binary64 controls, raw/accessible values, state persistence and literal card titles. No production runtime, bridge behavior, assertions or deadlines changed. Source only, not a complete current core lane or installed pair.",
+    "retained_build_failure": {
+      "profile": "build-plot-stream-834",
+      "cause": "Incomplete local Node 22 npm installation cannot resolve node-gyp/bin/node-gyp.js; original npm log retained.",
+      "replacement_profile": "build-plot-stream-835",
+      "receiving": "Same declared package.json build:e2e:all entries/options through installed local esbuild and Node 22; no runtime rebuild."
+    }
+  },
+  "movie_tail_receiving": {
+    "native_exit": 0,
+    "seconds": 834.9799439166673,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 68,
+      "survivors": [],
+      "errors": []
+    },
+    "peak_owned_rss_mib": 2957.8,
+    "profile": "covering-movie-tail-837",
+    "raw_receipt_sha256": "3a7fe4bd42fc0ac2c801ad710db71df9a4d277a4dd854b7c343fb4f575e99999",
+    "completed_entries": 9,
+    "entries": [
+      "movie-playback",
+      "movie-seek",
+      "movie-legacy",
+      "movie-export",
+      "movie-appearance",
+      "movie-studio",
+      "movie-web",
+      "movie-composition",
+      "movie-story"
+    ],
+    "native_integrity_files": 6356,
+    "scope": "All nine complete canonical Movie entries in one sequential shared Chromium invocation on unchanged Mol* 5.13.1 bytes: real scene/seek/playback, PNG/MP4/WebM, native materials and bonds, Studio/detached capture, offline/iframe playback, composition/context/units/playheads, sparse named-analysis identity and independent session recovery. This suffix and the hosted 53-entry prefix are not a complete uninterrupted current core pass. No production/runtime/scientific change.",
+    "artifact_files": 71
+  },
+  "structural_plot_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/structural-plot-source-20261114",
+    "profiles": [
+      "contacts-panel-source-829",
+      "contacts-jupyter-source-830",
+      "contacts-jupyter-final-831",
+      "structural-observables-family-832",
+      "structural-observables-records-833",
+      "build-plot-stream-834",
+      "build-plot-stream-835",
+      "plot-stream-source-836",
+      "covering-movie-tail-837"
+    ],
+    "files": 234,
+    "bytes": 76078921,
+    "manifest_sha256": "062bde44a23d36d4a7cf0cc883a878931d4d97bd99ac154579b88d9fe9c4682f",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
   }
 }

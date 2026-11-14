@@ -20,12 +20,40 @@ async function clickSample(page: Page, sample: number, tag = "authority-plot") {
     await svg.click({ position });
 }
 
-async function inspect(bridge: PythonFixtureBridge) {
-    const result = await bridge.request([{ plot_fixture: "inspect" }]);
-    const record = result.messages.map((message: any) => message.content.protocolVersion === undefined
-        ? message.content : message.content.payload).find((content: any) => content.op === "trajectory_plot_fixture_state");
-    assert.ok(record, "The real Python authority must return an explicit current-state observation");
-    return record;
+async function inspect(bridge: PythonFixtureBridge, source: Page) {
+    // The fixture transport delivers replies to the widget before resolving
+    // request(), consuming its messages. Observe that actual delivery once;
+    // replaying the response would duplicate scene commands and callbacks.
+    await source.evaluate(() => {
+        const w = window as any;
+        if (w.__plotStateInspection) throw new Error("A plot inspection is already active");
+        const observation = w.__plotStateInspection = {
+            count: 0, record: undefined as any,
+            receive(message: any) {
+                const content = message.protocolVersion === undefined ? message : message.payload;
+                if (content?.op !== "trajectory_plot_fixture_state") return;
+                observation.count++;
+                if (observation.count === 1) observation.record = content;
+            },
+        };
+        w.__popupWidgetModel.on("msg:custom", observation.receive);
+    });
+    try {
+        await bridge.request([{ plot_fixture: "inspect" }]);
+        const observation = await source.evaluate(() => {
+            const { count, record } = (window as any).__plotStateInspection;
+            return { count, record };
+        });
+        assert.ok(observation.record, "The real Python authority must return an explicit current-state observation");
+        assert.equal(observation.count, 1, "A plot inspection must reach its widget exactly once");
+        return observation.record;
+    } finally {
+        if (!source.isClosed()) await source.evaluate(() => {
+            const w = window as any;
+            w.__popupWidgetModel.off("msg:custom", w.__plotStateInspection.receive);
+            delete w.__plotStateInspection;
+        });
+    }
 }
 
 async function clickAndReceive(page: Page, source: Page, sample: number, tag = "authority-plot") {
@@ -95,7 +123,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             release = await mountCanvasPopupFixture(source, bridge, { trajectoryLabel: "3 / 3" });
             await captureCanvasPopupControllers(source);
             await capturePlotIntents(source);
-            let state = await inspect(bridge);
+            let state = await inspect(bridge, source);
             assert.equal(state.index, 2);
             assert.deepEqual(state.callbacks, []);
             await rendered(source, 2, state.coordinates);
@@ -112,7 +140,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             await calculationDetails(source, observation);
 
             await clickAndReceive(source, source, 1);
-            state = await inspect(bridge);
+            state = await inspect(bridge, source);
             assert.equal(state.index, 1, "Plot click reached Mol* but did not update Python's current structure");
             assert.deepEqual(state.callbacks.map((event: any) => event.frame), [1]);
             await rendered(source, 1, state.coordinates);
@@ -121,7 +149,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             assert.ok(Math.abs(state.current_distance - distance) < 1e-9);
 
             await clickAndReceive(source, source, 1);
-            state = await inspect(bridge);
+            state = await inspect(bridge, source);
             assert.deepEqual(state.callbacks.map((event: any) => event.frame), [1], "Repeated selection emitted duplicate Python callbacks");
 
             const opened = source.waitForEvent("popup");
@@ -133,7 +161,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             await rendered(popup, 1, state.coordinates);
             await calculationDetails(popup, observation);
             await clickAndReceive(popup, source, 2);
-            state = await inspect(bridge);
+            state = await inspect(bridge, source);
             assert.equal(state.index, 2);
             assert.deepEqual(state.callbacks.map((event: any) => event.frame), [1, 2]);
             for (const endpoint of [source, popup]) await rendered(endpoint, 2, state.coordinates);
@@ -142,7 +170,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                 (window as any).__popupWidgetModel.send({ plot_fixture: "go", index: 0 });
                 return (window as any).__popupFixtureDrain();
             });
-            state = await inspect(bridge);
+            state = await inspect(bridge, source);
             assert.equal(state.index, 0);
             assert.deepEqual(state.callbacks.map((event: any) => event.frame), [1, 2, 0]);
             for (const endpoint of [source, popup]) await rendered(endpoint, 0, state.coordinates);
@@ -160,7 +188,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                     await source.waitForFunction(({ mark, frame }) => (window as any).__plotAuthorityIntents
                         .slice(mark).some((event: any) => event.index === frame), { mark, frame });
                     await source.evaluate(() => (window as any).__popupFixtureDrain());
-                    state = await inspect(bridge); expectedCallbacks.push(frame);
+                    state = await inspect(bridge, source); expectedCallbacks.push(frame);
                     assert.equal(state.index, frame);
                     assert.deepEqual(state.callbacks.map((event: any) => event.frame), expectedCallbacks);
                     assert.deepEqual(state.plot_records[0].x, [4, 4, 0]);
@@ -186,7 +214,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                 await rendered(staticPage, 1, state.coordinates);
                 // The exported file is self-contained and independent of the
                 // retained notebook authority, including its public callbacks.
-                state = await inspect(bridge);
+                state = await inspect(bridge, source);
                 assert.equal(state.index, 0);
                 assert.deepEqual(state.callbacks.map((event: any) => event.frame), expectedCallbacks);
             } finally { await staticPage.close(); }
@@ -345,7 +373,7 @@ export async function checkTrajectoryPlotPrecision(context: BrowserContext, dir:
             await capturePlotIntents(source);
             for (const name of cases) {
                 await plotFixtureAction(source, { plot_fixture: "precision", case: name });
-                let state = await inspect(bridge);
+                let state = await inspect(bridge, source);
                 const control: PrecisionControl = state.precision;
                 assert.equal(control.name, name);
                 assert.equal(control.records.length, 1, `${name}: the public plot operation must retain exactly one card`);
@@ -358,7 +386,7 @@ export async function checkTrajectoryPlotPrecision(context: BrowserContext, dir:
                 }
                 if (["tiny", "angstrom", "signed", "large-offset", "wide", "subnormal"].includes(name)) {
                     await plotFixtureAction(source, { plot_fixture: "restore-precision" });
-                    state = await inspect(bridge);
+                    state = await inspect(bridge, source);
                     assert.equal(state.precision.state_restored, true);
                     assert.deepEqual(state.precision.records, control.records, `${name}: file restore changed raw plot data`);
                     await precisionRendered(source, control, 2);
@@ -373,7 +401,7 @@ export async function checkTrajectoryPlotPrecision(context: BrowserContext, dir:
             await popup.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
             for (const name of ["large-offset", "signed", "angstrom"]) {
                 await plotFixtureAction(source, { plot_fixture: "precision", case: name });
-                const state = await inspect(bridge);
+                const state = await inspect(bridge, source);
                 const control: PrecisionControl = state.precision;
                 assert.equal(control.records.length, 1, `${name}: the popup fixture must retain exactly one card`);
                 await plotFixtureAction(source, { plot_fixture: "go", index: 0 });
@@ -382,7 +410,7 @@ export async function checkTrajectoryPlotPrecision(context: BrowserContext, dir:
                     await precisionRendered(endpoint, control, 0);
                 }
                 await clickAndReceive(popup, source, 1, "precision-plot");
-                const received = await inspect(bridge);
+                const received = await inspect(bridge, source);
                 assert.equal(received.index, 1, `${name}: popup sample click did not reach the Python frame owner`);
                 assert.equal(received.callbacks.at(-1).frame, 1);
                 for (const endpoint of [source, popup]) {
@@ -390,7 +418,7 @@ export async function checkTrajectoryPlotPrecision(context: BrowserContext, dir:
                     await precisionRendered(endpoint, control, 1);
                 }
                 await plotFixtureAction(source, { plot_fixture: "restore-precision" });
-                const restored = await inspect(bridge);
+                const restored = await inspect(bridge, source);
                 assert.deepEqual(restored.precision.records, control.records);
                 for (const endpoint of [source, popup]) await precisionRendered(endpoint, control, 1);
             }

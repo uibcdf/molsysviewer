@@ -67,15 +67,24 @@ The [current followup](molstar_qualification_followup_20261114.json) preserves
 failed full runs and receives #244's complete two-entry partition, #389's
 matched original/repaired native picking and #390's native cell-provider
 assertions. These three source defects are closed. The canonical prolonged
-gate passes 30/30 cycles. One complete current three-platform checkpoint
-`43646263694` is running on `eae57346`; the earlier #388 click sequence retains
-its explicit causal limit. Uninterrupted core and exact installed-candidate
+gate passes 30/30 cycles. Three-platform checkpoint `43646263694` on
+`eae57346` fails after 53 complete core entries because the plot fixture reads
+an already consumed reply list. [#391's receiving correction](pending_bugs/plot_authority_streamed_reply_receiving.md)
+passes the complete plot entry locally, including 15 precision controls.
+All nine Movie entries also pass together in scoped receiving `837`.
+The earlier #388 click sequence retains its explicit causal limit.
+Uninterrupted core and exact installed-candidate
 acceptance remain separate; #369/#372 stay open.
 The [prolonged receiving closeout](prolonged_receiving_closeout_20261114.json)
 resolves #364's source-attribution correction and #356's measured retirement
 defect. #354 remains partial with its original pre-save Python frame failure
 correctly identified; MolSysMT #754 owns the receiver diagnostic gap. E2 and
 the installed/manual exits remain separate from those source closures.
+The [structural-observables receipt](structural_observables_receiving_20261114.json)
+now delivers D6.7 in source: 361 expert/panel cases and six actual-Jupyter
+contact-cutoff decisions pass. The original ledger advances to 39/46
+source-delivered; final applicable acceptance remains 1/46. These counts
+do not measure total release readiness.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

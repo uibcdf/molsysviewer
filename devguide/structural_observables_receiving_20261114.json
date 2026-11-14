@@ -1,0 +1,315 @@
+{
+  "schema": "molsysviewer.structural_observables_receiving@1",
+  "date": "2026-11-14",
+  "work_item": "D6.7",
+  "parent_issues": [
+    "uibcdf/molsysviewer#315",
+    "uibcdf/molsysviewer#264"
+  ],
+  "status": "source-delivered; installed/hosted-family and postponed human qualification remain separate",
+  "viewer_source_base": "09dd38a1ceba74a44bf4fc9c218e269e421fad0b",
+  "production_runtime_source": "eae573467c71e14b7f8e7216ca71d7e6b9b562c2; later commits only change records/instructions",
+  "runtime_sha256": "36c5644a534879d81562d83608153323904571a2c1b148be3438856dcf1dfb2a",
+  "source_composition": {
+    "scientific_addon_native": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "canonical_receiver": "429d7494b5ee053fd1ecdd644c1e8f71e6376062",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "support": "Copied PyUnitWizard 0.29.4+2.g9bb4f5f and explicitly recorded cached public support; not a clean installed artifact."
+  },
+  "scientific_scope": [
+    "Distances, neighborhoods/minimum/maximum distances and conformation readers",
+    "PCA, secondary structure and symmetry-aware RMSD expert contracts",
+    "Analysis distance/neighborhood/conformation, vector/angular and PCA panels",
+    "Inclusive Boolean contact maps, paired/cartesian/repeated/center/PBC axes, thresholds, bounded pages, native output-budget refusal, selection/focus and no false live-distance adoption"
+  ],
+  "source_family": {
+    "native_exit": 0,
+    "seconds": 87.43421028926969,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 3,
+      "survivors": [],
+      "errors": []
+    },
+    "profile": "structural-observables-family-832",
+    "raw_receipt_sha256": "194a82c40639de0a65c160185dc43f0ccf476862a4ab95b8b1435ad653cf834c",
+    "native_junit": {
+      "tests": 361,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "modules": [
+      "test_structure_tools.py",
+      "test_structure_analysis_tools.py",
+      "test_analysis_panel.py",
+      "test_vector_angular_analysis_panel.py",
+      "test_pca_analysis_panel.py",
+      "test_contacts_panel.py"
+    ],
+    "warnings": {
+      "count": 345,
+      "legacy_h5msm_04": 339,
+      "deliberate_4096_byte_budget_controls": 4,
+      "intentional_unknown_dihedral_arguments": 2
+    },
+    "warning_scope": "Native diagnostics retained. Tiny configured-budget warnings are intentional test controls, not a supervisor resource stop or global host-pressure claim."
+  },
+  "earlier_contact_scope": {
+    "native_exit": 0,
+    "seconds": 11.592587117105722,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "profile": "contacts-panel-source-829",
+    "raw_receipt_sha256": "4c8e96a2b3502844f3e3d45531c3e5dbc441339a2e87ca927f816520c0e825bf",
+    "native_junit": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "counting": "Overlaps the 361-case family; do not add counts."
+  },
+  "actual_jupyter": {
+    "native_exit": 0,
+    "seconds": 31.363963681273162,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 26,
+      "survivors": [],
+      "errors": []
+    },
+    "profile": "contacts-jupyter-final-831",
+    "raw_receipt_sha256": "d4706c66268714e9a4ad98bffe21a665c634e85f382cb1931d8544bb66807f80",
+    "decisions": [
+      {
+        "cutoff": "0.5",
+        "unit": "nm",
+        "included": true,
+        "rows": [
+          [
+            "0",
+            "0",
+            "1",
+            "true"
+          ],
+          [
+            "0",
+            "0",
+            "2",
+            "false"
+          ]
+        ]
+      },
+      {
+        "cutoff": "0.49999999999999994",
+        "unit": "nm",
+        "included": false,
+        "rows": [
+          [
+            "0",
+            "0",
+            "1",
+            "false"
+          ],
+          [
+            "0",
+            "0",
+            "2",
+            "false"
+          ]
+        ]
+      },
+      {
+        "cutoff": "5",
+        "unit": "angstrom",
+        "included": true,
+        "rows": [
+          [
+            "0",
+            "0",
+            "1",
+            "true"
+          ],
+          [
+            "0",
+            "0",
+            "2",
+            "false"
+          ]
+        ]
+      },
+      {
+        "cutoff": "4.999999999999999",
+        "unit": "angstrom",
+        "included": false,
+        "rows": [
+          [
+            "0",
+            "0",
+            "1",
+            "false"
+          ],
+          [
+            "0",
+            "0",
+            "2",
+            "false"
+          ]
+        ]
+      },
+      {
+        "cutoff": "500",
+        "unit": "pm",
+        "included": true,
+        "rows": [
+          [
+            "0",
+            "0",
+            "1",
+            "true"
+          ],
+          [
+            "0",
+            "0",
+            "2",
+            "false"
+          ]
+        ]
+      },
+      {
+        "cutoff": "499.99999999999994",
+        "unit": "pm",
+        "included": false,
+        "rows": [
+          [
+            "0",
+            "0",
+            "1",
+            "false"
+          ],
+          [
+            "0",
+            "0",
+            "2",
+            "false"
+          ]
+        ]
+      }
+    ],
+    "geometry": "Real bundled pentalanine with declared boundary-control coordinates, not an experimental molecular contact dataset.",
+    "system_chemistry_coordinates_and_scene_preserved": true,
+    "errors": 3,
+    "baseline_errors": 1,
+    "errors_have_only_baseline_fingerprints": true,
+    "error_scope": "Known host debugger fingerprint is retained; not an error-free browser claim.",
+    "observer_instrumentation": {
+      "scope": "Generated final-cell observer only. Original scientific/UI assertions and marker are unchanged. No source/provider edit.",
+      "original_cell_sha256": "16920ad6c0b37f75464a18e0e157ddc81ad09c421a4544c8829be986e1e66ee6",
+      "instrumented_cell_sha256": "cfc57132e57d6e1469e931d8a88a620f718382c1be6f8849dd66530c2c6b9267",
+      "observer": "Existing canonical _record_molecular_imports; after contact calculations, before successful marker."
+    },
+    "final_kernel_imports": {
+      "molsysmt": {
+        "loaded": true,
+        "module_version": "0+unknown",
+        "file_sha256": "c3a838c2e858b86ed2ac484faa9632eb6a4d2ba314914d6e321c0dec9e935304",
+        "role": "scientific/addon/native receiving tree"
+      },
+      "molsysmt._rust": {
+        "loaded": true,
+        "module_version": null,
+        "file_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+        "role": "scientific/addon/native receiving tree"
+      },
+      "molsysviewer": {
+        "loaded": true,
+        "module_version": "0.24.0+97.gdf4bf477.dirty",
+        "file_sha256": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+        "role": "MolSysViewer source checkout"
+      },
+      "molsysviewer_molsysmt": {
+        "loaded": true,
+        "module_version": null,
+        "file_sha256": "1665840cb208aabed8ea4e6f800c3444e3219c14abb5ed1eb90ae3bfa16ef3f0",
+        "role": "scientific/addon/native receiving tree"
+      },
+      "pyunitwizard": {
+        "loaded": true,
+        "module_version": "0.29.4+2.g9bb4f5f",
+        "file_sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+        "role": "declared support source"
+      },
+      "smonitor": {
+        "loaded": true,
+        "module_version": "0.21.0",
+        "file_sha256": "f60b1c2bff72dbbb70fe403e23908e62a8297f6190e18fdcac090092b84e6800",
+        "role": "declared support source"
+      },
+      "argdigest": {
+        "loaded": true,
+        "module_version": "0.15.0",
+        "file_sha256": "64d9f5893968c71bce80599c9da0580346b728e0fad18990e58e9a69f251df2f",
+        "role": "declared support source"
+      },
+      "depdigest": {
+        "loaded": true,
+        "module_version": "0.15.1",
+        "file_sha256": "401e1f2b69d68053bdf91b524eb9d876fa2839908ca2dc5df17e77d3a389b6b1",
+        "role": "declared support source"
+      }
+    },
+    "scope": "Actual Jupyter/AnyWidget/native Mol*/Chromium with original scientific/UI assertions. Generated final cell adds only the existing owner import observer before the success marker. No owner source or scientific function edited; this small observation extension is explicit."
+  },
+  "retained_setup_failure": {
+    "native_exit": 1,
+    "seconds": 1.948080320842564,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 3,
+      "survivors": [],
+      "errors": []
+    },
+    "profile": "contacts-jupyter-source-830",
+    "raw_receipt_sha256": "35cb720c565b080ebfb8dc3dbc2035c4e6079d4f1f639a8d3c81b29aa1e8daf0",
+    "cause": "The new private Node observation wrapper did not forward the owner launcher --version probe. Corrected to exec the real Node for that probe. No browser/calculation started; original source preserved separately and unused credentials retired by the owner."
+  },
+  "outcome_counter": {
+    "previous_source_delivered": 38,
+    "source_delivered": 39,
+    "denominator": 46,
+    "percentage": 84.8,
+    "final_applicable_acceptance": 1,
+    "scope": "D6.7 is now delivered locally in source. This is not release-readiness percentage, installed qualification or final applicable acceptance."
+  },
+  "publication": "No dependency floor, candidate/tag/package/promotion/release change.",
+  "private_evidence_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/structural-plot-source-20261114",
+    "profiles": [
+      "contacts-panel-source-829",
+      "contacts-jupyter-source-830",
+      "contacts-jupyter-final-831",
+      "structural-observables-family-832",
+      "structural-observables-records-833",
+      "build-plot-stream-834",
+      "build-plot-stream-835",
+      "plot-stream-source-836",
+      "covering-movie-tail-837"
+    ],
+    "files": 234,
+    "bytes": 76078921,
+    "manifest_sha256": "062bde44a23d36d4a7cf0cc883a878931d4d97bd99ac154579b88d9fe9c4682f",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
+  }
+}

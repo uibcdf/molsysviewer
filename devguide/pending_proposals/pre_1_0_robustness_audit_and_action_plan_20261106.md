@@ -526,6 +526,18 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current D6.7 delivery — 2026-11-14:** the
+[structural-observables receipt](../structural_observables_receiving_20261114.json)
+receives all 361 cases across the six expert/panel modules, including contacts,
+and six actual-Jupyter inclusive/exclusive cutoff decisions in nm/Å/pm. Native
+source, backend and final kernel imports are verified; the generated final
+cell adds only the existing owner provenance observer. Coordinates, chemistry
+and scene are preserved, native limits/errors remain explicit and the failed
+initial observation-wrapper setup is retained. D6.7 is source-delivered.
+The original counter advances once to **39/46 (84.8%) source-delivered**;
+final applicable acceptance remains **1/46**. Installed, hosted-family and
+postponed human scopes are separate; this is not release-readiness percentage.
+
 **Current prolonged closeout — 2026-11-14:** the
 [source closeout](../prolonged_receiving_closeout_20261114.json) receives #364's
 owner-integrated import observer, five current provenance controls, bounded
@@ -537,13 +549,13 @@ timeout and previously bound controller were misattributed to recovery.
 MolSysMT #754 owns that diagnostic gap. The thirty-cycle campaign retains its
 own successful source scope; this correction neither explains original packet
 ordering nor completes every E2/installed/human exit. Original counters stay
-38/46 source-delivered and 1/46 final acceptance.
+unchanged by those two source closures; the later D6.7 delivery above owns the current counter.
 
 **Required architectural review — #369, open:** complete the
 [current-release/development Mol* reassessment](pre_1_0_molstar_integration_review.md)
 and its adopted pre-1.0 follow-ups before architecture/candidate freeze and the
 documentary handoff. This is an additional adopted requirement, not one of the
-38 source-delivered original outcomes.
+39 source-delivered original outcomes.
 
 **Receiver qualification — 2026-11-12:** the
 [source receipt](../jupyter_popup_controls_receiving_20261112.json) receives
@@ -639,7 +651,7 @@ QuantityRecord, Jupyter and native Qt controls. Its owner contribution is
 owner-integrated through PR #702, verified by official merge metadata and ancestry of `9dff314f8` in owner main `af32a559c`. Native #695 is now
 owner-closed; the new source pair has scoped receiving. The contact boundary
 #666 / PyUnitWizard #143 remains explicit owner work. At that checkpoint C3/C4, D5.4, D6.7, E2/E4, F2 and
-G1/G2 remained. Current source exits are C4, D5.4, D6.7, E2/E4, F2 and G1/G2. B3.6/E3 retain separate decisions; Movie #320 remains mandatory
+G1/G2 remained. Current source exits are C4, D5.4, E2/E4, F2 and G1/G2; D6.7 is now source-delivered. B3.6/E3 retain separate decisions; Movie #320 remains mandatory
 outside the unchanged denominator. Human observations and publication remain paused.
 
 ### Dated receiving history
@@ -800,9 +812,9 @@ qualification under #524, the H5MSM session assumptions, and the #615 capture
 plan plus #705 evidence.
 
 1. Retain the owner-integrated D5.2/D6.5 contributions (#696/#699) and
-   owner-closed #695/#697 and owner-merged producer PR #702. Receive the owner
-   correction of #666 / PyUnitWizard #143 and complete D6.7's contact family/panel
-   acceptance; both provider issues are closed. #690 is source-closed
+   owner-closed #695/#697 and owner-merged producer PR #702. Retain the received owner
+   correction of #666 / PyUnitWizard #143 and D6.7's contact family/panel source
+   delivery; complete its separate installed/hosted/manual acceptance. #690 is source-closed
    and its canonical corrected backend is received; do not repeat its dangerous
    original allocation outside the preserved protected control.
 2. Retain source-delivered B4 figure provenance and F1’s reviewed public-contract snapshot; retain the verified owner integration of producer PR #702.
@@ -811,20 +823,21 @@ plan plus #705 evidence.
    original failed runs and unchanged deadlines.
 3. Retain owner-merged #706's corrected readiness/playback deadlines and
    owner-incorporated #707 instrumentation. Neither closes the unexplained
-   #615 timeout. Retain source-received #357/#361 with their original failures
-   and exact native/API guards, plus #356's partial controller correction.
-   Retain #344's received coherent-presentation and frame-query corrections;
-   receive #723's host/metrology scope before the full prolonged gate.
-   #702 is owner-merged and #696/#699 are verified
+   #615 timeout. Retain source-received #357/#361 and resolved #356/#364 with
+   their original failures and durable guards. #344's coherent-presentation
+   and frame-query corrections and #723's canonical host/metrology controls
+   now have scoped receiving; do not repeat completed campaigns without a
+   changed input or unresolved applicable failure. #702 is owner-merged and #696/#699 are verified
    ancestors of public owner main. Receive changed combined-head gates in one agreed batch,
    without a new hosted matrix or CI run for every incremental commit.
-4. Retain the completed scale anchors and fifteen correct same-kernel cycles.
-   Retain #356's corrected backing-buffer guard and #363's upstream monitoring.
-   Receive MolSysMT #718 / PR #721's readiness correction and #364's actual-kernel
-   provenance. Retain the thirty passing functional cycles and the matched
-   host-memory controls; receive uibcdf/molsysmt#723's sampling method, separate API/timing
-   effects and identify the qualification host before the next long campaign. Keep the
-   original `513` failure and #354's observation separate. Retain
+4. Retain the completed scale anchors and current thirty-cycle campaign,
+   #356's backing-buffer guard, #363's upstream monitoring and owner-integrated
+   PR #721's readiness/import observer. The current canonical #723 protocol
+   has actual-kernel provenance and qualified default-host controls. #354's
+   original failure is a pre-save Python index assertion, not an established
+   recovered-canvas failure; receive MolSysMT #754's phase/controller/error
+   diagnostics and isolate that authority discrepancy. Preserve the original
+   `513` and other failed campaigns rather than combining their prefixes. Retain
    source/installed/human scopes separately. Complete mandatory Movie #320;
    B3.6/E3 remain separate recommendations and E4 human review remains postponed.
 5. Finish and internally review F2 documentation alongside the concrete,
@@ -909,8 +922,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **38/46 — 82.6%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2, independent construction D6.5 consolidated handoff F3 and the current host services C3. See the receipts for each original outcome and its unaccepted exits. |
-| Consumer result delivered | **38/46 — 82.6%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1–C3/C5, D1–D4, D5.1–D5.3/D5.5/D5.6, D6.1–D6.6/D6.8–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; #696/#699 are owner-integrated; C3 is received in the current host integration receipt. |
+| Consumer result complete and locally verified | **39/46 — 84.8%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2, independent construction D6.5, consolidated handoff F3, host services C3 and structural observables D6.7. See the receipts for each original outcome and its unaccepted exits. |
+| Consumer result delivered | **39/46 — 84.8%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1–C3/C5, D1–D4, D5.1–D5.3/D5.5/D5.6, D6.1–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; #696/#699 are owner-integrated; C3 is received in the current host integration receipt; D6.7 in the structural-observables receipt. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -1257,7 +1270,7 @@ do not silently omit an existing accepted family.
 | **D6.4 — chemical repair and assignments, source received** | Independent explicit inference/bond repair, terminal completion/caps, reference H removal, AutoDock typing and named charges are delivered through owner-merged PR #681; native/unit/source/effect, actual Jupyter/popup and Qt/result-window receiving pass. The owner has delivered #679/#686 terminal-context repairs, received in their directed native cohorts; older GUI receipts retain their exact source scope and final acceptance remains separate |
 | **D6.5 — construction and solvent, source received** | Draft PR #699 supplies five native tasks with explicit sequence/cell/model/charge/seed/structure inputs, independent results and reviewed adoption. Native/unit/axis/source/refusal, actual Jupyter/both-popup and native Qt receiving pass. Owner integration and covering installed/hosted/human acceptance remain separate |
 | **D6.6 — coordinate refinement** | Source-delivered in PR #678: explicit reviewed model, native CPU/Reference single-structure minimization, current or independent effect; native/analytical, Jupyter and Qt receiving pass. Graphical adoption of native #582’s compiled recipe and final acceptance retain their own scope |
-| **D6.7 — structural observables** | Distances, neighborhoods, conformations, angles/torsions and PCA have bounded numerical/axis/ownership receiving. #666 / PyUnitWizard #143 are owner-closed; consumer contact family/panel and full-family acceptance remain. PCA or provider closure alone does not complete this outcome |
+| **D6.7 — structural observables** | Source-delivered on 2026-11-14: all 361 expert/panel cases and six actual-Jupyter cutoff decisions pass with verified sources, native units/axes/budgets and preserved system/scene. Earlier received observables retain their scopes. See [the receipt](../structural_observables_receiving_20261114.json); full installed/hosted/manual acceptance remains separate |
 | **D6.8 — properties and molecular reports, source received** | Nine native property/sequence/connectivity tasks in owner-merged PR #682; source maps, definitions, explicit units/scope, missing-chemistry refusal and complete participant actions pass native, actual Jupyter/both-popup and representative Qt receiving. Changed combined-head and final acceptance remain separate |
 | **D6.9 — interactions and mechanics, source received** | Draft PR #687 delivers nine sparse native detector tasks and four explicitly reviewed mechanical reports; native/unit/axis, actual Jupyter/both-popup and native Qt guards pass. Storage and visual adoption remain separate; graphical adoption of native #582’s compiled recipe and final acceptance remain |
 | **D6.10 — qualified visual adoption, source received** | Existing Measures/conformation plots plus explicit scalar-property/RMSF colors and compatible pair/extreme/vector-component/tuple/SASA structure series in owner-merged PR #683. Native/unit/axis/refusal/history/state and actual Jupyter/both-popup/native Qt receiving pass. No new renderer or B3.6/B4 metadata contract; changed combined-head and final acceptance remain separate |

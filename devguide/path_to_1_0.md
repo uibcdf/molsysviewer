@@ -51,9 +51,17 @@ The [2026-11-14 followup](molstar_qualification_followup_20261114.json)
 receives native Python on all three hosts and 25 notebooks, closing #386.
 It preserves the failed source runs, receives #244's complete partition and
 #389/#390's native picking/cell corrections, and records 30/30 prolonged
-cycles. The current complete source checkpoint `43646263694` on `eae57346`
-is still pending; complete core and installed-candidate qualification remain
-required before claiming the handoff.
+cycles. The complete source checkpoint `43646263694` on `eae57346`
+receives all three Python source hosts, 25 notebooks and 53 core entries, then
+fails the plot fixture reply inspector. [#391's correction](pending_bugs/plot_authority_streamed_reply_receiving.md)
+passes the complete plot entry locally, including actual Python authority and
+15 precision controls. The followup also receives all nine Movie entries
+together, including the integrated scientific story and its exports/recovery.
+Complete current core and installed-candidate
+qualification remain required before claiming the handoff. D6.7's
+[structural-observable receiving](structural_observables_receiving_20261114.json)
+now passes its 361-case source family and six actual Jupyter cutoff decisions;
+its installed/hosted-family and postponed human scopes stay separate.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

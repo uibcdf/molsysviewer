@@ -913,9 +913,17 @@ complete controls/mirror partition (#244); all three source defects are
 closed with registered guards. The exact-runtime automated Wayland/Qt/NVIDIA
 capture profile `824` passes. The canonical thirty-cycle source campaign keeps
 its earlier input identity. One complete three-platform source checkpoint
-`43646263694` is running, including all 63 mandatory Linux core entries.
-Receive that terminal result and originals before claiming complete current
-core acceptance. #388's original event sequence retains its causal limit;
+`43646263694` is terminal failure: 53 complete core entries pass, then the
+plot fixture reads a consumed reply list. All three Python source hosts and
+25 notebooks pass; the complete 63-entry core gate remains open.
+Original terminal evidence is retained. #391's request-scoped widget observer
+receives the complete plot entry in profile `836`, including genuine Python
+authority, source/popups/static navigation and 15 numeric precision controls.
+Profile `837` then receives all nine complete Movie entries in one invocation,
+including Studio, PNG/MP4/WebM, composition, offline/iframe and the scientific
+story/session. All inputs stay unchanged and all 68 owned processes retire.
+Receive a complete current core gate before claiming that acceptance.
+#388's original event sequence retains its causal limit;
 #369/#372, installed candidate and postponed human exits remain separate.
 The [current receipt](molstar_qualification_followup_20261114.json) and
 [#372 plan](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md) own the detail.
@@ -931,6 +939,17 @@ save/recovery, not a recovered frontend's frame wait. MolSysMT #754 owns the
 receiver's missing Python-error/owner diagnostics. The
 [closeout receipt](prolonged_receiving_closeout_20261114.json) preserves that
 correction, the unchanged thirty-cycle source scope and outstanding E2 exits.
+
+**D6.7 source delivery — 2026-11-14:** all 361 structural-observable expert/
+panel cases and six actual-Jupyter contact cutoff decisions pass on the
+declared scientific/native source with current copied support. The
+[receipt](structural_observables_receiving_20261114.json) retains units, axes,
+native budgets, true threshold boundaries, actual inner imports, known host
+error fingerprints and the initial observation-wrapper setup failure.
+Coordinates, chemistry and scene remain unchanged. Original outcome delivery
+is now 39/46 (84.8%); final applicable acceptance stays 1/46. Contact source
+receiving is no longer pending implementation; installed/hosted/manual exits
+remain separate.
 
 **Current delivery objective — 2026-11-12:** follow the
 [documentation-review handoff](path_to_1_0.md#documentation-review-handoff).
