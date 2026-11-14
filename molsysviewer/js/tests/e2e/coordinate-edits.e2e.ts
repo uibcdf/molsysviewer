@@ -53,9 +53,9 @@ async function run() {
                     await c.trajectory.setTrajectoryFrame(index);
                     const structure = c.plugin.managers.structure.hierarchy.current.structures[0].cell.obj.data;
                     const model = structure.units[0].model;
-                    const cell = model._staticPropertyData.model_symmetry?.spacegroup.cell;
-                    return { size: cell ? Array.from(cell.size) : null,
-                        angles: cell ? Array.from(cell.anglesInRadians) : null,
+                    const cell = (window as any).Harness.inspectNativeModelCell(model);
+                    return { size: cell?.size ?? null,
+                        angles: cell?.angles ?? null,
                         boxShapes: (window as any).Harness.inspectTaggedRefs(c, "shape", "__msv_box").length };
                 }, frame);
                 // Mol*'s default nonperiodic symmetry may expose its placeholder

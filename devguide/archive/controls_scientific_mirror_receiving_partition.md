@@ -1,13 +1,13 @@
 ---
 summary: Partition controls and scientific popup receiving after aggregate timeouts.
 issue: uibcdf/molsysviewer#244
-status: active
+status: resolved
 opened: 2026-11-14
-closed:
+closed: 2026-11-14
 severity: medium
 verification: reproduced
 area: [ci, browser, popup, qualification]
-guard:
+guard: molsysviewer/js/tests/e2e/controls-visibility.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -40,3 +40,16 @@ four-page inventory identifies closed #244 as the same aggregate-budget
 mechanism; #305's original hidden menu and #325's original native pick failure
 retain distinct causal/disposition requirements. No runtime or scientific
 algorithm is changed by this partition.
+
+## Source resolution — 2026-11-14
+
+Both complete owners pass locally in `802` through the canonical runner,
+and in hosted diagnostics `43626475247` on `1a8d630d`. The subsequent complete
+Linux run `43627876434` also passes both entries before a separate cell-reader
+failure in its sixteenth suite (#390). Each keeps the original 300-second
+bound, all scientific assertions and unchanged operation deadlines. The
+registered controls guard requires both entries; neither is omitted from
+the full lane. This closes the aggregate-budget recurrence, while the failed
+original runs and independent #305/#325/#388 observations remain separate.
+Current inventory grows to 66 total / 63 core after #389 adds its new control;
+the three remote preview suites remain deferred.

@@ -100,7 +100,8 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # 63: persistent Studio capture remains mandatory in its bounded entry.
     # 64: detached Studio PNG retains its originating molecular canvas.
     # 65: the existing independent scientific popup mirror has its own budget.
-    assert len(expected) == 65
+    # 66: native synchronous picking stays valid during asynchronous GPU reads.
+    assert len(expected) == 66
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))
@@ -196,3 +197,13 @@ def test_e2e_skip_is_centralized_and_requires_explicit_opt_in():
     assert source.count("process.exit(0)") == 1
     assert "WebGL2 is unavailable" in source
     assert "Chromium launch failed" in source
+
+
+def test_cell_assertions_use_the_native_symmetry_provider():
+    """A provider may store/lazily compute symmetry outside its old static bag."""
+    harness = (E2E_ROOT / "harness.ts").read_text(encoding="utf-8")
+    assert "ModelSymmetry.Provider.get(model)" in harness
+    for name in ("coordinate-edits.e2e.ts", "managed-system-edits-scenarios.ts"):
+        source = (E2E_ROOT / name).read_text(encoding="utf-8")
+        assert "Harness.inspectNativeModelCell(" in source
+        assert "_staticPropertyData" not in source

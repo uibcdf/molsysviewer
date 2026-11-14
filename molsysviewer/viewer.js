@@ -113222,7 +113222,7 @@ var PickHelper = class {
   }
   identify(x, y, camera2, frame2) {
     this.prepare();
-    if (this.dirty) {
+    if (this.dirty || !this.buffers.ready) {
       if (isTimingMode)
         this.webgl.timer.mark("PickHelper.identify");
       this.webgl.resources.finalizePrograms(["pick"], true);

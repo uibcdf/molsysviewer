@@ -9,6 +9,7 @@ import { e2eLaunchOptions, failOrExplicitlySkip } from "./e2e-browser";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SUITES = [
     "context-menu",
+    "native-picking-readiness",
     "controls-visibility",
     "canvas-popup-mirror",
     "studio-usability",

@@ -275,3 +275,17 @@ point, receive host-only controls and identify the qualification host before
 the next comparable long campaign. Keep #356/E2 partial. Routine Conda and
 user Jupyter settings are unchanged; no upstream publication or new dependency
 floor is inferred. Original failed diagnostic controls are retained separately.
+
+## Current qualified lifetime observations — 2026-11-14
+
+The [current receiving](../molstar_qualification_followup_20261114.json)
+uses integrated MolSysMT #723's canonical metrology at `429d7494`: retained/
+released objects, remote-handle controls and an unmodified plain-Jupyter
+reference precede thirty same-kernel cycles. Every retired controller,
+structure, model and x/y/z target plus its 3,720,000-byte buffer collects;
+the independent 3,983-atom witness and its 47,796-byte buffer survive with
+unchanged data/camera. Own cgroup peak is 2.55 GiB under 4 GiB, with no OOM,
+resource stop or owned survivor. Raw/page/CDP metrics and known host-debugger
+errors remain distinct. This receives the current source lifetime scope;
+it does not relabel the original weak-reference observation, identify every
+historical retaining path or promise a universal RAM ceiling.

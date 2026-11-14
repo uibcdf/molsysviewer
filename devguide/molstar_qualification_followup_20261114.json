@@ -5,7 +5,10 @@
     244,
     369,
     372,
-    386
+    386,
+    388,
+    389,
+    390
   ],
   "source_base": "40cfb0a9ec74ca1999c06ed21ac67bcf5651520a",
   "scope": "Current source receiving; no frozen candidate, installed package or publication qualification.",
@@ -322,9 +325,9 @@
     }
   },
   "remaining": [
-    "Diagnose #388 primary-click-to-selection receiving and then receive the complete core lane; keep #244 aggregate-budget and original #305/#325 failures causally distinct. Current canonical prolonged-host receiving passes 30/30 cycles.",
-    "Receive the reviewed partition in the next substantive source/platform checkpoint; do not reclassify the original failed run.",
-    "Freeze the producer and qualify exact installed candidate bytes/dependency closure; preserve separate human observations."
+    "Receive one uninterrupted complete current core lane and applicable source-host CI after the native readiness/cell-provider corrections; retain failed predecessors and distinct original #388 limits.",
+    "Reconcile remaining #372/#369 migration criteria without changing original audit denominators.",
+    "Freeze producer and qualify exact installed candidate bytes/dependency closure; preserve separate human observations. No public candidate or publication authorized."
   ],
   "audit_counters": "Original 38/46 source-delivered and 1/46 finally accepted counters are unchanged; #369/#372 are separately adopted work.",
   "publication": "No tag, package, promotion or release is authorized by these source checks.",
@@ -461,7 +464,7 @@
       "resource_stop": null,
       "owned_survivors": []
     },
-    "causal_status": "Original hosted lost-selection failure is not reproduced locally and remains unresolved. A bounded hosted diagnostic is required before another complete source matrix.",
+    "causal_status": "Bounded hosted diagnostic 43626475247 and the subsequent full Linux prefix pass context-menu. #389 independently establishes and receives a native readiness repair; the original #388 event sequence remains unobserved.",
     "focused_profile": "context-menu,controls-visibility,canvas-popup-mirror; retains both mandatory mirror owners after partition.",
     "final_record_checks": {
       "profile": "prolonged-click-records-814",
@@ -487,6 +490,235 @@
     "files": 272,
     "bytes": 172327924,
     "manifest_sha256": "5198007dc804b60e941765128bb5b1413bebac68af595f7b9fc71ca6d0a3d239",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
+  },
+  "bounded_hosted_diagnostic": {
+    "run": 43626475247,
+    "producer": "1a8d630d6416aadb2197470bdacad5a4161d55d1",
+    "conclusion": "success",
+    "scope": "Bounded Linux source diagnostic, not complete core/installed-pair acceptance.",
+    "complete_browser_suites": [
+      "context-menu",
+      "controls-visibility",
+      "canvas-popup-mirror"
+    ],
+    "actual_jupyter": {
+      "stopped": 6,
+      "strong_restores": 6,
+      "studio": 4,
+      "moving": 8,
+      "final_cancel_lifecycle": "pass",
+      "seconds": 171.801,
+      "owned_retired": 17
+    },
+    "native_provider_tests": 3,
+    "integration_tests": 2,
+    "expected_warning": "LegacyH5MSMWarning for legacy 0.4 fixture",
+    "original_artifact": {
+      "bytes": 592,
+      "sha256": "08df8926bc46fdcf6e4202f1c7ade2921c4bbaff825c1d911968730d6194d084"
+    }
+  },
+  "latest_complete_linux_source_checkpoint": {
+    "run": 43627876434,
+    "source": "1a8d630d6416aadb2197470bdacad5a4161d55d1",
+    "provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "conclusion": "failure",
+    "scope": "One complete Linux source/core/notebook checkpoint; not a three-platform or installed-pair gate.",
+    "python": [
+      {
+        "file": "source-receiving.xml",
+        "tests": 4773,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 42
+      }
+    ],
+    "python_native_summary": "4731 passed, 42 skipped, 17 deselected; zero errors/failures",
+    "browser": {
+      "passed_prefix": 15,
+      "declared_core": 62,
+      "failed_suite": "coordinate-edits",
+      "cause_issue": 390,
+      "scope": "Numeric cell-size helper gets null from obsolete private property read; fixture must verify the public provider."
+    },
+    "notebooks": {
+      "executed": 25,
+      "failed": 0
+    },
+    "original_artifacts": [
+      {
+        "id": 14127054295,
+        "name": "source-receiving-Linux-py3.14",
+        "size_in_bytes": 82134,
+        "digest": "sha256:5e23d4ae1cf1d07b16123d6473073eb50658efd0316ffb947dd71d40b41ba3a7"
+      },
+      {
+        "id": 14126869843,
+        "name": "movie-encoder-native-Linux",
+        "size_in_bytes": 14696,
+        "digest": "sha256:78668ac0113032d9a29bca488611fb97529ed78ae2346c9c8368d22e02a5733d"
+      }
+    ]
+  },
+  "native_picking_and_symmetry_receiving": {
+    "source_base": "1a8d630d6416aadb2197470bdacad5a4161d55d1 plus recorded reviewed worktree changes",
+    "issues": [
+      389,
+      390
+    ],
+    "upstream_inspection": {
+      "branch": "master",
+      "commit": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+      "pull": "already up to date; worktree clean",
+      "pending_click_commit": "7aa232cca648874fcbda829953dc53a01a6c7717",
+      "scope": "Development graphics architecture, not the published 5.13.1 or an adopted v6 migration. No external issue published."
+    },
+    "build": {
+      "native_exit": 0,
+      "seconds": 58.257622472941875,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 60,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-native-picking-818",
+      "minimum_available_gib": 16.52,
+      "cgroup_peak_mib": 701.46875,
+      "javascript_cases": 491,
+      "scoped_python_cases": 494,
+      "typescript": "pass",
+      "ruff": "pass"
+    },
+    "original_matched": {
+      "native_exit": 0,
+      "seconds": 11.617856056895107,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "native-original-picking-819",
+      "minimum_available_gib": 16.67,
+      "cgroup_peak_mib": 390.31640625,
+      "consumed_native_files": 1034,
+      "result": {
+        "primary": {
+          "before": {
+            "objectId": 2,
+            "instanceId": 0,
+            "groupId": 0
+          },
+          "during": null,
+          "resolved": {
+            "objectId": 2,
+            "instanceId": 0,
+            "groupId": 0
+          },
+          "after": {
+            "objectId": 2,
+            "instanceId": 0,
+            "groupId": 0
+          },
+          "cameraUnchanged": true,
+          "cameraTransition": false
+        },
+        "peer": {
+          "before": {
+            "objectId": 5,
+            "instanceId": 0,
+            "groupId": 0
+          },
+          "during": null,
+          "resolved": {
+            "objectId": 5,
+            "instanceId": 0,
+            "groupId": 0
+          },
+          "after": {
+            "objectId": 5,
+            "instanceId": 0,
+            "groupId": 0
+          },
+          "cameraUnchanged": true,
+          "cameraTransition": false
+        },
+        "witness": {
+          "objectId": 2,
+          "instanceId": 0,
+          "groupId": 0
+        },
+        "witnessCameraUnchanged": true
+      }
+    },
+    "repaired": {
+      "native_exit": 0,
+      "seconds": 115.57656074874103,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "native-box-final-822",
+      "minimum_available_gib": 14.45,
+      "cgroup_peak_mib": 2377.453125,
+      "complete_core_suites": [
+        "native-picking-readiness",
+        "coordinate-edits"
+      ],
+      "scientific_assertions": "Original cell lengths/angles, frames, removal, managed edits, centroids, session and bidirectional popup controls pass unchanged."
+    },
+    "retained_failures": [
+      {
+        "profile": "build-native-picking-817",
+        "scope": "Sandbox cannot access systemd user bus; no build executed."
+      },
+      {
+        "profile": "context-click-observation-811",
+        "scope": "Behavior passed, new diagnostic cleanup incorrectly used contexts() on shared facade."
+      },
+      {
+        "profile": "native-coordinate-final-820",
+        "scope": "Complete context-menu passes, then new native entry cannot access a non-exported IIFE helper; no picking verdict. Explicit export received by 821/822."
+      }
+    ],
+    "native_integrity": "Installed native bytes remain original, verified against original artifact; only the narrowly version/hash-gated build output changes. No runtime monkeypatch or injected selection.",
+    "final_record_checks": {
+      "profile": "native-receiving-records-823",
+      "passed": 465,
+      "indexes": "up to date",
+      "links": "pass",
+      "ruff": "pass",
+      "inputs_unchanged": true,
+      "resource_stop": null
+    }
+  },
+  "native_readiness_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-native-readiness-20261114",
+    "profiles": [
+      "prolonged-click-records-814",
+      "native-pending-pick-probe-815",
+      "native-pending-pick-probe-816",
+      "build-native-picking-817",
+      "build-native-picking-818",
+      "native-original-picking-819",
+      "native-coordinate-final-820",
+      "build-native-export-821",
+      "native-box-final-822",
+      "native-receiving-records-823"
+    ],
+    "files": 125,
+    "bytes": 68876649,
+    "manifest_sha256": "8fb5502a1d5c5156b0c964eece50cd078a87ecf761934f7df145acfc0c50bf75",
     "originals_retained": true,
     "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia"

@@ -35,6 +35,37 @@ export function molstarComponentCachePlugin() {
           throw new Error("Mol* image-asset source differs from reviewed bytes (#382): " + relative);
         }
       }
+      // #389: synchronous picking must read a pending asynchronous buffer.
+      // Qualify both the private readiness flag and the method that consumes it.
+      const picking = JSON.parse(await readFile(new URL("./reviewed-picking-readiness.json", import.meta.url), "utf8"));
+      if (metadata.version !== picking.version) throw new Error("Review Mol* picking-readiness compatibility (#389).");
+      for (const [relative, digest] of Object.entries(picking.files)) {
+        const source = await readFile(path.join(path.dirname(packagePath), relative));
+        if (createHash("sha256").update(source).digest("hex") !== digest) {
+          throw new Error("Mol* picking-readiness source differs from reviewed bytes (#389): " + relative);
+        }
+      }
+      const pickingPath = path.join(path.dirname(packagePath), "lib/mol-canvas3d/helper/pick-helper.js");
+      const pickingPaths = new Map(Object.entries(picking.files).map(([name, digest]) =>
+        [path.join(path.dirname(packagePath), name), digest]));
+      build.onLoad({ filter: /canvas3d[\\/](?:helper[\\/]pick-helper|passes[\\/]pick)\.js$/ }, async args => {
+        const file = path.resolve(args.path), digest = pickingPaths.get(file);
+        if (!digest) return;
+        let source = await readFile(file, "utf8");
+        if (createHash("sha256").update(source).digest("hex") !== digest) {
+          throw new Error("Mol* picking-readiness source changed while building (#389).");
+        }
+        if (file === pickingPath) {
+          const before = "    identify(x, y, camera, frame) {\n        this.prepare();\n        if (this.dirty) {";
+          if (source.split(before).length !== 2) throw new Error("Mol* synchronous-picking repair did not match exactly once (#389).");
+          source = source.replace(before, before.replace("if (this.dirty)", "if (this.dirty || !this.buffers.ready)"));
+        }
+        return {
+          contents: source,
+          loader: "js",
+          resolveDir: path.dirname(file),
+        };
+      });
       const sourcePath = path.join(path.dirname(packagePath), "lib/mol-model-formats/structure/basic/properties.js");
       build.onLoad({ filter: /structure[\\/]basic[\\/]properties\.js$/ }, async args => {
         if (path.resolve(args.path) !== sourcePath) return;

@@ -70,3 +70,18 @@ the bounded review of older nested claims and full E2 memory acceptance remain
 pending. The corrected campaign completes all thirty functional cycles in
 1,749.912 s with one scientific kernel and all 10,182 selected inputs unchanged.
 No blanket requalification is inferred.
+
+## Current inner-source qualification — 2026-11-14
+
+Canonical receiver `429d7494` is contained in the observed owner origin/main.
+The [current thirty-cycle receiving](../molstar_qualification_followup_20261114.json)
+uses 158 exact owner receiver files over 3,542 unchanged scientific/addon/
+data/native files from `aee7aa65`. All actual inner inputs are frozen before/
+after, and 31 kernel-import snapshots verify their origins/hashes, including
+the exact native extension after activation. The initial snapshot correctly
+records lazy modules as unloaded. The copied provider's `0+unknown` and
+MolSysViewer's cached development label remain explicit; neither supplies a source
+identity. The widget reads its hashed local runtime through the source comm
+bootstrap, independently of those labels. Original `513`/`515` claims remain
+corrected, never requalified by this later pass. The bounded historical review
+and closure guard/disposition remain separate; no installed pair is claimed.

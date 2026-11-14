@@ -50,7 +50,7 @@ published native replacement or a separately reviewed dependency update.
 | Q1 | Preserve old identities; inspect exact new artifact/closure; align Node >=22 build routes. | Source selected: exact 5.13.1, isolated closure and old source/lock/runtime hashes preserved; build and recipe routes use Node 22. |
 | Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 491 current units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
-| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Partial: completed context-menu motion, controls/popup mirroring and Studio layout/trajectory controls pass; remaining core receiving is pending. |
+| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Partial: context-menu and independent mirror controls pass; matched original/repaired native picking and the complete coordinate/cell/managed-edit/centroid/popup entry pass in 822. Uninterrupted complete current core receiving remains pending. |
 | Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Current source scopes received: earlier named-session/H5MSM, Movie/encoder/offline and actual-host controls retain their exact inputs; canonical default-Jupyter reference and retained/released controls pass, followed by 30/30 same-kernel cycles in 809 on a72c92ba. Covering and installed acceptance remain separate. |
 | Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Pending; no public candidate or publication authorized. |
 
@@ -404,3 +404,34 @@ selection. This is distinct from #244's budget and #305/#325's original
 observations. Passive diagnostics and clean local native `813` preserve the
 failure as unresolved; receive the bounded hosted diagnostic before another
 whole matrix. Q4/Q6 and the candidate/installed gates remain open.
+
+## Current native picking and cell receiving — 2026-11-14
+
+Bounded hosted diagnostic `43626475247` on `1a8d630d` passes context-menu,
+controls and the complete independent scientific mirror, plus the actual full
+Jupyter profile (six captures, six strong restores, four Studio captures,
+eight moving cases and final lifetime controls). Its original diagnostic ZIP
+is verified. The following full Linux `43627876434` passes 4,731 Python cases,
+25 notebooks and fifteen complete core entries before #390's stale private
+cell-reader assertion. Both original ZIPs are verified. The run stays failed;
+its passing prefix is not complete core acceptance.
+
+[Native picking readiness](../archive/native_synchronous_picking_readiness.md)
+#389 has a matched original-package counterexample in two independent real
+WebGL2 plugins. A narrowly source/version-gated build repair preserves the
+same synchronous IDs during a pending async read; it edits no installed
+provider, selection API or scientific data. Build/type, 491 JS cases and 494
+scoped Python cases pass. Profile `822` receives the repaired native control
+and the complete coordinate/edit/centroid/session/popup entry. That entry now
+uses the [native symmetry provider](../archive/native_symmetry_receiving_provider.md)
+#390 with all original lengths, angles, frames and geometry assertions intact.
+Failed new-harness setups are preserved, not relabeled as product failures.
+
+The current core inventory is 63 mandatory entries (66 including the three
+remote previews). #244's [partition](../archive/controls_scientific_mirror_receiving_partition.md)
+is received locally and hosted with both complete owners and original
+300-second bounds. The original #388 hosted click sequence remains unobserved;
+current passing diagnostics and the independent readiness counterexample do
+not establish that sequence retrospectively. The next uninterrupted full
+current core/source checkpoint remains required before closing the migration.
+The original 30-cycle campaign keeps its prior source/runtime identity.

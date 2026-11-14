@@ -28,8 +28,16 @@ import { PopupHostManager } from "../../src/managers/popup-host";
 import { RemoteInputAdapter } from "../../src/messages/remote-input-adapter";
 import { Loci } from "molstar/lib/mol-model/loci";
 import { HelpOverlay } from "../../src/ui/help-overlay";
+import { ModelSymmetry } from "molstar/lib/mol-model-formats/structure/property/symmetry";
+import { probeNativePickingReadiness } from "./native-picking-readiness-scenarios";
 
-export { RemoteInputAdapter };
+export { RemoteInputAdapter, probeNativePickingReadiness };
+
+/** Read the native contract independently of its property-storage strategy. */
+export function inspectNativeModelCell(model: any) {
+    const cell = ModelSymmetry.Provider.get(model)?.spacegroup.cell;
+    return cell ? { size: Array.from(cell.size), angles: Array.from(cell.anglesInRadians) } : null;
+}
 
 /** Read production source/model correspondence without replacing a scientific result. */
 export function inspectSourceAtomCorrespondence(controller: MolSysViewerController, indices: number[]) {
@@ -262,6 +270,8 @@ declare global {
     // eslint-disable-next-line no-var
     var Harness: {
         createController: typeof createController;
+        inspectNativeModelCell: typeof inspectNativeModelCell;
+        probeNativePickingReadiness: typeof probeNativePickingReadiness;
         inspectSourceAtomCorrespondence: typeof inspectSourceAtomCorrespondence;
         profileExclusiveOwnership: typeof profileExclusiveOwnership;
         profileExclusiveOwnershipMask: typeof profileExclusiveOwnershipMask;
@@ -2120,6 +2130,8 @@ export async function probeRegionOrderOwnership(
 if (typeof window !== "undefined") {
     (window as any).Harness = {
         createController,
+        inspectNativeModelCell,
+        probeNativePickingReadiness,
         inspectSourceAtomCorrespondence,
         profileExclusiveOwnership,
         profileExclusiveOwnershipMask,

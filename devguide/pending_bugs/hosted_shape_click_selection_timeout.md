@@ -49,3 +49,13 @@ entry in `813`, with unchanged inputs and clean retirement. This is local
 non-reproduction, not a repair of the original hosted observation. The bounded
 source diagnostic now includes context-menu and both partitioned mirror owners;
 it cannot qualify the complete core lane.
+
+Hosted diagnostic `43626475247` and complete Linux prefix `43627876434`
+both receive the complete context-menu entry on `1a8d630d`. An independent
+original-native control then establishes a real pending-read/synchronous-pick
+gap (#389), received by the exact-byte-gated repair and two-view GPU control
+in `822`. The complete real-click context entry also passes in `820` before
+an unrelated new-helper export failure. This removes a concrete relevant
+native gap, but the original failing click's actual event sequence was not
+captured. Keep that causal limit explicit and receive the next complete
+current core checkpoint before final disposition.

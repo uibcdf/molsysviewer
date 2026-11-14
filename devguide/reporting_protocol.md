@@ -347,6 +347,22 @@ Playback runs during bootstrap; the oracle deliberately stops at frame 1 for
 geometry inspection. This control does not qualify uninterrupted moving saves.
 `tests/test_reporting_protocol.py` protects entry/build/core addressability.
 
+### Native picking readiness browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/native-picking-readiness.e2e.ts`. From
+`molsysviewer/js`, build the runtime with `npm run build:runtime`, then
+`npm run build:harness` and `npm run build:e2e:all`. Run
+`node tests/e2e/e2e-runner.js --lane=core --suites=native-picking-readiness`.
+The ordinary core deadline applies; missing WebGL2 or an opt-out fails acceptance.
+The native-only scenario builds a real mesh and checks synchronous picking
+before, during and after a pending asynchronous read, in two independent
+plugins. It checks unchanged cameras and the retained plugin after peer
+disposal. The same scenario can be compiled with the explicit-provider probe
+builder against unmodified native bytes as a counterfactual; that original
+failure is evidence of the defect, not a passing repaired result. No injected
+loci, selection retries or simulated native return values qualify this guard.
+
 ### Moving-state capture browser guard profile
 
 The bounded selector is exactly

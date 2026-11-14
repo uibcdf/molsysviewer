@@ -15,7 +15,8 @@ JS = ROOT / "molsysviewer/js"
 
 
 @pytest.mark.parametrize("fault", ["none", "digest", "missing"])
-def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
+@pytest.mark.parametrize("boundary", ["image", "picking"])
+def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault, boundary):
     """The private readiness reader cannot silently consume changed native code."""
     node = shutil.which("node")
     assert node is not None
@@ -36,7 +37,14 @@ def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
         "lib/mol-canvas3d/passes/smaa.js",
         "lib/mol-gl/webgl/texture.js",
     }
-    for name, digest in manifest["files"].items():
+    picking_path = JS / "scripts/reviewed-picking-readiness.json"
+    picking = json.loads(picking_path.read_text(encoding="utf-8"))
+    assert picking["version"] == manifest["version"]
+    assert set(picking["files"]) == {
+        "lib/mol-canvas3d/helper/pick-helper.js",
+        "lib/mol-canvas3d/passes/pick.js",
+    }
+    for name, digest in (manifest["files"] | picking["files"]).items():
         source = JS / "node_modules/molstar" / name
         assert hashlib.sha256(source.read_bytes()).hexdigest() == digest
         target = native / name
@@ -45,7 +53,10 @@ def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
     shutil.copy2(JS / "node_modules/molstar/package.json", native / "package.json")
     shutil.copy2(JS / "scripts/molstar-component-cache.mjs", scripts)
     shutil.copy2(qualified, scripts)
-    victim = native / "lib/mol-canvas3d/passes/smaa.js"
+    shutil.copy2(picking_path, scripts)
+    victim = native / (
+        "lib/mol-canvas3d/passes/smaa.js" if boundary == "image" else "lib/mol-canvas3d/helper/pick-helper.js"
+    )
     if fault == "digest":
         victim.write_text(
             victim.read_text(encoding="utf-8") + "\n// Unreviewed native modification.\n", encoding="utf-8"
@@ -71,7 +82,8 @@ def test_image_assets_build_guard_rejects_changed_native_bytes(tmp_path, fault):
         assert result.returncode != 0
         assert not output.exists(), "An unqualified readiness seam must emit no bundle."
         if fault == "digest":
-            assert "image-asset source differs" in result.stderr
+            expected = "image-asset source differs" if boundary == "image" else "picking-readiness source differs"
+            assert expected in result.stderr
 
 
 def test_component_cache_repair_preserves_native_chemistry_and_releases_inputs(tmp_path):

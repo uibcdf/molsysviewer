@@ -49,3 +49,14 @@ Related #331/#332/#314/#307/#224 and MolSysMT #615 concern different observed
 mechanisms. [The active audit](../pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 keeps E2 open. Scientific-source, installed, Qt and postponed human acceptance
 remain separate; no candidate or publication is authorized.
+
+## Current canonical campaign — 2026-11-14
+
+The [current receiving](../molstar_qualification_followup_20261114.json)
+passes all thirty same-kernel recovery/playback cycles on `a72c92ba` and
+Mol* 5.13.1, with canonical owner receiver `429d7494` and exact declared
+scientific/native bytes. It preserves the original frame assertions and
+receives independent witness data/camera, both popups and coherent recovery.
+This successful scope does not by itself explain the original offscreen
+observation or authorize its closure. Keep that historical causal/disposition
+work separate from the newly completed functional campaign.

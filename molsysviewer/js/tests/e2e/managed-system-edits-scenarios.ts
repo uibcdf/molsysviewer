@@ -70,7 +70,7 @@ export async function checkManagedSystemEdits(browser: any): Promise<void> {
             assert.equal(await overlay(page).isVisible(), false);
             const size = await page.evaluate(() => {
                 const structure = (window as any).__controller.getStructureData();
-                return Array.from(structure.units[0].model._staticPropertyData.model_symmetry.spacegroup.cell.size);
+                return (window as any).Harness.inspectNativeModelCell(structure.units[0].model)?.size ?? null;
             });
             assert.deepEqual(size, [30, 40, 50]);
         }
@@ -109,8 +109,8 @@ export async function checkManagedSystemEdits(browser: any): Promise<void> {
         assert.equal(report.unit, "nm");
         assert.equal(report.draft, "retained native reader");
         // Old rendered cells remain untouched until the explicit recovery.
-        assert.deepEqual(await first.evaluate(() => Array.from((window as any).__controller
-            .getStructureData().units[0].model._staticPropertyData.model_symmetry.spacegroup.cell.size)), [30, 40, 50]);
+        assert.deepEqual(await first.evaluate(() => (window as any).Harness.inspectNativeModelCell((window as any).__controller
+            .getStructureData().units[0].model)?.size ?? null), [30, 40, 50]);
         await first.evaluate(() => (window as any).__messages.length = 0);
         await overlay(first).getByRole("button", { name: "Update view" }).click();
         const recovery = await first.evaluate(() => (window as any).__messages.filter((event: any) =>

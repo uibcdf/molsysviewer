@@ -1,5 +1,11 @@
 # Archived implementation plans
 
+- [Controls/scientific receiving partition](controls_scientific_mirror_receiving_partition.md) — #244 gives the complete independent scientific mirror its own mandatory bounded core entry, retaining all assertions and operation deadlines.
+
+- [Native symmetry receiving provider](native_symmetry_receiving_provider.md) — #390 reads periodic cells through the native provider and preserves real frame, cell, box, edit and popup assertions.
+
+- [Native synchronous picking readiness](native_synchronous_picking_readiness.md) — #389 preserves synchronous picks during pending native GPU reads, with source-byte guards and two real independent-view controls.
+
 - [Source checkpoint guard/artifact recovery](source_checkpoint_guard_and_artifact_recovery.md) — #386 receives all Python source hosts and 25 notebooks, preserves command/path contracts and attributes logs only to their producing execution.
 
 - [Native source UTF-8 recurrence](source_guards_utf8_recurrence.md) — #169 receives all twelve original Unicode-failing cases on native Windows, retaining independent path-identity and full-gate limits.

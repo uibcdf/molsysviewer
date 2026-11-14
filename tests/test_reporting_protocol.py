@@ -56,6 +56,7 @@ CAPTURE_LIFECYCLE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/moving-capture-life
 BOX_TRAJECTORY_BROWSER_GUARD = "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
 ANNOTATIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/annotations-interaction.e2e.ts"
 FONT_ATLAS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/font-atlas-uploads.e2e.ts"
+NATIVE_PICKING_BROWSER_GUARD = "molsysviewer/js/tests/e2e/native-picking-readiness.e2e.ts"
 DATACARD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.ts"
 REGIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/region-hide.e2e.ts"
 POPUP_BOOTSTRAP_BROWSER_GUARD = "molsysviewer/js/tests/e2e/popup-scene-bootstrap.e2e.ts"
@@ -125,6 +126,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         BOX_TRAJECTORY_BROWSER_GUARD,
         ANNOTATIONS_BROWSER_GUARD,
         FONT_ATLAS_BROWSER_GUARD,
+        NATIVE_PICKING_BROWSER_GUARD,
         DATACARD_BROWSER_GUARD,
         REGIONS_BROWSER_GUARD,
         POPUP_BOOTSTRAP_BROWSER_GUARD,
@@ -272,6 +274,21 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             "requestFullscreen()" in entry,
             "__cardResources.listeners" in entry,
             (js_root / "tests/e2e/datacard-title-fixture.py").is_file(),
+        )
+    elif selector == NATIVE_PICKING_BROWSER_GUARD:
+        try:
+            native = (js_root / "tests/e2e/native-picking-readiness-scenarios.ts").read_text(encoding="utf-8")
+        except OSError as error:
+            return [f"guard {selector!r} cannot be indexed: {error}"]
+        requirements += (
+            "Harness.probeNativePickingReadiness()" in entry,
+            "assert.deepEqual(observed.during, observed.before)" in entry,
+            "assert.equal(result.witnessCameraUnchanged, true)" in entry,
+            "withFixtureWorkspace('native-picking-readiness', run).catch" in entry,
+            "const pending = c.asyncIdentify(point);" in native,
+            "const during = c.identify(point);" in native,
+            "second.dispose(); second = undefined;" in native,
+            "from 'molstar/lib/mol-plugin/context'" in native,
         )
     elif selector == FONT_ATLAS_BROWSER_GUARD:
         try:
@@ -758,6 +775,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, BOX_TRAJECTORY_BROWSER_GUARD) == []
     assert validate_guard(ROOT, ANNOTATIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, FONT_ATLAS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, NATIVE_PICKING_BROWSER_GUARD) == []
     assert validate_guard(ROOT, DATACARD_BROWSER_GUARD) == []
     assert validate_guard(ROOT, REGIONS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, POPUP_BOOTSTRAP_BROWSER_GUARD) == []
@@ -798,6 +816,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, BOX_TRAJECTORY_BROWSER_GUARD)
     assert validate_guard(tmp_path, ANNOTATIONS_BROWSER_GUARD)
     assert validate_guard(tmp_path, FONT_ATLAS_BROWSER_GUARD)
+    assert validate_guard(tmp_path, NATIVE_PICKING_BROWSER_GUARD)
+    assert validate_guard(ROOT, NATIVE_PICKING_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, DATACARD_BROWSER_GUARD)
     assert validate_guard(ROOT, DATACARD_BROWSER_GUARD + "::run")
     assert validate_guard(ROOT, FONT_ATLAS_BROWSER_GUARD + "::run")

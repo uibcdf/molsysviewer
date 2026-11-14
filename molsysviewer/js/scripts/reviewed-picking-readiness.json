@@ -1,0 +1,7 @@
+{
+  "version": "5.13.1",
+  "files": {
+    "lib/mol-canvas3d/helper/pick-helper.js": "4db6799baa56ac800a11aa240264c4d83d3a79ac96ab66b20d386b4635cc4a90",
+    "lib/mol-canvas3d/passes/pick.js": "312268759f0a8590db5813add1f96578585d5545967b0023c962dfe9afdd062f"
+  }
+}
