@@ -107,3 +107,15 @@ lookup upload readiness. During a future dependency review, inspect whether
 a public native readiness API is available and receive first/repeated PNG,
 Movie, cancellation and timeout before replacing the seam. Never remove it
 on a version-number assumption or silently reduce antialiasing quality.
+
+### Synchronous picking during pending native reads
+
+The resolved #389 adds a version/source-qualified build adaptation for 5.13.1:
+synchronous identification reads when the native buffers are unready, even
+after asynchronous rendering cleared `dirty`. Future native replacement must
+pass `native-picking-readiness.e2e.ts` with original before/during/after IDs,
+unchanged cameras and independent-view disposal, alongside actual clicks and
+markers. Upstream development `dabbf29f` uses a different pending/async-click
+architecture; that is not proof of a published replacement. Inspect and
+receive the selected artifact before removing the local repair. Keep #388's
+original unobserved event sequence distinct from this concrete counterexample.

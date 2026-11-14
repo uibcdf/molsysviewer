@@ -722,5 +722,77 @@
     "originals_retained": true,
     "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia"
+  },
+  "current_source_checkpoint": {
+    "run": 43646263694,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43646263694",
+    "producer": "eae573467c71e14b7f8e7216ca71d7e6b9b562c2",
+    "provider": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "status": "in_progress",
+    "conclusion": null,
+    "scope": "One complete source-only three-platform Python 3.14 checkpoint, with 63 mandatory Linux core entries and all documented notebooks. No candidate tags, package builds or installed-artifact qualification.",
+    "complete_exact_head_manual_inventory_before": 0,
+    "duplicate_dispatch": false
+  },
+  "current_native_qt": {
+    "native_exit": 0,
+    "seconds": 102.20469465805218,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 8,
+      "survivors": [],
+      "errors": []
+    },
+    "profile": "native-readiness-qt-824",
+    "producer": "eae573467c71e14b7f8e7216ca71d7e6b9b562c2",
+    "native_pytest_passed": 1,
+    "stopped_cases": 4,
+    "moving_cases": 4,
+    "platform": "wayland",
+    "rendering": {
+      "canvas": true,
+      "webgl2": true,
+      "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    },
+    "stderr_observations": {
+      "unsupported_none_get_form": 0,
+      "gbm_fallback": 1,
+      "dbus_address": 0,
+      "deprecation": 0,
+      "scope": "Observed stderr patterns, not an exhaustive diagnostic classification or a globally error-free host claim."
+    },
+    "scope": "Actual native Wayland/Qt/WebEngine/NVIDIA automated source receiving. Not xvfb/mesa, installed artifact qualification or postponed human review.",
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-qt-source-handoff-20261114",
+      "files": 55,
+      "bytes": 8397873,
+      "manifest_sha256": "1699c61a9a84eb880f68979289e381079b11df949e635c5ef03a175c967e2f5e",
+      "originals_retained": true,
+      "custodian": "Diego Prada Gracia"
+    }
+  },
+  "published_native_recheck": {
+    "date": "2026-11-14",
+    "url": "https://registry.npmjs.org/molstar/latest",
+    "version": "5.13.1",
+    "git_head": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+    "tarball": "https://registry.npmjs.org/molstar/-/molstar-5.13.1.tgz",
+    "integrity": "sha512-iExD98bJN2P4JK6+pVMwdJlPePldBH8oNT0pZhs8ucxOp086NU2b/gThKwYMC3SWkdmv++a1g4fGwKfu4Glx1w==",
+    "engines": {
+      "node": ">=22.0.0"
+    },
+    "metadata_sha256": "16243050250042e5c961a308bfc3ae94179b5d0ed036b22479dea8ff7fdc4e71",
+    "scope": "Read-only public registry recheck; no installation or dependency change."
+  },
+  "handoff_record_checks": {
+    "profile": "native-handoff-records-825",
+    "passed": 465,
+    "indexes": "up to date",
+    "links": "pass",
+    "ruff": "pass",
+    "scope": "Metadata/link reconciliation; no repetition or replacement of product receiving."
   }
 }

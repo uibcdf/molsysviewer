@@ -907,6 +907,19 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current Mol* checkpoint — 2026-11-14:** source `eae57346` receives the
+matched native picking repair (#389), public symmetry reader (#390) and
+complete controls/mirror partition (#244); all three source defects are
+closed with registered guards. The exact-runtime automated Wayland/Qt/NVIDIA
+capture profile `824` passes. The canonical thirty-cycle source campaign keeps
+its earlier input identity. One complete three-platform source checkpoint
+`43646263694` is running, including all 63 mandatory Linux core entries.
+Receive that terminal result and originals before claiming complete current
+core acceptance. #388's original event sequence retains its causal limit;
+#369/#372, installed candidate and postponed human exits remain separate.
+The [current receipt](molstar_qualification_followup_20261114.json) and
+[#372 plan](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md) own the detail.
+
 **Current delivery objective — 2026-11-12:** follow the
 [documentation-review handoff](path_to_1_0.md#documentation-review-handoff).
 Finish Movie, scientific integration, integrated/prolonged receiving, complete
@@ -1034,8 +1047,13 @@ and the original host debugger fingerprint. Hosted `43621650307` passes
 4,726/4,695/4,699 native Python cases and all 25 notebooks, but full core
 encounters the distinct [#388 click boundary](pending_bugs/hosted_shape_click_selection_timeout.md).
 Local passive receiving `813` passes; that non-reproduction is not a causal
-fix. Keep #388 and #244 open and use one bounded diagnostic before any new
-complete matrix. Installed/candidate and older causal dispositions remain.
+fix. Subsequent bounded diagnostic `43626475247` receives context-menu and
+both complete mirror owners. Full Linux `43627876434` passes fifteen entries
+before #390's stale private cell reader; `822` receives its source correction
+and #389's independent native readiness control. #244 is closed by its paired
+local/hosted receiving. Follow the current checkpoint above rather than
+repeating either historical campaign. Installed/candidate and older causal
+dispositions remain.
 
 
 Local full-core `775` completes context-menu and part of controls/popup

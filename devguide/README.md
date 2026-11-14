@@ -62,13 +62,15 @@ explicit/automatic FFmpeg selection and receives native Studio AV1 plus
 existing Movie/popup regressions. The [terminal source recovery](source_checkpoint_recovery_20261114.json)
 receives 61 codec/export cases per native host and all twelve original
 Unicode failures on Windows; #385/#169 are source-resolved. #386 now also
-passes native Python receiving on all three hosts and all 25 Linux notebooks; the overall run remains failed
-by the independent controls budget under reopened #244. The
-[current followup](molstar_qualification_followup_20261114.json) preserves
-that failure, the assertion-preserving two-entry correction and outstanding
-complete core/candidate exits. The canonical prolonged gate now passes 30/30
-cycles; current core is blocked by #388's hosted click-to-selection observation.
-#369/#372 remain open.
+passes native Python receiving on all three hosts and all 25 Linux notebooks.
+The [current followup](molstar_qualification_followup_20261114.json) preserves
+failed full runs and receives #244's complete two-entry partition, #389's
+matched original/repaired native picking and #390's native cell-provider
+assertions. These three source defects are closed. The canonical prolonged
+gate passes 30/30 cycles. One complete current three-platform checkpoint
+`43646263694` is running on `eae57346`; the earlier #388 click sequence retains
+its explicit causal limit. Uninterrupted core and exact installed-candidate
+acceptance remain separate; #369/#372 stay open.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

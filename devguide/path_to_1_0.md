@@ -49,8 +49,11 @@ current scoped source/native receiving. Their completion does not substitute
 for the remaining integrated and platform exits under #372.
 The [2026-11-14 followup](molstar_qualification_followup_20261114.json)
 receives native Python on all three hosts and 25 notebooks, closing #386.
-It preserves the independent aggregate browser timeout under #244 and
-requires complete core/prolonged receiving before candidate qualification.
+It preserves the failed source runs, receives #244's complete partition and
+#389/#390's native picking/cell corrections, and records 30/30 prolonged
+cycles. The current complete source checkpoint `43646263694` on `eae57346`
+is still pending; complete core and installed-candidate qualification remain
+required before claiming the handoff.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
