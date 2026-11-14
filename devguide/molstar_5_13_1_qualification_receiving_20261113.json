@@ -963,7 +963,13 @@
       "receipt": "source_checkpoint_recovery_20261114.json",
       "codec_boundary": "#385: 61/61 on each native source host, zero omissions",
       "utf8": "#169: all 12 original native Windows failures pass",
-      "complete_gate": "Original 43553954846 remains failed; #386 command/path guard and artifact-attribution repairs; Linux core/notebooks unexecuted."
+      "complete_gate": "Original 43553954846 remains failed; #386 command/path guard and artifact-attribution repairs; Linux core/notebooks unexecuted.",
+      "new_checkpoint": {
+        "id": 43616029893,
+        "sha": "22b51f89a7edb50da15103a399b71ae663d1ffae",
+        "status": "in_progress",
+        "receipt": "source_checkpoint_recovery_20261114.json"
+      }
     }
   },
   "controlled_profiles": [
@@ -3629,6 +3635,27 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "c2ff3e463c5e5d002628261f441c3d64a4707b1cad7ef7089ade8e871c491eaa"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 6.238785531837493,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-handoff-798",
+      "peak_summed_owned_rss_mib": 180.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "7fca232afacb4046fd6deb97a1b9e1da40328b6671a85fd827bb1315eec49cb0"
     }
   ],
   "remaining": [
@@ -3793,6 +3820,16 @@
       "credential_shaped_files_excluded": 0,
       "custodian": "Diego Prada Gracia",
       "scope": "Immutable original failed hosted artifacts and local repair profiles. Public records gain this pointer after copying; preserved bytes are not rewritten."
+    },
+    "source_recovery_dispatch_20261114": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/source-recovery-dispatch-20261114",
+      "files": 19,
+      "bytes": 4404559,
+      "manifest_sha256": "fa3c31f520a3ea228468fee11cb1496d9f0d2cf36fab8c9a82c9488acae23b56",
+      "originals_retained": true,
+      "custodian": "Diego Prada Gracia",
+      "scope": "Original dispatch/current-state observation and final handoff receiving; not terminal hosted qualification."
     }
   },
   "preflight_rejections": [

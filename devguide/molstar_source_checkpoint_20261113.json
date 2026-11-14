@@ -297,7 +297,7 @@
     "windows": "Local checks do not qualify the native Windows repair.",
     "live_example": "The explicit live-state-capture block is handed unchanged to the actual Jupyter kernel, separately from sequential headless blocks."
   },
-  "next": "Resolve/receive #386 command inventory, portable documentation identities and actual-producer artifact publication, then one complete exact-source checkpoint. Codec #385 and UTF8 #169 have native source acceptance. #369/#372 remain open; no candidate/publication.",
+  "next": "Receive terminal 43616029893 (22b51f89/aee7aa65): complete source hosts, Linux full core/notebooks and original artifacts. #169/#385 are source-resolved; #386 remains active through this gate. #369/#372 and installed/prolonged/human exits remain distinct. No candidate/publication.",
   "encoder_diagnostic": {
     "run_id": 43521107544,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43521107544",
@@ -383,5 +383,43 @@
     "terminal_receipt": "source_checkpoint_recovery_20261114.json",
     "terminal_limits": "61 codec/export cases per host and 12 prior UTF8 failures pass; complete gate fails #386 guards, core/notebooks not reached.",
     "terminal_observed_at": "2026-11-14T16:26:03.197158+00:00"
+  },
+  "guard_recovery_checkpoint": {
+    "id": 43616029893,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43616029893",
+    "head_sha": "22b51f89a7edb50da15103a399b71ae663d1ffae",
+    "status": "in_progress",
+    "conclusion": null,
+    "observed_at": "2026-11-14T16:36:09.889893+00:00",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "all",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "encoder_diagnostics": "false"
+    },
+    "single_dispatch": true,
+    "complete_exact_head_manual_inventory_before": 0,
+    "first_receptor": "PENDING exit 3, three in-progress jobs",
+    "jobs": [
+      {
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on windows-2025, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on macos-15, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ],
+    "scope": "New full exact-source checkpoint after guard repair; all three Python 3.14 hosts and Linux full core/notebooks. Not terminal or installed acceptance. Runtime/scientific product bytes remain unchanged from def5f417.",
+    "board": "51 active records agree with complete paginated board; #169/#385 closed, #386 active."
   }
 }

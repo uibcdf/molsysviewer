@@ -1004,6 +1004,12 @@ neighboring routes pass 620 and final new-record link/reporting checks pass
 451 after completing the receipt and archive index. One new complete source
 checkpoint follows the reviewed integration. No
 renderer, scientific algorithm, media quality or deadline changed.
+The correction is published as `22b51f89`; its single complete source run
+[43616029893](https://github.com/uibcdf/molsysviewer/actions/runs/43616029893)
+uses the same frozen MolSysMT provider, with all three jobs in progress in
+the first observation. #386 remains active until native receiving. The
+complete paginated board agrees with all 51 active local records after
+#169/#385 close. Do not duplicate this run or reinterpret the failed original.
 
 Local full-core `775` completes context-menu and part of controls/popup
 receiving before global swap activity triggers clean resource retirement.

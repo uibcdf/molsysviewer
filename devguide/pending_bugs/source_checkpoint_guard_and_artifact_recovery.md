@@ -54,3 +54,9 @@ Inputs are unchanged and owned cleanup is clean in each profile. The
 [receipt](../source_checkpoint_recovery_20261114.json) retains the original
 failure and separate scopes. Native Windows and complete source/core receiving
 of this correction remain pending.
+
+Published correction `22b51f89a7edb50da15103a399b71ae663d1ffae` is selected
+by the single full source checkpoint `43616029893`, with frozen MolSysMT
+`aee7aa65`, all three Python 3.14 hosts and the full Linux core/notebook
+lane. Its first receptor observation is pending with three in-progress jobs;
+no terminal or installed result is claimed. Do not duplicate the dispatch.

@@ -1048,15 +1048,37 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "c2ff3e463c5e5d002628261f441c3d64a4707b1cad7ef7089ade8e871c491eaa"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 6.238785531837493,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-handoff-798",
+      "peak_summed_owned_rss_mib": 180.3,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "7fca232afacb4046fd6deb97a1b9e1da40328b6671a85fd827bb1315eec49cb0"
     }
   ],
   "local_results": {
     "795": "89 affected cases, Ruff lint and all 1066 format checks pass, unchanged inputs and clean retirement.",
     "796": "620 pass; two devguide link tests fail because the newly referenced receipt did not yet exist and archival files were not indexed. Complete the record/staging and rerun only those guards. Native exit remains 1.",
-    "797": "451 devguide link/reporting cases pass with completed receipt and indexed archives; indexes current, unchanged inputs and clean retirement. The original 796 failure remains retained."
+    "797": "451 devguide link/reporting cases pass with completed receipt and indexed archives; indexes current, unchanged inputs and clean retirement. The original 796 failure remains retained.",
+    "798": "Four handoff link cases and generated-index check pass; product bytes are unchanged from def5f417 and all selected inputs remain unchanged."
   },
   "remaining": [
-    "Review/commit the scoped repairs and completed records, then one full three-platform exact-source checkpoint including Linux full core/notebooks.",
+    "Receive terminal checkpoint 43616029893 on 22b51f89: all three source hosts, Linux full core/notebooks and original artifacts; do not redispatch.",
     "Receive its native original terminal artifacts; a previous run is never relabelled green.",
     "#386 stays active through current repaired checkpoint receiving. #369/#372, prolonged/installed/human gates remain separate."
   ],
@@ -1076,6 +1098,54 @@
     "originals_retained": true,
     "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia",
-    "scope": "Immutable original failed hosted artifacts and local repair profiles. Public records gain this pointer after copying; preserved bytes are not rewritten."
+    "scope": "Immutable original failed hosted artifacts and local repair profiles. Public records gain this pointer after copying; preserved bytes are not rewritten.",
+    "dispatch_followup": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/source-recovery-dispatch-20261114",
+      "files": 19,
+      "bytes": 4404559,
+      "manifest_sha256": "fa3c31f520a3ea228468fee11cb1496d9f0d2cf36fab8c9a82c9488acae23b56",
+      "originals_retained": true,
+      "custodian": "Diego Prada Gracia",
+      "scope": "Original dispatch/current-state observation and final handoff receiving; not terminal hosted qualification."
+    }
+  },
+  "new_checkpoint": {
+    "id": 43616029893,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43616029893",
+    "head_sha": "22b51f89a7edb50da15103a399b71ae663d1ffae",
+    "status": "in_progress",
+    "conclusion": null,
+    "observed_at": "2026-11-14T16:36:09.889893+00:00",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "all",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "encoder_diagnostics": "false"
+    },
+    "single_dispatch": true,
+    "complete_exact_head_manual_inventory_before": 0,
+    "first_receptor": "PENDING exit 3, three in-progress jobs",
+    "jobs": [
+      {
+        "name": "Source pair on ubuntu-latest, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on windows-2025, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "name": "Source pair on macos-15, Python 3.14",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ],
+    "scope": "New full exact-source checkpoint after guard repair; all three Python 3.14 hosts and Linux full core/notebooks. Not terminal or installed acceptance. Runtime/scientific product bytes remain unchanged from def5f417.",
+    "board": "51 active records agree with complete paginated board; #169/#385 closed, #386 active."
   }
 }
