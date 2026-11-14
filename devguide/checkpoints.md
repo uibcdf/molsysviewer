@@ -1006,10 +1006,25 @@ checkpoint follows the reviewed integration. No
 renderer, scientific algorithm, media quality or deadline changed.
 The correction is published as `22b51f89`; its single complete source run
 [43616029893](https://github.com/uibcdf/molsysviewer/actions/runs/43616029893)
-uses the same frozen MolSysMT provider, with all three jobs in progress in
-the first observation. #386 remains active until native receiving. The
-complete paginated board agrees with all 51 active local records after
-#169/#385 close. Do not duplicate this run or reinterpret the failed original.
+uses the same frozen MolSysMT provider. Terminal receiving passes 4,724
+Python cases on Linux, 4,693 on macOS and 4,697 on Windows, plus all 25
+Linux notebooks. All six original ZIPs match GitHub sizes/hashes; the repaired
+notebook uploader correctly emits no stale failure artifact. This closes
+#386 in source. The overall run remains failed: #244 recurs as the aggregate
+300-second controls/scientific-mirror budget. Keep that failure independent
+of the passing Python/notebook and encoder boundaries.
+
+The [current followup](molstar_qualification_followup_20261114.json) records
+the two mandatory owners with unchanged 300-second budgets, all original
+scientific-helper assertions/deadlines and added phase timings. Native `802`
+receives both complete entries without overrides, unchanged inputs or cleanup
+errors. Build/535 Python guards and Ruff pass in `801`. The full canonical
+62-suite core lane and canonical-owner prolonged Jupyter controls remain
+required. #369/#372 and installed/human exits are not closed by this pair.
+Local full-core `804` receives the first three suites before a global PSI
+safety interruption during Studio; all owned processes retire. The receipt
+retains that partial result and directs full-core receiving to hosted CI.
+This is neither a complete pass nor an established product assertion failure.
 
 Local full-core `775` completes context-menu and part of controls/popup
 receiving before global swap activity triggers clean resource retirement.

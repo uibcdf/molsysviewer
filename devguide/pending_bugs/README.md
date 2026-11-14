@@ -21,8 +21,8 @@ list.
 
 ### Being worked on (3)
 
+- [`controls_scientific_mirror_receiving_partition.md`](controls_scientific_mirror_receiving_partition.md) — [#244](https://github.com/uibcdf/molsysviewer/issues/244) — Partition controls and scientific popup receiving after aggregate timeouts. *(medium, reproduced)*
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles. *(medium, measured)*
-- [`source_checkpoint_guard_and_artifact_recovery.md`](source_checkpoint_guard_and_artifact_recovery.md) — [#386](https://github.com/uibcdf/molsysviewer/issues/386) — Repair source checkpoint guards and notebook-artifact attribution. *(medium, reproduced)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
 ### Partially done (11)

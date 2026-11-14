@@ -339,6 +339,10 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'report.unit, "nm"' in receiving,
         )
     elif selector == CONTROLS_BROWSER_GUARD:
+        try:
+            mirror = (js_root / "tests/e2e/canvas-popup-mirror.e2e.ts").read_text(encoding="utf-8")
+        except OSError as error:
+            return [f"guard {selector!r} has no scientific mirror entry: {error}"]
         requirements += (
             "spawnSync(" in entry,
             "view.export.html(" in entry,
@@ -348,7 +352,10 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'withFixtureWorkspace("controls-visibility", run).catch(' in entry,
             'from "./fixture-workspace";' in entry,
             (js_root / "tests/e2e/fixture-workspace.ts").is_file(),
-            "await checkCanvasPopupMirror(page, dir);" in entry,
+            "await checkCanvasPopupMirror(page, dir);" in mirror,
+            'withFixtureWorkspace("canvas-popup-mirror", run).catch(' in mirror,
+            "canvas-popup-mirror.e2e.ts" in scripts.get("build:e2e:all", ""),
+            '"canvas-popup-mirror"' in runner,
             (js_root / "tests/e2e/canvas-popup-mirror-scenarios.ts").is_file(),
             (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
             (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),

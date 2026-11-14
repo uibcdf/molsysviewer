@@ -61,9 +61,12 @@ The [current codec recovery](movie_codec_receiving_20261113.json) implements
 explicit/automatic FFmpeg selection and receives native Studio AV1 plus
 existing Movie/popup regressions. The [terminal source recovery](source_checkpoint_recovery_20261114.json)
 receives 61 codec/export cases per native host and all twelve original
-Unicode failures on Windows; #385/#169 are source-resolved. #386 repairs
-command/path guards and artifact attribution before the next complete
-source/core gate. #369/#372 and installed qualification remain open.
+Unicode failures on Windows; #385/#169 are source-resolved. #386 now also
+passes native Python receiving on all three hosts and all 25 Linux notebooks; the overall run remains failed
+by the independent controls budget under reopened #244. The
+[current followup](molstar_qualification_followup_20261114.json) preserves
+that failure, the assertion-preserving two-entry correction and outstanding
+complete core/prolonged/candidate exits. #369/#372 remain open.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

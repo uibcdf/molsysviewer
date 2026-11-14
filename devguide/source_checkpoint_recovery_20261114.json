@@ -8,7 +8,7 @@
     "uibcdf/molsysviewer#372",
     "uibcdf/molsysviewer#369"
   ],
-  "status": "original_full_checkpoint_failed; guard_repairs_locally_received; new_full_checkpoint_pending",
+  "status": "source-resolved; covering core qualification continues under #244/#372",
   "original_run": {
     "id": 43553954846,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
@@ -1078,9 +1078,8 @@
     "798": "Four handoff link cases and generated-index check pass; product bytes are unchanged from def5f417 and all selected inputs remain unchanged."
   },
   "remaining": [
-    "Receive terminal checkpoint 43616029893 on 22b51f89: all three source hosts, Linux full core/notebooks and original artifacts; do not redispatch.",
-    "Receive its native original terminal artifacts; a previous run is never relabelled green.",
-    "#386 stays active through current repaired checkpoint receiving. #369/#372, prolonged/installed/human gates remain separate."
+    "Receive the complete mandatory core lane after #244 partitions the existing independent scientific mirror workflow; preserve 43616029893 as failed.",
+    "Complete current prolonged-host receiving and exact installed-candidate qualification under #372; retain postponed human observations separately."
   ],
   "counters": "Original 38/46 source-delivered and 1/46 final audit acceptance unchanged.",
   "publication": "No candidate, tag, package, release, promotion or external upstream write.",
@@ -1114,8 +1113,8 @@
     "id": 43616029893,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43616029893",
     "head_sha": "22b51f89a7edb50da15103a399b71ae663d1ffae",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "observed_at": "2026-11-14T16:36:09.889893+00:00",
     "inputs": {
       "source_receiving": "true",
@@ -1131,21 +1130,91 @@
     "jobs": [
       {
         "name": "Source pair on ubuntu-latest, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       },
       {
         "name": "Source pair on windows-2025, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "success"
       },
       {
         "name": "Source pair on macos-15, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "success"
       }
     ],
-    "scope": "New full exact-source checkpoint after guard repair; all three Python 3.14 hosts and Linux full core/notebooks. Not terminal or installed acceptance. Runtime/scientific product bytes remain unchanged from def5f417.",
-    "board": "51 active records agree with complete paginated board; #169/#385 closed, #386 active."
+    "scope": "Terminal exact-source receiving: all three Python 3.14 hosts pass with 25 Linux notebooks; overall run fails independent aggregate controls budget #244. Not installed-artifact acceptance.",
+    "board": "Source guard/path/artifact issue #386 is resolved; equivalent aggregate controls issue #244 is reopened. Broader #369/#372 remain open.",
+    "native_python_results": {
+      "Linux": {
+        "passed": 4724,
+        "skipped": 42,
+        "failures": 0,
+        "errors": 0,
+        "qt_deselected": 17
+      },
+      "macOS": {
+        "passed": 4693,
+        "skipped": 73,
+        "failures": 0,
+        "errors": 0,
+        "qt_deselected": 17
+      },
+      "Windows": {
+        "passed": 4697,
+        "skipped": 69,
+        "failures": 0,
+        "errors": 0,
+        "qt_deselected": 17
+      }
+    },
+    "documented_notebooks": {
+      "passed": 25,
+      "failed": 0,
+      "stale_failure_artifact_emitted": false
+    },
+    "verified_original_artifacts": [
+      {
+        "id": 14123490147,
+        "name": "source-receiving-Windows-py3.14",
+        "bytes": 83668,
+        "sha256": "8132a994a3ecff38607bb4e9af4f88bc43a42c1e744f8c9bb180bffeefa38da2"
+      },
+      {
+        "id": 14123081061,
+        "name": "movie-encoder-native-Windows",
+        "bytes": 14805,
+        "sha256": "f9397d92add79b364359b400e779899f7905981b5b8fa7d9aeaea374842817ff"
+      },
+      {
+        "id": 14122860700,
+        "name": "source-receiving-macOS-py3.14",
+        "bytes": 84214,
+        "sha256": "0c528f6f8c50d8562b39077e7f7a83f00f2a7a0ad9e6de394045a599da81bf82"
+      },
+      {
+        "id": 14122762588,
+        "name": "movie-encoder-native-macOS",
+        "bytes": 14717,
+        "sha256": "f4687c5fb01dc77d3123e9af25a3a321a2349f45cdfa040d0f5642f2c86f1def"
+      },
+      {
+        "id": 14122553162,
+        "name": "source-receiving-Linux-py3.14",
+        "bytes": 81866,
+        "sha256": "e555c9162b603b5e58d9edc7f4c6120c630f524d2d9f61affa5b72ce5802e0b5"
+      },
+      {
+        "id": 14122453318,
+        "name": "movie-encoder-native-Linux",
+        "bytes": 14696,
+        "sha256": "c2422213264b1f5f5df0e0c3634d6f6220429503945da6366a09e1e5acbd4a74"
+      }
+    ]
+  },
+  "current_native_followup": {
+    "record": "molstar_qualification_followup_20261114.json",
+    "custody_manifest_sha256": "55ae6bb1ca272cfd209c324f1f986176d1c2d69b9658ff51b013ab8896b793d7"
   }
 }

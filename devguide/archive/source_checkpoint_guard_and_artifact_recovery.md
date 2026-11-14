@@ -1,19 +1,19 @@
 ---
 summary: Repair source checkpoint guards and notebook-artifact attribution.
 issue: uibcdf/molsysviewer#386
-status: active
+status: resolved
 opened: 2026-11-14
-closed:
+closed: 2026-11-14
 severity: medium
 verification: reproduced
 area: [ci, testing, portability, evidence]
-guard:
+guard: tests/test_source_workflow_coverage.py::test_notebook_failure_artifacts_require_the_actual_executor_to_fail
 normative:
 blocked_by: []
 supersedes: []
 ---
 
-# Source checkpoint recovery — active
+# Source checkpoint recovery — resolved in source
 
 Run `43553954846` on MolSysViewer `def5f417` and MolSysMT `aee7aa65`
 fails all three Python 3.14 hosts. Seven original ZIPs match GitHub's sizes
@@ -52,11 +52,23 @@ failures reflect a not-yet-created receipt and unindexed new archive paths.
 After completing those records, `797` passes all 451 link/reporting checks.
 Inputs are unchanged and owned cleanup is clean in each profile. The
 [receipt](../source_checkpoint_recovery_20261114.json) retains the original
-failure and separate scopes. Native Windows and complete source/core receiving
-of this correction remain pending.
+failure and separate scopes. At that initial local checkpoint, native Windows and complete source/core
+receiving of this correction remained pending; terminal results follow below.
 
 Published correction `22b51f89a7edb50da15103a399b71ae663d1ffae` is selected
 by the single full source checkpoint `43616029893`, with frozen MolSysMT
 `aee7aa65`, all three Python 3.14 hosts and the full Linux core/notebook
-lane. Its first receptor observation is pending with three in-progress jobs;
-no terminal or installed result is claimed. Do not duplicate the dispatch.
+lane. Native terminal receiving passes 4,724 Python cases on Linux, 4,693
+on macOS and 4,697 on Windows, with zero failures/errors. The respective
+42/73/69 skips and seventeen deselected Qt cases retain their explicit scope.
+Linux executes all 25 documented notebooks successfully; its failure-log
+uploader is correctly skipped and no stale notebook artifact is emitted.
+All six original ZIPs independently match GitHub's sizes and SHA-256.
+
+This closes the command inventory, portable-document identity and actual-
+producer artifact defects. The guard above protects artifact ownership;
+`test_python_ecosystem_contract.py` protects all four command roles and
+`test_documentation_pages_run.py` protects native path identities plus global
+deprecated-example coverage. The original failed run remains failed. Overall
+`43616029893` still fails the independent aggregate controls budget under
+reopened #244; current source and installed qualification remain separate.

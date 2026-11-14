@@ -482,8 +482,12 @@ the same tag; APIs resolve identity as `(domain, tag)`.
     background/lighting without new authoring method signatures.
   - `view.movie.export_async()` (method) is experimental and asynchronous.
     It samples version-2 tracks through the live primary renderer and streams
-    MP4/H.264, WebM/VP9 or PNG/manifest ZIP output. It requires ImageIO and, for
-    video, imageio-ffmpeg. The [export reference](../user/movie/export.md)
+    MP4/H.264, WebM/VP9 or AV1, and PNG/manifest ZIP output; HTML creates an
+    offline interactive presentation. The keyword-only `codec="auto"` prefers
+    VP9 then AV1 for WebM; explicit codec choices never substitute another
+    encoder. The manifest records the selected policy and executable identity.
+    Media output requires ImageIO and video additionally requires imageio-ffmpeg.
+    The [export reference](../user/movie/export.md)
     documents resolution, rational rate, quality, composition, finite waits,
     progress, cancellation and atomic destination behavior.
 - `view.on_hover(callback)` / `view.off_hover(callback)`

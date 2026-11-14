@@ -960,16 +960,13 @@
       "raw_command_receipt_sha256": "3c344ea7b2efcc5ac7f29d7e470f3ab806c3963f432917f5119cfebeae12dcd5"
     },
     "source_checkpoint_guard_recovery": {
-      "receipt": "source_checkpoint_recovery_20261114.json",
-      "codec_boundary": "#385: 61/61 on each native source host, zero omissions",
-      "utf8": "#169: all 12 original native Windows failures pass",
-      "complete_gate": "Original 43553954846 remains failed; #386 command/path guard and artifact-attribution repairs; Linux core/notebooks unexecuted.",
-      "new_checkpoint": {
-        "id": 43616029893,
-        "sha": "22b51f89a7edb50da15103a399b71ae663d1ffae",
-        "status": "in_progress",
-        "receipt": "source_checkpoint_recovery_20261114.json"
-      }
+      "record": "source_checkpoint_recovery_20261114.json",
+      "state": "source-resolved",
+      "run": 43616029893,
+      "overall_conclusion": "failure",
+      "python_hosts": "all pass",
+      "notebooks": 25,
+      "remaining_failure": "#244 aggregate controls/scientific mirror budget"
     }
   },
   "controlled_profiles": [
@@ -3878,5 +3875,13 @@
         "terminal_conclusion": "failure"
       }
     }
+  },
+  "current_followup": {
+    "record": "molstar_qualification_followup_20261114.json",
+    "scope": "Terminal native source checkpoint plus current core/prolonged receiving; installed candidate remains unqualified."
+  },
+  "current_native_followup": {
+    "record": "molstar_qualification_followup_20261114.json",
+    "custody_manifest_sha256": "55ae6bb1ca272cfd209c324f1f986176d1c2d69b9658ff51b013ab8896b793d7"
   }
 }

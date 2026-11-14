@@ -271,24 +271,26 @@ into it.
 The bounded selector for Cinema, control-area reveal and shared popup controls
 is exactly `molsysviewer/js/tests/e2e/controls-visibility.e2e.ts`. From
 `molsysviewer/js`, build with `npm run build:harness` and `npm run build:e2e:all`,
-then run `node tests/e2e/controls-visibility.e2e.js`. It is also mandatory in
+then run `node tests/e2e/e2e-runner.js --lane=core --suites=controls-visibility,canvas-popup-mirror`.
+Both owners are also mandatory in
 `npm run test:e2e:core`. Its real Python export and Mol*/Chromium popup check
 Cinema cycles, Dock/fullscreen, Settings, both reveal scopes, keyboard access,
 hidden-frame updates and subscription cleanup. The same guard's notebook
 scenario runs the actual widget bootstrap against a persistent Python authority
 and checks runtime/control parity, UI preferences, panel popout and single-step
-trajectory convergence in both windows. Browser/WebGL failures fail;
-The same entrypoint's `canvas-popup-mirror-scenarios.ts` receiving owner guards
+trajectory convergence in both windows. Browser/WebGL failures fail.
+The independent `canvas-popup-mirror.e2e.ts` entry invokes the complete
+`canvas-popup-mirror-scenarios.ts` receiving owner, which guards
 resolved camera convergence, single motion/playback clocks, exact atom subsets,
 portable object identity and native GPU pick/marker behavior, local Studio
 layout and frame-specific calculated hbonds in both windows. The exported-page
 scenario guards context rotation and bidirectional selection without Python.
 These scientific scene checks use the persistent real Python fixture and actual
 Mol* rendering; a control-style comparison cannot substitute for them.
-The three-scenario `controls-visibility` entry has a bounded 300-second default
-runner allowance; Studio's integrated live-capture entry has a separate
-360-second budget after its expanded receiving exceeded 180 seconds. Other
-entries keep 180 seconds. An explicit
+The controls and independent scientific-mirror entries each retain a bounded
+300-second default runner allowance. All operation deadlines and scientific
+assertions are unchanged. Other integrated owners retain their separately
+documented allowances in `e2e-runner.ts`; ordinary entries keep 180 seconds. An explicit
 `E2E_SUITE_TIMEOUT_MS` retains precedence. Scientific phase timing must retain
 the distinction between progress, an assertion failure and outer termination;
 a timed-out run never qualifies closure by inference from earlier phases.
@@ -297,6 +299,10 @@ rejected. The offline validator checks the fixture, actions, popup entrypoint
 and build/core registration. Its exact entrypoint is
 `withFixtureWorkspace("controls-visibility", run).catch(...)`, importing the
 managed workspace owner; this preserves failing-exit checks through cleanup.
+The paired mirror entry also uses `withFixtureWorkspace` and a failing catch
+after awaited browser/fixture retirement. The offline validator requires
+both owners in the build and mandatory core inventory. Running just one entry
+is partial evidence for this combined historical guard profile.
 
 ### Managed-edit and pending-reader browser guard profile
 

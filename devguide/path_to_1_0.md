@@ -47,6 +47,10 @@ The [detached Studio PNG correction #380](archive/detached_studio_png_uses_empty
 [native image readiness #382](archive/native_image_asset_readiness.md) now have
 current scoped source/native receiving. Their completion does not substitute
 for the remaining integrated and platform exits under #372.
+The [2026-11-14 followup](molstar_qualification_followup_20261114.json)
+receives native Python on all three hosts and 25 notebooks, closing #386.
+It preserves the independent aggregate browser timeout under #244 and
+requires complete core/prolonged receiving before candidate qualification.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

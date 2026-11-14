@@ -79,6 +79,8 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         // Camera focus/reset and pointer/wheel updates must include their final
         // applied viewpoint, rather than stopping at pointerup.
         for (const canvas of [page, peer]) {
+            const side = canvas === page ? "primary" : "popup";
+            progress(`camera ${side} drag started`);
             await canvas.bringToFront();
             const beforeDrag = await canvas.evaluate(() => (window as any).__mirrorController.getCameraSnapshot().position);
             const bounds = await canvas.locator("canvas").boundingBox(); assert.ok(bounds);
@@ -89,6 +91,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
             await canvas.waitForFunction(before => (window as any).__mirrorController.getCameraSnapshot().position
                 .some((v: number, i: number) => Math.abs(v - before[i]) > 1e-4), beforeDrag);
             await cameraEqual();
+            progress(`camera ${side} drag received`);
             await canvas.bringToFront();
             await canvas.mouse.move(bounds.x + bounds.width * .6, bounds.y + bounds.height * .6);
             const beforeWheel = await canvas.evaluate(() => (window as any).__mirrorController.getCameraSnapshot().position);
@@ -96,6 +99,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
             await canvas.waitForFunction(before => (window as any).__mirrorController.getCameraSnapshot().position
                 .some((v: number, i: number) => Math.abs(v - before[i]) > 1e-4), beforeWheel);
             await cameraEqual();
+            progress(`camera ${side} wheel received`);
             for (const action of ["Focus All", "Reset View"]) {
                 const before = await canvas.evaluate(() => (window as any).__mirrorController.getCameraSnapshot().position);
                 await menu(canvas, action);
@@ -105,6 +109,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
                         .some((v: number, i: number) => Math.abs(v - before[i]) > 1e-4);
                 }, before);
                 await cameraEqual();
+                progress(`camera ${side} ${action} received`);
             }
         }
         for (const [canvas, start, stop, flag] of [

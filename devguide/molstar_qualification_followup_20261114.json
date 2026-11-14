@@ -1,0 +1,212 @@
+{
+  "schema": "molsysviewer.molstar_qualification_followup@1",
+  "date": "2026-11-14",
+  "issues": [
+    244,
+    369,
+    372,
+    386
+  ],
+  "source_base": "40cfb0a9ec74ca1999c06ed21ac67bcf5651520a",
+  "scope": "Current source receiving; no frozen candidate, installed package or publication qualification.",
+  "provider": {
+    "molstar": "5.13.1",
+    "source": "a4e9cc79415213263090ee47bf380d2a33e0118e",
+    "tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+    "matched_native_js_and_declarations": 6356,
+    "molsysmt_scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+  },
+  "hosted_checkpoint": {
+    "run": 43616029893,
+    "sha": "22b51f89a7edb50da15103a399b71ae663d1ffae",
+    "status": "completed",
+    "conclusion": "failure",
+    "python": {
+      "Linux": {
+        "passed": 4724,
+        "skipped": 42,
+        "failures": 0,
+        "errors": 0,
+        "qt_deselected": 17
+      },
+      "macOS": {
+        "passed": 4693,
+        "skipped": 73,
+        "failures": 0,
+        "errors": 0,
+        "qt_deselected": 17
+      },
+      "Windows": {
+        "passed": 4697,
+        "skipped": 69,
+        "failures": 0,
+        "errors": 0,
+        "qt_deselected": 17
+      }
+    },
+    "notebooks_passed": 25,
+    "original_artifacts": [
+      {
+        "id": 14123490147,
+        "name": "source-receiving-Windows-py3.14",
+        "bytes": 83668,
+        "sha256": "8132a994a3ecff38607bb4e9af4f88bc43a42c1e744f8c9bb180bffeefa38da2"
+      },
+      {
+        "id": 14123081061,
+        "name": "movie-encoder-native-Windows",
+        "bytes": 14805,
+        "sha256": "f9397d92add79b364359b400e779899f7905981b5b8fa7d9aeaea374842817ff"
+      },
+      {
+        "id": 14122860700,
+        "name": "source-receiving-macOS-py3.14",
+        "bytes": 84214,
+        "sha256": "0c528f6f8c50d8562b39077e7f7a83f00f2a7a0ad9e6de394045a599da81bf82"
+      },
+      {
+        "id": 14122762588,
+        "name": "movie-encoder-native-macOS",
+        "bytes": 14717,
+        "sha256": "f4687c5fb01dc77d3123e9af25a3a321a2349f45cdfa040d0f5642f2c86f1def"
+      },
+      {
+        "id": 14122553162,
+        "name": "source-receiving-Linux-py3.14",
+        "bytes": 81866,
+        "sha256": "e555c9162b603b5e58d9edc7f4c6120c630f524d2d9f61affa5b72ce5802e0b5"
+      },
+      {
+        "id": 14122453318,
+        "name": "movie-encoder-native-Linux",
+        "bytes": 14696,
+        "sha256": "c2422213264b1f5f5df0e0c3634d6f6220429503945da6366a09e1e5acbd4a74"
+      }
+    ],
+    "failure": "Linux controls-visibility aggregate 300-second budget expires after completed export/notebook flows during separately initialized scientific mirror; no established individual-operation assertion failure.",
+    "notebook_artifact": "Actual executor passes and failure uploader is skipped. No stale notebook-failure artifact."
+  },
+  "partition": {
+    "production_changes": false,
+    "helper_assertions_and_operation_deadlines_unchanged": true,
+    "proof": {
+      "old_helper_sha256": "62c3262dd44de00d696d84492c03c778ac7ac7117e20c17c71d00df78a448007",
+      "current_helper_sha256": "34c5ab94d8f6f748ee0439eade1d70f7217d5d2eb166d41c126487d467941596",
+      "normalized_helper_identical": true,
+      "only_added_statements": "per-camera phase timing; all original assertions, operation waits and fixture cleanup remain byte-identical",
+      "production_package_diff": "git diff def5f417 -- molsysviewer excluding js test/script registrations contains no runtime/scientific source changes"
+    },
+    "total_entries": 65,
+    "mandatory_core_entries": 62,
+    "remote_preview_excluded": 3,
+    "entry_budgets_ms": {
+      "controls-visibility": 300000,
+      "canvas-popup-mirror": 300000
+    },
+    "required_command": "node tests/e2e/e2e-runner.js --lane=core --suites=controls-visibility,canvas-popup-mirror",
+    "local_guards": {
+      "profile": "build-controls-partition-801",
+      "python_passed": 535,
+      "ruff": "lint and format pass; 1066 files",
+      "build": "all declared native entries pass"
+    },
+    "canonical_native_receiving": {
+      "profile": "controls-partition-native-802",
+      "suites_passed": 2,
+      "native_exit": 0,
+      "seconds": 351.747486368753,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "owned_survivors": [],
+      "timeout_override": null
+    },
+    "complete_core": {
+      "profile": "prolonged-full-core-804",
+      "state": "resource_interrupted",
+      "completed_suites": [
+        "context-menu",
+        "controls-visibility",
+        "canvas-popup-mirror"
+      ],
+      "completed": 3,
+      "required": 62,
+      "incomplete_suite": "studio-usability",
+      "seconds": 468.3821269837208,
+      "stop": "Global memory PSI full avg10 rose to 5.68, above unchanged threshold 2; local cgroup full pressure remained zero, maximum memory near 1.90 GiB, available RAM 15.16 GiB, no swap activity/OOM. No causal attribution to another process.",
+      "native_exit": 0,
+      "supervisor_exit": 1,
+      "notice": "A child status of zero does not override resource interruption or establish a full browser result.",
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 39,
+        "survivors": [],
+        "errors": []
+      },
+      "timeout_override": null
+    },
+    "final_record_checks": {
+      "profile": "controls-partition-final-806",
+      "passed": 461,
+      "ruff": "lint and format pass; 1066 files",
+      "resource_stop": null,
+      "inputs_unchanged": true,
+      "owned_survivors": []
+    }
+  },
+  "memory_receiving": {
+    "method_owner": "uibcdf/molsysmt#723",
+    "method_source": "429d7494b5ee053fd1ecdd644c1e8f71e6376062",
+    "composition": "158 exact canonical owner receiver files over 3542 unchanged scientific/addon/native files from aee7aa65. A copied source composition, not pure 429d7494 or an installed pair.",
+    "control": {
+      "profile": "molstar-memory-method-shorttmp-800",
+      "canonical_pytest_passed": 1,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "owned_survivors": []
+    },
+    "retained_failures": [
+      {
+        "profile": "molstar-memory-method-799",
+        "cause": "Harness TMPDIR exceeded Chromium Unix socket path limit; no scientific/control gate ran."
+      },
+      {
+        "profile": "prolonged-full-core-803",
+        "cause": "Consumer driver was passed relative to the scientific working directory; corrected to absolute path before launching 804. No browser gate ran."
+      },
+      {
+        "profile": "controls-partition-docs-805",
+        "cause": "Clean-checkout links correctly reject six newly written paths before git staging. Staging the reviewed new records resolves the cause; 806 receives unchanged assertions."
+      }
+    ],
+    "host_baseline": "pending",
+    "one_cycle_pilot": "pending",
+    "same_kernel_30_cycles": "pending"
+  },
+  "remaining": [
+    "Receive the complete mandatory core lane on hosted CI after the local safety interruption; do not repeat an extensive local browser run while global pressure recurs. Complete canonical prolonged-host receiving under safe resources.",
+    "Receive the reviewed partition in the next substantive source/platform checkpoint; do not reclassify the original failed run.",
+    "Freeze the producer and qualify exact installed candidate bytes/dependency closure; preserve separate human observations."
+  ],
+  "audit_counters": "Original 38/46 source-delivered and 1/46 finally accepted counters are unchanged; #369/#372 are separately adopted work.",
+  "publication": "No tag, package, promotion or release is authorized by these source checks.",
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-core-memory-followup-20261114",
+    "profiles": [
+      "molstar-memory-method-799",
+      "molstar-memory-method-shorttmp-800",
+      "build-controls-partition-801",
+      "controls-partition-native-802",
+      "prolonged-full-core-803",
+      "prolonged-full-core-804",
+      "controls-partition-docs-805",
+      "controls-partition-final-806"
+    ],
+    "files": 897,
+    "bytes": 41660825,
+    "manifest_sha256": "55ae6bb1ca272cfd209c324f1f986176d1c2d69b9658ff51b013ab8896b793d7",
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia"
+  }
+}

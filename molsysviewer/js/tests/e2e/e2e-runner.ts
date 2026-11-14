@@ -10,6 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SUITES = [
     "context-menu",
     "controls-visibility",
+    "canvas-popup-mirror",
     "studio-usability",
     "studio-live-capture",
     "studio-image-export",
@@ -95,6 +96,10 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
     // and any explicit caller override unchanged.
     const integratedBudgets: Readonly<Record<string, number>> = {
         "controls-visibility": 300_000,
+        // This existing scientific workflow owns an independent Python view,
+        // scene and popup. Keep it mandatory without charging the preceding
+        // exported-control/bootstrap workflows to the same wall-clock budget.
+        "canvas-popup-mirror": 300_000,
         "studio-usability": 360_000,
         // The unchanged persistent owner completes its primary, popup and
         // detached state/session roundtrips in 321s with Mol* 5.13.1 at 8 CPU/

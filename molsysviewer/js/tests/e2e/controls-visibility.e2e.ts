@@ -5,7 +5,6 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "./e2e-browser";
 import { checkNotebookCanvasPopup } from "./canvas-popup-scenarios";
-import { checkCanvasPopupMirror } from "./canvas-popup-mirror-scenarios";
 import { captureCanvasPopupControllers } from "./canvas-popup-fixture";
 import { checkHelpLayout } from "./help-layout-scenarios";
 
@@ -392,7 +391,6 @@ print(json.dumps({"page": str(output), "single": str(single)}))
         assert.deepEqual(errors, []);
         console.log("[E2E controls] actual Python export/popup: whole-group fade, inert fading input, Cinema slide, two-second discovery, preset cycles, scopes, Settings, Dock/fullscreen, keyboard and stable subscriptions pass");
         await checkNotebookCanvasPopup(page, dir);
-        await checkCanvasPopupMirror(page, dir);
     } finally { await browser.close(); }
 }
 withFixtureWorkspace("controls-visibility", run).catch(error => { console.error(error); process.exit(1); });

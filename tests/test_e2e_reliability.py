@@ -99,11 +99,25 @@ def test_e2e_runner_inventory_matches_every_scientific_suite():
     # Studio authoring, offline web, overlay composition and the molecular story.
     # 63: persistent Studio capture remains mandatory in its bounded entry.
     # 64: detached Studio PNG retains its originating molecular canvas.
-    assert len(expected) == 64
+    # 65: the existing independent scientific popup mirror has its own budget.
+    assert len(expected) == 65
     assert declared == expected
     build_command = package["scripts"]["build:e2e:all"]
     compiled = set(re.findall(r"tests/e2e/([^ ]+)\.e2e\.ts", build_command))
     assert compiled == expected
+
+
+def test_controls_and_scientific_mirror_keep_separate_mandatory_owners():
+    controls = (E2E_ROOT / "controls-visibility.e2e.ts").read_text(encoding="utf-8")
+    mirror = (E2E_ROOT / "canvas-popup-mirror.e2e.ts").read_text(encoding="utf-8")
+    runner = (E2E_ROOT / "e2e-runner.ts").read_text(encoding="utf-8")
+    assert "await checkNotebookCanvasPopup(page, dir);" in controls
+    assert "checkCanvasPopupMirror" not in controls
+    assert mirror.count("await checkCanvasPopupMirror(page, dir);") == 1
+    assert 'withFixtureWorkspace("canvas-popup-mirror", run).catch(' in mirror
+    assert "finally { await browser.close(); }" in mirror
+    for suite in ["controls-visibility", "canvas-popup-mirror"]:
+        assert f'"{suite}": 300_000' in runner
 
 
 def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():

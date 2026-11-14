@@ -342,3 +342,41 @@ Linux core/notebooks were not reached. A notebook-log artifact is proved to
 contain tracked history despite its executor being skipped; its producer
 condition is corrected. Receive the new complete source/core gate after the
 scoped repairs. No installed artifact is qualified.
+
+## Current covering and prolonged receiving — 2026-11-14
+
+The [followup receipt](../molstar_qualification_followup_20261114.json)
+receives all three native Python 3.14 source hosts (4,724/4,693/4,697 passes)
+and all 25 Linux notebooks on `22b51f89` with scientific provider `aee7aa65`.
+Original artifact sizes and hashes agree independently. #386 is source-resolved;
+the complete run `43616029893` remains failed by reopened #244.
+
+That recurrence exhausts the combined controls entry after its two earlier
+workflows, while its independently initialized scientific mirror is still
+progressing. The mirror now owns a separate mandatory core entry with the
+same 300-second budget. Every original scientific assertion, operation wait
+and cleanup is unchanged; only per-camera phase timing is added. Native
+`802` passes both complete entries without overrides. The build and 535
+source guards pass in `801`. Inventory is 65 total / 62 core entries; all
+three remote preview entries retain their post-1.0 exclusion.
+
+The complete uninterrupted core lane remains required. Prolonged receiving
+uses the unmodified canonical MolSysMT #723 method at `429d7494` over the
+frozen `aee7aa65` scientific/native source, recording that composition rather
+than claiming a pure provider checkout or an installed pair. Its retained/
+released-object and remote-handle control passes in `800`; the plain-Jupyter
+baseline, one-cycle pilot and current 30-cycle session are separate exits.
+The first harness attempt has a too-long Chromium socket path and no executed
+molecular gate; its failure is retained. Managed short temporary paths correct
+only that launcher limitation. None of these controls changes scientific
+algorithms, silently disables a Jupyter extension or replaces human acceptance.
+
+Full-core `804` then receives the first three complete suites, including both
+new mandatory owners, before global memory PSI full `avg10=5.68` crosses the
+unchanged safety threshold 2 during Studio. All 39 owned processes retire,
+inputs remain unchanged and no OOM, swap activity or owned cleanup error is
+recorded. Available RAM is 15.16 GiB and own cgroup pressure remains zero;
+those observations do not identify the cause of global pressure. The child
+status zero does not qualify the interrupted lane. Preserve three complete
+suites and one incomplete scope, then use the next substantive hosted checkpoint
+for the whole core lane instead of repeatedly loading this shared host.

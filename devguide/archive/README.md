@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Source checkpoint guard/artifact recovery](source_checkpoint_guard_and_artifact_recovery.md) — #386 receives all Python source hosts and 25 notebooks, preserves command/path contracts and attributes logs only to their producing execution.
+
 - [Native source UTF-8 recurrence](source_guards_utf8_recurrence.md) — #169 receives all twelve original Unicode-failing cases on native Windows, retaining independent path-identity and full-gate limits.
 - [Windows WebM codec selection](windows_movie_webm_encoder.md) — #385 receives automatic AV1, explicit-codec refusal and 61 codec/export cases on each source host with original native encoder receipts.
 
