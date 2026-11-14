@@ -105,9 +105,16 @@ def test_encoder_diagnostic_cannot_qualify_or_broaden_a_candidate(platform, rece
     diagnostic, full = tests["run"].split("else", 1)
     assert "tests/test_movie_export.py" in diagnostic
     assert '-m "not qt_runtime" tests/' in full
-    receipt = next(step for step in steps if step.get("name") == "Preserve native Movie encoder diagnostic logs")
-    assert receipt["if"] == "always() && inputs.encoder_diagnostics == true"
-    assert receipt["with"]["path"].endswith("/**/encoder.log")
+    assert "--basetemp=.pytest_cache/source-receiving" in full
+    receipt = next(
+        step for step in steps if step.get("name") == "Preserve native Movie encoder identity and diagnostics"
+    )
+    assert receipt["if"] == "always() && inputs.receiving_scope != 'diagnostics'"
+    assert "/**/encoder.log" in receipt["with"]["path"]
+    assert "/**/encoder-receipt.json" in receipt["with"]["path"]
+    for scope in ("movie-encoder-diagnostic", "source-receiving"):
+        assert f".pytest_cache/{scope}/**/encoder-receipt.json" in receipt["with"]["path"]
+    assert "import imageio, imageio_ffmpeg" in diagnostic
 
 
 @pytest.mark.parametrize(

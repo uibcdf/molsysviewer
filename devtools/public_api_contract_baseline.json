@@ -19934,6 +19934,15 @@
         {
           "default": {
             "kind": "literal",
+            "type": "str",
+            "value": "auto"
+          },
+          "kind": "KEYWORD_ONLY",
+          "name": "codec"
+        },
+        {
+          "default": {
+            "kind": "literal",
             "type": "bool",
             "value": false
           },

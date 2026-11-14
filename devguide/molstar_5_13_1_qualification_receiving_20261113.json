@@ -29,8 +29,8 @@
       "tests/test_e2e_reliability.py": "df39dc823dc0ea1aecc84f0db822531d13a258d7ac2205b373937367a5dc0395",
       "devtools/conda-envs/build_env.yaml": "7acf9013b68f739205d264c2311e3daa1074cc90c3aa704ff276c9c4e6408f28",
       "devtools/conda-build/meta.yaml": "371781bcc62fe36977a45be3d34092372b4e72f504a7aa6c378009d34e29fc21",
-      "molsysviewer/viewer.js": "c007fe172352bdaab4f7afdf68bed441357f23a0674d7c764f949dad749805e4",
-      "molsysviewer/js/tests/e2e/harness.bundle.js": "9e37887dbbb2b096766dec4970aacb0093ad57cb35681682210f9f70437dc2af",
+      "molsysviewer/viewer.js": "dd1e305412813aefa1f7b941c7c9467da2a95f7c06f97b6563aad58ce9ac7885",
+      "molsysviewer/js/tests/e2e/harness.bundle.js": "ce1a788bae27d96f935a06ec1b039f880b4c1453fef49ae4c8fbd8a2b5754c15",
       "molsysviewer/js/tests/e2e/studio-usability.e2e.ts": "27b771fc79ad37a0ac436cc3751124599f33f968d3c98cfa307ff6aa5bd981d5",
       "molsysviewer/js/tests/e2e/studio-live-capture.e2e.ts": "f0fb11587c79543b57e0f69ecf13779dfc583baaa67f9b6fb63605306b6776d6",
       "molsysviewer/js/tests/unit/render-presentation.test.ts": "4b5e538fbc065298712988b7b1d29c31c1286f590bd92c791f6d7f5cd1a87c22",
@@ -76,10 +76,24 @@
       "tests/_jupyter_movie.mjs": "1d85c2d92d6318cb986c24b0a2acb8ac741545b5e6e027ae54d26b2390c5b8fa",
       "tests/test_documentation_pages_run.py": "ad7e986651f6751f8f59474a95cce3a3dc1514d11aeb92b231592a0b3d3efea4",
       "tests/test_js_source_coverage.py": "377fe41461d3856d40c042acd6810d444470c036b95bf30228dd3759d0abed2a",
-      "tests/test_movie_export.py": "6fc453db160010c56139df64160ddda880511c11ea3edd0ab4f2606bf3d0d23e",
-      "tests/test_movie_studio.py": "8874995c62bd86b1a532a65ad68d345d3723f5a963e65bfde80c3d64e0c79ba1",
+      "tests/test_movie_export.py": "331376be0568abd189c6aefd179dbbe54c30f7aae1b8a0466ab46d560c8ae7a5",
+      "tests/test_movie_studio.py": "a04f42d45f92abcc3fcf6402e1ccd343856215e6ffc7b00ac9d1a3619a4b31ee",
       "tests/test_source_text_encoding.py": "dcd5768e9a7a074172effc6a3f3e0c61c652e736003f270347f631823fe3ed65",
-      "tests/test_source_workflow_coverage.py": "e5baab5621cab43483ff872023e9f41348aa28cc078ac26d33738d11017006be"
+      "tests/test_source_workflow_coverage.py": "cde9f39ec0f9e66e60e13db2291f07834b759d43e0aed0f8568fc7829ff085e6",
+      "molsysviewer/viewer/_movie_encoder.py": "13622860db8f9c84ab7a7dfa58e28c6a53c54eedaed89ea2100ee1a442794742",
+      "molsysviewer/viewer/_movie_export.py": "8748b94fdfae8d92e45f02119b5b1bc7ab724bd00609e598335f9d2af9b4627c",
+      "molsysviewer/viewer/_movie_studio.py": "07aa402c332a81568f52a35df602edaa017c9de1a6cdf3998434a5f635084849",
+      "molsysviewer/viewer/movie.py": "620c86bdf84e854e76c22c0c3b4cc2663cf6411c442df4162e00f381a29cf579",
+      "molsysviewer/_private/argdigest/argument/codec.py": "e31bd3521c1f0a9af0b6d724ed78197b2f33a68a96e67c8f33af0fcc6760bd30",
+      "molsysviewer/_private/smonitor/catalog.py": "4cdf9eb927ec5f89bec32c9b3077ced5facefff34d70fd177aa599840a1d6ea5",
+      "molsysviewer/js/src/ui/panels/movie-panel.ts": "2a0a454cd8d7d7ace432478f226689b1036ccb101270767eabb6d1758d37bf1f",
+      "molsysviewer/js/tests/e2e/movie-studio.e2e.ts": "4a09ddce7f2dbbfbef60d342e66c92bed3ef6a6d6b9a57743d5033b3096404f6",
+      "molsysviewer/js/tests/e2e/movie-studio-bridge.py": "93ab9c9062ac15ea6bcf873430f6a7913717e3a31a313242fe2ca610f4fe3aef",
+      "molsysviewer/js/tests/unit/movie-studio.test.ts": "ebf4a6dc44be0b617146a37a932aca0b1bed9c5806e8be1724cac21e5e7c54c4",
+      "tests/test_movie_codecs.py": "6280f0e9ce988716944807cbe93ce44b079d314f82e90112e794c2d805580da4",
+      ".github/workflows/ci-python-314-source-pair.yaml": "a8bb9199b9d12b25f8004fc9ad0379873e7d4a039f2229850eabad91c25ee389",
+      "devtools/public_api_contract_baseline.json": "c4a2618a2da2173f7169c829dd7b1aa5b71da5e6fb64749ee3d036e6d8d1430d",
+      "devtools/public_api_inventory_baseline.json": "d96a5251198616f175366b794dbd179929c4b497943c2f3d937452657591ef42"
     },
     "scientific_provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
     "pyunitwizard_source": "9bb4f5fae4ff6d1331b42fa387c933f4bec934e7",
@@ -870,6 +884,22 @@
       },
       "cleanup": "No survivors/errors",
       "next": "Postpone another extensive local run while shared swap pressure recurs; complete the full core gate in a suitable local window or reviewed hosted checkpoint."
+    },
+    "movie_codec_recovery": {
+      "receipt": "movie_codec_receiving_20261113.json",
+      "final_python": "776 passed; 20 explicitly limited skips",
+      "canonical_js": "491 passed, zero skipped",
+      "native_studio": "789 complete AV1/PNG/owner receiving",
+      "image_regressions": "790 complete two-suite receiving",
+      "windows": "pending; #385 remains open",
+      "additional_receiver_label": "#383 corrected in both owners and native entry received"
+    },
+    "canonical_units_current": {
+      "profile": "787",
+      "passed": 491,
+      "skipped": 0,
+      "node": "22.23.4",
+      "project_runtime_harness_entries": "all pass; original 761 receiving retains its original scope"
     }
   },
   "controlled_profiles": [
@@ -3058,6 +3088,378 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "be21bbe7db78f5fd09ed742b95d5d8ac99421d77462666221856bfd01f9565b4"
+    },
+    {
+      "state": "completed",
+      "native_exit": 2,
+      "resource_stop": null,
+      "seconds": 4.2116534630768,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codecs-777",
+      "peak_summed_owned_rss_mib": 115.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "f7b336e22b8152e707f2b5e01e3cda90fed5323534e87c5aec6a318d797d6305",
+      "pytest": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 14.040866488125175,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codecs-778",
+      "peak_summed_owned_rss_mib": 413.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "18a33e53c937f2d4c514c30df591244b5c04e75c5123beef91a18bd156d07f43",
+      "pytest": {
+        "tests": 59,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 8.45133208623156,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-contract-779",
+      "peak_summed_owned_rss_mib": 401.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "35b8a61aeae78c08b23e6500139287f9df58c6105fd3c408cca1869beeea6d1e"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 40.14637692179531,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-python-780",
+      "peak_summed_owned_rss_mib": 581.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "fa96cc076196ac9948fd4ca8911f0512cfc6fae7a99193ce3c43912d7e732d47",
+      "pytest": {
+        "tests": 338,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 20
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 7.121101809665561,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-inventory-781",
+      "peak_summed_owned_rss_mib": 395.2,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "fee7d947a1f999db3ebf3ebeedd01e98ff00812377a2e1da1b59ace571c51afb"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 42.16468495083973,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-movie-codec-782",
+      "peak_summed_owned_rss_mib": 491.7,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "5d961393ee445db5d58c49e3ef0309ce71104e3c9bd5e4537116be7e6f1a471c"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 72.24584908597171,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-studio-783",
+      "peak_summed_owned_rss_mib": 2490.3,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "084ae59ba501cfc692e078307b8da5ac88e276f24897fcb4a2399d52e9afd31f"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 2.5853491122834384,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-codec-diagnostic-784",
+      "peak_summed_owned_rss_mib": 191.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "c126ed5431637a05ed5ad9e339e3ba3e0909df75b614fe037e875d2b00bc80c1"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 50.4641492748633,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-color-785",
+      "peak_summed_owned_rss_mib": 2500.2,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "65377cfd66bfa0427c9950d9be13d7beaafff63cdae3c7f6808b9602a98d9dc8"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 2.717060016002506,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-color-control-786",
+      "peak_summed_owned_rss_mib": 82.1,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "5105da782eb5bdc0350fca34fa764c19996889e5ecb5be424f92ebab084f43c6"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 28.148715938907117,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-movie-codec-final-787",
+      "peak_summed_owned_rss_mib": 491.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "a6ddca7a9c02410e5a749bcbf8202f7f7e65b06ff55ca0ec4eddb46dd1ee4f4a"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 44.80935008218512,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-final-python-788",
+      "peak_summed_owned_rss_mib": 608.0,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "0c9681cfeacb541c4a3a05ace53d5e9825c6f01153c2e574424e2471c9b6adb0",
+      "pytest": {
+        "tests": 796,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 20
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 62.52634234493598,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-studio-final-789",
+      "peak_summed_owned_rss_mib": 2669.7,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "6d75dcac2df0b80f4b9022050e2a6b1eb9ba62ad073df2493c59497c8b83db09"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 143.16724930889904,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-image-regressions-790",
+      "peak_summed_owned_rss_mib": 2452.0,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "835edf7a4a79642aa1c2c0405e1601f17b604bc08dd559fedc8e0997cc24686c"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 5.964359610341489,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-checkpoint-checks-791",
+      "peak_summed_owned_rss_mib": 180.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "e32edb11bfd5b34af0efb57454e9b2789128d3ef66365c8890935432960afb40",
+      "pytest": {
+        "tests": 67,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 5.214095490984619,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "movie-codec-final-records-792",
+      "peak_summed_owned_rss_mib": 187.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "f3d133cffa44ff1bb4bd765cad279ead346ade7eabc194dfa00f818c9c49f085",
+      "pytest": {
+        "tests": 449,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
     }
   ],
   "remaining": [
@@ -3166,6 +3568,35 @@
       "manifest_sha256": "ff5e911cd2ce88d9ace035a48655a0da52b85d60d02631235b8a384fa0c67e7c",
       "originals_retained": true,
       "credential_shaped_files_excluded": 0
+    },
+    "codec_followup": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-codecs-20261113",
+      "profiles": [
+        "movie-codecs-777",
+        "movie-codecs-778",
+        "movie-codec-contract-779",
+        "movie-codec-python-780",
+        "movie-codec-inventory-781",
+        "build-movie-codec-782",
+        "movie-codec-studio-783",
+        "build-codec-diagnostic-784",
+        "movie-codec-color-785",
+        "movie-codec-color-control-786",
+        "build-movie-codec-final-787",
+        "movie-codec-final-python-788",
+        "movie-codec-studio-final-789",
+        "movie-codec-image-regressions-790",
+        "movie-codec-checkpoint-checks-791",
+        "movie-codec-final-records-792"
+      ],
+      "files": 275,
+      "bytes": 90681734,
+      "manifest_sha256": "ae64f3ccdace7ded596a8b1ddce5f540dfe280568502ec57a24ff92bfb381e59",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 0,
+      "custodian": "Diego Prada Gracia",
+      "scope": "Immutable original local codec profiles/source snapshots. Public receipt gains this custody pointer after the copy; it does not rewrite preserved files."
     }
   },
   "preflight_rejections": [

@@ -545,3 +545,4 @@ Completed work, kept for the reasoning:
 - [Native image readiness](native_image_asset_readiness.md) — #382 waits for qualified SMAA uploads before first PNG/Movie rendering, preserving requested quality and cancellation.
 
 - [Actual-Jupyter Movie export field](jupyter_movie_export_field_label.md) — #383 aligns the exact field selector and receives all eight actual-host authoring/export/session/cancellation cases.
+- [Additional Movie Studio export-field owner](movie_export_field_additional_owner.md) — #383 also aligns the native receiver, guards both owners and passes the complete Studio scenario with AV1 export/browser playback.

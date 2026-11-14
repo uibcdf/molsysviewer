@@ -940,7 +940,7 @@ freeze under [#372](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md).
 qualification. The timing decision is not runtime or installed acceptance.
 
 The [current migration receipt](molstar_5_13_1_qualification_receiving_20261113.json)
-records exact 5.13.1 working sources, 490 units and separately scoped native
+records exact 5.13.1 working sources, 491 current units and separately scoped native
 receiving. [#378](archive/popup_pending_capture_close.md) receives exact owner
 retirement and the complete pending-capture lifecycle in canonical native run
 `725`. [#379](archive/panel_only_native_loop.md) now also preserves the stopped
@@ -960,7 +960,7 @@ Python 3.14 platforms. All three jobs fail the Python step: Linux/macOS have
 five failures each; Windows has eighteen. The four original artifact ZIPs
 match GitHub's sizes and SHA-256. Five shared guard/example synchronization
 faults are diagnosed; Windows also exposes twelve UTF-8 decoding failures
-(reopened #169) and a native WebM encoder failure (#385, cause unknown).
+(reopened #169) and a native WebM encoder failure (#385, unknown in that artifact).
 The corrected focused scope passes 860 cases with four explicitly unselected
 live-host skips in `771`. Actual Jupyter `772` executes the documented live
 cell and completes six stopped/strong restores, four Studio captures and six
@@ -973,13 +973,20 @@ Studio/cancellation/expiry control with unchanged inputs and clean cleanup.
 The original `772` resource interruption remains recorded independently.
 The single bounded Windows encoder diagnostic
 [43521107544](https://github.com/uibcdf/molsysviewer/actions/runs/43521107544)
-uses published `26f935f0` and the unchanged exact provider; it will recover
+uses published `26f935f0` and the unchanged exact provider and recovers
 native stderr before another full matrix. This encoder-only run is not full
 source qualification; the failed original checkpoint remains failed.
 The diagnostic reproduces one failure / 23 passes: FFmpeg 9.0.2 on Windows
 does not provide `libvpx-vp9`. The inspected native distribution recipe
-confirms that exclusion. #385 now owns the codec-availability/contract choice;
-the maintainer's preference is pending, with no silent codec substitution.
+confirms that exclusion. Following the instruction to proceed, #385 now
+implements a documented `codec="auto"|"h264"|"vp9"|"av1"` policy shared
+by Python and Studio. Auto prefers VP9 then AV1 for WebM; an explicit choice
+never substitutes another codec. Bounded native inspection records the exact
+executable and policy. The [codec receipt](movie_codec_receiving_20261113.json)
+retains 776 final Python passes, 491 JS passes, complete native Studio AV1
+and existing Movie/popup regressions. Windows fallback and the next complete
+source/platform/core checkpoint remain pending. The compatible keyword-only
+extension and its one new digester are explicitly reviewed in F1's baselines.
 
 Local full-core `775` completes context-menu and part of controls/popup
 receiving before global swap activity triggers clean resource retirement.

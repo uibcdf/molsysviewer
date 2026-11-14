@@ -57,6 +57,10 @@ The adopted [pre-1.0 Mol* integration review](pending_proposals/pre_1_0_molstar_
 under #369 is an additional required architectural review before that handoff,
 with latest-release/development comparisons and explicit implementation and
 dependency decisions.
+The [current codec recovery](movie_codec_receiving_20261113.json) implements
+explicit/automatic FFmpeg selection and receives native Studio AV1 plus
+existing Movie/popup regressions; Windows and covering source/core gates
+remain pending under #385/#372.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

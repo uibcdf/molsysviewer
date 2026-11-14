@@ -24,7 +24,7 @@ list.
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles. *(medium, measured)*
 - [`source_guards_utf8_recurrence.md`](source_guards_utf8_recurrence.md) — [#169](https://github.com/uibcdf/molsysviewer/issues/169) — New native-source guards reintroduce platform-dependent text decoding. *(medium, reproduced)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
-- [`windows_movie_webm_encoder.md`](windows_movie_webm_encoder.md) — [#385](https://github.com/uibcdf/molsysviewer/issues/385) — Native Windows WebM encoding fails without retained encoder stderr. *(medium, reproduced)*
+- [`windows_movie_webm_encoder.md`](windows_movie_webm_encoder.md) — [#385](https://github.com/uibcdf/molsysviewer/issues/385) — WebM needs explicit native codec selection and Windows receiving. *(medium, reproduced)*
 
 ### Partially done (11)
 

@@ -70,3 +70,13 @@ test("Choosing a discrete Movie property resets continuous easing to its admitte
     const panel = editor(); panel.easing = "ease-in"; panel.property = "visible";
     panel.defaultValue(); assert.equal(panel.easing, "linear");
 });
+
+test("Codec intentions require the Python owner's capability and retain an explicit draft", () => {
+    const panel = editor(); panel.setState(state); panel.codec = "av1";
+    assert.equal("codec" in panel.exportOptions(), false, "An older owner must not silently ignore a new choice");
+    panel.setState({ ...state, codec_selection: 1 });
+    assert.equal(panel.exportOptions().codec, "av1");
+    panel.setState({ ...state, codec_selection: 2 });
+    assert.equal("codec" in panel.exportOptions(), false, "Unknown policy versions are not declared compatible");
+    assert.equal(panel.codec, "av1", "The form draft survives unrelated summaries");
+});

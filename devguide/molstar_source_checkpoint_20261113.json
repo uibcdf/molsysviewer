@@ -297,7 +297,7 @@
     "windows": "Local checks do not qualify the native Windows repair.",
     "live_example": "The explicit live-state-capture block is handed unchanged to the actual Jupyter kernel, separately from sequential headless blocks."
   },
-  "next": "Resolve the explicit WebM codec/availability contract (#385), retain reopened UTF-8 receiving (#169), and complete full core/platform source qualification. Actual-Jupyter 774 is complete; local core 775 is resource-interrupted. No publication or installed candidate is authorized.",
+  "next": "Review and publish the codec patch, then dispatch one full exact-source three-platform checkpoint including Linux core. #169/#385 platform receiving remains open; original failed runs retain their native outcomes. No candidate/publication.",
   "encoder_diagnostic": {
     "run_id": 43521107544,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43521107544",
@@ -340,7 +340,7 @@
       ],
       "finding": "libvpx explicitly excluded on Windows; AOM/SVT AV1 declared. This is inspected source, not an executed Windows AV1 qualification."
     },
-    "codec_policy": "Maintainer preference requested for explicit codec plus documented auto-selection versus requiring a VP9-enabled FFmpeg; no codec substitution implemented.",
+    "codec_policy": "Following instruction to proceed, implemented explicit codec plus documented auto-selection; actual Windows/source-core qualification pending. See movie_codec_receiving_20261113.json.",
     "scope": "Single Windows source-only encoder diagnostic, not a complete source/installed/platform claim; native failure retained."
   }
 }

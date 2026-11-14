@@ -874,6 +874,7 @@ class MovieManager:
         height_px: int = 720,
         sample_level: int = 2,
         format: str | None = None,
+        codec: str = "auto",
         overwrite: bool = False,
         include_overlays: bool = True,
         timeout: float = 15.0,
@@ -913,6 +914,11 @@ class MovieManager:
         progress dictionary. The view remains at the last sampled pose.
         MP4/WebM require the optional imageio-ffmpeg backend; media formats require
         ImageIO. A missing renderer or codec never produces a placeholder.
+        ``codec="auto"`` selects H.264 for MP4 and prefers VP9 over AV1 for
+        WebM, inspecting the same FFmpeg executable used for encoding. Explicit
+        ``h264``, ``vp9`` or ``av1`` requests require that exact codec and a
+        compatible container. PNG/HTML require ``auto``. The manifest records
+        requested/actual codec and selection policy.
         """
         from ._movie_export import export_movie
 
@@ -924,6 +930,7 @@ class MovieManager:
             height_px=height_px,
             sample_level=sample_level,
             format=format,
+            codec=codec,
             overwrite=overwrite,
             include_overlays=include_overlays,
             timeout=timeout,

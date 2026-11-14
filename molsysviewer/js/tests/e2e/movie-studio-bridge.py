@@ -1,5 +1,7 @@
 """Actual Python Movie/scene authority; only notebook comm delivery is adapted."""
 
+import base64
+import io
 import json
 import os
 import runpy
@@ -22,8 +24,13 @@ def main():
             view.regions.add(atom_indices=[0, 1], tag="site", representation="ball-and-stick", color="orange")
             coordinates = msv.pyunitwizard.get_value(view.get_coordinates(), to_unit="angstrom").copy()
             original = view.molsys
+            captured = {}
 
             def action(owner, event):
+                content = event.get("payload", event)
+                frame = content.get("movie_frame")
+                if content.get("event") == "visual_state_snapshot" and isinstance(frame, dict):
+                    captured.setdefault(frame["job_id"], {})[frame["frame_index"]] = frame["data_uri"]
                 if "movie_editor_duration_ms" in event:
                     owner.movie.set_duration(event["movie_editor_duration_ms"])
                     return {"duration_ms": owner.movie.duration_ms}
@@ -49,6 +56,35 @@ def main():
                         frames = [name for name in archive.namelist() if name.endswith(".png")]
                         assert frames
                         return {"archive": {"manifest": manifest, "frames": len(frames), "bytes": path.stat().st_size}}
+                if event.get("movie_editor_media"):
+                    media = runpy.run_path(str(Path(__file__).with_name("movie-export-bridge.py")))["_video"]
+                    metadata, frames, manifest = media(Path(event["movie_editor_media"]))
+                    assert manifest["encoder"]["codec_family"] == "av1"
+                    assert len(frames) == manifest["sampling"]["frame_count"] == 2
+                    assert metadata["size"] == (1280, 720) and metadata["fps"] == 2
+                    assert abs(metadata["duration"] - 1) < 0.01
+                    with zipfile.ZipFile(event["reference"]) as archive:
+                        images = [base64.b64encode(archive.read(f"frames/{i:08d}.png")).decode() for i in range(2)]
+                    diagnostics = os.environ.get("MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR")
+                    if diagnostics:
+                        import shutil
+
+                        import imageio.v2 as imageio
+
+                        shutil.copyfile(event["movie_editor_media"], Path(diagnostics) / "studio-av1.webm")
+                        shutil.copyfile(event["reference"], Path(diagnostics) / "studio-reference.zip")
+                        (Path(diagnostics) / "av1-manifest.json").write_text(
+                            json.dumps(manifest, indent=2), encoding="utf-8"
+                        )
+                        for i, frame in enumerate(frames):
+                            imageio.imwrite(Path(diagnostics) / f"av1-native-{i}.png", frame)
+                            reference = imageio.imread(io.BytesIO(base64.b64decode(images[i])))
+                            imageio.imwrite(Path(diagnostics) / f"av1-expected-{i}.png", reference)
+                            original_frame = captured[manifest["job_id"]][i]
+                            (Path(diagnostics) / f"av1-input-{i}.png").write_bytes(
+                                base64.b64decode(original_frame.split(",", 1)[1])
+                            )
+                    return {"manifest": manifest, "images": images, "last_output": owner.movie._studio.last_output}
                 return False
 
             artifacts = os.environ.get("MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR")

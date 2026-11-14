@@ -48,7 +48,7 @@ published native replacement or a separately reviewed dependency update.
 | Step | Exit and evidence | Current state |
 | --- | --- | --- |
 | Q1 | Preserve old identities; inspect exact new artifact/closure; align Node >=22 build routes. | Source selected: exact 5.13.1, isolated closure and old source/lock/runtime hashes preserved; build and recipe routes use Node 22. |
-| Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 490 units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
+| Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 491 current units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
 | Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Partial: completed context-menu motion, controls/popup mirroring and Studio layout/trajectory controls pass; remaining core receiving is pending. |
 | Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Partial: current persistent Studio passes in 729; native physical teardown, real Qt/GPU capture and actual-Jupyter lifecycle pass in 730/731/732. #381 separates healthy public defaults from deliberately delayed science; complete eight-case actual-Jupyter receiving passes in 739, with prior failed scopes retained. Movie, prolonged and covering exits remain separate. |
@@ -319,3 +319,19 @@ Actual Movie notebook `770` separately passes all eight cases after the #383
 field-label correction. Retain its original failed `767` attempt and exact
 owner inputs. Neither this successful host nor local checks make the failed
 source checkpoint green or close #369/#372.
+
+## Current codec recovery — 2026-11-13
+
+The [codec receipt](../movie_codec_receiving_20261113.json) implements explicit
+and automatic native selection for #385, after Windows diagnostic stderr
+establishes absent libvpx. Final local sources receive 776 Python passes,
+491 canonical JS cases and native Studio AV1 export/browser playback.
+The ordinary Movie-export and shape-only/popup regressions also pass. The
+additional #383 receiver label is corrected and guarded across both owners;
+earlier actual-Jupyter receiving retains its original source identity.
+
+The 320p chromatic-edge oracle failures and independent codec-free YUV420
+control remain preserved. The final 720p interior-colour guard uses the
+existing MP4 sampling rule and unchanged tolerance; product quality and
+deadlines are unchanged. Full Windows fallback, all three source hosts and
+the complete core gate remain pending; no new artifact is qualified.

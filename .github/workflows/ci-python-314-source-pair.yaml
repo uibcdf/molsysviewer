@@ -300,18 +300,25 @@ jobs:
         env:
           ENCODER_DIAGNOSTICS: ${{ inputs.encoder_diagnostics || false }}
         run: |
+          python -c "import imageio, imageio_ffmpeg"
           if [[ "$ENCODER_DIAGNOSTICS" == true ]]; then
-            python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci tests/test_movie_export.py --basetemp=.pytest_cache/movie-encoder-diagnostic --junitxml=source-receiving.xml
+            python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci tests/test_movie_export.py tests/test_movie_codecs.py --basetemp=.pytest_cache/movie-encoder-diagnostic --junitxml=source-receiving.xml
           else
-            python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/ --junitxml=source-receiving.xml
+            python -m pytest -o receptor_rerun_command="python -m pytest" --receptor=ci -m "not qt_runtime" tests/ --basetemp=.pytest_cache/source-receiving --junitxml=source-receiving.xml
           fi
 
-      - name: Preserve native Movie encoder diagnostic logs
-        if: always() && inputs.encoder_diagnostics == true
+      - name: Preserve native Movie encoder identity and diagnostics
+        if: always() && inputs.receiving_scope != 'diagnostics'
         uses: actions/upload-artifact@v4
         with:
           name: movie-encoder-native-${{ runner.os }}
-          path: molsysviewer-source/.pytest_cache/movie-encoder-diagnostic/**/encoder.log
+          path: |
+            molsysviewer-source/.pytest_cache/movie-encoder-diagnostic/**/encoder.log
+            molsysviewer-source/.pytest_cache/movie-encoder-diagnostic/**/encoder-receipt.json
+            molsysviewer-source/.pytest_cache/movie-encoder-diagnostic/**/metadata.txt
+            molsysviewer-source/.pytest_cache/source-receiving/**/encoder.log
+            molsysviewer-source/.pytest_cache/source-receiving/**/encoder-receipt.json
+            molsysviewer-source/.pytest_cache/source-receiving/**/metadata.txt
           include-hidden-files: true
           if-no-files-found: warn
 

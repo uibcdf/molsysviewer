@@ -13,6 +13,18 @@ META = {
 }
 
 CATALOG = {
+    "movie_codec_unavailable": {
+        "code": "MOLSYSVIEWER-MOVIE-CODEC-UNAVAILABLE",
+        "source": "molsysviewer.movie",
+        "category": "dependency",
+        "level": "ERROR",
+    },
+    "movie_encoder_probe_failed": {
+        "code": "MOLSYSVIEWER-MOVIE-ENCODER-PROBE-FAILED",
+        "source": "molsysviewer.movie",
+        "category": "dependency",
+        "level": "ERROR",
+    },
     "movie_overlay_unavailable": {
         "code": "MOLSYSVIEWER-MOVIE-OVERLAY-UNAVAILABLE",
         "source": "molsysviewer.movie",
@@ -305,6 +317,8 @@ CATALOG = {
 #: `devguide/smonitor.md` rule 1 ("zero string hardcoding") was satisfied on paper and
 #: defeated in practice.
 MESSAGES = {
+    "movie_codec_unavailable": "The selected FFmpeg cannot encode {format} with codec {codec}. This request requires {required_encoders}. Enable the required encoder in that FFmpeg build or choose Auto/another compatible output.",
+    "movie_encoder_probe_failed": "FFmpeg capability inspection failed ({reason}). Verify the selected imageio-ffmpeg executable and its dependencies.",
     "movie_overlay_unavailable": "A visible Movie plot or legend is unavailable in the requested canvas. Expand minimized plots, return detached cards, or explicitly exclude overlays before exporting.",
     "movie_overlay_changed": "A Movie overlay changed during capture. Keep its canvas, plot cards and opacity fixed while exporting, then retry.",
     "movie_overlay_limit": "Movie composition exceeds its vector limits. Use at most 32 overlays and 8 MiB of SVG content; legends admit at most 256 entries and 16384 characters. Reduce the displayed content or explicitly exclude overlays.",

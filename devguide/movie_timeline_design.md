@@ -750,9 +750,20 @@ settings are restored and interactive-canvas quality is not changed. The
 renderer's remaining deadline includes the draw barrier and image capture.
 
 Python sends one decoded RGB frame at a time to a single-thread FFmpeg pipe,
-with backpressure and finite waits. MP4 uses libx264/CRF 18/medium/faststart;
-WebM uses libvpx-vp9/CRF 30 without a target bitrate. The manifest records the
-explicit colour conversion, provider version and executable digest. PNG ZIP
+with backpressure and finite waits. The keyword-only `codec="auto"` keeps MP4
+on libx264/CRF 18/medium/faststart. WebM auto-selection prefers libvpx-vp9,
+then libaom-av1 when VP9 is absent; both use CRF 30 without a target bitrate.
+Explicit `h264`, `vp9` and `av1` choices require their exact native encoder
+and a compatible container. PNG/HTML admit only `auto`. AV1 additionally
+records `cpu_used=6`; row multithreading is disabled and threads remain one.
+Bounded version/encoder queries share one preparation deadline, inspect the
+same executable later used for encoding and retire only their own subprocess.
+Native failure, output overflow and missing codec remain distinct outcomes.
+The manifest records `molsysviewer.movie_codecs@1`, requested/actual codec,
+ordered candidates, available choices, explicit colour conversion, provider
+version and executable digest. Studio exposes the same choice behind its
+collapsed Video codec controls and displays the selected codec after saving.
+Source support is not native Windows/installed acceptance. PNG ZIP
 stores each lossless image immediately and appends the manifest; videos embed
 it as comment metadata. Both paths use a temporary sibling destination, then
 atomic no-clobber publication by default or explicit atomic replacement.

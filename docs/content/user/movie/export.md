@@ -67,8 +67,30 @@ environment:
 conda install -c conda-forge imageio imageio-ffmpeg
 ```
 
-MP4/H.264 and WebM/VP9 use `imageio-ffmpeg>=0.6.0`; media formats use ImageIO for
-PNG decoding. A missing renderer or encoder raises an error.
+MP4/H.264 and WebM/VP9 or AV1 use `imageio-ffmpeg>=0.6.0`; media formats use
+ImageIO for PNG decoding. The selected FFmpeg build must provide the encoder.
+A missing renderer or encoder raises an error.
+
+The default `codec="auto"` selects H.264 for MP4. For WebM it prefers VP9,
+then AV1 if that FFmpeg build lacks VP9. This includes Windows distributions
+that provide AV1 without VP9. The manifest records the requested and actual
+codec, available choices, selection policy and executable SHA-256.
+
+To require a particular codec, select it explicitly:
+
+```python
+result = await view.movie.export_async("movie.webm", codec="av1")
+print(result["manifest"]["encoder"]["codec_family"])
+```
+
+Explicit `"h264"`, `"vp9"` and `"av1"` choices never substitute another codec.
+H.264 requires MP4; VP9 and AV1 require WebM. PNG/HTML use `"auto"` and need
+no video encoder. An incompatible or unavailable choice preserves the output
+destination. Studio offers the same choices under **Video codec** and reports
+the codec used after saving.
+
+MP4/WebM use lossy YUV 4:2:0 video. Fine colored edges can blend, especially
+at low resolution. Use PNG frames when you need the exact exported pixels.
 
 This implementation exports camera, structure, visibility and the
 [admitted appearance tracks](timeline.md#animating-appearance).
@@ -95,6 +117,7 @@ Keep your molecular session to edit the story later.
 | `width_px`, `height_px` | `1280`, `720` | Exact resolution. Video dimensions must be even. |
 | `sample_level` | `2` | Mol* multisampling level, from 0 to 5; the interactive canvas keeps its settings. |
 | `format` | inferred | `"mp4"`, `"webm"`, `"pngs"` or `"html"`. |
+| `codec` | `"auto"` | H.264 for MP4; prefer VP9 then AV1 for WebM. Explicit `"h264"`, `"vp9"` or `"av1"` requires that codec. |
 | `overwrite` | `False` | Replace an existing output only after successful completion. |
 | `include_overlays` | `True` | Require support for visible scientific overlays. |
 | `timeout` | `15.0` | Renderer/encoder wait budget in seconds, up to 300. |

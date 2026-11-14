@@ -3,13 +3,11 @@
 import asyncio
 import base64
 import binascii
-import hashlib
 import inspect
 import io
 import json
 import math
 import os
-import shutil
 import struct
 import tempfile
 import time
@@ -20,6 +18,8 @@ from pathlib import Path
 from uuid import uuid4
 
 from ._movie_composition import checked_composition, overlay_requirements, overlay_revisions, overlays_unchanged
+from ._movie_encoder import codec_candidates
+from ._movie_encoder import encoder as _encoder
 from ._movie_endpoint import check_movie_revision
 from ._movie_playback import _revisions
 from ._movie_sampling import _MovieSampling
@@ -156,7 +156,7 @@ class _FrameSink:
             self.archive = zipfile.ZipFile(self.path, "w", compression=zipfile.ZIP_STORED)
             return
         rate = self.sampling.rate
-        codec = "libx264" if self.format == "mp4" else "libvpx-vp9"
+        codec = self.manifest["encoder"]["codec"]
         self.manifest["encoder"].update(codec=codec, pixel_format="yuv420p", threads=1)
         self.manifest["encoder"]["color"] = {
             "input": "srgb",
@@ -169,6 +169,8 @@ class _FrameSink:
             self.manifest["encoder"].update(crf=18, preset="medium", faststart=True)
         else:
             self.manifest["encoder"].update(crf=30, target_bitrate=0, row_multithreading=False)
+            if codec == "libaom-av1":
+                self.manifest["encoder"]["cpu_used"] = 6
         metadata = self.directory / "metadata.txt"
         metadata.write_text(
             ";FFMETADATA1\ncomment="
@@ -227,6 +229,8 @@ class _FrameSink:
             command += ["-crf", "18", "-preset", "medium", "-movflags", "+faststart"]
         else:
             command += ["-crf", "30", "-b:v", "0", "-row-mt", "0"]
+            if codec == "libaom-av1":
+                command += ["-cpu-used", "6"]
         command.append(str(self.path))
         self.diagnostics = (self.directory / "encoder.log").open("wb")
         self.process = await asyncio.wait_for(
@@ -302,49 +306,25 @@ class _FrameSink:
             self.diagnostics.close()
 
 
-async def _encoder(format, timeout):
-    if format == "pngs":
-        return None, {"name": "PNG/ZIP", "threads": 1}
-    from depdigest import dep_digest
-
-    @dep_digest("imageio_ffmpeg")
-    def locate():
-        import imageio_ffmpeg
-
-        return imageio_ffmpeg.get_ffmpeg_exe(), imageio_ffmpeg.__version__
-
-    executable, version = locate()
-    resolved = Path(shutil.which(executable) or executable)
-    with resolved.open("rb") as binary:
-        binary_digest = hashlib.file_digest(binary, "sha256").hexdigest()
-    # Native version output is tiny and bounded; no user command shell is used.
-    process = await asyncio.wait_for(
-        asyncio.create_subprocess_exec(
-            executable, "-version", stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL
-        ),
-        timeout,
-    )
-    try:
-        output, _ = await asyncio.wait_for(process.communicate(), timeout)
-        if process.returncode:
-            raise RuntimeError("Movie encoder is unavailable.")
-    finally:
-        if process.returncode is None:
-            process.kill()
-            await process.wait()
-    return executable, {
-        "name": "FFmpeg",
-        "provider": "imageio-ffmpeg",
-        "provider_version": version,
-        "executable_sha256": binary_digest,
-        "version": output.decode(errors="replace").splitlines()[0][:512],
-    }
-
-
 async def export_movie(
-    movie, path, *, fps, width_px, height_px, sample_level, format, overwrite, include_overlays, timeout, on_progress
+    movie,
+    path,
+    *,
+    fps,
+    width_px,
+    height_px,
+    sample_level,
+    format,
+    overwrite,
+    include_overlays,
+    timeout,
+    on_progress,
+    codec="auto",
 ):
-    selected_format = format or {".html": "html", ".htm": "html"}.get(Path(path).suffix.lower())
+    selected_format = format or {".html": "html", ".htm": "html", ".zip": "pngs", ".mp4": "mp4", ".webm": "webm"}.get(
+        Path(path).suffix.lower()
+    )
+    codec_candidates(selected_format, codec)
     if selected_format == "html":
         from ._movie_web import export_movie_web
 
@@ -380,7 +360,7 @@ async def export_movie(
         raise ValueError("Movie overwrite/include_overlays must be booleans.")
     width, height = _dimensions(width_px, height_px)
     path = Path(path).expanduser().absolute()
-    format = format or {".zip": "pngs", ".mp4": "mp4", ".webm": "webm"}.get(path.suffix.lower())
+    format = selected_format
     if format not in {"mp4", "webm", "pngs"}:
         raise ValueError("Version-2 Movie export supports mp4, webm or pngs (a ZIP archive).")
     if format != "pngs" and (width % 2 or height % 2):
@@ -395,7 +375,7 @@ async def export_movie(
     require_host = getattr(view.widget, "_require_async_capture_host", None)
     if callable(require_host):
         require_host()
-    executable, encoder = await _encoder(format, timeout)
+    executable, encoder = await _encoder(format, timeout, codec)
     job = None
     sink = None
 

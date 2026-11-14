@@ -24,10 +24,13 @@ def test_live_movie_export_field_matches_studio():
     """The actual-host owner must address the field exposed by the current UI."""
     root = Path(__file__).resolve().parents[1]
     panel = (root / "molsysviewer/js/src/ui/panels/movie-panel.ts").read_text(encoding="utf-8")
-    owner = (root / "tests/_jupyter_movie.mjs").read_text(encoding="utf-8")
     field = re.search(r'this.field\("(Output path in Python session[^"]+)", "path"', panel)
     assert field is not None
-    assert f"getByLabel('{field.group(1)}',{{exact:true}})" in owner
+    for name in ["tests/_jupyter_movie.mjs", "molsysviewer/js/tests/e2e/movie-studio.e2e.ts"]:
+        owner = (root / name).read_text(encoding="utf-8")
+        assert re.search(
+            r"getByLabel\(([\"\x27])" + re.escape(field.group(1)) + r"\1,\s*\{\s*exact:\s*true\s*\}\)", owner
+        ), name
 
 
 @pytest.fixture

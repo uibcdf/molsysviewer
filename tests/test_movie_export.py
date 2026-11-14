@@ -6,6 +6,7 @@ actual molecular rendering and transport; these tests never fabricate a View.
 
 import asyncio
 import base64
+import json
 import zipfile
 from fractions import Fraction
 
@@ -78,6 +79,15 @@ def _frame(colour):
 
 @pytest.mark.parametrize("format", ["pngs", "mp4", "webm"])
 def test_real_encoder_outputs_are_readable_and_match_sample_count(tmp_path, format):
+    _receive_known_frames(tmp_path, format)
+
+
+def test_explicit_av1_encoder_outputs_are_readable_and_match_sample_count(tmp_path):
+    actual = _receive_known_frames(tmp_path, "webm", "av1")
+    assert actual["codec"] == "libaom-av1" and actual["requested_codec"] == "av1"
+
+
+def _receive_known_frames(tmp_path, format, codec="auto"):
     if format != "pngs":
         backend = pytest.importorskip("imageio_ffmpeg")
     sampling = _MovieSampling(1000, 4)
@@ -85,7 +95,7 @@ def test_real_encoder_outputs_are_readable_and_match_sample_count(tmp_path, form
     manifest = {"schema": "molsysviewer.movie_export@1", "sampling": sampling.record()}
 
     async def encode():
-        executable, encoder = await _encoder(format, 10)
+        executable, encoder = await _encoder(format, 10, codec)
         manifest["encoder"] = encoder
         sink = _FrameSink(tmp_path, format, 48, 32, sampling, manifest, executable)
         try:
@@ -109,8 +119,6 @@ def test_real_encoder_outputs_are_readable_and_match_sample_count(tmp_path, form
 
     path = asyncio.run(encode())
     if format == "pngs":
-        import json
-
         with zipfile.ZipFile(path) as archive:
             assert archive.namelist() == [f"frames/{i:08d}.png" for i in range(4)] + ["manifest.json"]
             assert json.loads(archive.read("manifest.json")) == manifest
@@ -130,6 +138,21 @@ def test_real_encoder_outputs_are_readable_and_match_sample_count(tmp_path, form
         for raw, colour in zip(frames, colours, strict=True):
             pixels = np.frombuffer(raw, dtype=np.uint8).reshape(32, 48, 3)
             np.testing.assert_allclose(pixels[2:6, 2:6].mean(axis=(0, 1)), colour, atol=8)
+    (tmp_path / "encoder-receipt.json").write_text(
+        json.dumps(
+            {
+                "outcome": "passed",
+                "encoder": manifest["encoder"],
+                "sampling": sampling.record(),
+                "frames": 4,
+                "resolution": [48, 32],
+                "colours_rgb": colours,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return manifest["encoder"]
 
 
 def test_encoder_is_retired_when_no_frames_are_committed(tmp_path):

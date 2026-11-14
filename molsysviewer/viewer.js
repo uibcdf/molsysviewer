@@ -176373,6 +176373,7 @@ var MoviePanel = class extends BasePanel {
     this.height = "720";
     this.overwrite = false;
     this.includeOverlays = true;
+    this.codec = "auto";
     this.settingsOpen = false;
     this.representations = [];
     this.targets = [];
@@ -176401,7 +176402,7 @@ var MoviePanel = class extends BasePanel {
     if (this.state && state.revision < this.state.revision) return;
     if (state.editor && state.request_id !== this.request) return;
     const changed = !this.state || state.revision !== this.state.revision;
-    const controlsChanged = !this.state || state.busy !== this.state.busy;
+    const controlsChanged = !this.state || state.busy !== this.state.busy || state.codec_selection !== this.state.codec_selection;
     this.state = state;
     this.ctx.setBadge(state.version === 2 ? `${state.n_tracks} tracks` : state.version === 1 ? "Legacy" : "Empty");
     if (!this.durationTouched && state.duration_ms) this.duration = String(state.duration_ms / 1e3);
@@ -176839,6 +176840,21 @@ var MoviePanel = class extends BasePanel {
     root.appendChild(this.field("Height (pixels)", "height", this.height, (value) => {
       this.height = value;
     }, "number"));
+    if (this.state?.codec_selection === 1) {
+      const advanced = document.createElement("details"), summary = document.createElement("summary");
+      summary.textContent = "Video codec";
+      advanced.appendChild(summary);
+      advanced.appendChild(this.select("Video codec", [
+        { value: "auto", label: "Automatic (recommended)" },
+        { value: "h264", label: "H.264 \xB7 MP4" },
+        { value: "vp9", label: "VP9 \xB7 WebM" },
+        { value: "av1", label: "AV1 \xB7 WebM" }
+      ], this.codec, (value) => {
+        this.codec = value;
+      }));
+      advanced.appendChild(note("Automatic prefers VP9 for WebM and uses AV1 when VP9 is unavailable. An explicit choice requires that codec. Choose Automatic for PNG or HTML."));
+      root.appendChild(advanced);
+    }
     root.appendChild(this.check("Allow replacing an existing output file", this.overwrite, (value) => {
       this.overwrite = value;
     }));
@@ -176847,16 +176863,25 @@ var MoviePanel = class extends BasePanel {
     }));
     root.appendChild(note("Native labels are included. For media, expand plot cards inside the canvas and keep their layout and opacity fixed during export. Unavailable or changing overlays stop export without replacing the file. Output is written in the Python session, including when that session runs remotely."));
     root.appendChild(note("HTML is an offline interactive presentation with Play, Pause and Seek. It uses the same recipe without a Python session; frame rate and image sampling do not apply. Static regions are required."));
-    root.appendChild(this.button("Export Movie", () => this.submit("movie_export", {
+    root.appendChild(this.button("Export Movie", () => this.submit("movie_export", this.exportOptions()), this.editable && this.state?.version === 2 && !!this.state?.live_available));
+    if (this.state?.last_output) {
+      const result2 = this.state.last_output;
+      const names = { h264: "H.264", vp9: "VP9", av1: "AV1" };
+      const codec = names[result2.codec ?? ""];
+      root.appendChild(note(`Saved ${result2.path} \xB7 ${result2.bytes} bytes${codec ? ` \xB7 ${codec}` : ""}`));
+    }
+    this.host.appendChild(root);
+  }
+  exportOptions() {
+    return {
       path: this.path,
       fps: this.fps,
       width_px: Number(this.width),
       height_px: Number(this.height),
       overwrite: this.overwrite,
-      include_overlays: this.includeOverlays
-    }), this.editable && this.state?.version === 2 && !!this.state?.live_available));
-    if (this.state?.last_output) root.appendChild(note(`Saved ${this.state.last_output.path} \xB7 ${this.state.last_output.bytes} bytes`));
-    this.host.appendChild(root);
+      include_overlays: this.includeOverlays,
+      ...this.state?.codec_selection === 1 ? { codec: this.codec } : {}
+    };
   }
   defaultValue() {
     if (!["pose", "color", "alpha", "background", "lighting"].includes(this.property)) this.easing = "linear";

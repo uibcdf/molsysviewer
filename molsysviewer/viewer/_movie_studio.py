@@ -86,6 +86,7 @@ class MovieStudio:
             "n_tracks": timeline.n_tracks if timeline else 0,
             "system_loaded": view.molsys is not None,
             "live_available": available,
+            "codec_selection": 1,
             "busy": (
                 self.job.action
                 if self.job
@@ -261,6 +262,7 @@ class MovieStudio:
                 fps=content.get("fps", 25),
                 width_px=content.get("width_px", 1280),
                 height_px=content.get("height_px", 720),
+                codec=content.get("codec", "auto"),
                 overwrite=content.get("overwrite", False),
                 include_overlays=content.get("include_overlays", True),
                 on_progress=progress,
@@ -276,6 +278,9 @@ class MovieStudio:
                 if not job.result.done():
                     if job.action == "movie_export":
                         self.last_output = {key: value[key] for key in ("path", "bytes")}
+                        codec = value.get("manifest", {}).get("encoder", {}).get("codec_family")
+                        if codec is not None:
+                            self.last_output["codec"] = codec
                     job.result.set_result(None)
             except asyncio.CancelledError:
                 if not job.result.done():
