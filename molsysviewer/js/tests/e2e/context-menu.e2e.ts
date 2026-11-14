@@ -89,8 +89,11 @@ view.close()
     assert.equal(fixture.status, 0, fixture.stderr || String(fixture.error));
     const { messages, echoes, scope_fixtures } = JSON.parse(fixture.stdout);
     const browser = await chromium.launch({ headless: true });
+    let releaseDiagnosticObservers: (() => Promise<unknown>) | undefined;
     try {
         const page = await browser.newPage();
+        releaseDiagnosticObservers = () => page.isClosed() ? Promise.resolve()
+            : page.evaluate(() => (window as any).__shapeClickDiagnostics?.release());
         const errors: string[] = [];
         const recordPageError = (error: Error) => {
             errors.push(String(error));
@@ -489,6 +492,26 @@ view.close()
             const c = await w.Harness.createController("objects");
             w.Harness.attachContextHelp(c, host);
             for (const message of wire) await c.handleMessage(message, { throwOnError: true });
+            // Passive observations distinguish a lost DOM/native click from
+            // selection projection without adding a delay before the click.
+            const rows: any[] = [];
+            const record = (value: any) => { rows.push(value); if (rows.length > 32) rows.shift(); };
+            const dom = (event: MouseEvent) => record({ source: "dom", type: event.type,
+                button: event.button, buttons: event.buttons, x: event.clientX, y: event.clientY,
+                target: (event.target as Element)?.tagName, id: (event.target as Element)?.id });
+            for (const type of ["mousedown", "mouseup", "click"]) window.addEventListener(type, dom, true);
+            const subscriptions = [
+                c.plugin.canvas3d.input.click.subscribe((event: any) => record({ source: "native-input",
+                    button: event.button, buttons: event.buttons, x: event.x, y: event.y })),
+                c.plugin.behaviors.interaction.click.subscribe((event: any) => record({ source: "plugin-click",
+                    button: event.button, buttons: event.buttons, kind: event.current?.loci?.kind,
+                    shape: event.current?.loci?.shape?.name })),
+            ];
+            w.__shapeClickDiagnostics = { rows, release: () => {
+                for (const type of ["mousedown", "mouseup", "click"]) window.removeEventListener(type, dom, true);
+                for (const subscription of subscriptions) subscription.unsubscribe();
+                delete w.__shapeClickDiagnostics;
+            } };
         }, objects.initial);
         const objectMenu = page.locator('#objects [data-molsysviewer-context-menu="true"]');
         const picked = await page.evaluate(() => (window as any).Harness.openInteractionContext((window as any).__controller, "parallel-set", 60));
@@ -568,7 +591,20 @@ view.close()
             return hover?.kind === "shape" && hover.tag === "menu-sphere";
         });
         await page.mouse.click(spherePoint.x, spherePoint.y);
-        await page.waitForFunction(() => (window as any).__controller.currentActiveSelection.items.some((item: any) => item.source_kind === "shape" && item.tag === "menu-sphere"));
+        try {
+            await page.waitForFunction(() => (window as any).__controller.currentActiveSelection.items.some((item: any) => item.source_kind === "shape" && item.tag === "menu-sphere"));
+        } catch (error) {
+            const diagnostic = await page.evaluate(point => {
+                const w = window as any, c = w.__controller;
+                const hit = document.elementFromPoint(point.x, point.y);
+                return { point, hit: { tag: hit?.tagName, id: hit?.id },
+                    events: w.__shapeClickDiagnostics?.rows, selection: c.currentActiveSelection,
+                    measuring: c.measurementTools.isActive(), hover: c.lastHoverPayload,
+                    cameraTransition: c.plugin.canvas3d.camera.transition.inTransition };
+            }, spherePoint);
+            console.error("[E2E shape click boundary] " + JSON.stringify(diagnostic));
+            throw error;
+        }
         await page.waitForFunction(() => {
             const c = (window as any).__controller;
             const ref = (window as any).Harness.inspectTaggedRefs(c, "shape", "menu-sphere")[0].ref;
@@ -693,7 +729,10 @@ view.close()
 
         assert.deepEqual(errors, []);
         console.log("[E2E context menu] adaptive adjacent cards, edge flipping, narrow/form preservation, disabled keyboard reasons and actual popup; molecular/object rendering, occurrence scope, editors, keys/Escape and single dispatch pass");
-    } finally { await browser.close(); }
+    } finally {
+        try { await releaseDiagnosticObservers?.(); }
+        finally { await browser.close(); }
+    }
 }
 
 run().catch(error => { console.error(error); process.exit(1); });

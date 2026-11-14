@@ -179,12 +179,150 @@
         "cause": "Clean-checkout links correctly reject six newly written paths before git staging. Staging the reviewed new records resolves the cause; 806 receives unchanged assertions."
       }
     ],
-    "host_baseline": "pending",
-    "one_cycle_pilot": "pending",
-    "same_kernel_30_cycles": "pending"
+    "host_baseline": {
+      "profile": "molstar-host-baseline-807",
+      "state": "passed",
+      "canonical_pytest_passed": 1,
+      "groups": 3,
+      "execution_samples": [
+        0,
+        3,
+        6,
+        9
+      ],
+      "forbidden_kernel_imports_before_after": [],
+      "settings_changed": false,
+      "cgroup_peak_mib": 672.95703125,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "owned_survivors": []
+    },
+    "one_cycle_pilot": {
+      "profile": "molstar-memory-pilot-808",
+      "state": "passed",
+      "cycles": 1,
+      "active_seconds": 10,
+      "canonical_owner_assertions": "unmodified and passed",
+      "source_commit": "a72c92ba49661555ff471e3693b916f005e463db",
+      "seconds": 84.74135719286278,
+      "cgroup_peak_mib": 1988.7890625,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "owned_survivors": []
+    },
+    "same_kernel_30_cycles": {
+      "profile": "prolonged-molstar-memory-809",
+      "state": "passed",
+      "canonical_owner_assertions": "passed unchanged",
+      "actual_import_snapshots_verified": 31
+    },
+    "terminal": {
+      "state": "passed",
+      "profiles": {
+        "molstar-host-baseline-807": {
+          "profile": "molstar-host-baseline-807",
+          "state": "passed",
+          "native_exit": 0,
+          "source_base": "a72c92ba49661555ff471e3693b916f005e463db",
+          "seconds": 33.176747772376984,
+          "inputs_unchanged": true,
+          "resource_stop": null,
+          "cleanup": {
+            "tracked": 20,
+            "survivors": [],
+            "errors": []
+          },
+          "raw_receipt_sha256": "e105b44d9536ed3a771074cd064c7282b9dd24357063eab672a826e2bcd24b75",
+          "cgroup_peak_mib": 672.95703125,
+          "minimum_globally_available_gib": 16.49
+        },
+        "molstar-memory-pilot-808": {
+          "profile": "molstar-memory-pilot-808",
+          "state": "passed",
+          "native_exit": 0,
+          "source_base": "a72c92ba49661555ff471e3693b916f005e463db",
+          "seconds": 84.74135719286278,
+          "inputs_unchanged": true,
+          "resource_stop": null,
+          "cleanup": {
+            "tracked": 25,
+            "survivors": [],
+            "errors": []
+          },
+          "raw_receipt_sha256": "9459d5f26e067b315db58e39f433d0a95e13f54e1ad12dcf347a6ad1dab4b3b0",
+          "cgroup_peak_mib": 1988.7890625,
+          "minimum_globally_available_gib": 15.2
+        },
+        "prolonged-molstar-memory-809": {
+          "profile": "prolonged-molstar-memory-809",
+          "state": "passed",
+          "native_exit": 0,
+          "source_base": "a72c92ba49661555ff471e3693b916f005e463db",
+          "seconds": 1669.2887780796736,
+          "inputs_unchanged": true,
+          "resource_stop": null,
+          "cleanup": {
+            "tracked": 26,
+            "survivors": [],
+            "errors": []
+          },
+          "raw_receipt_sha256": "3d2782c337b946b007e6146141351f31a482287e3491c25896f0210198b155e6",
+          "cgroup_peak_mib": 2607.8046875,
+          "minimum_globally_available_gib": 14.54
+        }
+      },
+      "cycles": 30,
+      "active_seconds_per_cycle": 10,
+      "one_kernel": true,
+      "kernel_processes": 1,
+      "browser_seconds": 1661.882,
+      "blocks": [
+        {
+          "first_cycle": 1,
+          "last_cycle": 10,
+          "seconds": 549.562
+        },
+        {
+          "first_cycle": 11,
+          "last_cycle": 20,
+          "seconds": 549.203
+        },
+        {
+          "first_cycle": 21,
+          "last_cycle": 30,
+          "seconds": 544.146
+        }
+      ],
+      "occurrences_each_cycle": [
+        2248
+      ],
+      "native_kernel_rss_mib": {
+        "minimum": 553.12109375,
+        "maximum": 575.00390625
+      },
+      "actual_import_snapshots_verified": 31,
+      "module_versions_initial": {
+        "molsysmt": "0+unknown",
+        "molsysviewer": "0.24.0+97.gdf4bf477.dirty",
+        "pyunitwizard": "0.29.4+2.g9bb4f5f",
+        "smonitor": "0.21.0",
+        "argdigest": "0.15.0",
+        "depdigest": "0.15.1"
+      },
+      "positive_negative_lifetime_controls": "All six retired controller/structure/model/x/y/z targets and 3,720,000-byte buffers die on every created/recovered view. Independent 3,983-atom witness and its 47,796-byte buffer survive with unchanged data/camera.",
+      "memory_interpretation": "Paired raw/after-tasks/after-two-CDP-collections observations; DOM/page/CDP metrics are distinct. No universal RAM bound or zero Jupyter-host growth is claimed.",
+      "composition": "Scientific/addon/native bytes aee7aa65 + exact canonical receiver 429d7494; copied support with PyUnitWizard module 0.29.4+2.g9bb4f5f. Not clean installed qualification.",
+      "errors": {
+        "count": 182,
+        "baseline_count": 1,
+        "scope": "Canonical guard permits only fingerprints already observed on the plain page; original diagnostics are retained privately.",
+        "baseline_error": "Error: No active debugger session"
+      },
+      "module_version_notice": "The copied provider declares 0+unknown and the editable Viewer has a cached 0.24.0+97.gdf4bf477.dirty label. Actual imported source/native hashes and runtime bundle inputs, not those cached development labels, establish this source composition; this is not versioned artifact qualification."
+    }
   },
   "remaining": [
-    "Receive the complete mandatory core lane on hosted CI after the local safety interruption; do not repeat an extensive local browser run while global pressure recurs. Complete canonical prolonged-host receiving under safe resources.",
+    "Diagnose #388 primary-click-to-selection receiving and then receive the complete core lane; keep #244 aggregate-budget and original #305/#325 failures causally distinct. Current canonical prolonged-host receiving passes 30/30 cycles.",
     "Receive the reviewed partition in the next substantive source/platform checkpoint; do not reclassify the original failed run.",
     "Freeze the producer and qualify exact installed candidate bytes/dependency closure; preserve separate human observations."
   ],
@@ -207,6 +345,150 @@
     "bytes": 41660825,
     "manifest_sha256": "55ae6bb1ca272cfd209c324f1f986176d1c2d69b9658ff51b013ab8896b793d7",
     "originals_retained": true,
+    "custodian": "Diego Prada Gracia"
+  },
+  "subsequent_source_checkpoint": {
+    "run": 43621650307,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43621650307",
+    "producer": "a72c92ba49661555ff471e3693b916f005e463db",
+    "status": "completed",
+    "scope": "All three Python source hosts and Linux notebooks retain independent results; complete core fails on the first suite. No duplicate dispatch or acceptance by inference.",
+    "complete_exact_head_manual_inventory_before": 0,
+    "first_receptor": "PENDING exit 3, all three jobs in progress. No duplicate run.",
+    "conclusion": "failure",
+    "successful_jobs": [
+      "macOS",
+      "Windows"
+    ],
+    "linux_failure": {
+      "issue": 388,
+      "suite": "context-menu",
+      "source_line": 571,
+      "stage": "Active selection after native GPU/hover predicates and one real primary click. Marker predicate not reached.",
+      "deadline_ms": 30000
+    },
+    "native_python_junit": [
+      {
+        "name": "source-receiving-Windows-py3.14",
+        "tests": 4768,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 69,
+        "passed": 4699
+      },
+      {
+        "name": "source-receiving-macOS-py3.14",
+        "tests": 4768,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 73,
+        "passed": 4695
+      },
+      {
+        "name": "source-receiving-Linux-py3.14",
+        "tests": 4768,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 42,
+        "passed": 4726
+      }
+    ],
+    "documented_notebooks": {
+      "executed": 25,
+      "failed": 0,
+      "original_native_log": "execute_notebooks: 25 notebooks, 25 executed, 0 failed (51s)"
+    },
+    "verified_original_artifacts": [
+      {
+        "id": 14125660024,
+        "name": "movie-encoder-native-Windows",
+        "size_in_bytes": 14805,
+        "digest": "sha256:18eeb702d2856b7828967afb90dbf16913da51b449869b10f0fc44fdf3c816a5"
+      },
+      {
+        "id": 14125645098,
+        "name": "source-receiving-Windows-py3.14",
+        "size_in_bytes": 83533,
+        "digest": "sha256:9fe0ebc0a1c61b228b82a97ebf970a4bfa72d28c0e702578ab2917eb8b7385ad"
+      },
+      {
+        "id": 14124699694,
+        "name": "source-receiving-macOS-py3.14",
+        "size_in_bytes": 86057,
+        "digest": "sha256:2e5bce2afbf0f395fef80f6a24dd3b322471eb026451213cd24f7469d29a2483"
+      },
+      {
+        "id": 14124698504,
+        "name": "source-receiving-Linux-py3.14",
+        "size_in_bytes": 82684,
+        "digest": "sha256:2108de08591a3e7ccda940e1014466af9ba4a24e7f0d6e6d77c7d0d03103467d"
+      },
+      {
+        "id": 14124679807,
+        "name": "movie-encoder-native-macOS",
+        "size_in_bytes": 14717,
+        "digest": "sha256:89a8973c797a2ddbdca3b58f3c248c5d80b654aa34449d12db55eb34fc1fa34d"
+      },
+      {
+        "id": 14124449110,
+        "name": "movie-encoder-native-Linux",
+        "size_in_bytes": 14696,
+        "digest": "sha256:76756f924813646443970bfc27b4660a8adcab3c66277a4f1e8214586c100678"
+      }
+    ]
+  },
+  "shape_click_diagnostics": {
+    "issue": 388,
+    "production_changes": false,
+    "observations": "Bounded passive DOM/native/plugin click records and post-failure selection/mode/hover/hit target. No new delay before the original single click, fake loci, force click, retry, selection injection or timeout change.",
+    "source_guards": {
+      "profile": "build-shape-click-810",
+      "passed": 537,
+      "all_declared_entries_built": true,
+      "ruff": "lint/format pass"
+    },
+    "retained_harness_failure": {
+      "profile": "context-click-observation-811",
+      "native_exit": 1,
+      "scope": "All context-menu behavior passes, then new diagnostic cleanup incorrectly assumes contexts() on the narrower shared-browser facade. Corrected to release observers on their owning Page before browser.close(). Original attempt stays failed."
+    },
+    "current_native_receiving": {
+      "profile": "context-click-final-813",
+      "native_exit": 0,
+      "suites_passed": 1,
+      "seconds": 82.32856748113409,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "owned_survivors": []
+    },
+    "causal_status": "Original hosted lost-selection failure is not reproduced locally and remains unresolved. A bounded hosted diagnostic is required before another complete source matrix.",
+    "focused_profile": "context-menu,controls-visibility,canvas-popup-mirror; retains both mandatory mirror owners after partition.",
+    "final_record_checks": {
+      "profile": "prolonged-click-records-814",
+      "passed": 465,
+      "ruff": "lint and format pass; 1066 files",
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "owned_survivors": []
+    }
+  },
+  "prolonged_and_click_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-prolonged-click-20261114",
+    "profiles": [
+      "molstar-host-baseline-807",
+      "molstar-memory-pilot-808",
+      "prolonged-molstar-memory-809",
+      "build-shape-click-810",
+      "context-click-observation-811",
+      "build-context-cleanup-812",
+      "context-click-final-813"
+    ],
+    "files": 272,
+    "bytes": 172327924,
+    "manifest_sha256": "5198007dc804b60e941765128bb5b1413bebac68af595f7b9fc71ca6d0a3d239",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia"
   }
 }

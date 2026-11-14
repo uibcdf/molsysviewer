@@ -109,6 +109,17 @@ comparable long campaign. Original thirty functional passes remain; E2 and
 both counters above are unchanged. The 4.6.5 host comparison is diagnostic,
 not an environment upgrade or a received fix.
 
+**Current E2/Mol* prolonged receiving — 2026-11-14:** the
+[current followup](../molstar_qualification_followup_20261114.json) receives
+MolSysMT #723's canonical controls, the unchanged default-Jupyter host baseline
+and 30/30 same-kernel molecular cycles on `a72c92ba`/Mol* 5.13.1. It verifies
+actual imported scientific/native bytes and retired model/buffer lifetimes
+while retaining the independent witness. Original #354/#356/#364 observations
+and their causal dispositions remain distinct; this result does not silently
+relabel earlier runs or frozen scale baselines. Current complete core is
+blocked by #388, with installed and postponed human acceptance still separate.
+Neither original counter is changed by these separately scoped observations.
+
 **Movie camera prerequisite — 2026-11-12:** the
 [Cartesian profile](../movie_cartesian_receiving_20261112.json) is received
 through headless/JavaScript controls and native primary/popup preview/session

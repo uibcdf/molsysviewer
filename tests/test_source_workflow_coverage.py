@@ -28,6 +28,24 @@ def test_notebook_failure_artifacts_require_the_actual_executor_to_fail():
     assert "steps.source-notebooks.outcome == 'failure'" in upload["if"]
 
 
+def test_focused_browser_diagnostics_retain_both_mirror_owners_and_click_boundary():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    diagnostic = next(step for step in steps if step.get("name") == "Run focused mirror receiving diagnostics")
+    assert diagnostic["if"] == "runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'"
+    assert diagnostic["run"] == (
+        "node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror"
+    )
+    complete = next(
+        step for step in steps if step.get("name") == "Run all core browser suites against the exact source pair"
+    )
+    assert complete["run"] == "npm run test:e2e:core"
+    assert complete["if"] == "runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'"
+
+
 def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets():
     workflow = yaml.load(
         (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),

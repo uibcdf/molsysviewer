@@ -51,7 +51,7 @@ published native replacement or a separately reviewed dependency update.
 | Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 491 current units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
 | Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Partial: completed context-menu motion, controls/popup mirroring and Studio layout/trajectory controls pass; remaining core receiving is pending. |
-| Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Partial: current persistent Studio passes in 729; native physical teardown, real Qt/GPU capture and actual-Jupyter lifecycle pass in 730/731/732. #381 separates healthy public defaults from deliberately delayed science; complete eight-case actual-Jupyter receiving passes in 739, with prior failed scopes retained. Movie, prolonged and covering exits remain separate. |
+| Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Current source scopes received: earlier named-session/H5MSM, Movie/encoder/offline and actual-host controls retain their exact inputs; canonical default-Jupyter reference and retained/released controls pass, followed by 30/30 same-kernel cycles in 809 on a72c92ba. Covering and installed acceptance remain separate. |
 | Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Pending; no public candidate or publication authorized. |
 
 Use sequential bounded executions: build/type/backend checks at 2 CPU/2 GiB,
@@ -380,3 +380,27 @@ those observations do not identify the cause of global pressure. The child
 status zero does not qualify the interrupted lane. Preserve three complete
 suites and one incomplete scope, then use the next substantive hosted checkpoint
 for the whole core lane instead of repeatedly loading this shared host.
+
+## Current prolonged gate and hosted click observation
+
+The canonical method control, plain-Jupyter reference and one-cycle pilot
+pass before `809` receives **30/30** cycles in one unchanged kernel on
+`a72c92ba`. The browser runs 1,662 seconds, observing ten seconds of native
+playback per cycle, exact recovery and 2,248 occurrences. All six retired
+native targets and their 3,720,000-byte backing buffers collect; the independent
+3,983-atom witness and 47,796-byte buffer remain alive with unchanged data.
+Thirty-one actual-import snapshots verify the declared scientific/addon/native
+composition. Own cgroup peak is 2.55 GiB under 4 GiB; no resource stop or owned
+process survivor occurs. The [receipt](../molstar_qualification_followup_20261114.json)
+keeps cached development version labels, known baseline Jupyter debugger
+errors and raw/page/CDP metrics explicit; it claims neither zero host growth
+nor an installed artifact.
+
+Hosted `43621650307` on that same source passes native Python (4,726 Linux /
+4,695 macOS / 4,699 Windows) and all 25 notebooks. Its six original ZIPs are
+size/hash verified. Complete core fails earlier this time: #388's shape
+GPU/hover predicates pass, then the original click does not reach active
+selection. This is distinct from #244's budget and #305/#325's original
+observations. Passive diagnostics and clean local native `813` preserve the
+failure as unresolved; receive the bounded hosted diagnostic before another
+whole matrix. Q4/Q6 and the candidate/installed gates remain open.

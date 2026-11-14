@@ -1026,6 +1026,18 @@ safety interruption during Studio; all owned processes retire. The receipt
 retains that partial result and directs full-core receiving to hosted CI.
 This is neither a complete pass nor an established product assertion failure.
 
+Current `a72c92ba` now passes the canonical Jupyter host baseline, one-cycle
+pilot and all thirty molecular cycles in `809`, with 31 actual-import
+snapshots, retired native buffers, a retained independent witness and clean
+owned teardown. The followup preserves copied-source/cached-version scope
+and the original host debugger fingerprint. Hosted `43621650307` passes
+4,726/4,695/4,699 native Python cases and all 25 notebooks, but full core
+encounters the distinct [#388 click boundary](pending_bugs/hosted_shape_click_selection_timeout.md).
+Local passive receiving `813` passes; that non-reproduction is not a causal
+fix. Keep #388 and #244 open and use one bounded diagnostic before any new
+complete matrix. Installed/candidate and older causal dispositions remain.
+
+
 Local full-core `775` completes context-menu and part of controls/popup
 receiving before global swap activity triggers clean resource retirement.
 Only one of 61 complete suites is received in that attempt. Preserve it as

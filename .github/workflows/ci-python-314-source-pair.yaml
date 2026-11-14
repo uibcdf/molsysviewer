@@ -373,7 +373,7 @@ jobs:
         working-directory: molsysviewer-source/molsysviewer/js
         env:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
-        run: node tests/e2e/e2e-runner.js --lane=core --suites=controls-visibility
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror
 
       - name: Receive live Jupyter diagnostics
         if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' }}

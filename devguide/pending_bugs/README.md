@@ -19,9 +19,10 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (3)
+### Being worked on (4)
 
 - [`controls_scientific_mirror_receiving_partition.md`](controls_scientific_mirror_receiving_partition.md) — [#244](https://github.com/uibcdf/molsysviewer/issues/244) — Partition controls and scientific popup receiving after aggregate timeouts. *(medium, reproduced)*
+- [`hosted_shape_click_selection_timeout.md`](hosted_shape_click_selection_timeout.md) — [#388](https://github.com/uibcdf/molsysviewer/issues/388) — Hosted shape click does not reach active selection after GPU and hover succeed. *(medium, measured)*
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose a recovered Jupyter canvas staying at structure zero after eight successful cycles. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 

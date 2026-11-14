@@ -66,7 +66,9 @@ passes native Python receiving on all three hosts and all 25 Linux notebooks; th
 by the independent controls budget under reopened #244. The
 [current followup](molstar_qualification_followup_20261114.json) preserves
 that failure, the assertion-preserving two-entry correction and outstanding
-complete core/prolonged/candidate exits. #369/#372 remain open.
+complete core/candidate exits. The canonical prolonged gate now passes 30/30
+cycles; current core is blocked by #388's hosted click-to-selection observation.
+#369/#372 remain open.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns
