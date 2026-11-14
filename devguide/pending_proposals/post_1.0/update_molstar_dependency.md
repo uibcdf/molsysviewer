@@ -24,6 +24,19 @@ new native capabilities and adapter-retirement review. The original blanket
 deferral no longer applies to the adopted 5.13.1 qualification. No published
 MolSysViewer package is qualified by that timing decision.
 
+**Deferral reaffirmed with the maintainer — 2026-11-14:** retain v6 after
+MolSysViewer 1.0; no v6 migration or pilot is adopted before that release.
+The read-only registry recheck still identifies 5.13.1 as `molstar`'s latest
+published version, with no v6 versions under that package. The seven relevant
+workspace packages queried are not published in npm. The inspected upstream
+`dabbf29f` declares `6.0.0-dev.0` and documents v6 as work in progress.
+Its modular composition, shared font resources and graphics improvements are
+worth revisiting, but none is required by the inspected promised 1.0 scope.
+Continue #372's 5.13.1 qualification. Reassess #115 when v6 has a stable
+published distribution with exact package/source identities, then measure
+the benefit and receive the migration against the existing public contracts.
+This is a timing decision, not a negative compatibility result for v6.
+
 **Inspected 2026-11-08:** #344's font-upload investigation receives an
 independent real-WebGL probe of current upstream master
 `6682cc94a230c851e13dbbc6f35fc9d486c0bbdb`. Its v6 source already supplies

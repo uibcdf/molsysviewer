@@ -20,6 +20,11 @@ slice previously deferred under #115. The wider v6/ESM/workspace migration and
 unqualified new capabilities remain post-1.0 under #115. Tags, packages,
 promotions and both 1.0 publications retain their separate approval.
 
+**Reaffirmed 2026-11-14:** after reviewing v6's development and unpublished
+package status, the maintainer keeps v6 post-1.0 under #115. No v6 pilot or
+migration is added to this qualification. Complete the selected public 5.13.1
+scope and its outstanding source/installed exits without waiting for v6.
+
 The [#369 assessment](../molstar_integration_review_20261112.md) supplies the
 three baselines, capability matrix, native comparisons and migration rationale.
 Its historical receiving qualifies neither this migration nor a new package.
