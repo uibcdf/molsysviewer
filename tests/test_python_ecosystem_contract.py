@@ -59,7 +59,8 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
                 step for step in job["steps"] if step.get("name") == "Record published pytest tool versions"
             )
             assert f"assert version('pytest-receptor') == '{RECEPTOR_VERSION}'" in version_step["run"]
-    assert len(commands) == (1 if filename == "CI.yaml" else 3)
+    expected_counts = {"CI.yaml": 1, "CI_qt_experimental.yaml": 3, "ci-python-314-source-pair.yaml": 4}
+    assert len(commands) == expected_counts[filename]
     for tokens in commands:
         assert tokens[tokens.index("pytest") - 2 : tokens.index("pytest")] == ["python", "-m"]
         assert "--receptor=ci" in tokens
@@ -78,7 +79,13 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
             "not qt_live_model_smoke_real_window and not full_render_gpu",
         }
     else:
-        assert any("tests/" in tokens for tokens in commands)
+        full = next(tokens for tokens in commands if "tests/" in tokens)
+        assert full[full.index("-m", full.index("pytest") + 1) + 1] == "not qt_runtime"
+        assert "--junitxml=source-receiving.xml" in full
+        diagnostic = next(tokens for tokens in commands if "tests/test_movie_codecs.py" in tokens)
+        assert "tests/test_movie_export.py" in diagnostic
+        assert "--basetemp=.pytest_cache/movie-encoder-diagnostic" in diagnostic
+        assert "--junitxml=source-receiving.xml" in diagnostic
         installed = next(tokens for tokens in commands if "--import-mode=importlib" in tokens)
         assert "molsysviewer-source/tests/integration/test_molsysmt_integration.py" in installed
         assert any(

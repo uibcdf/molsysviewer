@@ -333,5 +333,12 @@ earlier actual-Jupyter receiving retains its original source identity.
 The 320p chromatic-edge oracle failures and independent codec-free YUV420
 control remain preserved. The final 720p interior-colour guard uses the
 existing MP4 sampling rule and unchanged tolerance; product quality and
-deadlines are unchanged. Full Windows fallback, all three source hosts and
-the complete core gate remain pending; no new artifact is qualified.
+deadlines are unchanged. The [terminal source receipt](../source_checkpoint_recovery_20261114.json)
+receives all 61 codec/export cases on each source host, including Windows
+automatic AV1 with the exact formerly failing executable, and all twelve
+original Unicode cases on native Windows. #385/#169 are source-resolved.
+The complete checkpoint remains failed by #386's command/path guards;
+Linux core/notebooks were not reached. A notebook-log artifact is proved to
+contain tracked history despite its executor being skipped; its producer
+condition is corrected. Receive the new complete source/core gate after the
+scoped repairs. No installed artifact is qualified.

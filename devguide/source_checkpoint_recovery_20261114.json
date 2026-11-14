@@ -1,0 +1,1081 @@
+{
+  "schema": "molsysviewer.source_checkpoint_recovery@1",
+  "date": "2026-11-14",
+  "issues": [
+    "uibcdf/molsysviewer#386",
+    "uibcdf/molsysviewer#385",
+    "uibcdf/molsysviewer#169",
+    "uibcdf/molsysviewer#372",
+    "uibcdf/molsysviewer#369"
+  ],
+  "status": "original_full_checkpoint_failed; guard_repairs_locally_received; new_full_checkpoint_pending",
+  "original_run": {
+    "id": 43553954846,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
+    "head_sha": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
+    "provider_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "status": "completed",
+    "conclusion": "failure",
+    "platform_results": [
+      {
+        "platform": "Linux",
+        "tests": 4765,
+        "passed": 4722,
+        "failed": 1,
+        "skipped": 42,
+        "deselected": 17,
+        "failures": [
+          {
+            "class": "tests.test_python_ecosystem_contract",
+            "name": "test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]",
+            "message": "AssertionError: assert 4 == 3\n +  where 4 = len([['python', '-m', 'pytest', '-o', 'receptor_rerun_command=python -m pytest', '--receptor=ci', ...], ['python', '-m', '...-receptor=ci', ...], ['python', '-m', 'pytest', '-o', 'receptor_rerun_command=python -m pytest', '--receptor=ci', ...]])"
+          }
+        ],
+        "codec_export": {
+          "passed": 61,
+          "failed": 0,
+          "skipped": 0,
+          "native_receipts": [
+            {
+              "case": "test_explicit_av1_encoder_outp0",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "0edf6dad59b507e81aa76a6bdd559a078e281191b776e2652e02caadeca78aca",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libaom-av1",
+                "codec_family": "av1",
+                "requested_codec": "av1",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libaom-av1"
+                ],
+                "available_codecs": [
+                  "vp9",
+                  "av1"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 30,
+                "target_bitrate": 0,
+                "row_multithreading": false,
+                "cpu_used": 6
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "e7883274a0eaf86ea2e63014b38315695d53e9475b9ef7e5a7ed8627c2383a50"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_0",
+              "encoder": {
+                "name": "PNG/ZIP",
+                "threads": 1
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "c62aadc69acba6bf29c6929502db6a19ceab305568ed427ac53b235c5762b15f"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_1",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "0edf6dad59b507e81aa76a6bdd559a078e281191b776e2652e02caadeca78aca",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libx264",
+                "codec_family": "h264",
+                "requested_codec": "auto",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libx264"
+                ],
+                "available_codecs": [
+                  "h264"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 18,
+                "preset": "medium",
+                "faststart": true
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "24132b7175d1a689e294d0a8ec1712a10dfdb0314c937d43b704ece46179c3da"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_2",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "0edf6dad59b507e81aa76a6bdd559a078e281191b776e2652e02caadeca78aca",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libvpx-vp9",
+                "codec_family": "vp9",
+                "requested_codec": "auto",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libvpx-vp9",
+                  "libaom-av1"
+                ],
+                "available_codecs": [
+                  "vp9",
+                  "av1"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 30,
+                "target_bitrate": 0,
+                "row_multithreading": false
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "7cf98714593732cc80b719fc55a45a664c1da4f52a3f302e9eeed42fb5602c0e"
+            }
+          ]
+        },
+        "junit_sha256": "b79df88efd7321fc7e109e1043951597f642d85fad39416427de1fb9d2a1a23f"
+      },
+      {
+        "platform": "macOS",
+        "tests": 4765,
+        "passed": 4691,
+        "failed": 1,
+        "skipped": 73,
+        "deselected": 17,
+        "failures": [
+          {
+            "class": "tests.test_python_ecosystem_contract",
+            "name": "test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]",
+            "message": "AssertionError: assert 4 == 3\n +  where 4 = len([['python', '-m', 'pytest', '-o', 'receptor_rerun_command=python -m pytest', '--receptor=ci', ...], ['python', '-m', '...-receptor=ci', ...], ['python', '-m', 'pytest', '-o', 'receptor_rerun_command=python -m pytest', '--receptor=ci', ...]])"
+          }
+        ],
+        "codec_export": {
+          "passed": 61,
+          "failed": 0,
+          "skipped": 0,
+          "native_receipts": [
+            {
+              "case": "test_explicit_av1_encoder_outp0",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "b4eca5674290652817b37859559e5959bf38b1e7d279ce64b943a99c45ed98be",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libaom-av1",
+                "codec_family": "av1",
+                "requested_codec": "av1",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libaom-av1"
+                ],
+                "available_codecs": [
+                  "vp9",
+                  "av1"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 30,
+                "target_bitrate": 0,
+                "row_multithreading": false,
+                "cpu_used": 6
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "61bd54f2ec7e16128d5e66f29b3cebc94d39f16df4c6642daf54c8b4a0d963b2"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_0",
+              "encoder": {
+                "name": "PNG/ZIP",
+                "threads": 1
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "c62aadc69acba6bf29c6929502db6a19ceab305568ed427ac53b235c5762b15f"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_1",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "b4eca5674290652817b37859559e5959bf38b1e7d279ce64b943a99c45ed98be",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libx264",
+                "codec_family": "h264",
+                "requested_codec": "auto",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libx264"
+                ],
+                "available_codecs": [
+                  "h264"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 18,
+                "preset": "medium",
+                "faststart": true
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "123a4d14b3e3f2217c2af68f3d7c8540ac0a78c4e740f936c4b7a9275473f2ea"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_2",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "b4eca5674290652817b37859559e5959bf38b1e7d279ce64b943a99c45ed98be",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libvpx-vp9",
+                "codec_family": "vp9",
+                "requested_codec": "auto",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libvpx-vp9",
+                  "libaom-av1"
+                ],
+                "available_codecs": [
+                  "vp9",
+                  "av1"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 30,
+                "target_bitrate": 0,
+                "row_multithreading": false
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "17ab4f1ea88d558d00279c2a3ea4a5c950198900ec1f2c797ebd188b6d64271e"
+            }
+          ]
+        },
+        "junit_sha256": "ea3a46ee33a70fef00495e421c7405ecbc12c0150b90d65bcdb41af998980489"
+      },
+      {
+        "platform": "Windows",
+        "tests": 4765,
+        "passed": 4694,
+        "failed": 2,
+        "skipped": 69,
+        "deselected": 17,
+        "failures": [
+          {
+            "class": "tests.test_documentation_pages_run",
+            "name": "test_live_state_example_has_an_explicit_host_and_actual_kernel_owner",
+            "message": "AssertionError: Live-cell examples must still participate in the global deprecated-API guard.\nassert False\n +  where False = any(<generator object test_live_state_example_has_an_explicit_host_and_actual_kernel_owner.<locals>.<genexpr> at 0x000002B001499210>)"
+          },
+          {
+            "class": "tests.test_python_ecosystem_contract",
+            "name": "test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]",
+            "message": "AssertionError: assert 4 == 3\n +  where 4 = len([['python', '-m', 'pytest', '-o', 'receptor_rerun_command=python -m pytest', '--receptor=ci', ...], ['python', '-m', '...-receptor=ci', ...], ['python', '-m', 'pytest', '-o', 'receptor_rerun_command=python -m pytest', '--receptor=ci', ...]])"
+          }
+        ],
+        "codec_export": {
+          "passed": 61,
+          "failed": 0,
+          "skipped": 0,
+          "native_receipts": [
+            {
+              "case": "test_explicit_av1_encoder_outp0",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libaom-av1",
+                "codec_family": "av1",
+                "requested_codec": "av1",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libaom-av1"
+                ],
+                "available_codecs": [
+                  "av1"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 30,
+                "target_bitrate": 0,
+                "row_multithreading": false,
+                "cpu_used": 6
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "9eaa32d5f7a5de0ae42ceb4c869c0169daffdefa52da3ac9378ce6cce4099a16"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_0",
+              "encoder": {
+                "name": "PNG/ZIP",
+                "threads": 1
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "f887e840d6596ef45acb46ec5907e267fc01068471ced869de51ea629b6c9b77"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_1",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libx264",
+                "codec_family": "h264",
+                "requested_codec": "auto",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libx264"
+                ],
+                "available_codecs": [
+                  "h264"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 18,
+                "preset": "medium",
+                "faststart": true
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "148e623e8b19ea10e350d03cced7c13fbba39fdf172f8b6d06978107a16d2e01"
+            },
+            {
+              "case": "test_real_encoder_outputs_are_2",
+              "encoder": {
+                "name": "FFmpeg",
+                "provider": "imageio-ffmpeg",
+                "provider_version": "0.8.1",
+                "executable_sha256": "5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7",
+                "version": "ffmpeg version 9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+                "codec": "libaom-av1",
+                "codec_family": "av1",
+                "requested_codec": "auto",
+                "selection_policy": "molsysviewer.movie_codecs@1",
+                "codec_candidates": [
+                  "libvpx-vp9",
+                  "libaom-av1"
+                ],
+                "available_codecs": [
+                  "av1"
+                ],
+                "pixel_format": "yuv420p",
+                "threads": 1,
+                "color": {
+                  "input": "srgb",
+                  "primaries": "bt709",
+                  "transfer": "iec61966-2-1",
+                  "matrix": "bt709",
+                  "range": "limited"
+                },
+                "crf": 30,
+                "target_bitrate": 0,
+                "row_multithreading": false,
+                "cpu_used": 6
+              },
+              "frames": 4,
+              "resolution": [
+                48,
+                32
+              ],
+              "sampling": {
+                "rule": "constant-rate-half-open@1",
+                "fps": {
+                  "numerator": 4,
+                  "denominator": 1
+                },
+                "duration_ms": 1000.0,
+                "frame_count": 4,
+                "first_time_ms": 0.0,
+                "last_time_ms": 750.0,
+                "encoded_duration_seconds": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "receipt_sha256": "c235e7989094f99dabe0ccbdd70db7bbc7a52707768e8c95059eda7d4f141ef8"
+            }
+          ]
+        },
+        "junit_sha256": "7d63867a167fc0e6ee0539d625366fc1c529948fd468d19b1a1165029e6d72ff"
+      }
+    ],
+    "steps": [
+      {
+        "job": "Source pair on macos-15, Python 3.14",
+        "failed": [
+          "Run MolSysViewer Python tests"
+        ],
+        "skipped": [
+          "Validate and locally tag the exact Viewer source candidate",
+          "Locally tag the exact MolSysMT candidate version",
+          "Remove the temporary Viewer tag after installation",
+          "Remove the temporary MolSysMT tag after installation",
+          "Register the exact source-pair notebook kernel",
+          "Build the source-pair browser runtime and harness",
+          "Verify the hosted source-pair browser",
+          "Run all core browser suites against the exact source pair",
+          "Run focused mirror receiving diagnostics",
+          "Receive live Jupyter diagnostics",
+          "Preserve safe source-pair receiving diagnostic receipts",
+          "Execute every documented notebook against the exact source pair",
+          "Preserve source-pair notebook failure logs"
+        ]
+      },
+      {
+        "job": "Source pair on windows-2025, Python 3.14",
+        "failed": [
+          "Run MolSysViewer Python tests"
+        ],
+        "skipped": [
+          "Validate and locally tag the exact Viewer source candidate",
+          "Locally tag the exact MolSysMT candidate version",
+          "Remove the temporary Viewer tag after installation",
+          "Remove the temporary MolSysMT tag after installation",
+          "Register the exact source-pair notebook kernel",
+          "Build the source-pair browser runtime and harness",
+          "Verify the hosted source-pair browser",
+          "Run all core browser suites against the exact source pair",
+          "Run focused mirror receiving diagnostics",
+          "Receive live Jupyter diagnostics",
+          "Preserve safe source-pair receiving diagnostic receipts",
+          "Execute every documented notebook against the exact source pair",
+          "Preserve source-pair notebook failure logs"
+        ]
+      },
+      {
+        "job": "Source pair on ubuntu-latest, Python 3.14",
+        "failed": [
+          "Run MolSysViewer Python tests"
+        ],
+        "skipped": [
+          "Validate and locally tag the exact Viewer source candidate",
+          "Locally tag the exact MolSysMT candidate version",
+          "Remove the temporary Viewer tag after installation",
+          "Remove the temporary MolSysMT tag after installation",
+          "Register the exact source-pair notebook kernel",
+          "Build the source-pair browser runtime and harness",
+          "Verify the hosted source-pair browser",
+          "Run all core browser suites against the exact source pair",
+          "Run focused mirror receiving diagnostics",
+          "Receive live Jupyter diagnostics",
+          "Preserve safe source-pair receiving diagnostic receipts",
+          "Execute every documented notebook against the exact source pair"
+        ]
+      }
+    ],
+    "verified_original_artifacts": [
+      {
+        "id": 14098146929,
+        "name": "source-receiving-macOS-py3.14",
+        "bytes": 86073,
+        "sha256": "de3fbd6663396285aa8901fa2d1b60dbd7edb3962a53ea80420b98e363d015be",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14098116757,
+        "name": "source-receiving-Windows-py3.14",
+        "bytes": 85195,
+        "sha256": "6e12d0cec7e0f13f817a0828f89f66dba5946a9ede476271930126b6d7c73061",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14097927424,
+        "name": "source-pair-notebook-failure-logs",
+        "bytes": 12746,
+        "sha256": "dc0c997f7585090de589213ef3ed2002cbea2d453184056750659ffb25028e65",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14097817740,
+        "name": "movie-encoder-native-Windows",
+        "bytes": 14792,
+        "sha256": "6565d962c44fc3328e3fb0fdd22b5839dcf72d9ee406d1ee2cbf822b008c274e",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14097663699,
+        "name": "source-receiving-Linux-py3.14",
+        "bytes": 82985,
+        "sha256": "5d6c926e5a3526d43b4bc7608df699a3d1aa497763927d200882e1f35d076c87",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14097498973,
+        "name": "movie-encoder-native-Linux",
+        "bytes": 14640,
+        "sha256": "b9396a81cd363bac0563b701c0a1c09fdd2f9c0c5fb125822672a8b4dc153902",
+        "github_digest_matches": true
+      },
+      {
+        "id": 14097359577,
+        "name": "movie-encoder-native-macOS",
+        "bytes": 14718,
+        "sha256": "3500ab802bd6b0e45afe38f4804ebcb945e4a9a8f5136a162eb212baf21aec9f",
+        "github_digest_matches": true
+      }
+    ]
+  },
+  "received_codec_boundary": {
+    "issue": 385,
+    "state": "resolved_in_source",
+    "source": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
+    "per_host": "61 codec/export passes, zero omissions; four original frame/colour/fps/duration encodes decoded independently",
+    "windows_auto": "libaom-av1 with FFmpeg 9.0.2 SHA256 5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7, the same executable that lacks libvpx",
+    "explicit_vp9": "Actual native listing selects the no-libvpx branch and confirms explicit refusal; no substitution.",
+    "other_hosts_auto": "libvpx-vp9",
+    "limits": "Native encoder source receiving; actual Chromium/Jupyter AV1 controls retain their separate Linux scope. Not Windows GUI, complete source or installed qualification."
+  },
+  "received_utf8_boundary": {
+    "issue": 169,
+    "state": "resolved_in_source",
+    "native_windows_original_cases": [
+      {
+        "class": "tests.test_js_build_version_resolution",
+        "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[version-runtime]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_js_build_version_resolution",
+        "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[version-unit]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_js_build_version_resolution",
+        "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[version-harness]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_js_build_version_resolution",
+        "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[bytes-runtime]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_js_build_version_resolution",
+        "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[bytes-unit]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_js_build_version_resolution",
+        "name": "test_build_routes_refuse_unreviewed_molstar_cache_inputs[bytes-harness]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_molstar_compatibility",
+        "name": "test_image_assets_build_guard_rejects_changed_native_bytes[none]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_molstar_compatibility",
+        "name": "test_image_assets_build_guard_rejects_changed_native_bytes[digest]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_molstar_compatibility",
+        "name": "test_image_assets_build_guard_rejects_changed_native_bytes[missing]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_molstar_compatibility",
+        "name": "test_native_probe_alias_overrides_an_unqualified_ancestor",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_molstar_compatibility",
+        "name": "test_native_probe_refuses_unqualified_inputs_before_emitting[version]",
+        "outcome": "passed"
+      },
+      {
+        "class": "tests.test_molstar_compatibility",
+        "name": "test_native_probe_refuses_unqualified_inputs_before_emitting[origin]",
+        "outcome": "passed"
+      }
+    ],
+    "declaration_guard": "tests/test_source_text_encoding.py passes on native Windows; no PYTHONUTF8 workaround",
+    "remaining_path_identity": "A separate Windows-only POSIX-vs-native string identity defect is now owned by #386."
+  },
+  "notebook_artifact_attribution": {
+    "executor_and_kernel_registration": "skipped",
+    "core_lane": "skipped after Python failure",
+    "original_uploaded_files": [
+      {
+        "repository_path": "docs/content/developer/documentation/web/myst.nbconvert.log",
+        "sha256": "b0ec93c9ac3e0af0644856c6c88a8a1064feb64ce218234bc7e4cb100cc66ac0"
+      },
+      {
+        "repository_path": "docs/content/showcase/anisotropy-ellipsoids.nbconvert.log",
+        "sha256": "6f033bbb19bfda6a668e17010d2757fbff1e6cea8fb7a37d494dc17fb7d211b1"
+      },
+      {
+        "repository_path": "docs/content/showcase/channels.nbconvert.log",
+        "sha256": "67b9253cb694960cd7db78764f44b18197a4c1d945d4c6f2c74680905eb2ddc0"
+      },
+      {
+        "repository_path": "docs/content/showcase/pharmacophore.nbconvert.log",
+        "sha256": "a5e894cc5c0eb37f15a29de10428aa2192624378ed84edbe039bb3c8d99df81e"
+      },
+      {
+        "repository_path": "docs/content/showcase/pockets.nbconvert.log",
+        "sha256": "692f1575ce4294f76b537ea962731b22092c3c8f27d5b8ebeaed58f6483c85de"
+      },
+      {
+        "repository_path": "docs/content/showcase/quickstart.nbconvert.log",
+        "sha256": "78f2a646e334b21a3403a65d206ad9466e57fee855a78367aebde1890e6574c7"
+      },
+      {
+        "repository_path": "docs/content/user/cookbook/interactions_workbench.nbconvert.log",
+        "sha256": "a6b7c15e18abb0ec9b7cc8f7549a992d7ebcab28eb2af440da5cef460a703d4e"
+      },
+      {
+        "repository_path": "docs/content/user/cookbook/molecular_workbench.nbconvert.log",
+        "sha256": "64b4ffb202822c00c5138bf0686b45808fee860f35a9bd468dd2923fb002d382"
+      },
+      {
+        "repository_path": "docs/content/user/cookbook/tutorial_trajectory_analysis.nbconvert.log",
+        "sha256": "5c31f8e06855515b91cd35ea3182e257ccf403619f767c460989c2ac55ac1c2d"
+      },
+      {
+        "repository_path": "docs/content/user/export/html_export.nbconvert.log",
+        "sha256": "22b043b9725a9b899977689cfee3cd9d0061a7071d219c97f5a8debb52106a43"
+      },
+      {
+        "repository_path": "docs/content/user/export/sphinx_html_embedding.nbconvert.log",
+        "sha256": "7c1edf7ff08438a69611e41f03aff501da24d9efbae09c025faacec7c43ab7d7"
+      },
+      {
+        "repository_path": "docs/content/user/introduction/installation.nbconvert.log",
+        "sha256": "4d00ab7fd42f2b0ebbeb34c2457c5467845c9ca62f5b2b51158ed5e364d95135"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/add.nbconvert.log",
+        "sha256": "c622be8ab880dad0af4dcdc30db72e9b283d6547f8bb0252b7c36bf11ae3419b"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/append_structures.nbconvert.log",
+        "sha256": "23ecbd51254aa8555ea9f43935e24b31e45355cde3ef6c3d8b0de89fb98aa8ac"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/get.nbconvert.log",
+        "sha256": "66d48640c77519a33d4bd93133175666caa927f8d05c44d4c07be612804f49e0"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/info.nbconvert.log",
+        "sha256": "2a17bce0607dd46236470c77c1a251e9e027829f0bb0418ed7be00d66f06b5a2"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/info_and_get.nbconvert.log",
+        "sha256": "d63086864f2a0a250ed2881c7d5f3fa4237f106096e85e728b75874da3c7b49e"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/loading_and_inspect.nbconvert.log",
+        "sha256": "346500e45121a0084d4e801721625de17965bb27e412c59ec95023821a945127"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/molecular_system.nbconvert.log",
+        "sha256": "34f16b5de47dcbc15c3d7f9d50c245189292270f30e9a2d6763e795b8cc8c247"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/remove.nbconvert.log",
+        "sha256": "318a9835e118d6824f81bf56fed3e472db92c824d8f0f6fcc13fe9a95918e979"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/selection.nbconvert.log",
+        "sha256": "9e07c37dd36ca1489e659bd5bf2c6fab13f2169a617af38dbf74c9a740cdd371"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/set.nbconvert.log",
+        "sha256": "df8388ae3946a4b8c74defa754a94a9670752519db3150d851b634bb3e2fe289"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/structures.nbconvert.log",
+        "sha256": "d871e81fd9fcf3a6b236f58dc099da0ba47206df3510cbc857dbccbebea2573d"
+      },
+      {
+        "repository_path": "docs/content/user/molecular_system/topology.nbconvert.log",
+        "sha256": "20e25f8c4d537541aed6f1f1bb3087e0554ba403a373fc2c001f32cc09e075e8"
+      },
+      {
+        "repository_path": "docs/content/user/viewer/camera_and_controls.nbconvert.log",
+        "sha256": "bb522ca071b6eb786345d38b84158c4351890bee13fa6a71de3c64a1b5434ff3"
+      },
+      {
+        "repository_path": "docs/content/user/viewer/ui.nbconvert.log",
+        "sha256": "782b9470b68089ba85f56af795165b1f267f212a14453e9ae303fc929c33c10b"
+      },
+      {
+        "repository_path": "docs/notebook_errors.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "finding": "All 27 files exactly match tracked historical logs. No current notebook execution or failure can be inferred from this artifact.",
+    "correction": "Uploader requires steps.source-notebooks.outcome == failure; original notebook execution and full core requirements unchanged."
+  },
+  "repairs": {
+    "python_ecosystem": "Review all four command roles and retain full test selection, receptor/rerun and JUnit checks.",
+    "documentation_paths": "Use canonical POSIX identities for both Markdown and notebooks; real PureWindowsPath/PurePosixPath regression retains global deprecation coverage.",
+    "native_code": "No renderer, scientific algorithm, media quality, runtime bundle or operation deadline changed.",
+    "working_sha256": {
+      "tests/test_python_ecosystem_contract.py": "698286257fcb543293fe40827e383e97c776666b549354944712d3d5c2133e10",
+      "tests/test_documentation_pages_run.py": "b6c0e15e2f7a1e3522d1088990bd4370cb47b6eb2c3ef97099c6c0f72614ff2a",
+      "tests/test_source_workflow_coverage.py": "c8f98f9664dc5fffbb7ae4b53d1369bb4ebc0f9c881360d3ff6522752c2582bb",
+      ".github/workflows/ci-python-314-source-pair.yaml": "7345fdc22c14bd472b265d40516ee8b6065cbc9bc5b1453622527c8ec622e76b"
+    }
+  },
+  "controlled_profiles": [
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 12.4767613443546,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-guard-repair-795",
+      "peak_summed_owned_rss_mib": 427.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "503ac52f5178bb35468bb3013c3732cc333179054108e8026d021c8c1887ce62"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 15.964438635855913,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-route-repair-796",
+      "peak_summed_owned_rss_mib": 433.1,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "46f3a99e608f05c8f6304fd9a96d749818258c069adb3a4358fc740001dcda57"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 6.038342769723386,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-final-records-797",
+      "peak_summed_owned_rss_mib": 187.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "c2ff3e463c5e5d002628261f441c3d64a4707b1cad7ef7089ade8e871c491eaa"
+    }
+  ],
+  "local_results": {
+    "795": "89 affected cases, Ruff lint and all 1066 format checks pass, unchanged inputs and clean retirement.",
+    "796": "620 pass; two devguide link tests fail because the newly referenced receipt did not yet exist and archival files were not indexed. Complete the record/staging and rerun only those guards. Native exit remains 1.",
+    "797": "451 devguide link/reporting cases pass with completed receipt and indexed archives; indexes current, unchanged inputs and clean retirement. The original 796 failure remains retained."
+  },
+  "remaining": [
+    "Review/commit the scoped repairs and completed records, then one full three-platform exact-source checkpoint including Linux full core/notebooks.",
+    "Receive its native original terminal artifacts; a previous run is never relabelled green.",
+    "#386 stays active through current repaired checkpoint receiving. #369/#372, prolonged/installed/human gates remain separate."
+  ],
+  "counters": "Original 38/46 source-delivered and 1/46 final audit acceptance unchanged.",
+  "publication": "No candidate, tag, package, release, promotion or external upstream write.",
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/source-checkpoint-recovery-20261114",
+    "profiles": [
+      "checkpoint-guard-repair-795",
+      "checkpoint-route-repair-796",
+      "checkpoint-final-records-797"
+    ],
+    "files": 52,
+    "bytes": 16094112,
+    "manifest_sha256": "5c11cb2e9e0e03e8d5dbfda6a0b64beeaf2f60843e1046b674456b97ecc84e71",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia",
+    "scope": "Immutable original failed hosted artifacts and local repair profiles. Public records gain this pointer after copying; preserved bytes are not rewritten."
+  }
+}

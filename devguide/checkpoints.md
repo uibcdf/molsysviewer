@@ -984,18 +984,26 @@ by Python and Studio. Auto prefers VP9 then AV1 for WebM; an explicit choice
 never substitutes another codec. Bounded native inspection records the exact
 executable and policy. The [codec receipt](movie_codec_receiving_20261113.json)
 retains 776 final Python passes, 491 JS passes, complete native Studio AV1
-and existing Movie/popup regressions. Windows fallback and the next complete
-source/platform/core checkpoint remain pending. The compatible keyword-only
+and existing Movie/popup regressions. Native Windows fallback is now received;
+the complete source/platform/core checkpoint remains pending. The compatible keyword-only
 extension and its one new digester are explicitly reviewed in F1's baselines.
 Current actual-Jupyter `793` passes all eight Movie scenarios on published
 `def5f417`, with unchanged inputs and clean owned-process retirement. The
 single full source checkpoint
 [43553954846](https://github.com/uibcdf/molsysviewer/actions/runs/43553954846)
 uses that same commit and MolSysMT `aee7aa65`; all three Python 3.14 hosts
-are in progress at the recorded observation. Linux also runs the complete
-core lane and documented notebooks. Native terminal outcomes and original
-encoder/JUnit artifacts must be received before closing #169/#385 or claiming
-covering qualification. No duplicate run, tag or package was produced.
+finish with failed Python steps. The [terminal recovery receipt](source_checkpoint_recovery_20261114.json)
+verifies all seven original ZIPs. All 61 codec/export cases pass on every
+host, and all twelve former Unicode failures pass on native Windows:
+#385/#169 are source-resolved. The complete run remains failed because of
+#386's stale command count and Windows documentation path identity; Linux
+core/notebooks were not reached. Its notebook-log artifact contains 27
+tracked historical files, not evidence of current notebook execution.
+The guard and actual-producer artifact repairs pass 89 affected cases;
+neighboring routes pass 620 and final new-record link/reporting checks pass
+451 after completing the receipt and archive index. One new complete source
+checkpoint follows the reviewed integration. No
+renderer, scientific algorithm, media quality or deadline changed.
 
 Local full-core `775` completes context-menu and part of controls/popup
 receiving before global swap activity triggers clean resource retirement.

@@ -1,19 +1,19 @@
 ---
 summary: WebM needs explicit native codec selection and Windows receiving.
 issue: uibcdf/molsysviewer#385
-status: active
+status: resolved
 opened: 2026-11-13
-closed:
+closed: 2026-11-14
 severity: medium
 verification: reproduced
 area: [movie, export, portability]
-guard:
+guard: tests/test_movie_codecs.py::test_native_executable_selection_matches_actual_video_encoders
 normative:
 blocked_by: []
 supersedes: []
 ---
 
-# Windows WebM receiving
+# Windows WebM receiving — resolved
 
 Exact-source run `43513962722` fails the real four-frame WebM control on
 Windows/Python 3.14. Linux/macOS pass the same encode/decode assertion and
@@ -96,6 +96,18 @@ instead of becoming skipped codec tests. Keep #385 open through that receiving.
 Source `def5f417` is published. Actual-Jupyter Movie `793` passes all eight
 cases on it. The single full source checkpoint `43553954846` now uses the
 same commit with MolSysMT `aee7aa65`, three Python 3.14 hosts and the Linux
-full core/notebook lane. All three jobs are in progress in the current
-receipt; terminal native evidence remains pending. Do not launch a second
-encoder-only or complete run while this one is active.
+full core/notebook lane. Its terminal evidence passes all 61 codec/export
+cases on each host without omissions. Native Windows automatic WebM selects
+`libaom-av1`; explicit AV1 and MP4 also pass the independent four-frame
+encode/decode, colour/rate/duration checks. The actual FFmpeg 9.0.2 digest
+remains `5de10060156daa8c128463cc1f8433a03f78535e7622873535a0e94d9bf2d2a7`,
+the same previously failing executable. The native-executable guard reads
+its actual encoder listing and confirms explicit VP9 refusal instead of
+substitution. Linux/macOS retain VP9 for automatic WebM.
+
+All seven original ZIPs match GitHub's sizes and SHA-256; successful native
+encoder receipts are retained. This resolves the codec boundary. The overall
+run still fails unrelated receiving guards under #386 and never reaches the
+complete core/notebook lane. The [recovery receipt](../source_checkpoint_recovery_20261114.json)
+keeps those limits and the earlier failed attempts. Installed artifacts,
+native Windows GUI and postponed human acceptance remain separate.

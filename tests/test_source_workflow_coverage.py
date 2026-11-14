@@ -14,6 +14,20 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_notebook_failure_artifacts_require_the_actual_executor_to_fail():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    execute = next(step for step in steps if step.get("id") == "source-notebooks")
+    assert execute["run"] == "python docs/execute_notebooks.py -q -n 4 -r -f docs/content"
+    assert "steps.notebook-kernel.outcome == 'success'" in execute["if"]
+    upload = next(step for step in steps if step.get("name") == "Preserve source-pair notebook failure logs")
+    assert "failure()" in upload["if"]
+    assert "steps.source-notebooks.outcome == 'failure'" in upload["if"]
+
+
 def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets():
     workflow = yaml.load(
         (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),

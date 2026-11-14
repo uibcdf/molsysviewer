@@ -891,15 +891,15 @@
       "canonical_js": "491 passed, zero skipped",
       "native_studio": "789 complete AV1/PNG/owner receiving",
       "image_regressions": "790 complete two-suite receiving",
-      "windows": "pending; #385 remains open",
+      "windows": "61 native codec/export cases pass; automatic AV1 and explicit VP9 refusal received in source",
       "additional_receiver_label": "#383 corrected in both owners and native entry received",
       "hosted_checkpoint": {
         "run_id": 43553954846,
         "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
         "head_sha": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
         "workflow": "ci-python-314-source-pair.yaml",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "failure",
         "observed_at": "2026-11-14T04:00:48.538028+00:00",
         "inputs": {
           "source_receiving": "true",
@@ -915,21 +915,24 @@
         "jobs": [
           {
             "name": "Source pair on macos-15, Python 3.14",
-            "status": "in_progress",
-            "conclusion": null
+            "status": "completed",
+            "conclusion": "failure"
           },
           {
             "name": "Source pair on windows-2025, Python 3.14",
-            "status": "in_progress",
-            "conclusion": null
+            "status": "completed",
+            "conclusion": "failure"
           },
           {
             "name": "Source pair on ubuntu-latest, Python 3.14",
-            "status": "in_progress",
-            "conclusion": null
+            "status": "completed",
+            "conclusion": "failure"
           }
         ],
-        "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim."
+        "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim.",
+        "terminal_receipt": "source_checkpoint_recovery_20261114.json",
+        "terminal_limits": "61 codec/export cases per host and 12 prior UTF8 failures pass; complete gate fails #386 guards, core/notebooks not reached.",
+        "terminal_observed_at": "2026-11-14T16:26:03.197890+00:00"
       }
     },
     "canonical_units_current": {
@@ -955,6 +958,12 @@
       "kernel_origin_sha256": "e1391b6bb858e238203245bf70039d90b78a7ba8815794dc4a4e0bf936514e16",
       "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
       "raw_command_receipt_sha256": "3c344ea7b2efcc5ac7f29d7e470f3ab806c3963f432917f5119cfebeae12dcd5"
+    },
+    "source_checkpoint_guard_recovery": {
+      "receipt": "source_checkpoint_recovery_20261114.json",
+      "codec_boundary": "#385: 61/61 on each native source host, zero omissions",
+      "utf8": "#169: all 12 original native Windows failures pass",
+      "complete_gate": "Original 43553954846 remains failed; #386 command/path guard and artifact-attribution repairs; Linux core/notebooks unexecuted."
     }
   },
   "controlled_profiles": [
@@ -3557,6 +3566,69 @@
         "minimum_globally_available_gib": 6.5
       },
       "raw_receipt_sha256": "6df0f7627e31da6d7a920dc40d74766ffd535656ded4c162b78c045fcb9f3b71"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 12.4767613443546,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-guard-repair-795",
+      "peak_summed_owned_rss_mib": 427.8,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "503ac52f5178bb35468bb3013c3732cc333179054108e8026d021c8c1887ce62"
+    },
+    {
+      "state": "completed",
+      "native_exit": 1,
+      "resource_stop": null,
+      "seconds": 15.964438635855913,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-route-repair-796",
+      "peak_summed_owned_rss_mib": 433.1,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "46f3a99e608f05c8f6304fd9a96d749818258c069adb3a4358fc740001dcda57"
+    },
+    {
+      "state": "completed",
+      "native_exit": 0,
+      "resource_stop": null,
+      "seconds": 6.038342769723386,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "checkpoint-final-records-797",
+      "peak_summed_owned_rss_mib": 187.9,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "raw_receipt_sha256": "c2ff3e463c5e5d002628261f441c3d64a4707b1cad7ef7089ade8e871c491eaa"
     }
   ],
   "remaining": [
@@ -3705,6 +3777,22 @@
       "credential_shaped_files_excluded": 0,
       "scope": "Completed actual Jupyter profile 793 plus current in-progress source-CI observation; not terminal hosted receiving.",
       "custodian": "Diego Prada Gracia"
+    },
+    "source_recovery_20261114": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/source-checkpoint-recovery-20261114",
+      "profiles": [
+        "checkpoint-guard-repair-795",
+        "checkpoint-route-repair-796",
+        "checkpoint-final-records-797"
+      ],
+      "files": 52,
+      "bytes": 16094112,
+      "manifest_sha256": "5c11cb2e9e0e03e8d5dbfda6a0b64beeaf2f60843e1046b674456b97ecc84e71",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 0,
+      "custodian": "Diego Prada Gracia",
+      "scope": "Immutable original failed hosted artifacts and local repair profiles. Public records gain this pointer after copying; preserved bytes are not rewritten."
     }
   },
   "preflight_rejections": [

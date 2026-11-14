@@ -21,7 +21,7 @@ import re
 import runpy
 import warnings
 from inspect import CO_COROUTINE
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import pytest
 
@@ -183,17 +183,29 @@ def _deprecations() -> tuple[set[str], dict[str, set[str]]]:
     return callables, keywords
 
 
+def _relative_document_path(page, root=ROOT):
+    """Use one document identity on every native host."""
+    return page.relative_to(root).as_posix()
+
+
+@pytest.mark.parametrize("path_class,prefix", [(PurePosixPath, "/checkout"), (PureWindowsPath, "D:/checkout")])
+def test_documentation_identity_is_independent_of_native_path_separators(path_class, prefix):
+    root = path_class(prefix)
+    for name in ["docs/content/user/export/state.md", "docs/content/showcase/quickstart.ipynb"]:
+        assert _relative_document_path(root / name, root) == name
+
+
 def _documentation_blocks() -> list[tuple[str, int, str]]:
     """Every python block and code cell under `docs/content`, as (page, number, source)."""
     blocks = []
     for page in sorted((ROOT / "docs" / "content").rglob("*.md")):
-        relative = str(page.relative_to(ROOT))
+        relative = _relative_document_path(page)
         text = page.read_text(encoding="utf-8")
         matches = sorted([*BLOCK.finditer(text), *DIRECTIVE_BLOCK.finditer(text)], key=lambda match: match.start())
         for number, match in enumerate(matches, 1):
             blocks.append((relative, number, match.group(1)))
     for notebook in sorted((ROOT / "docs" / "content").rglob("*.ipynb")):
-        relative = str(notebook.relative_to(ROOT))
+        relative = _relative_document_path(notebook)
         document = json.loads(notebook.read_text(encoding="utf-8"))
         for number, cell in enumerate(document.get("cells", []), 1):
             if cell.get("cell_type") != "code":

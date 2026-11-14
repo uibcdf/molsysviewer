@@ -59,8 +59,11 @@ with latest-release/development comparisons and explicit implementation and
 dependency decisions.
 The [current codec recovery](movie_codec_receiving_20261113.json) implements
 explicit/automatic FFmpeg selection and receives native Studio AV1 plus
-existing Movie/popup regressions; Windows and covering source/core gates
-remain pending under #385/#372.
+existing Movie/popup regressions. The [terminal source recovery](source_checkpoint_recovery_20261114.json)
+receives 61 codec/export cases per native host and all twelve original
+Unicode failures on Windows; #385/#169 are source-resolved. #386 repairs
+command/path guards and artifact attribution before the next complete
+source/core gate. #369/#372 and installed qualification remain open.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

@@ -7,7 +7,7 @@
     "uibcdf/molsysviewer#372",
     "uibcdf/molsysviewer#320"
   ],
-  "status": "local_source_and_native_browser_received; windows_and_covering_gates_pending",
+  "status": "codec_boundary_received_on_all_source_hosts; full_core_and_installed_gates_pending",
   "source": {
     "base_commit": "472032fa6eccf5c49100aa3ef24e652dce6b9439",
     "working_sha256": {
@@ -603,6 +603,13 @@
       "failed": 0,
       "skipped": 0,
       "scope": "Devguide links, reporting and generated indexes; not another product or hosted qualification."
+    },
+    "native_platform_codec": {
+      "receipt": "source_checkpoint_recovery_20261114.json",
+      "passed_per_host": 61,
+      "failed_or_skipped": 0,
+      "windows_auto": "AV1",
+      "overall_checkpoint": "failed (#386), not complete qualification"
     }
   },
   "retained_failures": {
@@ -671,8 +678,7 @@
     ]
   },
   "remaining": [
-    "Execute/inspect complete new-source three-platform Python 3.14 checkpoint and its full Linux core lane.",
-    "Verify actual Windows auto AV1 and explicit VP9 refusal against retained executable and encoder receipts.",
+    "Receive a complete new-source three-platform checkpoint and its full Linux core/notebook lane after #386 guard recovery.",
     "Preserve original failed source/diagnostic runs; later success never changes their native outcomes.",
     "Installed artifacts, prolonged use and postponed human acceptance remain distinct."
   ],
@@ -723,8 +729,8 @@
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
     "head_sha": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
     "workflow": "ci-python-314-source-pair.yaml",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "observed_at": "2026-11-14T04:00:48.538028+00:00",
     "inputs": {
       "source_receiving": "true",
@@ -740,20 +746,23 @@
     "jobs": [
       {
         "name": "Source pair on macos-15, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       },
       {
         "name": "Source pair on windows-2025, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       },
       {
         "name": "Source pair on ubuntu-latest, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       }
     ],
-    "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim."
+    "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim.",
+    "terminal_receipt": "source_checkpoint_recovery_20261114.json",
+    "terminal_limits": "61 codec/export cases per host and 12 prior UTF8 failures pass; complete gate fails #386 guards, core/notebooks not reached.",
+    "terminal_observed_at": "2026-11-14T16:26:03.197890+00:00"
   }
 }

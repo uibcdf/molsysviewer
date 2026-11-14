@@ -393,13 +393,14 @@ jobs:
           if-no-files-found: warn
 
       - name: Execute every documented notebook against the exact source pair
+        id: source-notebooks
         if: always() && runner.os == 'Linux' && steps.notebook-kernel.outcome == 'success' && inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         working-directory: molsysviewer-source
         run: python docs/execute_notebooks.py -q -n 4 -r -f docs/content
 
       - name: Preserve source-pair notebook failure logs
-        if: failure() && runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'
+        if: failure() && runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics' && steps.source-notebooks.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: source-pair-notebook-failure-logs

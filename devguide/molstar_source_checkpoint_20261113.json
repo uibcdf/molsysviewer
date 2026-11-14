@@ -297,7 +297,7 @@
     "windows": "Local checks do not qualify the native Windows repair.",
     "live_example": "The explicit live-state-capture block is handed unchanged to the actual Jupyter kernel, separately from sequential headless blocks."
   },
-  "next": "Receive terminal source-pair 43553954846: all three Python 3.14 hosts, Windows actual codec receipts and Linux full core/notebooks; preserve original failures. Current actual-Jupyter Movie 793 passes all eight cases. #169/#385 platform and #369/#372 qualification remain open. No candidate/publication.",
+  "next": "Resolve/receive #386 command inventory, portable documentation identities and actual-producer artifact publication, then one complete exact-source checkpoint. Codec #385 and UTF8 #169 have native source acceptance. #369/#372 remain open; no candidate/publication.",
   "encoder_diagnostic": {
     "run_id": 43521107544,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43521107544",
@@ -348,8 +348,8 @@
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43553954846",
     "head_sha": "def5f4171ebe16345d98d37f478cdf5bf2f0a547",
     "workflow": "ci-python-314-source-pair.yaml",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "observed_at": "2026-11-14T04:00:48.538028+00:00",
     "inputs": {
       "source_receiving": "true",
@@ -365,20 +365,23 @@
     "jobs": [
       {
         "name": "Source pair on macos-15, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       },
       {
         "name": "Source pair on windows-2025, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       },
       {
         "name": "Source pair on ubuntu-latest, Python 3.14",
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "failure"
       }
     ],
-    "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim."
+    "notice": "This is a source-only exact-commit checkpoint, including Linux full core/notebooks. Qualification is pending original terminal logs/artifacts; no new candidate or installed-artifact claim.",
+    "terminal_receipt": "source_checkpoint_recovery_20261114.json",
+    "terminal_limits": "61 codec/export cases per host and 12 prior UTF8 failures pass; complete gate fails #386 guards, core/notebooks not reached.",
+    "terminal_observed_at": "2026-11-14T16:26:03.197158+00:00"
   }
 }
