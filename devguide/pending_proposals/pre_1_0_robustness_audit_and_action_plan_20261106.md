@@ -24,6 +24,32 @@ human observations and exact installed qualification must not remain hidden
 work after that handoff. Their current pauses require their established
 authorization/resumption route; this objective does not lift them.
 
+**Accepted Jupyter startup resolution — 2026-11-15:** Diego accepts the
+joint technical host-profile resolution for D5.4; MolSysMT #615 closes in
+`5afa582f8cbd4b7c59c7be1fb05fb5063141ece4`, and the [lead audit](../archive/initial_jupyter_canvas_timeout_audit.md)
+is resolved with the >=7.4.0 notebook baseline. Causal controls and one normal
+current-source TcTIM startup receive 3,983 atoms and a new draw in 10.7884 s;
+the original event's exact cause remains explicitly unproven. This completes
+one original source outcome: **40/46 (87.0%) locally verified/source-delivered**,
+with **1/46 final applicable acceptance unchanged**. Controlled legacy-prefix
+adoption #200 and final-candidate/installed/human evidence stay separate.
+
+The complete source checkpoint `43748320908` now passes three native Python
+3.14 hosts, all 63 core browser suites and all 25 notebooks; all six original
+ZIPs match GitHub hashes. This source gate does not independently add another
+original leaf or qualify an installed artifact.
+
+**New provider finding to receive before the final source freeze:**
+[MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) reports valid
+public 3WU2/5XNL mmCIF conversion failures before rendering, caused by entity
+index reuse after revisiting an earlier entity. The reported converter is
+unchanged from the source qualified here; original CI does not cover those
+inputs. MolSysMT owns the correction and scientific identity tests. Receive
+its exact fix and bounded consumer checks when delivered; do not rewrite
+inputs, select fewer atoms or bypass MolSys to obtain a displayed model.
+This is an owner-reported load-path blocker, not an independent reproduction
+or a new denominator leaf. General standalone embedding #368 remains separate.
+
 **Additional requirement adopted — 2026-11-12:**
 [#369's Mol* review](pre_1_0_molstar_integration_review.md) is required before
 the architecture/candidate freeze and final documentation-review handoff.
@@ -536,7 +562,7 @@ mirror passes a diagnostic measurement locally; canonical/covering receiving
 remains separate. Later DataCard/plot/Movie guards are unreached in this run.
 Neither original outcome counter changes.
 
-**Current initial-canvas audit — 2026-11-14:** [#384's owned audit](../pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+**Current initial-canvas audit — 2026-11-14:** [#384's owned audit](../archive/initial_jupyter_canvas_timeout_audit.md)
 distinguishes the original executing-cell timeout from a separate earlier
 fixture oracle exception. [#392's independent source fix](../archive/runtime_source_replies_require_scene_lock.md)
 receives immutable runtime replies during contended scene ownership, five
@@ -944,8 +970,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **39/46 — 84.8%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2, independent construction D6.5, consolidated handoff F3, host services C3 and structural observables D6.7. See the receipts for each original outcome and its unaccepted exits. |
-| Consumer result delivered | **39/46 — 84.8%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1–C3/C5, D1–D4, D5.1–D5.3/D5.5/D5.6, D6.1–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; #696/#699 are owner-integrated; C3 is received in the current host integration receipt; D6.7 in the structural-observables receipt. |
+| Consumer result complete and locally verified | **40/46 — 87.0%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2, independent construction D6.5, consolidated handoff F3, host services C3 and structural observables D6.7, plus the accepted Jupyter startup resolution D5.4. See the receipts for each original outcome and its unaccepted exits. |
+| Consumer result delivered | **40/46 — 87.0%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1–C3/C5, D1–D4, D5.1–D5.6, D6.1–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; #696/#699 are owner-integrated; C3 is received in the current host integration receipt; D6.7 in the structural-observables receipt. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -1280,7 +1306,7 @@ do not silently omit an existing accepted family.
 | **D5.1 — source received, uibcdf/molsysmt#549** | Scheme-aware group labels, legacy/Amber/CCD distinctions and native builder/sequence/file consequences pass; no implicit chemical renaming |
 | **D5.2 — consumer source received, final acceptance separate** | Owner #582 delivers experimental `get_model_recipe`, its expert facade and compiled-physics/refusal guards. Draft #696 adds explicit physical inspection and labelled compiled observations in mechanical reports, retaining cheap request review, native origins, units, unsupported controls and no competing parameterization |
 | **D5.3 — source received, uibcdf/molsysmt#612** | Stable-ID alternate-site admission, whole-request atomic refusal and explicit observation/PDB-fidelity controls pass |
-| **D5.4 — uibcdf/molsysviewer#384 / uibcdf/molsysmt#615** | MolSysViewer's [owned audit](../pending_bugs/initial_jupyter_canvas_timeout_audit.md) receives the independent #392 bootstrap correction and real normal/contended startup controls. The original timeout's cause or bounded evidenced disposition remains required; return that outcome to MolSysMT without treating the separate source fix as closure |
+| **D5.4 — technical source resolution received, uibcdf/molsysviewer#384 / uibcdf/molsysmt#615** | The [archived lead audit](../archive/initial_jupyter_canvas_timeout_audit.md) receives the >=7.4.0 notebook baseline, controlled kernel/browser counterexamples and one normal TcTIM startup with a new draw in 10.7884 s. Diego accepts the technical resolution; MolSysMT #615 is closed. Original historical causality remains unproven; final candidate/installed/human evidence and shared-prefix adoption remain separate. |
 | **D5.5 — bounded source disposition received, uibcdf/molsysmt#473** | Provisional ISA area units and unverified original normalization remain explicit under ordinary/nondefault policies; owner #473 stays open |
 | **D5.6 — bounded source disposition received, uibcdf/molsysmt#475** | Legacy ECI wrapper/aggregation remains experimental and distinct from physical charge; original dimension/additivity is unverified and owner #475 stays open |
 

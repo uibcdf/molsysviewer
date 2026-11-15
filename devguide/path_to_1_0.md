@@ -86,10 +86,12 @@ The committed #754 receiver also passes one full molecular Jupyter cycle on
 `a8fc5273`, including both popups, the unchanged Python frame assertion and
 save/recovery. Its earlier resource interruption is retained; original failure
 causality and prolonged/final acceptance remain separate.
-The [#384 initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+The [#384 initial-canvas audit](archive/initial_jupyter_canvas_timeout_audit.md)
 now source-resolves the distinct #392 immutable-source lock defect, with causal
-guards and actual-kernel normal/contended receiving. The historical #615
-timeout and exact final-pair qualification remain separate required exits.
+guards and actual-kernel normal/contended receiving. Diego has now accepted D5.4's technical >=7.4.0 Jupyter resolution and MolSysMT
+#615 is closed; its exact historical cause remains unproven. Final-pair and
+shared-prefix adoption evidence remain separate. MolSysMT #763's owner-reported
+large-mmCIF converter defect must be fixed and received before final freeze.
 
 The next Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
 on `b9f7dfb2` passes the complete mirror, DataCard, trajectory plot and first

@@ -126,38 +126,33 @@ CI authorization has not already lifted the staging construction pause.
 
 ## 3. Historical startup uncertainty and actual-host acceptance
 
-The [#384 audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md) separates
+The [#384 audit](archive/initial_jupyter_canvas_timeout_audit.md) separates
 MolSysMT #615's missing original pre-deadline trace from a fixture exception
 and the independently proven/fixed #392 source-reply lock defect. The original
 timeout cannot be assigned to either from the preserved evidence. Current
 normal/contended startup passes are useful controls, not a historical cause.
 
-The maintainer's [decision recorded by MolSysMT](https://github.com/uibcdf/molsysmt/blob/c80e7380a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#maintainer-decision-continue-the-investigation--2026-11-15)
-keeps #615 open and requires further investigation; the proposed historical
-disposition is not accepted or awaiting approval. #384 leads the causal work.
-Keep #392's causal regression and the strengthened #754/#762 observations;
-do not raise the 30-second canvas deadline, retry blindly or describe the old
-failure as fixed. The next control distinguishes initial execute admission
-from molecular preparation, bootstrap and drawing. Candidate receiving still
-requires a real eligible draw after scene registration within the same bound.
+Diego's initial `c80e7380a` decision kept the audit open. The subsequent
+causal controls `919`/`923` and normal current-source `928` support a new
+technical host-profile resolution: ipykernel >=7.4.0 for Jupyter. Normal
+TcTIM startup produces 3,983 atoms and a new draw in 10.79 seconds without
+scheduling barriers. The original 30-second deadline is unchanged.
 
-That discriminating work now demonstrates the old-kernel mechanism in the
-kernel-only `919` and actual TcTIM/Jupyter `923` controls. The correlated
-execute is admitted after 30.52 seconds with 7.3.0, but after 1.6 ms with
-7.4.0; the latter renders all 3,983 atoms on a new draw in 6.55 seconds.
-Preserve `923`'s combined exit 1 from its post-retirement marker assertion;
-`924` verifies the actual pre-deadline/late-entry timing offline, without a
-rerun. This is controlled scheduling, not a spontaneous recurrence or proof
-of the original history. Review the [causal evidence](pending_bugs/initial_jupyter_canvas_timeout_audit.md#actual-jupytertctim-overlap--2026-11-15)
-with MolSysMT; #615 stays open and no historical waiver is pending.
+The principal maintainer explicitly accepts that resolution; [MolSysMT #615
+is closed](https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6902474490)
+in `5afa582f8cbd4b7c59c7be1fb05fb5063141ece4`, and the [lead audit](archive/initial_jupyter_canvas_timeout_audit.md)
+is archived with its recipe-floor regression. The original event's exact
+cause remains unproven. Shared-prefix #200 and final candidate/installed
+receiving remain separate. There is no outstanding unknown-cause waiver.
 
-The distinct ordinary startup is now received in `928`, without a forced
-overlap or timing delegates: original ipykernel 7.4.0, exact current MT
-`bc5a9297` source/receiver, 3,983 atoms and a new draw in 10.79 seconds.
-The [joint recommendation](pending_bugs/initial_jupyter_canvas_timeout_audit.md#normal-corrected-host-receiving-and-joint-recommendation--2026-11-15)
-is ready for Diego's review: close the technical host defect with the
->=7.4.0 notebook baseline, retaining the unproven exact historical cause
-and separate final gates. This is a recommendation, not a closure decision.
+New [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) concerns
+valid larger mmCIF inputs failing in conversion before rendering, with an
+entity-index allocator collision. The reported converter is unchanged from
+the qualified source. Receive the owner's exact fix and bounded consumer
+checks before final freeze; source CI success is not evidence about those
+previously untested inputs. Do not add a downstream input rewrite or compete
+with the owner's scientific correction. Its standalone consumer #368 is a
+separate feature proposal.
 
 Actual Jupyter and native Wayland/Qt/NVIDIA source receiving retain exact
 input identities. Recheck changed boundaries: the current runtime changes

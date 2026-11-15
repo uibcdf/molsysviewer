@@ -1,30 +1,62 @@
 ---
-summary: Audit the initial Jupyter molecular-canvas timeout with phase-specific evidence.
+summary: Require corrected Jupyter shell transport for initial molecular-canvas startup.
 issue: uibcdf/molsysviewer#384
-status: active
+status: resolved
 opened: 2026-11-13
-closed:
+closed: 2026-11-15
 severity: medium
-verification: measured
+verification: reproduced
 area: [jupyter, initialization, integration, receiving]
-guard:
+guard: tests/test_source_workflow_coverage.py::test_notebook_environments_require_the_corrected_native_shell_transport
 normative:
 blocked_by: []
 supersedes: []
 ---
 
-# Initial Jupyter canvas — MolSysViewer leads the audit
+# Initial Jupyter canvas — accepted host-profile resolution
 
-**Active pre-1.0 requirement.** MolSysViewer owns the investigation requested
-by the principal maintainer; uibcdf/molsysmt#615 retains its consumer/release
-dependency. MolSysMT's [owner handoff](https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6866859272)
-does not establish a product-code cause. The earlier unresolved-risk acceptance
-proposal was not adopted. A later passing attempt is not a causal correction.
-The [maintainer decision recorded by MolSysMT](https://github.com/uibcdf/molsysmt/blob/c80e7380a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#maintainer-decision-continue-the-investigation--2026-11-15)
-keeps #615 open and requires causal investigation. Approval of that historical
-disposition is not an outstanding action. This report retains the lead.
-The [existing integration handoff](../molsysmt_pre_1_0_handoff_20261110.md#molsysmt-615-first-canvas-evidence)
-retains the diagnostic contribution and its original source scope.
+**Resolved technically — 2026-11-15:** Diego accepts the corrected Jupyter
+host profile after the paired causal controls and normal TcTIM startup.
+MolSysMT #615 is [closed with that accepted resolution](https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6902474490)
+in owner commit `5afa582f8cbd4b7c59c7be1fb05fb5063141ece4`. This completes
+MolSysViewer's requested lead audit under #384. The original event's exact
+cause remains unproven; the retained observations below are not rewritten.
+
+## Resolution — 2026-11-15
+
+The supported notebook host requires `ipykernel>=7.4.0`. Component source-test,
+test, development and documentation recipes already declare that floor in
+`f6765f6c`; `3aff1d48` adds the four-recipe regression named in `guard`.
+It fails if a route loses the corrected minimum. This is a Jupyter profile
+requirement, not a new mandatory dependency of core/headless or Qt use.
+
+The demonstrated 7.3.0 shell notification loss, upstream repair and original
+7.4.0 controls support this engineering resolution. Normal control `928`
+receives the unchanged owner #762 guard on current committed MT source:
+3,983 atoms and a new native draw in 10.7884 seconds, inside the original
+30-second bound, without a scheduling barrier or artificial retry. The
+[immutable receiving receipt](https://github.com/uibcdf/molsysviewer/blob/7d88b56a6514dc1509ae0cfb85bb77ca1b12c0c9/devguide/initial_canvas_edge_receiving_20261115.json)
+retains actual loaded origins, source/native identity, original failures and
+private custody. The normal-source condition is independently reviewed by
+MolSysMT in `a1efa599a`; the principal maintainer then explicitly accepts it.
+
+The minimum guard passes in all three native Python 3.14 source jobs in
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+which also receives all 63 core suites and 25 notebooks. This closure does
+not infer the original missing transition, qualify installed/final artifacts
+or complete postponed human review. The exact final-pair initial-scene guard
+remains required. Controlled shared-prefix adoption belongs to MolSysSuite
+#200; that existing prefix is unchanged. No package, tag or publication is
+authorized by this technical acceptance.
+
+## Earlier investigation and recommendation history
+
+MolSysViewer led the investigation requested by the principal maintainer;
+MolSysMT #615 retained its consumer/release dependency. The earlier
+unresolved-risk proposal was not adopted, and the initial decision in
+`c80e7380a` kept the issue open. The subsequent causal investigation and
+accepted normal-source condition above supersede that pending state while
+preserving the following dated evidence.
 
 ## Original evidence reinspection — 2026-11-14
 
@@ -62,7 +94,7 @@ Its SHA-256 is
 and its installed-package inventory reports ipykernel 7.3.0. The neighbouring
 failure still matches the original `f7bfe46f…` digest above. The independently
 reproduced newer comm stall and 7.4.0 source-host solution are tracked under
-[#396](jupyter_movie_seek_pending.md). An associated environment inventory is
+[#396](../pending_bugs/jupyter_movie_seek_pending.md). An associated environment inventory is
 not an observation of the module loaded in the original kernel, nor proof of
 its missing transition. Neither failure is relabelled. A separately hashed
 private supplement preserves both originals; the current closure receipt

@@ -18,7 +18,7 @@ supersedes: []
 **Resolved in source — 2026-11-14:** the causal guard and actual-kernel
 receiving below pass; final hosted/installed acceptance remains separate.
 
-The [#384 startup audit](../pending_bugs/initial_jupyter_canvas_timeout_audit.md) reproduces
+The [#384 startup audit](../archive/initial_jupyter_canvas_timeout_audit.md) reproduces
 a distinct current defect: both `request_widget_runtime_source` and
 `request_popup_source` raise `SystemEditPendingError` when another thread
 owns the molecular scene lock. The same calls return after release. Their

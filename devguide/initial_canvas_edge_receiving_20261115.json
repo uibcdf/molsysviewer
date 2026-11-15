@@ -7,7 +7,7 @@
     "uibcdf/molsysviewer#396",
     "uibcdf/molsyssuite#200"
   ],
-  "state": "Controlled kernel and actual-browser initial-execute mechanism demonstrated; #615 remains open for review and candidate receiving. No spontaneous-incidence or exact historical-cause claim.",
+  "state": "Principal-maintainer-accepted technical >=7.4.0 Jupyter host resolution; owner #615 closed, lead #384 archival received. Original historical cause remains unproven.",
   "source_base": "f6765f6c680b82f47de0ae94dcd459ac32a79138",
   "runtime_sha256": "f613c7b4fb2b9693442ecf46a86a749f0d9912d3e488ef1aa6f2832a47fe6446",
   "provider_scope": {
@@ -308,9 +308,17 @@
     }
   },
   "joint_technical_recommendation": {
-    "state": "Joint recommendation ready for principal-maintainer review; not a closure decision.",
+    "state": "Accepted by Diego after normal 928 receiving; owner #615 closed in 5afa582f8.",
     "owner_proposal": "https://github.com/uibcdf/molsysmt/blob/0ff6af80a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#joint-recommendation-requested-by-the-maintainer--2026-11-15",
     "recommendation": "Close the technical host defect with the supported Jupyter minimum ipykernel>=7.4.0 after review of causal 919/923 and normal 928 receiving. Keep the original historical cause explicitly unproven and preserve its evidence. Do not require reconstructing absent observations.",
     "scope": "Jupyter host profile only, not a new mandatory core/headless dependency. Shared legacy-prefix adoption remains MolSysSuite #200; exact source/installed/candidate/human/publication exits stay separate. No issue closed, approval inferred or new package/matrix requested."
+  },
+  "accepted_resolution": {
+    "owner_commit": "5afa582f8cbd4b7c59c7be1fb05fb5063141ece4",
+    "owner_issue": "https://github.com/uibcdf/molsysmt/issues/615",
+    "owner_closing_comment": "https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6902474490",
+    "lead_record": "devguide/archive/initial_jupyter_canvas_timeout_audit.md",
+    "guard": "tests/test_source_workflow_coverage.py::test_notebook_environments_require_the_corrected_native_shell_transport",
+    "scope": "Technical Jupyter host-profile acceptance. Shared legacy prefix unchanged; exact candidate/installed/human/publication gates remain separate. No exact original historical cause inferred."
   }
 }

@@ -262,12 +262,13 @@
     "minimum_interpretation": "Original MolSysMT 0.23.0 already has native stored ChemicalStates/get_bonds. No dependency-floor change is justified merely by a later public namespace. Original public MolSysViewer 0.24.0 lacks closed; #524 needs a real new compatible published floor plus clean minimum/newer installed receiving. Artifact declarations alone are not runtime qualification.",
     "owner_prerequisites": [
       "#256: H5MSM stable-format acceptance and BindingMT #73 native omitted-version/migration receiving under ordinary and pm/fs units.",
-      "MolSysViewer #384 / MolSysMT #615: maintainer decision recorded at owner c80e7380a keeps the issue open for causal investigation. The prior historical disposition is not accepted or awaiting approval.",
+      "D5.4 technical host resolution accepted by Diego; owner #615 closed. Receive final candidate on notebook ipykernel>=7.4.0 separately.",
       "MolSysMT #524: agreed compatible published host floor, audited manifests and clean installed minimum/newer closure/origin checks.",
-      "Agree exact producers/refs, new unused builds, manifests, original file hashes and one installed 16-cell dispatch after prerequisite review."
+      "Agree exact producers/refs, new unused builds, manifests, original file hashes and one installed 16-cell dispatch after prerequisite review.",
+      "MolSysMT #763: owner-reported valid large-mmCIF entity-index conversion defect; receive exact correction and bounded consumer checks before final producer freeze. No downstream data workaround."
     ],
     "matrix": "Four platforms x Python 3.11-3.14; no new installed dispatch performed.",
-    "additional_current_prerequisite": "Current notebook host profile requires ipykernel>=7.4.0; receive exact candidate on this explicit host baseline. Legacy-prefix adoption belongs to MolSysSuite #200. Causal #615 investigation and installed pair remain separate.",
+    "additional_current_prerequisite": "Current notebook host profile requires ipykernel>=7.4.0; receive exact candidate on this explicit host baseline. Legacy-prefix adoption belongs to MolSysSuite #200. Technical #615 resolution is accepted; installed pair and controlled legacy-prefix adoption remain separate.",
     "current_owner_source_controls": {
       "profile": "mt-review-session-interactions-897",
       "source": "96988b6ea42fb02a662fa3dda5eb2f7659f28c56",
@@ -539,8 +540,8 @@
     "manifest_sha256": "364a7b7b773104f561ea5a2b67a8a8b275c1fbc40165363ae96eaee0a75d4dbc",
     "originals_retained": true
   },
-  "source_delivered_counter": "39/46 unchanged",
-  "final_acceptance_counter": "1/46 unchanged",
+  "source_delivered_counter": "40/46 (87.0%): D5.4 added once after accepted technical host resolution",
+  "final_acceptance_counter": "1/46 unchanged; exact candidate/installed/human exits remain separate",
   "public_tags_releases_promotions": "paused",
   "record_validation": {
     "profile": "story-closeout-records-886",
@@ -1254,11 +1255,11 @@
     "scope": "Only #396 derived in-progress -> partial labels; no body/comment/closure changed."
   },
   "current_historical_initial_canvas_decision": {
-    "owner_record": "https://github.com/uibcdf/molsysmt/blob/c80e7380a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md",
-    "state": "Keep open and investigate; proposed unknown-cause closure rejected, not awaiting approval.",
-    "lead": "uibcdf/molsysviewer#384",
-    "consumer": "uibcdf/molsysmt#615",
-    "next_control": "Review joint technical-closeout recommendation with the principal maintainer: original-kernel causal 919/923 plus normal current-source TcTIM/7.4.0 receiving 928 now pass their declared checks. Historical exact cause remains unproven; no issue closure decision inferred. Final candidate/installed receiving remains separate."
+    "state": "Principal-maintainer-accepted technical resolution; owner #615 closed. Lead #384 record archived.",
+    "owner_commit": "5afa582f8cbd4b7c59c7be1fb05fb5063141ece4",
+    "owner_closing_comment": "https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6902474490",
+    "minimum": "ipykernel>=7.4.0 for the Jupyter profile; no mandatory core/headless dependency",
+    "remaining": "Exact final-candidate/installed/host receiving and controlled legacy-prefix adoption #200. Original exact historical cause unproven."
   },
   "previous_complete_source_terminal_43698930436": {
     "run": 43698930436,
@@ -1451,7 +1452,7 @@
       "originals_retained": true,
       "credential_shaped_files_excluded": 0
     },
-    "remaining": "#615 causal review and final candidate receiving; no unknown-cause waiver pending.",
+    "remaining": "Final candidate/installed/host receiving and shared-prefix adoption; technical resolution accepted by Diego.",
     "normal_startup_928": {
       "profile": "initial-canvas-normal-740-928",
       "source_base": "6f80cc915a9f44b6eb47ace336fa543c9e0b35e1",
@@ -2095,5 +2096,51 @@
     "core_suites": 63,
     "notebooks": 25,
     "scope": "MolSysViewer exact source consumer receiving, not MolSysMT full scientific suite, frozen producers, original installed artifacts, all supported minor/architecture qualification or human/publication acceptance. Queue closures/counters require their own reconciliation."
+  },
+  "previous_historical_initial_canvas_decision_c80e7380a": {
+    "owner_record": "https://github.com/uibcdf/molsysmt/blob/c80e7380a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md",
+    "state": "Keep open and investigate; proposed unknown-cause closure rejected, not awaiting approval.",
+    "lead": "uibcdf/molsysviewer#384",
+    "consumer": "uibcdf/molsysmt#615",
+    "next_control": "Review joint technical-closeout recommendation with the principal maintainer: original-kernel causal 919/923 plus normal current-source TcTIM/7.4.0 receiving 928 now pass their declared checks. Historical exact cause remains unproven; no issue closure decision inferred. Final candidate/installed receiving remains separate."
+  },
+  "current_provider_load_blocker_763": {
+    "issue": "https://github.com/uibcdf/molsysmt/issues/763",
+    "verification": "Owner report and source inspection only; no independent molecular reproduction performed here.",
+    "inputs": [
+      "3WU2.cif.gz",
+      "5XNL.cif.gz"
+    ],
+    "reported_source": "6deb0200cd7e384128eded46caaf751a57e65bc6",
+    "converter_differences_from_qualified_bc5": 0,
+    "impact": "Large valid mmCIF conversion fails before rendering. Needs owner correction and bounded consumer receiving before final source freeze; prior source CI does not cover those inputs.",
+    "ownership": "MolSysMT; no downstream patch, input cleaning or duplicate owner execution requested."
+  },
+  "initial_audit_archive_validation": {
+    "initial_unindexed_native_exit": 1,
+    "initial_cause": "Clean-checkout link guard rejects the new archive destination before it is added to the Git index. The file and target links exist; index state is corrected without relaxing any assertion.",
+    "final_indexed_native_exit": 0,
+    "selected_pytest_passed": 477,
+    "checks": [
+      "Four notebook minimum-provider route guards",
+      "reporting/archived guard contract",
+      "clean-checkout local links",
+      "generated queue indexes",
+      "git diff checks"
+    ],
+    "profile": "initial-audit-closure-indexed-931",
+    "limits": "1 CPU/1 GiB",
+    "supervised": {
+      "seconds": 5.47371762804687,
+      "peak_owned_rss_mib": 188.3,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    }
   }
 }

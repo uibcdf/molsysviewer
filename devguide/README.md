@@ -123,21 +123,17 @@ guard pass 549 selected checks. Native JUnit records 4,764 Linux, 4,733 macOS
 and 4,737 Windows passes, with explicit skips and no failures/errors. All six
 original ZIPs match GitHub hashes. The source run assigns no
 candidate version/tag and is not an installed package gate.
-The [initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
-now leads #384/MolSysMT #615 and source-resolves the independent
-[#392 bootstrap lock defect](archive/runtime_source_replies_require_scene_lock.md).
-Five causal and 38 affected Python cases, plus normal/contended actual-kernel
-startup controls, pass in their overlapping scopes. The historical timeout's
-cause remains unresolved; its source outcome and the 39/46 counter are unchanged.
-Paired kernel-only and actual-Jupyter controls now reproduce an initial
-execute notification loss with original ipykernel 7.3.0; the matched 7.4.0
-arm draws all 3,983 atoms in 6.55 seconds. The controlled scheduling is not
-proof of the original history or final-candidate acceptance; #615 stays open.
-The distinct normal startup now passes on current MT source with original
-7.4.0: 3,983 atoms and a new draw in 10.79 seconds, without timing barriers.
-The joint technical-closeout recommendation is ready for Diego's review;
-historical exact cause, installed qualification and shared-prefix adoption
-remain separately recorded.
+The [initial-canvas audit](archive/initial_jupyter_canvas_timeout_audit.md)
+is technically resolved after Diego accepts the >=7.4.0 notebook host profile
+and MolSysMT closes #615 in `5afa582f8`. Controlled 919/923 plus normal
+current-source 928 receive the shell mechanism and 3,983-atom scene/new draw
+in 10.79 seconds. The original event's exact cause remains unproven. D5.4 is
+source-delivered once: **40/46 (87.0%)**; final applicable acceptance remains
+**1/46**, with final artifacts, shared-prefix #200 and human exits separate.
+The independent [#392 bootstrap lock fix](archive/runtime_source_replies_require_scene_lock.md)
+retains its own causal scope. New [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763)
+requires owner correction/consumer receiving for large valid mmCIF imports
+before the final source freeze; it is distinct from first-canvas startup.
 The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
 the complete native authoring/export entry and all 491 JS cases. Full M2

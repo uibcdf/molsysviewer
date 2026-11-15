@@ -925,17 +925,15 @@ independently on ipykernel 7.3.0; original 7.4.0 bytes pass 30 native cycles
 and the complete actual Movie pytest with ten edit/seeks. Component notebook
 recipes now require >=7.4.0. MolSysSuite #200 owns legacy-prefix adoption;
 that shared prefix is unchanged. Exact installed pair,
-causal #615 investigation and applicable human exits remain separate and
+MolSysMT #763 owner correction/consumer receiving and applicable human exits remain separate and
 pending. Follow the [decision packet](molstar_closeout_decisions_20261115.md).
-Kernel-only `919` and actual-TcTIM `923` demonstrate a controlled original
-7.3.0 initial-execute stall; the matched 7.4.0 arm draws all 3,983 atoms in
-6.55 seconds. Offline `924` distinguishes late entry from entry before the
-original deadline without rewriting the combined driver's exit 1. #615 stays
-open; historical cause and final candidate receiving remain uncredited.
-Normal current-source startup `928` now passes separately on original
-ipykernel 7.4.0 without scheduling barriers: 3,983 atoms and a new draw in
-10.79 seconds. The joint technical-closeout recommendation is ready for
-Diego's review; no issue is closed or final qualification inferred.
+Kernel-only `919` and actual-TcTIM `923` demonstrate the controlled
+7.3.0 initial-execute stall; normal current-source `928` receives 3,983 atoms
+and a new draw in 10.79 seconds on original 7.4.0 without timing barriers.
+Diego accepts the technical >=7.4.0 notebook resolution and MolSysMT closes
+#615 in `5afa582f8`; the lead #384 report is archived. D5.4 advances source
+outcomes once to **40/46 (87.0%)**, with **1/46 final acceptance unchanged**.
+Historical exact cause and final installed/candidate receiving remain separate.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**
@@ -998,7 +996,7 @@ installed and postponed human acceptance remain open; original progress stays
 39/46. The failed source checkpoints did not reach Movie's complete browser
 scope; the latest complete Linux recovery also stops before Movie.
 
-**Initial-canvas audit — 2026-11-14:** [#384](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+**Initial-canvas audit — 2026-11-14:** [#384](archive/initial_jupyter_canvas_timeout_audit.md)
 leads the #615 investigation and source-resolves the independent
 [#392 source-request lock defect](archive/runtime_source_replies_require_scene_lock.md).
 Five causal and 38 affected Python cases pass, as do two fresh-kernel
