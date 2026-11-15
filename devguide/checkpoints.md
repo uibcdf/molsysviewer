@@ -934,6 +934,10 @@ Diego accepts the technical >=7.4.0 notebook resolution and MolSysMT closes
 #615 in `5afa582f8`; the lead #384 report is archived. D5.4 advances source
 outcomes once to **40/46 (87.0%)**, with **1/46 final acceptance unchanged**.
 Historical exact cause and final installed/candidate receiving remain separate.
+The complete core gate also receives and closes source reports #244/#391/
+#395/#397; each archived record names its durable guard and original failures.
+#396's corrected host source scope, residual #388/#354 questions, exact
+artifacts and postponed human exits remain separately tracked.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**
@@ -942,7 +946,7 @@ on `a8fc5273b6aa274cb5fc343b79ddf613b3458a54`, retaining scientific source
 `aee7aa65` and pandas 3.1.0, ends in failure. Python passes 4,744 cases with 42
 explicit skips and all 25 notebooks execute. The outer runner kills scientific
 mirror entry 4/63 at 300 seconds, after camera/motion and native-picking
-milestones; the three preceding entries pass. [#244 is reopened](pending_bugs/scientific_mirror_aggregate_budget_recurrence.md).
+milestones; the three preceding entries pass. [#244 is reopened](archive/scientific_mirror_aggregate_budget_recurrence.md).
 No DataCard/plot/Movie assertion is reached in this run. Original ZIPs match
 GitHub hashes. Prior Windows/macOS evidence stays on `ad470cdf`; no current
 complete-core, installed or three-platform candidate acceptance is inferred.

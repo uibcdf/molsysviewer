@@ -1,19 +1,44 @@
 ---
 summary: Receive the complete scientific popup mirror after its independent aggregate budget expires.
 issue: uibcdf/molsysviewer#244
-status: active
+status: resolved
 opened: 2026-11-15
-closed:
+closed: 2026-11-15
 severity: medium
 verification: measured
 area: [testing, ci, popup]
-guard:
+guard: tests/test_e2e_reliability.py::test_controls_and_scientific_mirror_keep_separate_mandatory_owners
 normative:
 blocked_by: []
 supersedes: []
 ---
 
 # Independent scientific mirror budget recurrence
+
+**Resolved in source — 2026-11-15.**
+
+## Resolution
+
+The independently initialized scientific mirror retains its canonical 480-second aggregate, with controls at 300 seconds and every individual operation deadline unchanged. The guard protects distinct mandatory owners and those exact budget contracts; actual native mirror receiving is provided by the full core run. Earlier resource-interrupted local attempts and diagnostic overrides remain non-passes.
+
+Exact source checkpoint [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and MolSysMT
+`bc5a9297a762d451742734f9e11c7f54c6a832a0`, passes all three native Python
+3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all
+25 notebooks. Every original ZIP matches GitHub size/hash metadata; native
+required-step and JUnit evidence are retained in the
+[closeout receipt](../molstar_closeout_three_blocks_20261115.json). This
+satisfies this report's complete-current-core prerequisite. The original
+failed campaigns, setup failures, explicit skips and causal limits stay
+preserved below; no successful prefix/suffix is substituted for that gate.
+
+The durable guard is `tests/test_e2e_reliability.py::test_controls_and_scientific_mirror_keep_separate_mandatory_owners`.
+This closes receiving infrastructure in source, not the remaining installed,
+actual-host, human, Movie #320 or whole Mol* #372 qualification. No runtime
+algorithm, source dataset, candidate or publication changes in this closure.
+
+## Earlier investigation and scoped receiving
+
 
 The prior [partition](../archive/controls_scientific_mirror_receiving_partition.md)
 keeps the controls and scientific mirror in separate mandatory core entries.

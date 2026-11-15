@@ -1,9 +1,9 @@
 ---
 summary: Observe plot authority replies through the delivered widget stream.
 issue: uibcdf/molsysviewer#391
-status: partial
+status: resolved
 opened: 2026-11-14
-closed:
+closed: 2026-11-15
 severity: medium
 verification: reproduced
 area: [testing, plots, jupyter, synchronization]
@@ -13,7 +13,32 @@ blocked_by: []
 supersedes: []
 ---
 
-# Plot authority inspection — receiving correction in progress
+# Plot authority inspection — received source correction
+
+**Resolved in source — 2026-11-15.**
+
+## Resolution
+
+Authority inspection observes the actual exactly-once widget stream with request-scoped listener cleanup. Static bootstrap uses timer polling at the unchanged 30-second bound, including an actual hidden/revealed molecular export and unavailable-runtime negative control. Native coordinates, Python callbacks, all 15 precision controls and independent static/popup assertions pass. The original hosted page visibility remains unknown; this does not assign every historical timeout the same cause.
+
+Exact source checkpoint [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and MolSysMT
+`bc5a9297a762d451742734f9e11c7f54c6a832a0`, passes all three native Python
+3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all
+25 notebooks. Every original ZIP matches GitHub size/hash metadata; native
+required-step and JUnit evidence are retained in the
+[closeout receipt](../molstar_closeout_three_blocks_20261115.json). This
+satisfies this report's complete-current-core prerequisite. The original
+failed campaigns, setup failures, explicit skips and causal limits stay
+preserved below; no successful prefix/suffix is substituted for that gate.
+
+The durable guard is `molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts`.
+This closes receiving infrastructure in source, not the remaining installed,
+actual-host, human, Movie #320 or whole Mol* #372 qualification. No runtime
+algorithm, source dataset, candidate or publication changes in this closure.
+
+## Earlier investigation and scoped receiving
+
 
 **Current receiving — 2026-11-15:** source run
 [43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436)

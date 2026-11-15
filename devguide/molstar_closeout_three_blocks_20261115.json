@@ -2142,5 +2142,57 @@
       },
       "resource_stop": null
     }
+  },
+  "qualified_source_receiving_closures": {
+    "issues": [
+      244,
+      391,
+      395,
+      397
+    ],
+    "qualified_source": "3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb",
+    "run": 43748320908,
+    "state": "Corrections and complete required source gate received; closing records archived.",
+    "records": [
+      {
+        "issue": 244,
+        "record": "devguide/archive/scientific_mirror_aggregate_budget_recurrence.md",
+        "guard": "tests/test_e2e_reliability.py::test_controls_and_scientific_mirror_keep_separate_mandatory_owners"
+      },
+      {
+        "issue": 391,
+        "record": "devguide/archive/plot_authority_streamed_reply_receiving.md",
+        "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts"
+      },
+      {
+        "issue": 395,
+        "record": "devguide/archive/movie_story_saved_key_action.md",
+        "guard": "tests/test_movie_story.py::test_native_integrated_molecular_movie"
+      },
+      {
+        "issue": 397,
+        "record": "devguide/archive/moving_work_file_popup_readiness.md",
+        "guard": "molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts"
+      }
+    ],
+    "scope": "Receiving-infrastructure source closures only. Original failed/interrupted results and exact-cause limits retained. No additional original audit leaf, installed/human result or publication credited.",
+    "record_validation": {
+      "pytest_passed": 534,
+      "scope": "Source-workflow contracts, addressable archived guards, reporting protocol, clean-checkout links, generated indexes and scoped lint/format/diff checks. No browser rerun.",
+      "profile": "source-queue-closure-932",
+      "supervised": {
+        "native_exit": 0,
+        "seconds": 7.392199330963194,
+        "peak_owned_rss_mib": 193.0,
+        "selected_inputs": 9983,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 3,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null
+      }
+    }
   }
 }

@@ -556,7 +556,7 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
 on `a8fc5273` passes Python and 25 notebooks, then the outer runner retires
 scientific mirror entry 4/63 at 300 seconds. The earlier controls/science
-partition remains intact; [#244 is reopened](../pending_bugs/scientific_mirror_aggregate_budget_recurrence.md)
+partition remains intact; [#244 is reopened](../archive/scientific_mirror_aggregate_budget_recurrence.md)
 for the independent workflow's aggregate allowance. The complete unchanged
 mirror passes a diagnostic measurement locally; canonical/covering receiving
 remains separate. Later DataCard/plot/Movie guards are unreached in this run.

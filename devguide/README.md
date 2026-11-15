@@ -69,7 +69,7 @@ matched original/repaired native picking and #390's native cell-provider
 assertions. These three source defects are closed. The canonical prolonged
 gate passes 30/30 cycles. Three-platform checkpoint `43646263694` on
 `eae57346` fails after 53 complete core entries because the plot fixture reads
-an already consumed reply list. [#391's receiving correction](pending_bugs/plot_authority_streamed_reply_receiving.md)
+an already consumed reply list. [#391's receiving correction](archive/plot_authority_streamed_reply_receiving.md)
 passes the complete plot entry locally, including 15 precision controls.
 All nine Movie entries also pass together in scoped receiving `837`.
 The single full Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
@@ -99,8 +99,8 @@ source-delivered; final applicable acceptance remains 1/46. These counts
 do not measure total release readiness.
 The [latest source recovery](molstar_closeout_three_blocks_20261115.json)
 retains failed full run `43698930436`: 4,760 Python cases, 25 notebooks and
-53 core entries pass, including [#397](pending_bugs/moving_work_file_popup_readiness.md),
-then [#391](pending_bugs/plot_authority_streamed_reply_receiving.md) repeats a
+53 core entries pass, including [#397](archive/moving_work_file_popup_readiness.md),
+then [#391](archive/plot_authority_streamed_reply_receiving.md) repeats a
 static-bootstrap timeout. A real hidden iframe demonstrates animation-frame
 polling starvation; timer polling with the unchanged deadline and its actual
 hidden/revealed molecular regression pass the complete plot entry in `909`.
@@ -123,6 +123,13 @@ guard pass 549 selected checks. Native JUnit records 4,764 Linux, 4,733 macOS
 and 4,737 Windows passes, with explicit skips and no failures/errors. All six
 original ZIPs match GitHub hashes. The source run assigns no
 candidate version/tag and is not an installed package gate.
+The complete gate closes the source-receiving reports
+[#244](archive/scientific_mirror_aggregate_budget_recurrence.md),
+[#391](archive/plot_authority_streamed_reply_receiving.md),
+[#395](archive/movie_story_saved_key_action.md) and
+[#397](archive/moving_work_file_popup_readiness.md). Their original failed and
+resource-interrupted campaigns remain preserved; these additional receiving
+closures do not increment the original 46-outcome counter.
 The [initial-canvas audit](archive/initial_jupyter_canvas_timeout_audit.md)
 is technically resolved after Diego accepts the >=7.4.0 notebook host profile
 and MolSysMT closes #615 in `5afa582f8`. Controlled 919/923 plus normal
@@ -147,7 +154,7 @@ now passes 72 controls independently, with real plain-Jupyter and synthetic
 controller scopes separate. Original #354/#615 causes remain unresolved.
 The complete Linux recovery [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
 on `a8fc5273` passes Python and all 25 notebooks, but its outer runner kills
-the scientific mirror at 300 seconds, entry 4/63. [#244 is reopened](pending_bugs/scientific_mirror_aggregate_budget_recurrence.md);
+the scientific mirror at 300 seconds, entry 4/63. [#244 is reopened](archive/scientific_mirror_aggregate_budget_recurrence.md);
 later core guards are unreached. After the original resource interruption,
 the committed receiver now passes one complete real molecular cycle on
 `a8fc5273`; both attempts retire all their owned processes. This does not

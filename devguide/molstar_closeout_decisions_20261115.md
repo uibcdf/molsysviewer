@@ -61,8 +61,8 @@ its 63-start assertion; offline verification checks exact ordered distinct
 1–63 suite entries and native successful steps without rerunning the workflow.
 
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
-Reconcile #244/#395 against their complete guards and #388/#391 against the
-actual diagnostics and remaining causal limits. A successful source gate
+The complete guards now resolve #244/#391/#395/#397 in source. Retain #388
+and other independent historical questions with their actual causal limits. A successful source gate
 does not qualify a different provider or an installed artifact.
 
 ## 2. Proposed staging preparation, still subject to its separate approval

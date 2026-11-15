@@ -1,9 +1,9 @@
 ---
 summary: Moving work-file receiving chooses its popup role before bootstrap is ready.
 issue: uibcdf/molsysviewer#397
-status: active
+status: resolved
 opened: 2026-11-15
-closed:
+closed: 2026-11-15
 severity: medium
 verification: measured
 area: [testing, popup, lifecycle, ci]
@@ -14,6 +14,31 @@ supersedes: []
 ---
 
 # Positive readiness before popup work-file controls
+
+**Resolved in source — 2026-11-15.**
+
+## Resolution
+
+The receiver requires positive panel-role/navigation or initialized canvas-owner readiness before choosing its operation path. The combined lifecycle retains its qualified canonical 240-second aggregate, with original readiness/product bounds and all pending owner-close, transport-loss, late-reply, native freeze and View-close assertions unchanged. Actual original popup timing is not retrospectively inferred.
+
+Exact source checkpoint [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and MolSysMT
+`bc5a9297a762d451742734f9e11c7f54c6a832a0`, passes all three native Python
+3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all
+25 notebooks. Every original ZIP matches GitHub size/hash metadata; native
+required-step and JUnit evidence are retained in the
+[closeout receipt](../molstar_closeout_three_blocks_20261115.json). This
+satisfies this report's complete-current-core prerequisite. The original
+failed campaigns, setup failures, explicit skips and causal limits stay
+preserved below; no successful prefix/suffix is substituted for that gate.
+
+The durable guard is `molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts`.
+This closes receiving infrastructure in source, not the remaining installed,
+actual-host, human, Movie #320 or whole Mol* #372 qualification. No runtime
+algorithm, source dataset, candidate or publication changes in this closure.
+
+## Earlier investigation and scoped receiving
+
 
 Source run [43692655949](https://github.com/uibcdf/molsysviewer/actions/runs/43692655949)
 on `21474b8c` / scientific source `aee7aa65` fails core entry 10,

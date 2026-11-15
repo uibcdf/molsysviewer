@@ -53,7 +53,7 @@ It preserves the failed source runs, receives #244's complete partition and
 #389/#390's native picking/cell corrections, and records 30/30 prolonged
 cycles. The complete source checkpoint `43646263694` on `eae57346`
 receives all three Python source hosts, 25 notebooks and 53 core entries, then
-fails the plot fixture reply inspector. [#391's correction](pending_bugs/plot_authority_streamed_reply_receiving.md)
+fails the plot fixture reply inspector. [#391's correction](archive/plot_authority_streamed_reply_receiving.md)
 passes the complete plot entry locally, including actual Python authority and
 15 precision controls. The followup also receives all nine Movie entries
 together, including the integrated scientific story and its exports/recovery.
@@ -79,7 +79,7 @@ and postponed human exits remain separate.
 The complete Linux source recovery
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
 on `a8fc5273` passes Python and all 25 notebooks but fails the outer scientific
-mirror budget at entry 4/63. [#244 is reopened](pending_bugs/scientific_mirror_aggregate_budget_recurrence.md);
+mirror budget at entry 4/63. [#244 is reopened](archive/scientific_mirror_aggregate_budget_recurrence.md);
 later core assertions, including #394's guard, are unreached. Prior
 other-platform evidence retains its original exact producer.
 The committed #754 receiver also passes one full molecular Jupyter cycle on
@@ -96,7 +96,7 @@ large-mmCIF converter defect must be fixed and received before final freeze.
 The next Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
 on `b9f7dfb2` passes the complete mirror, DataCard, trajectory plot and first
 62 core entries, plus 4,748 Python cases and all 25 notebooks. Its final Movie
-story entry waits for an obsolete accessible button name. [#395](pending_bugs/movie_story_saved_key_action.md)
+story entry waits for an obsolete accessible button name. [#395](archive/movie_story_saved_key_action.md)
 corrects that test selector and receives the complete story locally, including
 media/session/offline assertions. The whole run remains failed; one complete
 current core pass is required. The [three-block receipt](molstar_closeout_three_blocks_20261115.json)
@@ -112,7 +112,7 @@ candidate or installed-pair acceptance is credited.
 
 The latest complete source recovery [43692655949](https://github.com/uibcdf/molsysviewer/actions/runs/43692655949)
 passes 4,752 Python cases and 25 notebooks, then fails core entry 10 after nine
-complete entries. [#397](pending_bugs/moving_work_file_popup_readiness.md)
+complete entries. [#397](archive/moving_work_file_popup_readiness.md)
 receives positive popup-role readiness before the lifecycle helper uses its
 controller. The earlier story correction is unreached here. Keep both failed
 runs and the requirement for one complete current core pass.

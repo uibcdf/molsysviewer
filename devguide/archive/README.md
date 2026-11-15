@@ -1,5 +1,13 @@
 # Archived implementation plans
 
+- [#397: Popup work-file readiness](moving_work_file_popup_readiness.md) — Requires a positive role/owner before work-file operations and receives the complete canonical lifecycle.
+
+- [#395: Integrated Movie key receiving](movie_story_saved_key_action.md) — Edits the current saved-key action while retaining scientific, encoder, session and offline assertions.
+
+- [#391: Plot stream and static bootstrap](plot_authority_streamed_reply_receiving.md) — Receives exactly-once widget replies and hidden/revealed real exports through bounded timer polling.
+
+- [#244: Scientific mirror allowance](scientific_mirror_aggregate_budget_recurrence.md) — Retains the complete 480-second mirror and separate 300-second controls, with every operation deadline unchanged.
+
 - [Initial notebook startup](initial_jupyter_canvas_timeout_audit.md) — #384 receives the accepted ipykernel >=7.4.0 host profile, causal controls and normal TcTIM draw, preserving historical uncertainty and separate final gates.
 
 - [DataCard applied-frame receiving](datacard_applied_frame_receiving.md) — #394 waits for the actual trajectory publication and coherent native/slider values, with a real concurrent-layout control and unchanged product deadlines.

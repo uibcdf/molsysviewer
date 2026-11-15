@@ -1,19 +1,44 @@
 ---
 summary: Receive the integrated Movie story through its current saved-key action.
 issue: uibcdf/molsysviewer#395
-status: active
+status: resolved
 opened: 2026-11-15
-closed:
+closed: 2026-11-15
 severity: medium
 verification: reproduced
 area: [movie, testing, ci, accessibility]
-guard:
+guard: tests/test_movie_story.py::test_native_integrated_molecular_movie
 normative:
 blocked_by: []
 supersedes: []
 ---
 
 # Integrated story targets an obsolete saved-key action
+
+**Resolved in source — 2026-11-15.**
+
+## Resolution
+
+The integrated story selects the actual 1000-ms saved-key row/current accessible action and verifies its prepared one-second field before editing. The same complete Node owner invoked by the named pytest guard executes in core entry 63: scientific occurrences/coverage, native/reference pixels, all three media encoders, independent session recovery and offline playback remain asserted. No unselected pytest skip is credited as browser receiving.
+
+Exact source checkpoint [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and MolSysMT
+`bc5a9297a762d451742734f9e11c7f54c6a832a0`, passes all three native Python
+3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all
+25 notebooks. Every original ZIP matches GitHub size/hash metadata; native
+required-step and JUnit evidence are retained in the
+[closeout receipt](../molstar_closeout_three_blocks_20261115.json). This
+satisfies this report's complete-current-core prerequisite. The original
+failed campaigns, setup failures, explicit skips and causal limits stay
+preserved below; no successful prefix/suffix is substituted for that gate.
+
+The durable guard is `tests/test_movie_story.py::test_native_integrated_molecular_movie`.
+This closes receiving infrastructure in source, not the remaining installed,
+actual-host, human, Movie #320 or whole Mol* #372 qualification. No runtime
+algorithm, source dataset, candidate or publication changes in this closure.
+
+## Earlier investigation and scoped receiving
+
 
 Full source run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
 on `b9f7dfb2` / scientific source `aee7aa65` passes the first 62/63 core

@@ -77,11 +77,11 @@ version/tag or installed acceptance is assigned.
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | **Received in source:** [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. Earlier failed campaigns and causal limits remain preserved. Reconcile the individual queue records against these guards; source success does not close installed/manual exits or establish unobserved historical causes. |
+| Complete integrated source receiving | **Received in source:** [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. Earlier failed campaigns and causal limits remain preserved. The #244/#391/#395/#397 receiving records are now archived with their guards; source success does not close installed/manual exits or establish unobserved historical causes. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 
-The [current #244 recurrence](../pending_bugs/scientific_mirror_aggregate_budget_recurrence.md)
+The [current #244 recurrence](../archive/scientific_mirror_aggregate_budget_recurrence.md)
 keeps controls and scientific mirror separate, but now gives only the latter
 a 480-second aggregate allowance. Individual operation deadlines, assertions
 and core inclusion are unchanged. The complete diagnostic mirror passes;
@@ -120,7 +120,7 @@ old 1.0.0 build-0 staging packages cannot qualify today's ChemicalStates code.
 The next complete source run [43692655949](https://github.com/uibcdf/molsysviewer/actions/runs/43692655949)
 on `21474b8c` is also terminal failure: Python passes 4,752 cases with 42 skips
 and all 25 notebooks pass; the first nine core entries complete, then
-[#397](../pending_bugs/moving_work_file_popup_readiness.md) finds a work-file
+[#397](../archive/moving_work_file_popup_readiness.md) finds a work-file
 helper choosing a popup role before a positive bootstrap condition. The
 unreached Movie/story assertions cannot qualify #395 in this run. Receive its
 readiness correction and one new complete gate; neither source run is green.
