@@ -111,7 +111,8 @@
     "browser_failure": "Target page/context/browser closed after the supervisor retired owned processes. This is not a product failure or original #354/#615 diagnosis.",
     "completed_cycles": 0,
     "remaining": "One complete current molecular cycle with committed diagnostics; do not repeat under active shared pressure. Prior canonical thirty-cycle receiving keeps its own earlier exact source.",
-    "raw_receipt_sha256": "f310c9787694557bac009919c66e776bab5e46e729ab68d89202b9fc67d22404"
+    "raw_receipt_sha256": "f310c9787694557bac009919c66e776bab5e46e729ab68d89202b9fc67d22404",
+    "later_recovery": "receiver-754-molecular-873 passes one complete cycle after a fresh resource assessment; this original interrupted attempt remains uncredited."
   },
   "custody": {
     "state": "preserved_and_hash_verified",
@@ -132,5 +133,81 @@
     "links": "pass",
     "diff_checks": "pass",
     "scope": "Scoped records/runner registration; product/browser and provider controls retain their separate execution scope."
+  },
+  "molecular_recovery": {
+    "profile": "receiver-754-molecular-873",
+    "state": "passed",
+    "viewer_source": "a8fc5273b6aa274cb5fc343b79ddf613b3458a54",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "receiver_source": "c4fa8552e9696ee225dd9abd51be4e2e441228c4",
+    "native_exit": 0,
+    "passed": 1,
+    "skipped": 0,
+    "seconds": 94.88970574969426,
+    "cycles": 1,
+    "active_seconds_per_cycle": 10,
+    "actual_cycle_seconds": 54.644,
+    "activity": {
+      "seconds": 10.5245,
+      "draws": 25,
+      "distinct_frames": 12
+    },
+    "controls": {
+      "started_hidden": true,
+      "next_focused": true
+    },
+    "selected_inputs": 9979,
+    "inputs_unchanged": true,
+    "cleanup": {
+      "tracked": 27,
+      "survivors": [],
+      "errors": []
+    },
+    "limits": {
+      "logical_cpus": 8,
+      "ram_gib": 4,
+      "owned_swap_gib": 0,
+      "global_reserve_gib": 6.5
+    },
+    "resource_stop": null,
+    "peak_summed_owned_rss_mib": 3004.8,
+    "peak_sampled_cgroup_bytes": 2033889280,
+    "minimum_sampled_available_gib": 14.67,
+    "maximum_sampled_memory_pressure_avg10": 0.0,
+    "maximum_global_swap_activity_bytes_per_sample": 2142208,
+    "kernel_python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+    "loaded_module_sha256": {
+      "molsysmt": "c3a838c2e858b86ed2ac484faa9632eb6a4d2ba314914d6e321c0dec9e935304",
+      "molsysmt._rust": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "molsysviewer": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+      "molsysviewer_molsysmt": "1665840cb208aabed8ea4e6f800c3444e3219c14abb5ed1eb90ae3bfa16ef3f0",
+      "pyunitwizard": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+      "smonitor": "f60b1c2bff72dbbb70fe403e23908e62a8297f6190e18fdcac090092b84e6800",
+      "argdigest": "64d9f5893968c71bce80599c9da0580346b728e0fad18990e58e9a69f251df2f",
+      "depdigest": "401e1f2b69d68053bdf91b524eb9d876fa2839908ca2dc5df17e77d3a389b6b1"
+    },
+    "scope": "One complete real molecular Jupyter cycle: 62 atoms x 5000 structures, independent 3983-atom witness, edit/query, hidden controls, canvas and Studio popups, unchanged Python pre-save assertion, coherent save/recovery, active playback, pause and owned native/controller retirement. Committed receiving tools over the unchanged scientific/native snapshot. Source composition, not clean installed qualification, thirty new cycles, historical #354/#615 causality or postponed human acceptance.",
+    "raw_receipts_sha256": {
+      "invocation.json": "1243b4a6b67868ecf9d333f0d83cf74f7a9c7da4738b7ef1c79b5c3c860a04cd",
+      "junit.xml": "f87c0486588c342737b9e1d3301e548ab50be44b3d018f23cb483bee2bd0db69",
+      "pytest/test_actual_jupyter_prolonged_0/jupyter-prolonged-controls/full-result.json": "54f9a2ba21e2d0cee5f369d0363b71b9dd372e5f2ddeef83de8141cb4584fe16",
+      "pytest/test_actual_jupyter_prolonged_0/jupyter-prolonged-controls/kernel-molecular-imports-after-cycle-1.json": "f2393ca6f26e0eec28b73100c938b13ccb65d9d0434a1f8da9415c6d30e46f96"
+    },
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/receiver-molecular-20261114",
+      "files": 28,
+      "bytes": 8396458,
+      "manifest_sha256": "749d3d7f7118f1c0cf3b6587991729ae2eff8b0ae0016a9730134eb9add2c4b2",
+      "originals_retained": true
+    },
+    "record_checks": {
+      "profile": "molecular-handoff-records-874",
+      "passed": 460,
+      "indexes": "up to date",
+      "links": "pass",
+      "diff_checks": "pass",
+      "scope": "Documentation/report checks; not additional product or hosted acceptance."
+    }
   }
 }

@@ -108,6 +108,12 @@ passes the complete card entry locally; complete current core remains open.
 [MolSysMT #754 receiving](receiver_754_independent_receiving_20261114.json)
 now passes 72 controls independently, with real plain-Jupyter and synthetic
 controller scopes separate. Original #354/#615 causes remain unresolved.
+The complete Linux recovery [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
+is active on `a8fc5273`; the full core/Python/notebook selection is retained
+and no terminal result is credited. After the original resource interruption,
+the committed receiver now passes one complete real molecular cycle on
+`a8fc5273`; both attempts retire all their owned processes. This does not
+explain the historical frame disagreement or replace prolonged acceptance.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

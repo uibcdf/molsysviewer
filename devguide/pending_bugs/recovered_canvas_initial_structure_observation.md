@@ -63,7 +63,22 @@ pre-save frame cause is still unestablished.
 Do not increase deadlines, repair-seek, suppress
 the Python precondition or silently retry to make it pass. Receive that
 instrumentation, then distinguish pending communication from a lost/newer
-frame intention under the existing scene-authority contract.
+frame intention under the existing scene-authority contract. #394's real
+layout counterexample establishes that a native model-index getter can become
+true before the applied trajectory publication. Audit whether the historical
+prolonged checks waited for native state, applied state or Python authority,
+and prove the surface identity before linking that result to #354. This is a
+new discriminating hypothesis, not a cause assigned to the unrecorded original
+message ordering.
+
+Reinspection of the exact original `74aeffede` receiver (matching the hash
+above) and committed `c4fa8552` shows that both `frame()` helpers still wait
+on the native index. The old path also lacks the later explicit controls-focus
+receipt and viewer-ID binding. The current receiver adds those protections and
+typed execution diagnostics, while the independent Python pre-save assertion
+remains. Observe Python authority separately before classifying a future
+disagreement as pending or lost; do not infer that either source comparison
+explains the original cycle-nine ordering.
 
 ## Later successful scopes
 
@@ -76,3 +91,14 @@ witness data/camera, both popups and unchanged scientific assertions. The
 those successes. They qualify their inputs and do not reconstruct the original
 pre-save message ordering. #354 and broader E2 acceptance remain open;
 installed, native Qt and postponed human scopes stay separate.
+
+The later committed diagnostic receiver `c4fa8552` also passes one complete
+molecular cycle in `receiver-754-molecular-873`, on MolSysViewer `a8fc5273`
+with the unchanged `aee7aa65` scientific/native snapshot. It retains the
+independent Python pre-save assertion, both popups, recovery, active playback
+and native retirement. A prior resource-interrupted attempt remains uncredited.
+The [independent receipt](../receiver_754_independent_receiving_20261114.json)
+records both outcomes and actual kernel imports. This confirms the new
+diagnostics can receive real molecular work; it does not reconstruct the
+original cycle-nine order or extend the earlier thirty-cycle result to this
+source.

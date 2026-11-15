@@ -907,6 +907,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Complete Linux recovery after #394 — 2026-11-14:**
+[43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
+is active on `a8fc5273b6aa274cb5fc343b79ddf613b3458a54`, retaining scientific
+source `aee7aa65` and pandas 3.1.0. One exact-head dispatch follows the causal
+receiving correction and complete local card entry; the complete 63-entry
+core, Python and 25-notebook lanes remain selected. It has no terminal result.
+Prior Windows/macOS evidence stays on `ad470cdf`; only the browser guard changes
+inside the package/dependency input scope. No new installed or three-platform
+candidate is qualified by this selected-platform recovery. Do not duplicate it.
+
 **Current complete source checkpoint — 2026-11-14:**
 [43662871581](https://github.com/uibcdf/molsysviewer/actions/runs/43662871581)
 on `ad470cdf07a6c8746b909010e9d5f9caaaa85258` is terminal failure: all three
@@ -919,9 +929,9 @@ now passes the full native card entry in `869`, including real concurrent
 layout and actual applied trajectory publication, without a runtime/deadline
 change. The [receipt](datacard_applied_receiving_20261114.json) keeps the exact
 source, counterexample and causal limits. Complete current core and #391's
-older static-bootstrap diagnosis remain open; no new matrix has been launched
-by this source correction. Installed/candidate/publication decisions stay
-separate. The [followup](molstar_qualification_followup_20261114.json) retains
+older static-bootstrap diagnosis remain open. The recovery above retains its
+later exact input; source closure has not qualified that pending run.
+Installed/candidate/publication decisions stay separate. The [followup](molstar_qualification_followup_20261114.json) retains
 original platform evidence without combining successful prefixes/suffixes.
 
 **Owner receiver #754 independently received — 2026-11-14:**
@@ -935,9 +945,15 @@ these controls do not explain the original #354/#384/#615 failures. A subsequent
 one-cycle molecular check (`871`) is resource-interrupted: global swap-out is
 46,870,528 bytes in about five seconds, with 14.39 GiB globally available and
 no own cgroup OOM. All 26 owned processes retire. Its later closed-browser
-error is not a product failure; zero complete cycles are credited. Keep that
-check pending and continue light work until shared pressure permits it.
-Continue the investigations with committed tools, without editing MolSysMT.
+error is not a product failure; zero complete cycles are credited to that
+attempt. After a fresh resource assessment, `873` passes the unchanged molecular
+guard on `a8fc5273`: one complete cycle, both popups, the independent Python
+pre-save assertion, recovery, active playback and native retirement. It takes
+94.89 seconds under 8 CPU/4 GiB, keeps 9,979 selected inputs unchanged and retires
+all 27 owned processes; minimum sampled global availability is 14.67 GiB and
+there is no resource stop. This receives the committed diagnostics with real
+molecular work; original #354/#615 causes and longer/final acceptance remain
+separate. MolSysMT's checkout is unchanged.
 
 **Movie keyboard authoring — 2026-11-14:**
 [#393](archive/movie_authoring_keyboard_and_key_actions.md) is source-resolved:
@@ -947,7 +963,8 @@ The complete native authoring/export guard and all 491 JS cases pass. The
 [receipt](movie_authoring_keyboard_receiving_20261114.json) preserves its
 causal old-runtime failure and exact inputs. Full M2 host/accessibility,
 installed and postponed human acceptance remain open; original progress stays
-39/46. The separate source CI below does not qualify this later runtime.
+39/46. The failed source checkpoints did not reach Movie's complete browser
+scope; the current complete Linux recovery has no terminal result yet.
 
 **Initial-canvas audit — 2026-11-14:** [#384](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 leads the #615 investigation and source-resolves the independent
@@ -955,9 +972,11 @@ leads the #615 investigation and source-resolves the independent
 Five causal and 38 affected Python cases pass, as do two fresh-kernel
 normal/contended startup controls with verified handler/native bytes and
 actual connector-thread identity. The [receipt](initial_canvas_audit_receiving_20261114.json)
-preserves original failures and corrected receiving observers. The historical
-timeout remains unexplained; the failed full CI retains its earlier producer
-and does not qualify this later Python fix. Original progress remains 39/46.
+preserves original failures and corrected receiving observers. Its new hosted
+followup verifies all five #392 controls on each of the three Python 3.14
+hosts in `43662871581`, without omissions; that full run fails later in a
+separate browser guard. The historical timeout remains unexplained and actual
+cold-kernel controls keep their earlier source. Original progress remains 39/46.
 
 **Current Mol* checkpoint — 2026-11-14:** source `eae57346` receives the
 matched native picking repair (#389), public symmetry reader (#390) and

@@ -247,5 +247,44 @@
     "originals_retained": true,
     "credential_shaped_files_excluded": 0,
     "custodian": "Diego Prada Gracia"
+  },
+  "hosted_source_followup": {
+    "run": 43662871581,
+    "producer": "ad470cdf07a6c8746b909010e9d5f9caaaa85258",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "guard": "tests/test_runtime_source_scene_ownership.py",
+    "received": [
+      {
+        "platform": "source-receiving-Windows-py3.14",
+        "passed": 5,
+        "failures": 0,
+        "skipped": 0,
+        "artifact_sha256": "21abda8ba01efede0d5b9792a4865bb08def10c2f2fb3f5bbbddfb54cb20bc53"
+      },
+      {
+        "platform": "source-receiving-macOS-py3.14",
+        "passed": 5,
+        "failures": 0,
+        "skipped": 0,
+        "artifact_sha256": "f22ba903c2a17c35c73d37682acb78a632b21bd1de5bb6b1b2d42b29f5396441"
+      },
+      {
+        "platform": "source-receiving-Linux-py3.14",
+        "passed": 5,
+        "failures": 0,
+        "skipped": 0,
+        "artifact_sha256": "1a1ee8edb02647d01a64d680665a4c741887bd4e2ba60e0c0d9639dead3260ab"
+      }
+    ],
+    "scope": "All five causal source-bootstrap guards pass on each source Python 3.14 host, independently inspected in original hash-verified JUnit ZIPs. The full Linux job still fails later in a different browser receiving phase. Not installed qualification, a new actual-kernel control or the historical #384/#615 cause.",
+    "case_index_custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/datacard-source-recovery-20261114",
+      "files": 16,
+      "bytes": 4182952,
+      "manifest_sha256": "206fa452ac53e0aea2974e18dabad4a18582edaba0b2a46cb03b7facf6c4a5c6",
+      "originals_retained": true
+    },
+    "original_zip_custody": "receiver-datacard-20261114, manifest 2d9fa0006f452f1a2926aebf5f5fafee1fe5fac95b3bbe0dcf4ba38cae487fa3"
   }
 }

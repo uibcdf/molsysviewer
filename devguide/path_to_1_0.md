@@ -76,6 +76,15 @@ now has a complete local card-entry pass and a real concurrent-layout control;
 complete current core acceptance remains required. [The committed #754 tools](receiver_754_independent_receiving_20261114.json)
 now pass independent consumer receiving. Original #354/#615, installed-candidate
 and postponed human exits remain separate.
+The complete Linux source recovery
+[43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
+now receives the #394 correction on `a8fc5273`, with the same scientific
+source and all 63 core entries/25 notebooks selected. Its outcome is pending;
+prior other-platform evidence retains its original exact producer.
+The committed #754 receiver also passes one full molecular Jupyter cycle on
+`a8fc5273`, including both popups, the unchanged Python frame assertion and
+save/recovery. Its earlier resource interruption is retained; original failure
+causality and prolonged/final acceptance remain separate.
 The [#384 initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 now source-resolves the distinct #392 immutable-source lock defect, with causal
 guards and actual-kernel normal/contended receiving. The historical #615
