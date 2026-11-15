@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Runtime source and scene ownership](runtime_source_replies_require_scene_lock.md) — #392 serves immutable bootstrap replies on the connector caller thread during scene edits, with causal and actual-Jupyter controls.
+
 - [Retired notebook molecular data](retired_notebook_molecular_data.md) — #356 releases owned render closures and native strong cache keys, with causal controls, current actual-Jupyter release and qualified thirty-cycle lifetime receiving.
 
 - [Nested scientific receiving provenance](nested_jupyter_receiving_provenance.md) — #364 verifies actual inner imports, receives owner observer integration and narrows historical claims through the normative attribution rule.

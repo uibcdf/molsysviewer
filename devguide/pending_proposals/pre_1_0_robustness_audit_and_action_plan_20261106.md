@@ -526,6 +526,15 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current initial-canvas audit — 2026-11-14:** [#384's owned audit](../pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+distinguishes the original executing-cell timeout from a separate earlier
+fixture oracle exception. [#392's independent source fix](../archive/runtime_source_replies_require_scene_lock.md)
+receives immutable runtime replies during contended scene ownership, five
+causal/38 affected Python cases and two actual-kernel startup controls.
+The [receipt](../initial_canvas_audit_receiving_20261114.json) retains exact
+handler/runtime/provenance and receiving failures. The original #615 cause
+is not established; D5.4 remains active and neither original counter changes.
+
 **Current D6.7 delivery — 2026-11-14:** the
 [structural-observables receipt](../structural_observables_receiving_20261114.json)
 receives all 361 cases across the six expert/panel modules, including contacts,
@@ -1258,7 +1267,7 @@ do not silently omit an existing accepted family.
 | **D5.1 — source received, uibcdf/molsysmt#549** | Scheme-aware group labels, legacy/Amber/CCD distinctions and native builder/sequence/file consequences pass; no implicit chemical renaming |
 | **D5.2 — consumer source received, final acceptance separate** | Owner #582 delivers experimental `get_model_recipe`, its expert facade and compiled-physics/refusal guards. Draft #696 adds explicit physical inspection and labelled compiled observations in mechanical reports, retaining cheap request review, native origins, units, unsupported controls and no competing parameterization |
 | **D5.3 — source received, uibcdf/molsysmt#612** | Stable-ID alternate-site admission, whole-request atomic refusal and explicit observation/PDB-fidelity controls pass |
-| **D5.4 — uibcdf/molsysviewer#384 / uibcdf/molsysmt#615** | MolSysViewer now leads the unexplained initial-canvas audit; receive a causal diagnosis or bounded evidenced disposition and return it to MolSysMT, retaining the original timeout |
+| **D5.4 — uibcdf/molsysviewer#384 / uibcdf/molsysmt#615** | MolSysViewer's [owned audit](../pending_bugs/initial_jupyter_canvas_timeout_audit.md) receives the independent #392 bootstrap correction and real normal/contended startup controls. The original timeout's cause or bounded evidenced disposition remains required; return that outcome to MolSysMT without treating the separate source fix as closure |
 | **D5.5 — bounded source disposition received, uibcdf/molsysmt#473** | Provisional ISA area units and unverified original normalization remain explicit under ordinary/nondefault policies; owner #473 stays open |
 | **D5.6 — bounded source disposition received, uibcdf/molsysmt#475** | Legacy ECI wrapper/aggregation remains experimental and distinct from physical charge; original dimension/additivity is unverified and owner #475 stays open |
 

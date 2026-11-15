@@ -65,6 +65,10 @@ its installed/hosted-family and postponed human scopes stay separate.
 The single complete Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
 is running on `2947c2fd`, with all 63 core entries and 25 notebooks declared;
 its terminal result is not yet received.
+The [#384 initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+now source-resolves the distinct #392 immutable-source lock defect, with causal
+guards and actual-kernel normal/contended receiving. The historical #615
+timeout and exact final-pair qualification remain separate required exits.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

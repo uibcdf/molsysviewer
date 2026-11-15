@@ -87,6 +87,12 @@ now delivers D6.7 in source: 361 expert/panel cases and six actual-Jupyter
 contact-cutoff decisions pass. The original ledger advances to 39/46
 source-delivered; final applicable acceptance remains 1/46. These counts
 do not measure total release readiness.
+The [initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+now leads #384/MolSysMT #615 and source-resolves the independent
+[#392 bootstrap lock defect](archive/runtime_source_replies_require_scene_lock.md).
+Five causal and 38 affected Python cases, plus normal/contended actual-kernel
+startup controls, pass in their overlapping scopes. The historical timeout's
+cause remains unresolved; its source outcome and the 39/46 counter are unchanged.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

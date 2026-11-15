@@ -1683,6 +1683,16 @@ class MolSysView(
         )
 
     def _handle_frontend_event(self, content: Mapping[str, Any]) -> None:
+        event = content.get("event")
+        if event in {"request_widget_runtime_source", "request_popup_source"}:
+            # Immutable bundled source needs neither a molecular index space
+            # nor scene ownership. Reply on the connector's caller thread,
+            # even while another thread edits the scene, and before _ready:
+            # the bootstrap cannot become ready without this very response.
+            if not self.closed:
+                operation = "widget_runtime_source" if event == "request_widget_runtime_source" else "popup_source"
+                self._transmit_widget_message({"op": operation, "source": MolSysViewerWidget._viewer_js_source})
+            return
         if content.get("event") == "popup_endpoint_closed":
             endpoint = content.get("popup_endpoint_id")
             if isinstance(endpoint, str) and endpoint:
@@ -1770,8 +1780,6 @@ class MolSysView(
                 not in {
                     "widget_resize",
                     "popup_endpoint_closed",
-                    "request_widget_runtime_source",
-                    "request_popup_source",
                     "structure_data_begin_ack",
                     "structure_data_chunk_ack",
                     "structure_data_complete",
@@ -1840,18 +1848,6 @@ class MolSysView(
             mode = content.get("mode")
             if isinstance(endpoint_id, str) and endpoint_id and mode in ("canvas", "panel"):
                 self._endpoint_transfers.register(endpoint_id, mode)
-        elif event == "request_widget_runtime_source":
-            # This is the lazy-load bootstrap handshake: the frontend requests the
-            # runtime source BEFORE the real runtime has loaded, so `_ready` is
-            # necessarily still False here. Send directly (not via
-            # `_send_runtime_only`, which drops messages while not ready) — the
-            # frontend is listening because it just asked. Gating this on `_ready`
-            # deadlocks: `_ready` only becomes True once this source has loaded.
-            self._transmit_widget_message(
-                {"op": "widget_runtime_source", "source": MolSysViewerWidget._viewer_js_source}
-            )
-        elif event == "request_popup_source":
-            self._transmit_widget_message({"op": "popup_source", "source": MolSysViewerWidget._viewer_js_source})
         elif event == "region_ack":
             tag = content.get("tag")
             if tag and tag in self._regions:

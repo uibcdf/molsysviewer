@@ -907,6 +907,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Initial-canvas audit — 2026-11-14:** [#384](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
+leads the #615 investigation and source-resolves the independent
+[#392 source-request lock defect](archive/runtime_source_replies_require_scene_lock.md).
+Five causal and 38 affected Python cases pass, as do two fresh-kernel
+normal/contended startup controls with verified handler/native bytes and
+actual connector-thread identity. The [receipt](initial_canvas_audit_receiving_20261114.json)
+preserves original failures and corrected receiving observers. The historical
+timeout remains unexplained; the running full CI retains its earlier producer
+and does not qualify this later Python fix. Original progress remains 39/46.
+
 **Current Mol* checkpoint — 2026-11-14:** source `eae57346` receives the
 matched native picking repair (#389), public symmetry reader (#390) and
 complete controls/mirror partition (#244); all three source defects are

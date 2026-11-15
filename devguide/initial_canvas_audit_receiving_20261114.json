@@ -1,0 +1,251 @@
+{
+  "schema": "molsysviewer.initial_canvas_audit_receiving@1",
+  "date": "2026-11-14",
+  "viewer_source_base": "1e9c2a6feb4d01b4bbc9544d0a486c95cdd39043",
+  "working_core_sha256": "fe8735cf63c8e948e854728f6f3eabf360eeb8d95f493dc63162213c52fcfa6f",
+  "runtime_sha256": "36c5644a534879d81562d83608153323904571a2c1b148be3438856dcf1dfb2a",
+  "runtime_rebuilt": false,
+  "issues": {
+    "uibcdf/molsysviewer#384": "Active historical startup audit; no causal closure of original timeout.",
+    "uibcdf/molsysviewer#392": "Source-resolved with causal guard, 38 affected cases and two actual-kernel startup controls; hosted/installed scopes separate.",
+    "uibcdf/molsysmt#615": "Consumer/release dependency, original cause unresolved.",
+    "uibcdf/molsysmt#754": "Owner is developing the receiver phase/error/controller correction; no owner files changed here."
+  },
+  "source_composition": {
+    "scientific_native": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "canonical_receiver": "429d7494b5ee053fd1ecdd644c1e8f71e6376062",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "support": "Copied PyUnitWizard 0.29.4+2.g9bb4f5f and explicitly recorded cached support. Source receiving, not clean installed-artifact qualification."
+  },
+  "original_failures": {
+    "initial_canvas": {
+      "failure_sha256": "f7bfe46f2da867e9768cf031a37b503fe3413d5d43af16e0ce2270957455701d",
+      "dom_sha256": "60bfc5a18d56fcce0b093c9aa9cc96806bfd48c8f477d336f369bc2080cd6838",
+      "observed": "Executing initial cell and no visible canvas within 30s. Empty 45s stack timer cannot locate missing transition. No explanatory Python exception captured."
+    },
+    "separate_preparation_error": {
+      "failure_sha256": "0d1bb0b95638d8a14334751427bfbf5acf541082ba6d86ce6f8737d1339d995a",
+      "dom_sha256": "ecb9d9faeeebfc09cc69ca2761ec80605237fade002a2457e62bd5a734437fdf",
+      "observed": "Completed initial cell with NumPy broadcasting ValueError in the independent distance oracle, before display. Different fixture; not proof of a common product cause."
+    }
+  },
+  "receiving_profiles": {
+    "bootstrap-scene-lock-probe-840": {
+      "native_exit": 0,
+      "seconds": 5.53521990776062,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 379.4,
+      "profile": "bootstrap-scene-lock-probe-840",
+      "raw_receipt_sha256": "43ad707d4ec54aae6872a46728d7fcd62fe2c5b624ef41cb6fbad16a2d2a2a61"
+    },
+    "bootstrap-lock-regression-before-841": {
+      "native_exit": 1,
+      "seconds": 7.5716095538809896,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 410.9,
+      "profile": "bootstrap-lock-regression-before-841",
+      "raw_receipt_sha256": "301522e506ac5d69a653c10043fbd2ee2b64fa51cc5bd0340b1b1122f5c0d8d6",
+      "junit": {
+        "tests": 5,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "bootstrap-lock-regression-after-842": {
+      "native_exit": 0,
+      "seconds": 6.915235404856503,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 402.8,
+      "profile": "bootstrap-lock-regression-after-842",
+      "raw_receipt_sha256": "7956dce4d68d43baadfc5fa5ff91cf28a7240771ae22d5ec17b61bd9fb5b1bc9",
+      "junit": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "bootstrap-lock-affected-843": {
+      "native_exit": 0,
+      "seconds": 13.749599811155349,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 621.7,
+      "profile": "bootstrap-lock-affected-843",
+      "raw_receipt_sha256": "b245393147b84cc40f2e35384d0c493c7f0b0f47516890ef117101e67998225c",
+      "junit": {
+        "tests": 38,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "initial-canvas-normal-844": {
+      "native_exit": 1,
+      "seconds": 29.749978618696332,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 2347.0,
+      "profile": "initial-canvas-normal-844",
+      "raw_receipt_sha256": "b40ec99224a626af56c967e8e4bbaa095f47f3cb09ee59438d0bd809908fcd63"
+    },
+    "initial-canvas-normal-final-845": {
+      "native_exit": 0,
+      "seconds": 28.882425784599036,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 2352.2,
+      "profile": "initial-canvas-normal-final-845",
+      "raw_receipt_sha256": "d82f6ad2d5c7fd267eddc26dee274e24b0f26dc788774eadf7c89c830b9f185d"
+    },
+    "initial-canvas-contended-846": {
+      "native_exit": 1,
+      "seconds": 28.965202033985406,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 2365.6,
+      "profile": "initial-canvas-contended-846",
+      "raw_receipt_sha256": "7999fac4daadbfb20bb7ab3a9d5752dcd3cee13d8895aa18bba7c3e948207d4f"
+    },
+    "initial-canvas-contended-final-847": {
+      "native_exit": 0,
+      "seconds": 31.455472439993173,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "peak_owned_rss_mib": 2372.3,
+      "profile": "initial-canvas-contended-final-847",
+      "raw_receipt_sha256": "483c2066327b2cd0c47168d27432502dd11c9813cadb2a4dbf4063a2eea017c2"
+    }
+  },
+  "actual_jupyter": [
+    {
+      "mode": "normal",
+      "marks": {
+        "run_clicked": 174.09999990463257,
+        "runtime_available": 4795.400000095367,
+        "widget_mount_started": 4798.699999809265,
+        "controller_ready": 5156,
+        "canvas_connected": 5156.099999904633,
+        "draw_observer_armed": 5156.199999809265,
+        "scene_registered": 5415.5,
+        "first_native_draw": 6568.800000190735
+      },
+      "atoms": 3983,
+      "core_sha256": "fe8735cf63c8e948e854728f6f3eabf360eeb8d95f493dc63162213c52fcfa6f",
+      "source_reply": null,
+      "scope": "Actual cold host, unchanged scientific assertions/deadlines; see explicit generated-cell extension. Not historical-cause acceptance.",
+      "run_to_first_draw_ms": 6394.700000286102,
+      "profile": "initial-canvas-normal-final-845",
+      "actual_page_errors": 1,
+      "plain_control_errors": 1,
+      "error_scope": "All actual page errors match the original plain-Jupyter control fingerprint. Not a zero-error claim.",
+      "actual_native_import_verified": true,
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+    },
+    {
+      "mode": "contended",
+      "marks": {
+        "run_clicked": 157.2000002861023,
+        "runtime_available": 5171.400000095367,
+        "widget_mount_started": 5174.60000038147,
+        "controller_ready": 5533.300000190735,
+        "canvas_connected": 5533.400000095367,
+        "draw_observer_armed": 5533.5,
+        "scene_registered": 5772.5,
+        "first_native_draw": 7045.5
+      },
+      "atoms": 3983,
+      "core_sha256": "fe8735cf63c8e948e854728f6f3eabf360eeb8d95f493dc63162213c52fcfa6f",
+      "source_reply": {
+        "op": "widget_runtime_source",
+        "worker_owned_scene": true,
+        "same_thread_as_initial_cell": false,
+        "source_sha256": "36c5644a534879d81562d83608153323904571a2c1b148be3438856dcf1dfb2a",
+        "ready_at_source_reply": false,
+        "delegated_to_actual_connector": true,
+        "reply_on_actual_connector_thread": true
+      },
+      "scope": "Actual cold host, unchanged scientific assertions/deadlines; see explicit generated-cell extension. Not historical-cause acceptance.",
+      "run_to_first_draw_ms": 6888.299999713898,
+      "profile": "initial-canvas-contended-final-847",
+      "actual_page_errors": 1,
+      "plain_control_errors": 1,
+      "error_scope": "All actual page errors match the original plain-Jupyter control fingerprint. Not a zero-error claim.",
+      "actual_native_import_verified": true,
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+    }
+  ],
+  "causal_scope": "Worker-owned scene lock rejects both immutable runtime-source operations before dispatch. The source fix responds on the actual connector caller thread before scene ownership, preserves closed-view/ready/history/scene controls and mutable-event rejection. Five causal regressions pass; all 38 affected cases pass, overlapping those five. Real contended direct-widget reply occurs while the worker owns the scene and before ready, on the actual incoming connector callback thread, different from the initial-cell execution thread.",
+  "cold_scope": "Fresh isolated Jupyter server/kernel and no warmed molecular imports. OS/disk caches were not cleared; not a universal cold-start latency promise. Normal View presentation and explicitly contended direct-widget display are separate variants. Existing scientific/UI assertions, 30s canvas and 15s source/stack settings remain. Generated fixture extensions are explicit and hashed.",
+  "retained_receiving_corrections": {
+    "844": "Browser/native draw passes, but the new observer incorrectly used the public class __module__, resolving viewer/__init__.py rather than the handler implementation. Corrected with inspect.getsourcefile(bound_handler), preserving the original failure.",
+    "846": "Browser/native draw and actual contended source reply pass. The new observer incorrectly equated initial-cell and connector callback threads. Corrected by passively observing the real incoming callback and comparing reply/caller identities, preserving the original failure."
+  },
+  "hosted_scope": {
+    "run": 43654425383,
+    "producer": "2947c2fdc9a815f1015f0e9e2c6b3a51cd70f547",
+    "status": "in_progress at last inspected checkpoint",
+    "scope": "Existing full Linux source gate, unchanged product/runtime before #392. Not qualification of the later Python fix; no cancellation, replay or duplicate dispatch."
+  },
+  "outcome_counter": {
+    "source_delivered": 39,
+    "denominator": 46,
+    "final_applicable_acceptance": 1,
+    "scope": "Separate startup fix; D5.4/#384 original observation remains active. No original outcome increment."
+  },
+  "publication": "No candidate/tag/package/promotion/release or scientific-provider change.",
+  "private_evidence_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/initial-canvas-audit-20261114",
+    "files": 113,
+    "bytes": 35249125,
+    "manifest_sha256": "655322f1dbe4859f712e1f9af63af387a5870cceb178ae506243a37289121df0",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
+  }
+}

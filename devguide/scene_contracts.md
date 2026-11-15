@@ -2045,6 +2045,16 @@ Transport, bootstrap and blocking request/response traffic call
 - `request_camera_snapshot` / `request_image_export` — they busy-wait on the
   kernel thread for an answer that deferral would prevent arriving.
 
+Immutable bundled runtime source also needs no molecular scene ownership.
+Serve those source replies before `_ready` and outside the managed-edit lock,
+on the connector callback's existing thread. In Jupyter that callback can run
+on a different thread from initial-cell execution. Scene-dependent requests
+and mutations keep their ownership rules. The real-demo guard
+`tests/test_runtime_source_scene_ownership.py` covers contended source replies,
+closed Views, unchanged state/history and continued mutable-event rejection;
+the [actual-kernel receipt](initial_canvas_audit_receiving_20261114.json)
+receives both normal presentation and explicitly contended direct-widget paths.
+
 An allowlist of op names would have been the same defect in a new place: a list
 that must agree with reality, with nothing forcing it to (§0, and the digester and
 Qt-manifest drifts). A method boundary cannot silently fall out of date.
