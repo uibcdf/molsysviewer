@@ -1,0 +1,183 @@
+{
+  "schema": "molsysviewer.movie_authoring_keyboard_receiving@1",
+  "date": "2026-11-14",
+  "issue": "uibcdf/molsysviewer#393",
+  "parent": "uibcdf/molsysviewer#320",
+  "viewer_source_base": "5281d4abdbdf81229a07bd673285c2a3b702bbe2",
+  "scope": "Focused Movie authoring keyboard/tab/key naming source correction; full existing real Python/Mol*/Chromium authoring guard retained. Not complete M2, actual Jupyter/Qt, installed, covering hosted or human acceptance.",
+  "guard": "molsysviewer/js/tests/e2e/movie-studio.e2e.ts",
+  "source_sha256": {
+    "molsysviewer/js/src/ui/panels/movie-panel.ts": "717369880b8e5c94b285a409b99620a8bf011efc97358e1b407cbb0b5d18a145",
+    "molsysviewer/js/tests/e2e/movie-studio.e2e.ts": "f909e79052f3ca93f7dde75bd5b7ff7df1c7a362b7ab7ae7b74ef4eaec6d3c28",
+    "molsysviewer/js/tests/e2e/movie-studio-bridge.py": "93ab9c9062ac15ea6bcf873430f6a7913717e3a31a313242fe2ca610f4fe3aef",
+    "molsysviewer/viewer.js": "f613c7b4fb2b9693442ecf46a86a749f0d9912d3e488ef1aa6f2832a47fe6446"
+  },
+  "reference": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/",
+  "runtime_rebuilt": true,
+  "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+  "scientific_scope": "Frozen receiving snapshot, exact native input and actual subprocess origins retained; not clean installed-artifact qualification. No MolSysMT owner worktree changes.",
+  "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+  "molstar": {
+    "version": "5.13.1",
+    "tarball_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+    "verified_js_and_declaration_files": 6356,
+    "unchanged_after": true
+  },
+  "tool_restoration": {
+    "url": "https://nodejs.org/dist/v22.23.4/node-v22.23.4-linux-x64.tar.xz",
+    "archive_sha256": "1805bcd35e6815559bd2eb97db438d3fdb0eb3a5e6a977b7c1badca76337e9ce",
+    "expected_archive_sha256": "1805bcd35e6815559bd2eb97db438d3fdb0eb3a5e6a977b7c1badca76337e9ce",
+    "prefix": "/tmp/msv-node22-restored-20261115/node-v22.23.4-linux-x64/bin",
+    "node": "v22.23.4",
+    "npm": "10.9.9",
+    "node_bytes_equal_existing": true,
+    "node_gyp_resolves": "/tmp/msv-node22-restored-20261115/node-v22.23.4-linux-x64/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js",
+    "scope": "New owned complete tool prefix from the previously qualified exact original archive; old incomplete npm prefix and other users/processes untouched. No project dependency, lock, global installation or package version change."
+  },
+  "profiles": {
+    "build-restore-node22-849": {
+      "native_exit": 0,
+      "seconds": 8.801067546010017,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 150.9,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "00f1a49ee0e816bbae8509f57afcfe8486a15c1f09dbcca4faadc507f1802a17",
+      "original_stdout_sha256": "19763a7a3aca28c447832d882aa44a8e80ffbecb22148d9c0b2e08673a76090d"
+    },
+    "build-movie-keyboard-before-850": {
+      "native_exit": 0,
+      "seconds": 2.7863382301293314,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 252.3,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "c0222d6e451d419bc4900169a5009c088cf0f09f56e8df9b7f6d3641edc995c4",
+      "original_stdout_sha256": "2e2e9d3b72b59533f303ca29aba6d00306bb1d776185aeebdde9229c957f827d"
+    },
+    "movie-keyboard-before-851": {
+      "native_exit": 1,
+      "seconds": 18.49733368307352,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2071.7,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "5c8c7627780c226d428d132375e4ec68f746616eb5cffb861d967c00f250ab07",
+      "original_stdout_sha256": "dd555ea9af177866b2cf184492498525aa395cb492cdbe76a8dca76ad8f33281"
+    },
+    "build-movie-keyboard-after-852": {
+      "native_exit": 0,
+      "seconds": 35.33541747927666,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 540.5,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "9d138db36c8b4f681e5427091458979c7db420e3136ec2b4bcea3bebd0171d4d",
+      "original_stdout_sha256": "84e7910366ea8e2e93264e810e62eab319a2da171549bfb85681b89c7994fca5"
+    },
+    "movie-keyboard-after-853": {
+      "native_exit": 0,
+      "seconds": 64.83112195599824,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2835.5,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "d82b1193e81016d0c7f0693ea827dba60afae812ac369bebeec8867029b8527a",
+      "original_stdout_sha256": "a052ddc8c0b03dadd65e65e183c28e47f99669d28837add10073ecb1e1b622d8"
+    }
+  },
+  "red_control": {
+    "first_failure": "Movie tab stops actual [0,0,0], expected [0,-1,-1].",
+    "limit": "The first failure is causal for tab-stop ownership. Later old-runtime assertions were not reached; do not claim independent red reproduction for every later assertion."
+  },
+  "green_control": {
+    "js_native_cases": {
+      "tests": 491,
+      "passed": 491,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typescript": "pass",
+    "browser_entries": 1,
+    "received": [
+      "Primary, canvas popup and detached Studio tabs: roving Tab stop, labelled content, ArrowLeft/Right wrap, Home/End, native activation and focus into content.",
+      "Real Python recipe and frame remain unchanged across local navigation; original draft/source/camera/preview/popups/export assertions retained.",
+      "Two actual UI-created fractional times, 0.04/0.05 ms, retain their Python values and have distinct full-time edit/remove action names; native Enter edits/submits.",
+      "Native PNG/AV1 media, independent decoded/reference pixels and cleanup remain in the complete guard."
+    ],
+    "receiver_origin_sha256": "246a986e4c5d334de6f5ba139571cf6235793cccf7bcf5237ef2fe58394d58b1"
+  },
+  "resources": {
+    "build_and_metadata": {
+      "logical_cpus": 2,
+      "ram_gib": 2
+    },
+    "browser": {
+      "logical_cpus": 8,
+      "ram_gib": 4
+    },
+    "parallel_local_jobs": 1,
+    "swap_allocation": 0,
+    "global_available_stop_gib": 6.5,
+    "rss_notice": "Sum of owned process RSS is not a unique physical-memory measurement; cgroup observations retained in original receipts."
+  },
+  "concurrent_source_ci": {
+    "run": 43654425383,
+    "producer": "2947c2fdc9a815f1015f0e9e2c6b3a51cd70f547",
+    "conclusion": "failure",
+    "first_failure": "trajectory-plot independent static page controller bootstrap wait, 30s; no original console/bootstrap failure evidence retained. Distinct from the corrected consumed-reply assertion.",
+    "notice": "Older exact producer does not qualify this later runtime/guard; no duplicate dispatch or cancellation."
+  },
+  "progress": {
+    "original_source_delivered": 39,
+    "original_total": 46,
+    "final_applicable_acceptance": 1,
+    "notice": "Movie is separately adopted work. This focused correction does not change those original counters."
+  },
+  "remaining": [
+    "Complete M2 accessibility/host review, including applicable native Qt and postponed human acceptance.",
+    "Full uninterrupted current core lane and exact installed-candidate/platform qualification.",
+    "Active startup timeout #384 and original prolonged #354/#754 diagnosis."
+  ],
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/movie-keyboard-core-terminal-20261114",
+    "files": 91,
+    "bytes": 90886650,
+    "manifest_sha256": "6ffee4037923055ec6c2be3c7ce816cf6481de87e2b9c65b3d91e09aebe70d33",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
+  },
+  "metadata": {
+    "first_profile": "movie-keyboard-records-854",
+    "first_outcome": "468 passed, one clean-checkout link guard failure because new records had not yet been staged. Tests and assertions unchanged.",
+    "final_profile": "movie-keyboard-records-final-855",
+    "passed": 469,
+    "ruff_check": "pass",
+    "ruff_format": "1067 files already formatted",
+    "indexes": "up to date",
+    "diff_check": "pass",
+    "raw_receipt_sha256": "e1ad4c677c5d4ddd2354536cbe32d4f68d3030a1f5d1f268d15b86b0eb1b00d3"
+  }
+}

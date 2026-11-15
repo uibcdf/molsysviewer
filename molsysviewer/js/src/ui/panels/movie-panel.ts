@@ -23,6 +23,8 @@ const properties: Record<string, string[]> = {
 };
 const labels: Record<string, string> = { pose: "Camera pose", index: "Structure", visible: "Visibility",
     color: "Color", alpha: "Opacity", representation: "Representation", text: "Text", background: "Background", lighting: "Lighting" };
+const workflowTabs = [["timeline", "Timeline"], ["preview", "Preview"], ["export", "Export"]] as const;
+type MovieTab = typeof workflowTabs[number][0];
 
 function note(text: string): HTMLElement {
     const el = document.createElement("p"); el.textContent = text;
@@ -38,7 +40,8 @@ function card(): HTMLDivElement {
 export class MoviePanel extends BasePanel {
     readonly key = "movie";
     private state?: MoviePanelState;
-    private tab = "timeline";
+    private tab: MovieTab = "timeline";
+    private readonly workflowId = studioRequestId("movie-workflow");
     private visible = false;
     private request = "";
     private pending: string | null = null;
@@ -180,6 +183,12 @@ export class MoviePanel extends BasePanel {
         select.setAttribute("aria-label", label);
         row.appendChild(select); return row;
     }
+    private activateTab(tab: MovieTab, focus = false): void {
+        this.tab = tab; this.scheduleRender();
+        // BasePanel restores the old active field across a repaint. A keyboard
+        // tab change deliberately moves focus to the newly selected tab.
+        if (focus) this.host?.querySelector<HTMLButtonElement>(`[data-molsysviewer-movie-tab="${tab}"]`)?.focus();
+    }
     protected paint(): void {
         if (!this.host) return;
         this.host.replaceChildren(); this.host.appendChild(makeSectionHeader("Movie · experimental"));
@@ -188,10 +197,26 @@ export class MoviePanel extends BasePanel {
             this.host.appendChild(note("Movie authoring requires a connected Python session. This exported view has no editing authority.")); return;
         }
         const tabs = document.createElement("div"); tabs.setAttribute("role", "tablist"); tabs.setAttribute("aria-label", "Movie workflow");
+        tabs.setAttribute("data-molsysviewer-movie-workflow", "true");
         Object.assign(tabs.style, { display: "flex", gap: "5px", margin: "8px 0" });
-        for (const [value, label] of [["timeline", "Timeline"], ["preview", "Preview"], ["export", "Export"]]) {
-            const button = this.button(label, () => { this.tab = value; this.scheduleRender(); });
+        const focusStyle = document.createElement("style");
+        focusStyle.textContent = '[data-molsysviewer-movie-workflow] [role="tab"]:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }';
+        this.host.appendChild(focusStyle);
+        for (const [index, [value, label]] of workflowTabs.entries()) {
+            const button = this.button(label, () => this.activateTab(value, true));
+            button.id = `${this.workflowId}-tab-${value}`;
+            button.setAttribute("aria-controls", `${this.workflowId}-panel-${value}`);
             button.setAttribute("role", "tab"); button.setAttribute("aria-selected", String(this.tab === value));
+            button.tabIndex = this.tab === value ? 0 : -1;
+            button.style.boxShadow = this.tab === value ? "inset 0 -2px 0 currentColor" : "none";
+            button.addEventListener("keydown", event => {
+                const next = event.key === "ArrowRight" ? (index + 1) % workflowTabs.length
+                    : event.key === "ArrowLeft" ? (index + workflowTabs.length - 1) % workflowTabs.length
+                    : event.key === "Home" ? 0 : event.key === "End" ? workflowTabs.length - 1 : undefined;
+                if (next !== undefined) {
+                    event.preventDefault(); event.stopPropagation(); this.activateTab(workflowTabs[next][0], true);
+                } else if (event.key === "Enter" || event.key === " ") event.stopPropagation();
+            });
             button.setAttribute("data-molsysviewer-movie-tab", value); tabs.appendChild(button);
         }
         this.host.appendChild(tabs);
@@ -207,9 +232,16 @@ export class MoviePanel extends BasePanel {
             if (this.state.job_id) this.host.appendChild(this.button("Cancel operation", () => this.submit("movie_cancel", { job_id: this.state?.job_id })));
             else this.host.appendChild(note("This operation was started from Python."));
         }
-        if (this.tab === "timeline") this.timeline();
-        else if (this.tab === "preview") this.preview();
-        else this.export();
+        for (const [value] of workflowTabs) {
+            const body = document.createElement("div"); body.id = `${this.workflowId}-panel-${value}`;
+            body.setAttribute("role", "tabpanel"); body.setAttribute("aria-labelledby", `${this.workflowId}-tab-${value}`);
+            body.hidden = this.tab !== value;
+            this.host.appendChild(body);
+            if (body.hidden) continue;
+            if (value === "timeline") this.timeline(body);
+            else if (value === "preview") this.preview(body);
+            else this.export(body);
+        }
         this.updateProgress();
     }
     private updateProgress(): void {
@@ -220,7 +252,7 @@ export class MoviePanel extends BasePanel {
             : this.state?.busy === "movie_play" ? "Preview is running. Pause to inspect the last drawn moment." : "Waiting for the operation to finish…";
     }
     private get editable(): boolean { return !!this.state && !this.state.busy && this.pending === null && !this.staleDraft; }
-    private timeline(): void {
+    private timeline(parent: HTMLElement): void {
         const setup = card();
         setup.appendChild(this.field("Duration (seconds)", "duration", this.duration, value => { this.duration = value; this.durationTouched = true; }, "number"));
         if (this.state?.version !== 2 || this.confirmation === "new") {
@@ -230,7 +262,7 @@ export class MoviePanel extends BasePanel {
                 { duration_ms: Number(this.duration) * 1000, confirmed: replacing && this.confirmation === "new" }), this.editable && !!this.state?.system_loaded && !!this.state?.live_available && (!replacing || this.confirmation === "new")));
             if (replacing && this.confirmation !== "new") setup.appendChild(this.button("Start a new Movie…", () => { this.confirmation = "new"; this.scheduleRender(); }, this.editable));
             if (this.confirmation === "new") setup.appendChild(this.button("Keep current Movie", () => { this.confirmation = ""; this.scheduleRender(); }));
-            this.host!.appendChild(setup); return;
+            parent.appendChild(setup); return;
         }
         setup.appendChild(this.button("Set duration", () => this.submit("movie_set_duration", { duration_ms: Number(this.duration) * 1000 }), this.editable));
         setup.appendChild(this.button("New Movie…", () => { this.confirmation = "new"; this.scheduleRender(); }, this.editable));
@@ -241,7 +273,7 @@ export class MoviePanel extends BasePanel {
         const settings = document.createElement("details"), summary = document.createElement("summary");
         settings.open = this.settingsOpen; summary.textContent = `Movie settings · ${this.state!.duration_ms / 1000} s`;
         settings.append(summary, setup); settings.addEventListener("toggle", () => { this.settingsOpen = settings.open; });
-        this.host!.appendChild(settings);
+        parent.appendChild(settings);
         const list = card(); list.appendChild(makeSectionHeader("Tracks"));
         list.appendChild(this.button("New track", () => {
             this.selected = ""; this.track = null; this.tag = ""; this.domain = "camera"; this.property = "pose";
@@ -260,10 +292,10 @@ export class MoviePanel extends BasePanel {
         }
         if (this.offset > 0) list.appendChild(this.button("Previous tracks", () => { this.offset = Math.max(0, this.offset - 20); this.refresh(); }));
         if (this.offset + this.tracks.length < this.state!.n_tracks) list.appendChild(this.button("Next tracks", () => { this.offset += 20; this.refresh(); }));
-        if (this.state!.n_tracks) this.host!.appendChild(list);
-        this.editor();
+        if (this.state!.n_tracks) parent.appendChild(list);
+        this.editor(parent);
     }
-    private editor(): void {
+    private editor(parent: HTMLElement): void {
         const form = card(); form.appendChild(makeSectionHeader(this.selected ? "Edit track" : "New track"));
         form.appendChild(this.field("Track name", "track-name", this.tag, value => { this.tag = value; }, "text", !!this.selected));
         form.appendChild(this.select("Target", Object.keys(properties), this.domain, value => {
@@ -304,8 +336,9 @@ export class MoviePanel extends BasePanel {
         if (this.track) {
             form.appendChild(makeSectionHeader("Saved keys"));
             for (const key of this.track.keys) {
-                const row = document.createElement("div");
-                row.appendChild(this.button(`Edit ${(key.time_ms / 1000).toFixed(3)} s`, () => {
+                const row = document.createElement("div"), seconds = String(key.time_ms / 1000);
+                row.setAttribute("data-molsysviewer-movie-key", String(key.time_ms));
+                const edit = this.button(`Edit ${seconds} s`, () => {
                     this.markDraft();
                     this.at = String(key.time_ms / 1000); this.easing = key.easing ?? "linear"; this.replace = true;
                     this.shown = !!key.value;
@@ -313,8 +346,16 @@ export class MoviePanel extends BasePanel {
                         : this.property === "lighting" ? String(key.value.ambient) : String(key.value);
                     if (this.property === "lighting") this.secondValue = String(key.value.diffuse);
                     this.scheduleRender();
-                }));
-                if (this.track.n_keys > 1) row.appendChild(this.button("Remove key", () => this.submit("movie_remove_key", { tag: this.selected, time_ms: key.time_ms }), this.editable));
+                });
+                edit.setAttribute("data-molsysviewer-movie-edit-key", String(key.time_ms));
+                edit.setAttribute("aria-label", `Edit ${this.selected} key at ${seconds} seconds (${key.time_ms} ms)`);
+                row.appendChild(edit);
+                if (this.track.n_keys > 1) {
+                    const remove = this.button(`Remove ${seconds} s`, () => this.submit("movie_remove_key", { tag: this.selected, time_ms: key.time_ms }), this.editable);
+                    remove.setAttribute("data-molsysviewer-movie-remove-key", String(key.time_ms));
+                    remove.setAttribute("aria-label", `Remove ${this.selected} key at ${seconds} seconds (${key.time_ms} ms)`);
+                    row.appendChild(remove);
+                }
                 form.appendChild(row);
             }
             if (this.keyOffset > 0) form.appendChild(this.button("Previous keys", () => { this.keyOffset = Math.max(0, this.keyOffset - 100); this.refresh(); }));
@@ -327,9 +368,9 @@ export class MoviePanel extends BasePanel {
         form.appendChild(workflowHelp("movie", ["Prepare regions, interactions and labels before recording the initial scene.",
             "For a camera move, add a key, rotate or zoom the canvas, then capture another camera key at a later time.",
             "Time and duration are shown in seconds; the Python Movie API stores milliseconds. Edits do not move the scene until preview or seek."]));
-        this.host!.appendChild(form);
+        parent.appendChild(form);
     }
-    private preview(): void {
+    private preview(parent: HTMLElement): void {
         const root = card(), enabled = this.state?.version === 2 && this.state.live_available;
         root.appendChild(this.field("Movie time (seconds)", "preview-time", this.previewAt, value => { this.previewAt = value; }, "number"));
         const slider = document.createElement("input"); slider.type = "range"; slider.min = "0";
@@ -349,9 +390,9 @@ export class MoviePanel extends BasePanel {
             else { this.confirmation = "reset"; this.scheduleRender(); }
         }, enabled && this.editable));
         root.appendChild(note("Restoring the initial scene replaces current scene objects with the recorded baseline. The molecular system and scientific analyses are preserved."));
-        this.host!.appendChild(root);
+        parent.appendChild(root);
     }
-    private export(): void {
+    private export(parent: HTMLElement): void {
         const root = card();
         root.appendChild(this.field("Output path in Python session (.mp4, .webm, .zip or .html)", "path", this.path, value => { this.path = value; }));
         root.appendChild(this.field("Frames per second", "fps", this.fps, value => { this.fps = value; }));
@@ -381,7 +422,7 @@ export class MoviePanel extends BasePanel {
             const codec = names[result.codec ?? ""];
             root.appendChild(note(`Saved ${result.path} · ${result.bytes} bytes${codec ? ` · ${codec}` : ""}`));
         }
-        this.host!.appendChild(root);
+        parent.appendChild(root);
     }
     private exportOptions(): Record<string, unknown> {
         return { path: this.path, fps: this.fps, width_px: Number(this.width), height_px: Number(this.height),

@@ -160,6 +160,26 @@ and interruption; browser/WebGL errors fail. No node suffix, wildcard or
 unregistered browser target is accepted. `tests/test_reporting_protocol.py`
 verifies this exact build/runner registration.
 
+### Movie Studio authoring browser guard profile
+
+The bounded scalar selector `molsysviewer/js/tests/e2e/movie-studio.e2e.ts`
+accepts no node suffix, wildcard or command. From `molsysviewer/js/`, build
+with `npm run build:runtime`, `npm run build:harness` and
+`npm run build:e2e:all`, then run
+`node tests/e2e/e2e-runner.js --lane=core --suites=movie-studio`.
+The complete entry also runs in `test:e2e:core`; browser/WebGL failure is an
+error and an opt-out does not qualify closure.
+
+The real Python/Mol*/Chromium workflow checks authoring, draft retention,
+camera/structure seeks, preview/pause, both popup owners and native image/video
+export. Its keyboard scenario receives one active tab stop, labelled content,
+arrow wrap/Home/End, native activation and exact fractional-time key actions
+in the existing workflow. Local tab changes preserve Python's accepted recipe
+and molecular state. The validator checks this exact entry, fixture and
+canonical build/core registration; it establishes addressability, not an
+executed result or full accessibility, actual-Jupyter/Qt, installed or human
+acceptance.
+
 ### Trajectory plot authority browser guard profile
 
 The bounded selector `molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts` is

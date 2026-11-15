@@ -26,6 +26,45 @@ async function idle(page: Page) {
     });
 }
 
+async function checkMovieKeyboard(page: Page) {
+    const root = page.locator('[data-molsysviewer-group-panel-section="movie"]');
+    const tabs = root.getByRole("tablist", { name: "Movie workflow", exact: true });
+    const metadata = await tabs.getByRole("tab").evaluateAll(nodes => nodes.map(node => {
+        const target = node.ownerDocument.getElementById(node.getAttribute("aria-controls") || "");
+        return { selected: node.getAttribute("aria-selected"), tabIndex: (node as HTMLElement).tabIndex,
+            owned: !!target && target.getAttribute("role") === "tabpanel"
+                && target.getAttribute("aria-labelledby") === node.id
+                && !!node.closest('[data-molsysviewer-group-panel-section="movie"]')?.contains(target),
+            hidden: target ? (target as HTMLElement).hidden : null };
+    }));
+    assert.deepEqual(metadata.map(tab => tab.tabIndex), [0, -1, -1], "The Movie workflow needs one active keyboard tab stop");
+    assert.deepEqual(metadata.map(tab => tab.selected), ["true", "false", "false"]);
+    assert.ok(metadata.every(tab => tab.owned), "Each Movie tab must label its own content panel");
+    assert.deepEqual(metadata.map(tab => tab.hidden), [false, true, true]);
+    const focused = async (name: string) => {
+        const tab = tabs.getByRole("tab", { name, exact: true });
+        assert.equal(await tab.getAttribute("aria-selected"), "true");
+        assert.equal(await tab.evaluate(node => node === node.ownerDocument.activeElement), true,
+            `Keyboard activation must leave focus on ${name}`);
+        assert.equal(await tab.getAttribute("tabindex"), "0");
+        return tab;
+    };
+    await tabs.getByRole("tab", { name: "Timeline", exact: true }).focus();
+    await tabs.getByRole("tab", { name: "Timeline", exact: true }).press("ArrowRight");
+    const preview = await focused("Preview");
+    await preview.press("Tab");
+    const time = root.getByLabel("Movie time (seconds)", { exact: true });
+    assert.equal(await time.evaluate(node => node === node.ownerDocument.activeElement), true,
+        "Tab must move from the active workflow tab into its content");
+    await time.press("Shift+Tab");
+    await (await focused("Preview")).press("End");
+    await (await focused("Export")).press("ArrowRight");
+    await (await focused("Timeline")).press("ArrowLeft");
+    await (await focused("Export")).press("Home");
+    await (await focused("Timeline")).press("Space");
+    await focused("Timeline");
+}
+
 async function run() {
     const dir = dirname(fileURLToPath(import.meta.url));
     await withFixtureWorkspace("movie-studio", async workspace => {
@@ -50,6 +89,12 @@ async function run() {
             const status = async () => (await page.evaluate(async () =>
                 (window as any).__popupWidgetModel.send({ movie_editor_status: true }))).movie_editor;
             await openMovie(page); await idle(page);
+            const beforeNavigation = await status();
+            await checkMovieKeyboard(page);
+            const afterNavigation = await status();
+            assert.deepEqual(afterNavigation.recipe, beforeNavigation.recipe, "Workflow navigation must leave Python's Movie unchanged");
+            assert.equal(afterNavigation.frame, beforeNavigation.frame);
+            assert.equal(afterNavigation.source_unchanged, true);
             await page.getByLabel("Duration (seconds)", { exact: true }).fill("0.5");
             await page.getByRole("button", { name: "Capture initial scene", exact: true }).click(); await idle(page);
             const baseline = (await status()).recipe;
@@ -86,6 +131,7 @@ async function run() {
             popup.on("pageerror", error => errors.push(String(error)));
             await popup.waitForFunction(() => !!(window as any).__mirrorController?.getStructureData());
             await openMovie(popup); await idle(popup);
+            await checkMovieKeyboard(popup);
             await popup.getByLabel("Track name", { exact: true }).fill("camera-end");
             await popup.getByLabel("Key time (seconds)", { exact: true }).fill("0.5");
             const mark = await page.evaluate(() => (window as any).__movieEditorRequests.length);
@@ -101,6 +147,7 @@ async function run() {
             panel.on("pageerror", error => errors.push(String(error)));
             await panel.waitForFunction(() => !!(window as any).__mirrorController);
             await openMovie(panel); await idle(panel);
+            await checkMovieKeyboard(panel);
             await panel.getByRole("tab", { name: "Preview", exact: true }).click();
             await panel.getByLabel("Loop preview", { exact: true }).check();
             await panel.getByRole("button", { name: "Play", exact: true }).click();
@@ -194,6 +241,28 @@ async function run() {
             const final = await status(); assert.equal(final.pending, 0); assert.equal(final.busy, false); assert.equal(final.source_unchanged, true);
             assert.deepEqual(errors, []);
             if (diagnostics) await panel.screenshot({ path: resolve(diagnostics, "movie-studio-export.png") });
+            await panel.getByRole("tab", { name: "Timeline", exact: true }).click();
+            await panel.locator('[data-molsysviewer-movie-track="frames"]').click(); await idle(panel);
+            for (const [seconds, frame] of [["0.00004", 0], ["0.00005", 1]] as const) {
+                await panel.getByLabel("Key time (seconds)", { exact: true }).fill(seconds);
+                await panel.getByLabel("Structure", { exact: true }).fill(String(frame));
+                await panel.getByRole("button", { name: "Save key", exact: true }).press("Enter"); await idle(panel);
+                const key = (await status()).recipe.tracks.find((track: any) => track.tag === "frames")
+                    .keys.find((key: any) => key.time_ms === Number(seconds) * 1000);
+                assert.equal(key?.value, frame, "Keyboard submission must preserve the exact requested key time and structure");
+                const row = panel.locator(`[data-molsysviewer-movie-key="${key.time_ms}"]`);
+                const edit = row.getByRole("button", { name: `Edit frames key at ${seconds} seconds (${key.time_ms} ms)`, exact: true });
+                const remove = row.getByRole("button", { name: `Remove frames key at ${seconds} seconds (${key.time_ms} ms)`, exact: true });
+                assert.equal(await edit.innerText(), `Edit ${seconds} s`);
+                assert.equal(await remove.innerText(), `Remove ${seconds} s`);
+                await edit.focus(); await edit.press("Enter");
+                assert.equal(await panel.getByLabel("Key time (seconds)", { exact: true }).inputValue(), seconds);
+                await panel.getByLabel("Replace a key at the same time", { exact: true }).uncheck();
+            }
+            const afterKeyboard = await status();
+            assert.equal(afterKeyboard.pending, 0); assert.equal(afterKeyboard.busy, false); assert.equal(afterKeyboard.source_unchanged, true);
+            assert.deepEqual(errors, []);
+            console.log("[Movie Studio] Keyboard tabs/content in three endpoints and distinct fractional-time key actions passed.");
             console.log("[Movie Studio] Typed scene keys, draft preservation, real seeks, popup-owned capture, detached preview/pause and native PNG export received.");
         } catch (error) {
             const output = process.env.MOLSYSVIEWER_MOVIE_DIAGNOSTICS_DIR;

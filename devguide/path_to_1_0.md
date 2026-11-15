@@ -63,8 +63,11 @@ qualification remain required before claiming the handoff. D6.7's
 now passes its 361-case source family and six actual Jupyter cutoff decisions;
 its installed/hosted-family and postponed human scopes stay separate.
 The single complete Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
-is running on `2947c2fd`, with all 63 core entries and 25 notebooks declared;
-its terminal result is not yet received.
+fails on `2947c2fd` at the independent static-page bootstrap in entry 54.
+The [terminal receipt](source_core_terminal_receiving_20261114.json) preserves
+4,732 Python passes, 42 explicit skips, all 25 notebooks and 53 complete core
+entries. The earlier inspector correction passes, but static failure diagnosis
+and complete current core acceptance remain open.
 The [#384 initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 now source-resolves the distinct #392 immutable-source lock defect, with causal
 guards and actual-kernel normal/contended receiving. The historical #615

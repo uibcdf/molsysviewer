@@ -73,7 +73,11 @@ an already consumed reply list. [#391's receiving correction](pending_bugs/plot_
 passes the complete plot entry locally, including 15 precision controls.
 All nine Movie entries also pass together in scoped receiving `837`.
 The single full Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
-is running on `2947c2fd`; it has no terminal acceptance yet.
+fails on `2947c2fd` in a later independent static-page bootstrap wait, after
+53 complete core entries. The [terminal receipt](source_core_terminal_receiving_20261114.json)
+retains 4,732 Python passes, 42 explicit skips, all 25 notebooks and the two
+original hash-verified ZIPs. The static failure cause and complete core gate
+remain open; no original static console/DOM evidence was archived.
 The earlier #388 click sequence retains its explicit causal limit.
 Uninterrupted core and exact installed-candidate
 acceptance remain separate; #369/#372 stay open.
@@ -93,6 +97,10 @@ now leads #384/MolSysMT #615 and source-resolves the independent
 Five causal and 38 affected Python cases, plus normal/contended actual-kernel
 startup controls, pass in their overlapping scopes. The historical timeout's
 cause remains unresolved; its source outcome and the 39/46 counter are unchanged.
+The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
+source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
+the complete native authoring/export entry and all 491 JS cases. Full M2
+host/accessibility and installed/human acceptance remain open.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

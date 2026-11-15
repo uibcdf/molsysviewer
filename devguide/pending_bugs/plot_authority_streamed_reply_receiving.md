@@ -53,9 +53,15 @@ source/native hashes and the earlier local npm-launcher setup failure.
 Complete current core receiving remains required; this scoped result does
 not turn the original hosted run green.
 
-**Covering source receiving dispatched:** [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
-runs the complete Linux gate on `2947c2fd`, retaining the exact scientific
-provider and all 63 core entries/25 notebooks. The opening native check is
-`in_progress`; keep this issue partial until its applicable terminal evidence
-is received. The nine complete Movie entries already pass together locally,
-without combining that suffix with the failed hosted prefix.
+**Covering source receiving is terminal failure:** [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
+on `2947c2fd` passes 4,732 Python cases with 42 explicit skips and all 25
+notebooks. The previous reply-inspector assertion passes, followed by genuine
+Python/source/popup navigation. Entry 54 then times out after 30 seconds while
+waiting for the independent exported static page's controller. That is a later
+phase, not evidence that the consumed-reply correction failed. The original
+static console/bootstrap state was not archived; the cause remains unknown.
+The [terminal receipt](../source_core_terminal_receiving_20261114.json)
+retains both original ZIPs with verified GitHub hashes and the complete log.
+Keep #391 partial while receiving the static bootstrap and complete current
+core gate. The 53-entry prefix and local nine-Movie suffix are not that gate;
+no deadline change or duplicate dispatch is justified by this observation.

@@ -907,6 +907,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Movie keyboard authoring — 2026-11-14:**
+[#393](archive/movie_authoring_keyboard_and_key_actions.md) is source-resolved:
+one keyboard tab stop, labelled content, local arrow/Home/End navigation and
+distinct full-time saved-key actions pass in the primary and both popups.
+The complete native authoring/export guard and all 491 JS cases pass. The
+[receipt](movie_authoring_keyboard_receiving_20261114.json) preserves its
+causal old-runtime failure and exact inputs. Full M2 host/accessibility,
+installed and postponed human acceptance remain open; original progress stays
+39/46. The separate source CI below does not qualify this later runtime.
+
 **Initial-canvas audit — 2026-11-14:** [#384](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 leads the #615 investigation and source-resolves the independent
 [#392 source-request lock defect](archive/runtime_source_replies_require_scene_lock.md).
@@ -914,7 +924,7 @@ Five causal and 38 affected Python cases pass, as do two fresh-kernel
 normal/contended startup controls with verified handler/native bytes and
 actual connector-thread identity. The [receipt](initial_canvas_audit_receiving_20261114.json)
 preserves original failures and corrected receiving observers. The historical
-timeout remains unexplained; the running full CI retains its earlier producer
+timeout remains unexplained; the failed full CI retains its earlier producer
 and does not qualify this later Python fix. Original progress remains 39/46.
 
 **Current Mol* checkpoint — 2026-11-14:** source `eae57346` receives the
@@ -935,8 +945,13 @@ story/session. All inputs stay unchanged and all 68 owned processes retire.
 Receive a complete current core gate before claiming that acceptance.
 One full Linux source recovery [43654425383](https://github.com/uibcdf/molsysviewer/actions/runs/43654425383)
 is dispatched on `2947c2fd` with unchanged scientific provider `aee7aa65`,
-pandas 3.1.0, all 63 core entries and 25 notebooks. Exact-head manual inventory
-was empty; native GitHub metadata and GH Run Receptor confirm one active job.
+pandas 3.1.0, all 63 core entries and 25 notebooks. It is now terminal failure:
+4,732 Python passes, 42 explicit skips and all 25 notebooks are retained; entry
+54 passes the corrected inspector but times out in the independent static-page
+bootstrap. The original console/boot state is unavailable, so its cause is
+unknown. The [terminal receipt](source_core_terminal_receiving_20261114.json)
+retains original logs and both hash-verified artifact ZIPs. No duplicate run
+was dispatched and complete current core acceptance remains open.
 Prior Windows/macOS Python evidence remains on `eae57346`; this is source
 recovery without candidate versions, tags, packages or installed qualification.
 #388's original event sequence retains its causal limit;

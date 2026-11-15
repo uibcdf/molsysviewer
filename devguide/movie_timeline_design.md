@@ -50,6 +50,17 @@ summaries. Replacing a plan, removing a track and restoring the recorded scene
 require explicit confirmation. Existing-key replacement requires a separate
 choice. Validation errors preserve the last accepted recipe and molecular data.
 
+The workflow follows the horizontal tabs pattern: only the active tab is in
+the Tab sequence; Left/Right wrap, Home/End move to the ends and activate the
+local content immediately, and Tab enters the selected labelled panel. Native
+Enter/Space activation and visible keyboard focus are retained. These local
+changes do not submit an edit or move the molecular scene. Saved-key actions
+include the track, full numeric seconds and raw milliseconds in their
+accessible names; visible seconds no longer use fixed three-decimal rounding.
+The [focused keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
+receives the primary and both popup endpoints, without claiming full
+accessibility or all actual-host acceptance.
+
 Every edit carries the Movie revision. A concurrent Python/other-window edit
 keeps the form but disables applying it until the user reviews the updated
 plan and chooses **Use kept draft**. The server also rejects a stale command

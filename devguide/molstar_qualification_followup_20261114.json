@@ -953,5 +953,34 @@
     "passed": 463,
     "raw_receipt_sha256": "3a57399358501e50eb8beed59ae68f6b8e5f09d8372d3bb4431733ec1a771fcc",
     "scope": "Reporting, devguide links and E2E reliability invariants; current indexes, Ruff and diff checks. Not product test cases or added to the 361 scientific cases."
+  },
+  "full_linux_recovery_terminal": {
+    "receipt": "source_core_terminal_receiving_20261114.json",
+    "run": 43654425383,
+    "producer": "2947c2fdc9a815f1015f0e9e2c6b3a51cd70f547",
+    "conclusion": "failure",
+    "python": {
+      "tests": 4774,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 42,
+      "passed": 4732,
+      "notice": "42 native/optional/unselected skips are retained and are not acceptance."
+    },
+    "notebooks": {
+      "total": 25,
+      "executed": 25,
+      "failed": 0
+    },
+    "core": {
+      "declared": 63,
+      "complete_prefix": 53,
+      "failing_entry": "trajectory-plot",
+      "failed_phase": "Independent exported static HTML page, waiting for window.__molsysviewerDocsController.",
+      "native_error": "page.waitForFunction: Timeout 30000ms exceeded, trajectory-plot.e2e.js:607:26.",
+      "previous_consumed_reply_assertion_reached_and_passed": true,
+      "limit": "The previous inspector correction passes its earlier assertions. Original static page console, boot error and per-phase DOM were not archived by this workflow, so this timeout does not identify a product, GPU, load or test cause. No deadline/assertion change and no complete-core acceptance.",
+      "remaining_entries_executed": false
+    }
   }
 }

@@ -1,0 +1,56 @@
+{
+  "schema": "molsysviewer.source_core_terminal_receiving@1",
+  "date": "2026-11-14",
+  "run": 43654425383,
+  "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43654425383",
+  "producer": "2947c2fdc9a815f1015f0e9e2c6b3a51cd70f547",
+  "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+  "job": 132629726319,
+  "status": "completed",
+  "conclusion": "failure",
+  "scope": "Single complete Linux source recovery attempt, not installed-artifact or full final candidate qualification. No duplicate dispatch, rerun, cancellation, tag or publication.",
+  "python": {
+    "tests": 4774,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 42,
+    "passed": 4732,
+    "notice": "42 native/optional/unselected skips are retained and are not acceptance."
+  },
+  "notebooks": {
+    "total": 25,
+    "executed": 25,
+    "failed": 0
+  },
+  "core": {
+    "declared": 63,
+    "complete_prefix": 53,
+    "failing_entry": "trajectory-plot",
+    "failed_phase": "Independent exported static HTML page, waiting for window.__molsysviewerDocsController.",
+    "native_error": "page.waitForFunction: Timeout 30000ms exceeded, trajectory-plot.e2e.js:607:26.",
+    "previous_consumed_reply_assertion_reached_and_passed": true,
+    "limit": "The previous inspector correction passes its earlier assertions. Original static page console, boot error and per-phase DOM were not archived by this workflow, so this timeout does not identify a product, GPU, load or test cause. No deadline/assertion change and no complete-core acceptance.",
+    "remaining_entries_executed": false
+  },
+  "original_files_sha256": {
+    "ci-43654425383-run.json": "90ec0ff07d9fca12dd53bc8a5556f6cf058a5c31dde3740776390cac7c3ee18b",
+    "ci-43654425383-jobs.json": "3be106e0d6c79ace8bb5041c4fb4465292fdd407d706e6658c7e2fcd1b7ac0c3",
+    "ci-43654425383-original.log": "489bdac9102ae6ab7eb7925a26b477844bd5e758a38caa880d386eab927b4203",
+    "ci-43654425383-failed.log": "965ebacad955e34d04384b46e53e2e72d285797458bd2fa8532dc9bfa60c4e45",
+    "ci-43654425383-source-original.zip": "3c978bbdf4c9eb78d4d75b144b84e3c0d6b23a647b291258ed0ed84159810d5c",
+    "ci-43654425383-encoder-original.zip": "42c54a7453eb19de0b25a9edf4fbce184ff182a973bb236e1420dcf8f23424ce"
+  },
+  "artifacts": [
+    {
+      "id": 14137862708,
+      "name": "source-receiving-Linux-py3.14",
+      "sha256": "3c978bbdf4c9eb78d4d75b144b84e3c0d6b23a647b291258ed0ed84159810d5c"
+    },
+    {
+      "id": 14137503962,
+      "name": "movie-encoder-native-Linux",
+      "sha256": "42c54a7453eb19de0b25a9edf4fbce184ff182a973bb236e1420dcf8f23424ce"
+    }
+  ],
+  "followup": "#391 remains partial; receive static bootstrap diagnostics and complete the current core gate. #393 runtime work has a later source/runtime identity and is separate."
+}

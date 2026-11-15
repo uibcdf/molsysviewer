@@ -43,6 +43,7 @@ INTERACTIONS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/interactions-calculation
 COMPOSITE_LOAD_BROWSER_GUARD = "molsysviewer/js/tests/e2e/composite-load.e2e.ts"
 INITIAL_WELCOME_BROWSER_GUARD = "molsysviewer/js/tests/e2e/initial-welcome.e2e.ts"
 MOVIE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-playback.e2e.ts"
+MOVIE_STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-studio.e2e.ts"
 TRAJECTORY_PLOT_BROWSER_GUARD = "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
@@ -113,6 +114,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         COMPOSITE_LOAD_BROWSER_GUARD,
         INITIAL_WELCOME_BROWSER_GUARD,
         MOVIE_BROWSER_GUARD,
+        MOVIE_STUDIO_BROWSER_GUARD,
         TRAJECTORY_PLOT_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
@@ -376,6 +378,20 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             (js_root / "tests/e2e/canvas-popup-mirror-scenarios.ts").is_file(),
             (js_root / "tests/e2e/canvas-popup-fixture.ts").is_file(),
             (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
+        )
+    elif selector == MOVIE_STUDIO_BROWSER_GUARD:
+        requirements += (
+            'import { PythonFixtureBridge } from "./python-fixture-bridge";' in entry,
+            'withFixtureWorkspace("movie-studio", async workspace =>' in entry,
+            "async function checkMovieKeyboard(page: Page)" in entry,
+            "await checkMovieKeyboard(page);" in entry,
+            "await checkMovieKeyboard(popup);" in entry,
+            "await checkMovieKeyboard(panel);" in entry,
+            "afterNavigation.recipe, beforeNavigation.recipe" in entry,
+            "Keyboard submission must preserve the exact requested key time and structure" in entry,
+            "assert.equal(decoded.width, 1280);" in entry,
+            (js_root / "tests/e2e/movie-studio-bridge.py").is_file(),
+            "run().catch(" in entry,
         )
     elif selector == TRAJECTORY_PLOT_BROWSER_GUARD:
         try:
@@ -763,6 +779,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, COMPOSITE_LOAD_BROWSER_GUARD) == []
     assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MOVIE_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, MOVIE_STUDIO_BROWSER_GUARD) == []
     assert validate_guard(ROOT, TRAJECTORY_PLOT_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
@@ -800,6 +817,8 @@ def test_browser_guard_rejects_missing_or_unadopted_targets(tmp_path: Path) -> N
     assert validate_guard(tmp_path, INITIAL_WELCOME_BROWSER_GUARD)
     assert validate_guard(ROOT, INITIAL_WELCOME_BROWSER_GUARD + "::checkInitialView")
     assert validate_guard(tmp_path, MOVIE_BROWSER_GUARD)
+    assert validate_guard(tmp_path, MOVIE_STUDIO_BROWSER_GUARD)
+    assert validate_guard(ROOT, MOVIE_STUDIO_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, TRAJECTORY_PLOT_BROWSER_GUARD)
     assert validate_guard(ROOT, TRAJECTORY_PLOT_BROWSER_GUARD + "::run")
     assert validate_guard(tmp_path, CONTROLS_BROWSER_GUARD)

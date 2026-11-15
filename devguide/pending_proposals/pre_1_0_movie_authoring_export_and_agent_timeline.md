@@ -218,7 +218,11 @@ acceptance and retained session/media provenance. The
 owns those rules. The admitted legacy profile below is now source-received.
 Studio has its first experimental Timeline/Preview/Export editor over the
 same Python Movie owner, including canvas-owned popup capture and detached
-Studio preview/export. Richer renderer channels, complete authoring acceptance,
+Studio preview/export. The [keyboard receiving](../movie_authoring_keyboard_receiving_20261114.json)
+closes #393's focused M2 tab navigation and saved-key naming correction in the
+primary and both popup endpoints, retaining the entire native authoring/export
+guard. Full accessibility and actual-host acceptance remain separate.
+Richer renderer channels, complete authoring acceptance,
 richer portable profiles and complete host acceptance remain open. The
 first self-contained offline HTML profile is implemented through the same
 `export_async` API. It embeds its runtime, recipe, molecular projection and
