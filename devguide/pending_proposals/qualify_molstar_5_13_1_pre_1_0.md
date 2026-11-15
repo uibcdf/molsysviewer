@@ -59,6 +59,34 @@ published native replacement or a separately reviewed dependency update.
 | Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Current source scopes received: earlier named-session/H5MSM, Movie/encoder/offline and actual-host controls retain their exact inputs; canonical default-Jupyter reference and retained/released controls pass, followed by 30/30 same-kernel cycles in 809 on a72c92ba. Covering and installed acceptance remain separate. |
 | Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Pending; no public candidate or publication authorized. |
 
+## Current closeout checklist — 2026-11-15
+
+The technical assessment and source corrections are delivered in their declared
+scopes. Closing this qualification still requires these three exits:
+
+| Exit | Remaining evidence |
+| --- | --- |
+| Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus the applicable Python/notebook/platform evidence. Current Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372) uses `b9f7dfb2`, scientific source `aee7aa65` and pandas 3.1.0; its latest receptor observation is pending. Reconcile #244, [#388](https://github.com/uibcdf/molsysviewer/issues/388) and [#391](https://github.com/uibcdf/molsysviewer/issues/391) against their actual guards and causal/disposition requirements. A later passing prefix cannot reconstruct an earlier unrecorded event sequence. |
+| Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
+| Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
+
+The [current #244 recurrence](../pending_bugs/scientific_mirror_aggregate_budget_recurrence.md)
+keeps controls and scientific mirror separate, but now gives only the latter
+a 480-second aggregate allowance. Individual operation deadlines, assertions
+and core inclusion are unchanged. The complete diagnostic mirror passes;
+the unoverridden paired and later single-mirror attempts are resource-interrupted,
+not canonical passes. The existing hosted run receives the complete boundary;
+do not duplicate it or repeat heavy local work during recurring shared swap.
+
+This checklist does not reopen the architectural comparison or add v6 work.
+The local cache/font/readiness/picking adapters have their recorded source
+guards and remain until their separately tracked native replacements are
+qualified. Waiting for another Mol* release is not a prerequisite of the
+selected 5.13.1 route. Older #305/#354/#384 observations retain their actual
+ownership and required exits in the wider programme; do not label them new
+Mol* regressions without causal evidence. Parent #369 closes after its adopted
+pre-1.0 findings and this qualification are reconciled, not when a subset passes.
+
 Use sequential bounded executions: build/type/backend checks at 2 CPU/2 GiB,
 native browser work initially at 4 CPU/4 GiB, within the agreed 8 CPU/6 GiB ceiling and
 the conservative shared-memory reserve. Preserve failed native controls and
