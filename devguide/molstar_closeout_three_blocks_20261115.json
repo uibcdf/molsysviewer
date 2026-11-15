@@ -1,0 +1,299 @@
+{
+  "schema": "molsysviewer.molstar_closeout_three_blocks@1",
+  "date": "2026-11-15",
+  "issues": [
+    244,
+    369,
+    372,
+    384,
+    388,
+    391,
+    395
+  ],
+  "scope": "Source receiving and concrete installed/host prerequisites. No candidate, clean installed pair or publication acceptance.",
+  "source": {
+    "viewer_producer": "b9f7dfb2673dd80b1fc4dd04ba19c7d04e16e0c0",
+    "molsysmt": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "pandas": "3.1.0",
+    "molstar": "5.13.1",
+    "native_files_matched": 6356,
+    "native_original_tar_sha256": "08e9292fb427bbebe9e1ecaef9e1b1066e2323dc4327e83692c4a5c3f14fff4e",
+    "runtime_sha256": "f613c7b4fb2b9693442ecf46a86a749f0d9912d3e488ef1aa6f2832a47fe6446"
+  },
+  "integrated_source": {
+    "run": 43686277372,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43686277372",
+    "conclusion": "failure",
+    "core_passed": 62,
+    "core_required": 63,
+    "notebooks_passed": 25,
+    "python": {
+      "tests": 4790,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 42,
+      "passed": 4748
+    },
+    "artifacts": [
+      {
+        "id": 14150683441,
+        "name": "movie-encoder-native-Linux",
+        "sha256": "47a8eb703de4778ecd2d05ddd0a13c330abcd2545de6b75e4713474cb45636e1",
+        "bytes": 14696
+      },
+      {
+        "id": 14150024857,
+        "name": "source-receiving-Linux-py3.14",
+        "sha256": "38c3a51ddead8a9c74fdb6e89bd3aa318d74650e60c1fec83057b7942641a1c2",
+        "bytes": 81828,
+        "junit": {
+          "tests": 4790,
+          "errors": 0,
+          "failures": 0,
+          "skipped": 42,
+          "passed": 4748
+        }
+      }
+    ],
+    "receptor_version": "1.1.1",
+    "receptor_exit": 1,
+    "complete_mirror": "Pass with canonical 480-second aggregate, about 179 seconds; controls, Dock and both stopped endpoints retained. Whole current core acceptance still required.",
+    "complete_plot": "Pass including real delivered authority, independent static export and diagnostic control. Historical static-bootstrap cause remains unobserved.",
+    "failure": "Final movie-story locator retains Edit 1.000 s; #393 deliberately renamed the accessible saved-key action. No product deadline or scientific assertion failed before that timeout.",
+    "full_log_sha256": "f522bd2648b78441356991ff2cbfe05dd3488aeae3c466975768a9a8e4bc8370"
+  },
+  "story_repair": {
+    "issue": "uibcdf/molsysviewer#395",
+    "change": "Select actual 1000-ms row and current accessible Edit action, then assert 1-second prepared field. Test-only correction; no runtime, scientific, dependency or timeout changes.",
+    "build": {
+      "source_base": "cb8b9cf3ee84ae495b9877aa8d38f3ece85df38d",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 3.0440394799225032,
+      "selected_inputs": 9977,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 243.3,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "build-story-key-881",
+      "raw_receipt_sha256": "174cd49c7148256d0701f76b1ae291b783e0dbf38888784ab82efb56265bd861"
+    },
+    "causal_control": {
+      "source_base": "cb8b9cf3ee84ae495b9877aa8d38f3ece85df38d",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 33.90724380221218,
+      "selected_inputs": 9980,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2148.9,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 14,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "story-key-causal-883",
+      "raw_receipt_sha256": "1b33d1da1beb5cf91cbbfccdc14f888b879ca1b90a556b640ac149bf949fb14e"
+    },
+    "complete_story": {
+      "source_base": "cb8b9cf3ee84ae495b9877aa8d38f3ece85df38d",
+      "provider_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_exit": 0,
+      "seconds": 241.09442432783544,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2688.5,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "profile": "story-native-full-884",
+      "raw_receipt_sha256": "ffbc2348d27d77066e6b04b21d2a5a0fe211de1c661fb0d2216250bce7b45787"
+    },
+    "complete_story_browser_seconds": 213.795,
+    "suite_budget_seconds": 360,
+    "timeout_override": null,
+    "complete_assertions": [
+      "forward/reverse/preview",
+      "sparse coverage and occurrence identities",
+      "native molecular geometry",
+      "independent Python session recovery",
+      "PNG/MP4/WebM independent reference pixels",
+      "offline complete story playback",
+      "unchanged scientific data and zero hidden scientific calls"
+    ],
+    "acceptance": "Complete scoped local pass; not an uninterrupted full core pass. #395 remains open until that required receiving."
+  },
+  "installed_preparation": {
+    "state": "pending_owner_prerequisites",
+    "owner_coordination": "Existing user-authorized MolSysMT thread; read-only facts/preparation request only. No request to lift the build/hosted/tag/publication pause.",
+    "molsysmt_owner_review_source": "96988b6ea42fb02a662fa3dda5eb2f7659f28c56",
+    "not_a_frozen_producer": true,
+    "molsysmt_native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "current_ci_does_not_qualify_new_owner_source": true,
+    "registry_observed_at": "2026-11-15T07:17:48.434528+00:00",
+    "molsysmt_1_0_0": "Four old ABI3 build-0 files, staging only. Producer 6dc80725; preserve originals, never rebuild/overwrite those coordinates. Current owner proposes build 1, not yet frozen or built.",
+    "molsysviewer_1_0_0": "Public exact-release endpoint HTTP 404 in this snapshot. Not a claim about private/unobserved files or reservation/authorization of build 0.",
+    "minimum_host_original": {
+      "version": "0.24.0",
+      "build": 1,
+      "package_sha256": "e31dfb114ab2e49f22b372992d0201455b91849f2631d0165b802069e13abeaa",
+      "registry_url": "https://api.anaconda.org/release/uibcdf/molsysviewer/0.24.0",
+      "labels": [
+        "staging",
+        "main"
+      ],
+      "class_declarations": [
+        {
+          "path": "site-packages/molsysviewer/viewer/core.py",
+          "sha256": "2cda2d9debeefb5968be1843c9c545c112e165d61be6952ba14f18ecf816e703",
+          "bases": [
+            "SceneRegistryMixin",
+            "HistoryMixin",
+            "ExportMixin",
+            "RegionsMixin",
+            "PanelModeMixin",
+            "LoadMixin",
+            "VisibilityMixin",
+            "SceneMixin",
+            "MolSysMTInterfaceMixin",
+            "StateMixin",
+            "PopupSnapshotMixin",
+            "InteractionMixin"
+          ],
+          "special_methods": []
+        }
+      ],
+      "closed_methods_in_package": [],
+      "first_closed_source_commit": "60659082596eb055054da99364715b5cef7f3767",
+      "scope": "Verified public artifact declaration inspection; no clean installed/runtime or future-version qualification."
+    },
+    "minimum_scientific_original": {
+      "package": "molsysmt",
+      "version": "0.23.0",
+      "archive_sha256": "7ff102db1ceb3a6098b5c020193a2bef1c5eaa4dbcbc5a0b472ee2fa44a1971b",
+      "examined_paths": [
+        "molsysmt/chemical_states/__init__.py",
+        "molsysmt/native/chemical_states.py",
+        "molsysmt/native/molsys.py"
+      ],
+      "found": {
+        "molsysmt/native/chemical_states.py": {
+          "sha256": "a5b1e528c3d96382a082944af7b31f2805e24ad800380faa6e332f5e8316fd31",
+          "bytes": 14852,
+          "chemical_states_token": true,
+          "get_bonds_token": true,
+          "classes": {
+            "ChemicalStates": [
+              "__init__",
+              "n_atoms",
+              "n_chemical_states",
+              "reference_chemical_state_index",
+              "_resolve_index",
+              "_replace_states",
+              "_append_state",
+              "_set_reference_index",
+              "_resize_atom_domain",
+              "append_state",
+              "get_bonds",
+              "get_preparation_history",
+              "append_preparation_history",
+              "copy",
+              "_extract_atoms"
+            ]
+          },
+          "cache_equal": true
+        },
+        "molsysmt/native/molsys.py": {
+          "sha256": "eea64319602c904324ecd212abe64add54ed0714832c45f0d412082635885e84",
+          "bytes": 56424,
+          "chemical_states_token": true,
+          "get_bonds_token": false,
+          "classes": {
+            "MolSys": [
+              "interactions",
+              "interactions",
+              "_validate_interactions",
+              "_invalidating_interaction_frames",
+              "topology",
+              "topology",
+              "chemical_states",
+              "chemical_states",
+              "_replace_chemical_states",
+              "__init__",
+              "_from_partial_domains",
+              "__setstate__",
+              "_get_structure_chemical_state_indices",
+              "_set_structure_chemical_state_indices",
+              "_resolve_structure_chemical_state_index",
+              "extract",
+              "remove",
+              "add",
+              "append_structures",
+              "copy",
+              "add_missing_bonds",
+              "rebuild_atoms",
+              "rebuild_groups",
+              "rebuild_components",
+              "rebuild_molecules",
+              "rebuild_chains",
+              "rebuild_entities",
+              "to_form",
+              "info",
+              "get",
+              "_get_n_atoms",
+              "_get_n_structures",
+              "get_n_atoms"
+            ]
+          },
+          "cache_equal": true
+        }
+      },
+      "scope": "Complete original package stream; exact native/public declaration inspection only, not runtime compatibility."
+    },
+    "minimum_interpretation": "Original MolSysMT 0.23.0 already has native stored ChemicalStates/get_bonds. No dependency-floor change is justified merely by a later public namespace. Original public MolSysViewer 0.24.0 lacks closed; #524 needs a real new compatible published floor plus clean minimum/newer installed receiving. Artifact declarations alone are not runtime qualification.",
+    "owner_prerequisites": [
+      "#256: H5MSM stable-format acceptance and BindingMT #73 native omitted-version/migration receiving under ordinary and pm/fs units.",
+      "MolSysViewer #384 / MolSysMT #615: causal resolution or evidenced principal-maintainer disposition; later passes do not close the original observation.",
+      "MolSysMT #524: agreed compatible published host floor, audited manifests and clean installed minimum/newer closure/origin checks.",
+      "Agree exact producers/refs, new unused builds, manifests, original file hashes and one installed 16-cell dispatch after prerequisite review."
+    ],
+    "matrix": "Four platforms x Python 3.11-3.14; no new installed dispatch performed."
+  },
+  "compatibility_and_hosts": {
+    "state": "partial",
+    "source_adapter_policy": "Existing reviewed 5.13.1 cache/font/readiness adapters remain; v6 stays post-1.0. Ordinary builds resolve the installed package.",
+    "retained_receiving": "Earlier 491 units, actual Jupyter/native Qt, current controller release and 30-cycle profiles retain their exact source and execution inputs; do not silently relabel as a new candidate.",
+    "remaining": "Review final producer changes; receive applicable actual hosts and postponed visual observations or explicit bounded disposition. Qt remains experimental.",
+    "general_human_acceptance": "Postponed, not passed and not waived by continuous development authorization."
+  },
+  "resource_policy": "One heavy local execution at a time; bounded <=8 logical CPU/6 GiB, current story 8 CPU/4 GiB, zero own swap, conservative 6.5 GiB global reserve and PSI/swap stops. No shared-prefix installs or foreign process termination.",
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-three-blocks-20261115",
+    "files": 88,
+    "bytes": 35824922,
+    "manifest_sha256": "364a7b7b773104f561ea5a2b67a8a8b275c1fbc40165363ae96eaee0a75d4dbc",
+    "originals_retained": true
+  },
+  "source_delivered_counter": "39/46 unchanged",
+  "final_acceptance_counter": "1/46 unchanged",
+  "public_tags_releases_promotions": "paused",
+  "record_validation": {
+    "profile": "story-closeout-records-886",
+    "tests_passed": 478,
+    "pytest_exit": 0,
+    "ruff_check": 0,
+    "ruff_format": 0,
+    "index_and_diff_check": 0,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "earlier_885": "Sandbox refused the user systemd bus before test execution. Native exit 1; no test or product failure. Same bounded command receives explicit sandbox access in 886."
+  }
+}

@@ -86,6 +86,12 @@ resolves #364's source-attribution correction and #356's measured retirement
 defect. #354 remains partial with its original pre-save Python frame failure
 correctly identified; MolSysMT #754 owns the receiver diagnostic gap. E2 and
 the installed/manual exits remain separate from those source closures.
+The [three-block closeout receipt](molstar_closeout_three_blocks_20261115.json)
+now receives the complete scientific mirror and plot in hosted core, then
+records a final Movie story selector failure after 62/63 entries. The complete
+story passes locally after #395's test-only repair; an uninterrupted current
+core pass and the new exact installed pair are still required. The old
+1.0.0 MolSysMT staging files do not represent its current source.
 The [structural-observables receipt](structural_observables_receiving_20261114.json)
 now delivers D6.7 in source: 361 expert/panel cases and six actual-Jupyter
 contact-cutoff decisions pass. The original ledger advances to 39/46

@@ -91,6 +91,15 @@ now source-resolves the distinct #392 immutable-source lock defect, with causal
 guards and actual-kernel normal/contended receiving. The historical #615
 timeout and exact final-pair qualification remain separate required exits.
 
+The next Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
+on `b9f7dfb2` passes the complete mirror, DataCard, trajectory plot and first
+62 core entries, plus 4,748 Python cases and all 25 notebooks. Its final Movie
+story entry waits for an obsolete accessible button name. [#395](pending_bugs/movie_story_saved_key_action.md)
+corrects that test selector and receives the complete story locally, including
+media/session/offline assertions. The whole run remains failed; one complete
+current core pass is required. The [three-block receipt](molstar_closeout_three_blocks_20261115.json)
+keeps exact installed/host prerequisites distinct from source recovery.
+
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
 once the relevant functionality is settled. Do not leave its first technical

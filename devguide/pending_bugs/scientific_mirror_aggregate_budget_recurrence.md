@@ -92,7 +92,12 @@ One complete Linux source recovery,
 now receives `b9f7dfb2` with the same scientific source/pandas and full core,
 Python and notebook selection. Complete pre-dispatch inventories have no
 active, queued or exact-head dispatch, and the subsequent exact-head inventory
-contains only this run. Its first observation is pending; #244 remains open.
+contains only this run. The terminal result is failure in entry 63, the
+unrelated Movie story selector tracked in #395. The complete scientific mirror
+passes in about 179 seconds under its canonical 480-second allowance, with all
+phase reports, Dock and both stopped endpoints. This receives the required
+hosted mirror boundary; keep the issue open until the declared complete
+current core acceptance is reconciled. No prefix/suffix assembly is a pass.
 
 A smaller unoverridden attempt, `mirror-canonical-880`, follows a fresh quiet
 resource assessment and selects only the affected scientific mirror. It is

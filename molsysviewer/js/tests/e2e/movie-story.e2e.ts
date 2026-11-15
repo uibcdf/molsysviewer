@@ -119,7 +119,9 @@ async function run() {
                 c.setPanelMode("navigate", true); c.groupPanel.setExpanded(true); c.groupPanel.openSection("movie"); });
             await page.getByRole("tab", { name: "Timeline", exact: true }).waitFor();
             await page.locator('[data-molsysviewer-movie-track="phase"]').click();
-            await page.getByRole("button", { name: "Edit 1.000 s", exact: true }).click();
+            await page.locator('[data-molsysviewer-movie-key="1000"]')
+                .getByRole("button", { name: "Edit phase key at 1 seconds (1000 ms)", exact: true }).click();
+            assert.equal(await page.getByLabel("Key time (seconds)", { exact: true }).inputValue(), "1");
             await page.getByLabel("Text", { exact: true }).fill("Relaxed Buch candidates: H-A <= 0.40 nm");
             await page.getByRole("button", { name: "Save key", exact: true }).click();
             await page.waitForFunction(() => { const p = (window as any).__mirrorController.groupPanel.moviePanel;

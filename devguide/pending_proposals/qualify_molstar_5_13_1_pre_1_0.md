@@ -66,7 +66,7 @@ scopes. Closing this qualification still requires these three exits:
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus the applicable Python/notebook/platform evidence. Current Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372) uses `b9f7dfb2`, scientific source `aee7aa65` and pandas 3.1.0; its latest receptor observation is pending. Reconcile #244, [#388](https://github.com/uibcdf/molsysviewer/issues/388) and [#391](https://github.com/uibcdf/molsysviewer/issues/391) against their actual guards and causal/disposition requirements. A later passing prefix cannot reconstruct an earlier unrecorded event sequence. |
+| Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus the applicable Python/notebook/platform evidence. Current Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372) uses `b9f7dfb2`, scientific source `aee7aa65` and pandas 3.1.0; its terminal result is failure at the obsolete saved-key selector in entry 63 (#395), after the complete mirror, DataCard, trajectory plot and first eight Movie entries pass. All 25 notebooks and 4,748 Python cases pass with 42 explicit skips. The complete affected story passes locally after the test-only selector correction; a new uninterrupted core pass is still required. Reconcile #244, [#388](https://github.com/uibcdf/molsysviewer/issues/388) and [#391](https://github.com/uibcdf/molsysviewer/issues/391) against their actual guards and causal/disposition requirements. A later passing prefix cannot reconstruct an earlier unrecorded event sequence. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 
@@ -75,8 +75,10 @@ keeps controls and scientific mirror separate, but now gives only the latter
 a 480-second aggregate allowance. Individual operation deadlines, assertions
 and core inclusion are unchanged. The complete diagnostic mirror passes;
 the unoverridden paired and later single-mirror attempts are resource-interrupted,
-not canonical passes. The existing hosted run receives the complete boundary;
-do not duplicate it or repeat heavy local work during recurring shared swap.
+not canonical passes. The terminal hosted run receives the complete mirror boundary. Its later
+Movie selector failure belongs to #395; repeat the complete source lane only
+after receiving that correction. Do not repeat heavy local work during
+recurring shared swap.
 
 This checklist does not reopen the architectural comparison or add v6 work.
 The local cache/font/readiness/picking adapters have their recorded source
@@ -97,6 +99,12 @@ The resource pilot measured busy assigned cores and spare capacity elsewhere;
 subsequent browser receiving uses 8 CPU/4 GiB, with the same reserve, zero swap
 allowance and own-process cleanup. This is an execution ceiling, not an
 exclusive machine reservation or a claim that every operation uses eight cores.
+
+The [three-block receipt](../molstar_closeout_three_blocks_20261115.json)
+records terminal source evidence, scoped story recovery and the independently
+checked package prerequisites. The current MolSysMT owner source is not the
+scientific source of this CI run. Its new producer/files are not frozen; the
+old 1.0.0 build-0 staging packages cannot qualify today's ChemicalStates code.
 
 ## Ownership and limits
 
