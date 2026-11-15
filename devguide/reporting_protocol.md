@@ -206,7 +206,10 @@ owners, build and core registration; those checks establish addressability.
 The bounded selector `molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts`
 is accepted without suffixes, globs or commands. From `molsysviewer/js`, run
 `npm run test:e2e:capture-lifecycle`; it builds through `build:e2e:all` and
-also runs in `test:e2e:core` with the ordinary 180-second suite budget.
+also runs in `test:e2e:core` with a bounded 240-second suite budget after #397
+receives its two independently initialized fixtures. The complete diagnostic
+workflow takes 169 seconds; the original 180-second cut remains evidence.
+Individual readiness/product-operation deadlines are unchanged.
 Browser/WebGL errors fail the guard; an explicit skip is not receiving evidence.
 
 The real Python/Mol* fixture hides, removes and restores the actual canvas,

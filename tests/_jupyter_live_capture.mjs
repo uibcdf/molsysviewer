@@ -286,7 +286,8 @@ try{
    const content=args.msg?.content?.data?.content,data=content?.payload??content;
    if(args.msg?.header?.msg_type==='error'&&window.__captureKernelErrors.length<12)window.__captureKernelErrors.push({ename:args.msg.content.ename,evalue:args.msg.content.evalue});
    if(data?.event==='visual_state_snapshot')window.__captureTraffic.push(JSON.parse(JSON.stringify(data)));
-   if(data?.event||data?.op){window.__captureProtocolTraffic.push({direction:args.direction,event:data.event,op:data.op,generation:data.generation,
+   if(data?.event||data?.op){window.__captureProtocolTraffic.push({direction:args.direction,epoch_ms:Date.now(),monotonic_ms:performance.now(),
+    event:data.event,op:data.op,action:data.action,request_id:data.request_id,revision:data.revision,generation:data.generation,
     target:data.target_endpoint_id,viewer:data.viewer_id,session:data.session_id,stream:data.stream_id});if(window.__captureProtocolTraffic.length>512)window.__captureProtocolTraffic.shift();}
   });
  });

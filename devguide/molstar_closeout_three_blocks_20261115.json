@@ -8,7 +8,9 @@
     384,
     388,
     391,
-    395
+    395,
+    396,
+    397
   ],
   "scope": "Source receiving and concrete installed/host prerequisites. No candidate, clean installed pair or publication acceptance.",
   "source": {
@@ -264,14 +266,155 @@
       "MolSysMT #524: agreed compatible published host floor, audited manifests and clean installed minimum/newer closure/origin checks.",
       "Agree exact producers/refs, new unused builds, manifests, original file hashes and one installed 16-cell dispatch after prerequisite review."
     ],
-    "matrix": "Four platforms x Python 3.11-3.14; no new installed dispatch performed."
+    "matrix": "Four platforms x Python 3.11-3.14; no new installed dispatch performed.",
+    "additional_current_prerequisite": "Diagnose and receive actual-Jupyter Movie #396 before final current-host/candidate acceptance.",
+    "current_owner_source_controls": {
+      "profile": "mt-review-session-interactions-897",
+      "source": "96988b6ea42fb02a662fa3dda5eb2f7659f28c56",
+      "git_verified_package_files": 3544,
+      "native_build_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "changed_rust_inputs": [],
+      "tests_passed": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "warnings": "51 explicit LegacyH5MSMWarning for supported legacy 0.4 demo reads; not suppressed.",
+      "guards": [
+        "tests/test_session_h5msm_migration.py",
+        "tests/test_interactions_public_completion.py",
+        "tests/test_recovered_interaction_append.py",
+        "tests/test_interactions_projection_batching.py",
+        "tests/test_interactions_qualification.py"
+      ],
+      "native_exit": 0,
+      "seconds": 62.6080921292305,
+      "selected_inputs": 9820,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 869.4,
+      "resource_stop": null,
+      "modules": {
+        "molsysmt": {
+          "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/owner-review-96988b6e/molsysmt/__init__.py",
+          "sha256": "dc89c5f21ab7ba4bb94b289927a19856d27cb670baf1b03d7f6fcb7fced03f90",
+          "version": "0+unknown"
+        },
+        "molsysmt._rust": {
+          "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/owner-review-96988b6e/molsysmt/_rust.abi3.so",
+          "sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+          "version": null
+        },
+        "molsysviewer": {
+          "origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+          "sha256": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+          "version": "0.24.0+97.gdf4bf477.dirty"
+        },
+        "pyunitwizard": {
+          "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+          "sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+          "version": "0.29.4+2.g9bb4f5f"
+        }
+      },
+      "custody": {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-current-hosts-20261115",
+        "files": 217,
+        "bytes": 60369992,
+        "manifest_sha256": "11c1eb2245bed4b098ef0498f3d676055285d8ddaf1ce5b16a351b97234a6cff",
+        "originals_retained": true
+      },
+      "scope": "Isolated source composition and selected real molecular/interaction/session controls. No provider rebuild/install, frozen producer, installed resolver/ABI qualification or BindingMT acceptance."
+    },
+    "metadata_proposal": {
+      "state": "private_review_only",
+      "tool": "devtools/prepare_release.py",
+      "version": "1.0.0",
+      "build_proposals": {
+        "molsysviewer": 0,
+        "molsysmt": 1
+      },
+      "surfaces_changed_in_private_copy": 5,
+      "patch_sha256": "58a00bdbfd24e290355903109a87a0e5a90aee8bf5c543376990f1e3434744c0",
+      "metadata_validation_exit": 0,
+      "main_metadata_runtime_and_refs_unchanged": true,
+      "date": "Provisional; replace at an eventual authorized producer freeze.",
+      "custody": {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-current-hosts-20261115",
+        "files": 217,
+        "bytes": 60369992,
+        "manifest_sha256": "11c1eb2245bed4b098ef0498f3d676055285d8ddaf1ce5b16a351b97234a6cff",
+        "originals_retained": true
+      }
+    }
   },
   "compatibility_and_hosts": {
     "state": "partial",
     "source_adapter_policy": "Existing reviewed 5.13.1 cache/font/readiness adapters remain; v6 stays post-1.0. Ordinary builds resolve the installed package.",
     "retained_receiving": "Earlier 491 units, actual Jupyter/native Qt, current controller release and 30-cycle profiles retain their exact source and execution inputs; do not silently relabel as a new candidate.",
     "remaining": "Review final producer changes; receive applicable actual hosts and postponed visual observations or explicit bounded disposition. Qt remains experimental.",
-    "general_human_acceptance": "Postponed, not passed and not waived by continuous development authorization."
+    "general_human_acceptance": "Postponed, not passed and not waived by continuous development authorization.",
+    "current_qt": {
+      "profile": "current-qt-closeout-888",
+      "producer": "21474b8cd4703ee54ed570733e4dbefdeea465ea",
+      "native_exit": 0,
+      "seconds": 98.60579555667937,
+      "tests_passed": 1,
+      "stopped_cases": 4,
+      "moving_cases": 4,
+      "platform": "wayland",
+      "renderer": "ANGLE (NVIDIA Corporation, Quadro M2000/PCIe/SSE2, OpenGL ES 3.2)",
+      "peak_owned_rss_mib": 2207.2,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "scope": "Actual Qt/WebEngine/NVIDIA work-file capture, not human acceptance, complete keyboard authoring or installed qualification.",
+      "earlier_887": "Pytest was invoked from the provider cwd and rejected the relative selector before executing tests. Wrapper corrected cwd; original usage error retained."
+    },
+    "current_actual_jupyter_movie": {
+      "profile": "current-jupyter-movie-889",
+      "issue": "uibcdf/molsysviewer#396",
+      "native_exit": 1,
+      "seconds": 86.36853542318568,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2702.6,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "completed_movie_cases": 2,
+      "required_movie_cases": 8,
+      "phase": "Movie notebook seek",
+      "cause": "Unassigned; passive 890 confirms actual event admission, callback and operation entry. Original browser/kernel evidence retained; not a complete Movie pass.",
+      "relation": "Separate from historical initial-canvas #615, original scene-admission #365 and loop-completion #366; no cause equivalence inferred.",
+      "followup": {
+        "complete_diagnostic_profiles": [
+          "891",
+          "892",
+          "893",
+          "894"
+        ],
+        "canonical_profile": "current-jupyter-movie-canonical-895",
+        "canonical_native_exit": 0,
+        "canonical_pytest_passed": 1,
+        "canonical_seconds": 83.77212044224143,
+        "canonical_completed_movie_cases": 8,
+        "canonical_inputs_unchanged": true,
+        "canonical_peak_owned_rss_mib": 3225.0,
+        "canonical_resource_stop": null,
+        "canonical_own_processes_retired": 20,
+        "cause": "Still unknown. Diagnostic task samples capture an already completed seek. Later complete success does not resolve original #396 failures. No further identical heavy retry without a new hypothesis/input.",
+        "receiver_change": "Passive bounded browser/kernel clock/correlation and connection-state diagnostics; no runtime, operation, response, timeout or extra production timer change."
+      }
+    }
   },
   "resource_policy": "One heavy local execution at a time; bounded <=8 logical CPU/6 GiB, current story 8 CPU/4 GiB, zero own swap, conservative 6.5 GiB global reserve and PSI/swap stops. No shared-prefix installs or foreign process termination.",
   "custody": {
@@ -295,5 +438,287 @@
     "inputs_unchanged": true,
     "resource_stop": null,
     "earlier_885": "Sandbox refused the user systemd bus before test execution. Native exit 1; no test or product failure. Same bounded command receives explicit sandbox access in 886."
+  },
+  "decisions": "devguide/molstar_closeout_decisions_20261115.md",
+  "current_source_recovery": {
+    "run": 43692655949,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43692655949",
+    "producer": "21474b8cd4703ee54ed570733e4dbefdeea465ea",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "state": "completed",
+    "complete_exact_head_and_active_inventories_before": 0,
+    "duplicate_dispatch": false,
+    "first_valid_receptor_exit": 3,
+    "first_receptor_cli_error": "Installed receptor rejects --format llm; usage error before acquisition, then corrected --receptor llm --format text.",
+    "scope": "Single complete Linux source recovery; no installed/candidate/publication claim.",
+    "conclusion": "failure",
+    "terminal_receptor_exit": 1
+  },
+  "current_host_and_preparation_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/molstar-current-hosts-20261115",
+    "files": 217,
+    "bytes": 60369992,
+    "manifest_sha256": "11c1eb2245bed4b098ef0498f3d676055285d8ddaf1ce5b16a351b97234a6cff",
+    "originals_retained": true
+  },
+  "current_source_terminal": {
+    "run": 43692655949,
+    "producer": "21474b8cd4703ee54ed570733e4dbefdeea465ea",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "status": "completed",
+    "conclusion": "failure",
+    "artifacts": [
+      {
+        "id": 14154130147,
+        "name": "movie-encoder-native-Linux",
+        "sha256": "682f71d830b4a7751f7dd6ac99b4cfd1bd2013c22feeabdc2ed16122d098ee9d",
+        "bytes": 14696
+      },
+      {
+        "id": 14154030458,
+        "name": "source-receiving-Linux-py3.14",
+        "sha256": "b25fb246472429c31a2a0dcc331b25bc96426ea2f36df6cedc3b476cb820bdc0",
+        "bytes": 82644,
+        "junit": {
+          "tests": 4794,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 42,
+          "passed": 4752
+        }
+      }
+    ],
+    "core_entries_started": 10,
+    "core_completed_63": false,
+    "notebooks_25_passed": true,
+    "original_log_sha256": "1a625f4c3b1cefb93ac5e09605f00d30b23620e679b631a911b102ff1edd0c77",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate source-recovery scope",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check out MolSysViewer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check out the exact MolSysMT source candidate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Require an exact MolSysMT commit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Select MolSysMT's pinned Rust toolchain",
+        "conclusion": "success"
+      },
+      {
+        "name": "Create the Python 3.14 source-pair environment",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate and locally tag the exact Viewer source candidate",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Locally tag the exact MolSysMT candidate version",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Install both exact source candidates",
+        "conclusion": "success"
+      },
+      {
+        "name": "Remove the temporary Viewer tag after installation",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Remove the temporary MolSysMT tag after installation",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Install JavaScript test dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "Synchronize the development runtime before source validation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Audit dependency routes and the installed exact source provider",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check installed Rust and viewer resources",
+        "conclusion": "success"
+      },
+      {
+        "name": "Record published pytest tool versions",
+        "conclusion": "success"
+      },
+      {
+        "name": "Guard native MolSysMT paths in the installed pair",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test MolSysMT integration against the installed pair",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run MolSysViewer Python tests",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve native Movie encoder identity and diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve the original source-receiving JUnit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Register the exact source-pair notebook kernel",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build the source-pair browser runtime and harness",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify the hosted source-pair browser",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run all core browser suites against the exact source pair",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Run focused mirror receiving diagnostics",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Receive live Jupyter diagnostics",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Preserve safe source-pair receiving diagnostic receipts",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Execute every documented notebook against the exact source pair",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve source-pair notebook failure logs",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Post Create the Python 3.14 source-pair environment",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Check out the exact MolSysMT source candidate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Check out MolSysViewer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "complete_core_entries_passed": 9,
+    "failing_entry": "moving-capture-lifecycle",
+    "issue": "uibcdf/molsysviewer#397",
+    "scope": "Original full run remains failure; no prefix/suffix assembly. Later Movie/story guard is unreached.",
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/popup-lifecycle-source-recovery-20261115",
+      "files": 119,
+      "bytes": 38408846,
+      "manifest_sha256": "6cef2fc975e8946a44a648592c71b1c1793d42bf81c3ce3049d50582cc66a02c",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 2
+    }
+  },
+  "record_validation_followup": {
+    "profile": "current-closeout-records-898",
+    "native_exit": -15,
+    "seconds": 271.35512582492083,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "scope": "Non-qualifying interrupted check. The wrapper selected Jupyter globally; an existing unmarked live-Jupyter test remained selected despite not jupyter_runtime. The next explicitly headless records driver removes only that selector environment; actual host receiving stays in 895. No pass is credited or product cause inferred."
+  },
+  "popup_lifecycle_readiness": {
+    "issue": "uibcdf/molsysviewer#397",
+    "change": "Positive actual role/painted panel navigation or observed molecular-controller readiness before work-file UI; earliest real panel-window receiving. No production/runtime/dependency/science change.",
+    "full_entry_budget_seconds": 240,
+    "operation_deadlines_unchanged": true,
+    "earlier_canonical_900": "Completes original failed panel boundary and whole lifetime fixture, then the outer 180-second runner cuts the independent freeze/close fixture. No individual assertion failure before that cut. Not a pass.",
+    "diagnostic_901": {
+      "browser_seconds": 169.655,
+      "supervised_seconds": 195.1873371549882,
+      "timeout_override_ms": 300000,
+      "native_exit": 0,
+      "scope": "Full unchanged assertions received for measurement; not canonical acceptance."
+    },
+    "canonical_903": {
+      "native_exit": 0,
+      "seconds": 159.80525964079425,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3662.4,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "browser_seconds": 156.702,
+      "timeout_override": null,
+      "native_inputs_matched": 6356,
+      "remaining": "Full current core gate required; source entry pass does not close #372 or qualify installed/human acceptance."
+    },
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/popup-lifecycle-source-recovery-20261115",
+      "files": 119,
+      "bytes": 38408846,
+      "manifest_sha256": "6cef2fc975e8946a44a648592c71b1c1793d42bf81c3ce3049d50582cc66a02c",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 2
+    }
+  },
+  "final_scoped_validation": {
+    "profile": "current-headless-closeout-904",
+    "passed": 536,
+    "skipped": 1,
+    "deselected": 2,
+    "native_exit": 0,
+    "seconds": 19.115326073020697,
+    "ruff_check": 0,
+    "ruff_format": 0,
+    "node_syntax": 0,
+    "indexes_and_diffs": 0,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "scope": "Current docs/diagnostic/async-owner controls. One unselected live guard and two marked actual-host cases are explicit, not live receiving; 895 supplies its separate actual Movie result.",
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/popup-lifecycle-source-recovery-20261115",
+      "files": 119,
+      "bytes": 38408846,
+      "manifest_sha256": "6cef2fc975e8946a44a648592c71b1c1793d42bf81c3ce3049d50582cc66a02c",
+      "originals_retained": true,
+      "credential_shaped_files_excluded": 2
+    }
   }
 }

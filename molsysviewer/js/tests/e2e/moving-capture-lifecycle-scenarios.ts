@@ -90,6 +90,9 @@ export async function checkCaptureLifetimes(context: Context) {
                 await popup.getByTitle("Popout panel to external window", { exact: true }).click({ noWaitAfter: true });
                 panel = await opened;
                 panel.on("pageerror", error => errors.push(String(error)));
+                // Exercise the shared readiness owner from the earliest real
+                // window event, before an absent loader could count as ready.
+                await openMovingWorkFile(panel);
                 await panel.locator("#molsysviewer-loading").waitFor({ state: "hidden" });
                 assert.equal(await popup.evaluate(() => {
                     const w = window as any, original = w.__captureLifetimeCanvas;

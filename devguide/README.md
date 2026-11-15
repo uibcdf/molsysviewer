@@ -97,6 +97,16 @@ now delivers D6.7 in source: 361 expert/panel cases and six actual-Jupyter
 contact-cutoff decisions pass. The original ledger advances to 39/46
 source-delivered; final applicable acceptance remains 1/46. These counts
 do not measure total release readiness.
+The [latest source recovery](molstar_closeout_three_blocks_20261115.json)
+retains another failed full run, `43692655949`: 4,752 Python cases and 25
+notebooks pass, followed by nine core entries and a popup-role readiness error
+in entry 10. [#397](pending_bugs/moving_work_file_popup_readiness.md) now has
+complete canonical lifecycle receiving after its test-only correction. The
+current native Qt guard and selected 55-case source integration with MT
+`96988b6e` pass; actual-Jupyter [#396](pending_bugs/jupyter_movie_seek_pending.md)
+retains original failures and its later complete uninstrumented pass with
+unknown cause. The complete core, installed pair and postponed human exits
+remain distinct and open.
 The [initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 now leads #384/MolSysMT #615 and source-resolves the independent
 [#392 bootstrap lock defect](archive/runtime_source_replies_require_scene_lock.md).

@@ -19,11 +19,13 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (5)
+### Being worked on (7)
 
 - [`hosted_shape_click_selection_timeout.md`](hosted_shape_click_selection_timeout.md) — [#388](https://github.com/uibcdf/molsysviewer/issues/388) — Hosted shape click does not reach active selection after GPU and hover succeed. *(medium, measured)*
 - [`initial_jupyter_canvas_timeout_audit.md`](initial_jupyter_canvas_timeout_audit.md) — [#384](https://github.com/uibcdf/molsysviewer/issues/384) — Audit the initial Jupyter molecular-canvas timeout with phase-specific evidence. *(medium, measured)*
+- [`jupyter_movie_seek_pending.md`](jupyter_movie_seek_pending.md) — [#396](https://github.com/uibcdf/molsysviewer/issues/396) — Actual Jupyter Movie seek remains pending after authoring and Python editing. *(high, measured)*
 - [`movie_story_saved_key_action.md`](movie_story_saved_key_action.md) — [#395](https://github.com/uibcdf/molsysviewer/issues/395) — Receive the integrated Movie story through its current saved-key action. *(medium, reproduced)*
+- [`moving_work_file_popup_readiness.md`](moving_work_file_popup_readiness.md) — [#397](https://github.com/uibcdf/molsysviewer/issues/397) — Moving work-file receiving chooses its popup role before bootstrap is ready. *(medium, measured)*
 - [`scientific_mirror_aggregate_budget_recurrence.md`](scientific_mirror_aggregate_budget_recurrence.md) — [#244](https://github.com/uibcdf/molsysviewer/issues/244) — Receive the complete scientific popup mirror after its independent aggregate budget expires. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 

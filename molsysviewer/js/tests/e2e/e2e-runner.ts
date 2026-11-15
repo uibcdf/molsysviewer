@@ -113,6 +113,12 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
         // take 172s at 8 CPU/4 GiB. Bound the complete workflow separately;
         // each individual PNG still has its original operation deadline.
         "studio-image-export": 240_000,
+        // Two independently initialized molecular fixtures receive owner
+        // retirement/transport loss, then dynamic freeze/pending View close.
+        // The unchanged workflow completes in 169s; a colder 180s attempt
+        // reaches the second fixture but is cut before completion (#397).
+        // Keep all readiness and product-operation deadlines unchanged.
+        "moving-capture-lifecycle": 240_000,
         // Ten calculated families, original/recovered scenes and periodic
         // controls create 22 real controllers. Mol* 5.13.1/SwiftShader takes
         // 236s at 8 CPU/4 GiB; the prior 5.4.1 control already took 179s.

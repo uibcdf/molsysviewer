@@ -100,6 +100,21 @@ media/session/offline assertions. The whole run remains failed; one complete
 current core pass is required. The [three-block receipt](molstar_closeout_three_blocks_20261115.json)
 keeps exact installed/host prerequisites distinct from source recovery.
 
+The separate [#396 actual-Jupyter Movie observation](pending_bugs/jupyter_movie_seek_pending.md)
+records an intermittent pending seek after authoring and Python editing. Current
+native Qt captures pass; the complete uninstrumented notebook Movie guard also
+passes later, while the original failed attempts and unknown cause remain.
+Keep that investigation separate from adapted core, historical #615 and the
+[staging/host decisions](molstar_closeout_decisions_20261115.md). No new
+candidate or installed-pair acceptance is credited.
+
+The latest complete source recovery [43692655949](https://github.com/uibcdf/molsysviewer/actions/runs/43692655949)
+passes 4,752 Python cases and 25 notebooks, then fails core entry 10 after nine
+complete entries. [#397](pending_bugs/moving_work_file_popup_readiness.md)
+receives positive popup-role readiness before the lifecycle helper uses its
+controller. The earlier story correction is unreached here. Keep both failed
+runs and the requirement for one complete current core pass.
+
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
 once the relevant functionality is settled. Do not leave its first technical

@@ -227,3 +227,32 @@ partial same-kernel campaign `265` retain their original sources in the
 [receiving receipt](prolonged_scientific_session_receiving_20261110.json).
 The 30-second first-canvas wait under #615 and the scientific deadlines retain
 their own contracts. PR review belongs to MolSysMT.
+
+## Current consumer source followup — 2026-11-15
+
+The [three-block receipt](molstar_closeout_three_blocks_20261115.json) now
+receives 55/55 cases against an isolated exact Git export of MolSysMT
+`96988b6ea42fb02a662fa3dda5eb2f7659f28c56`: all 3,544 package blobs match,
+Rust inputs are unchanged from `aee7aa65`, and the previously qualified
+`4ffb82e4` native backend is reused explicitly. The five guard modules cover
+H5MSM 0.5/1.0/default sessions, named sparse/parallel results, coverage and
+invalidation, remapping/append, pages and real molecular geometry. Native
+warnings retain 51 supported legacy-0.4 demo reads. There are no failed,
+errored or skipped cases. The exact guard paths, import origins and custody
+hashes are in that receipt. No provider worktree, build or installation changes.
+
+This selected source composition does not freeze a producer, verify a new ABI
+build or qualify an installed pair. Original public MolSysViewer 0.24.0 py_1
+lacks `closed`; the first new compatible public host floor is still pending
+actual delivery and minimum/newer qualification under MT #524. Original MT
+0.23.0 already has native ChemicalStates/get_bonds; a later public namespace
+alone does not justify a higher global floor. The [decision packet](molstar_closeout_decisions_20261115.md)
+retains proposed staging coordinates, original occupied MT build-0 identities,
+owner #256/BindingMT #73 acceptance, the two-way dependency/promotion-order
+review and the existing separate publication hold.
+
+Current native Qt work-file receiving passes. Actual-Jupyter Movie's original
+pending seek remains tracked in [#396](pending_bugs/jupyter_movie_seek_pending.md),
+with later complete uninstrumented receiving kept separate from causality.
+Neither those passes nor #397's source test correction explains historical
+#615. Return any accepted principal-maintainer disposition to its owner.

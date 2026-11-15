@@ -23,6 +23,20 @@ export async function movingEndpointIdentity(page: Page): Promise<string> {
 
 export async function openMovingWorkFile(page: Page) {
     await page.bringToFront();
+    // A new popup may still be about:blank: an absent loading indicator is
+    // already "hidden". Observe its actual role and usable owner before
+    // choosing panel-only navigation or molecular-controller operations.
+    await page.waitForFunction(() => {
+        const w = window as any;
+        if (w.molsysviewer_init_options?.isPanelOnly) {
+            return Array.from(document.querySelectorAll('select[aria-label="Studio section"], [data-molsysviewer-group-panel-tab="export"]'))
+                .some(element => {
+                    const bounds = element.getBoundingClientRect();
+                    return bounds.width > 0 && bounds.height > 0 && getComputedStyle(element).visibility !== "hidden";
+                });
+        }
+        return !!w.__mirrorController?.groupPanel;
+    });
     if (await page.evaluate(() => !!(window as any).molsysviewer_init_options?.isPanelOnly)) {
         const navigation = page.getByLabel("Studio section", { exact: true });
         if (await navigation.isVisible()) await navigation.selectOption("export");

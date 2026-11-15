@@ -145,7 +145,9 @@ export async function receiveJupyterMovie({page,kernel,config,report,openCanvas,
  }catch(error){
   const inspect=target=>target?.evaluate(()=>{
    const c=window.__captureControllers?.[0],p=c?.groupPanel.moviePanel,frame=c?.trajectory.getTrajectoryState().currentFrame;
-   return {hidden:document.hidden,frame,editor:p&&{state:p.state,pending:p.pending,message:p.message},
+   const kernel=window.jupyterapp?.shell.currentWidget?.sessionContext?.session?.kernel;
+   return {epoch_ms:Date.now(),hidden:document.hidden,frame,editor:p&&{state:p.state,pending:p.pending,message:p.message},
+    kernel_transport:kernel&&{connection_status:kernel.connectionStatus,status:kernel.status,is_disposed:kernel.isDisposed},
     native:c&&{trajectory:c.trajectory.isCaptureFrameReady(frame),annotations:c.annotations.isGeometryCurrent(),movie:c.movie.isCaptureSafe},
     traffic:window.__captureProtocolTraffic?.slice(-40),replies:window.__captureTraffic?.slice(-4)};
   }).catch(e=>({diagnostic_error:e.name}));
