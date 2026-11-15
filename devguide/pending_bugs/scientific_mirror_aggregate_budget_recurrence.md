@@ -79,3 +79,17 @@ all 9,979 inputs remain unchanged and no product failure is assigned. The
 child exit of zero does not override the supervisor's resource-stop failure.
 Do not repeat heavy local work under shared swap activity. Receive the same
 canonical boundary in the controlled hosted lane instead.
+
+The canonical entry build and 474 reporting/link/E2E-policy cases pass, as do
+Ruff and queue/diff checks. The initial clean-checkout link failure in `878`
+is retained: the new report had not yet been staged. Registering that file
+corrects the consumer setup, and `879` passes without changing assertions.
+The [consolidated receipt](../molstar_qualification_followup_20261114.json)
+preserves original profiles, ZIPs, hashes and approved private custody.
+
+One complete Linux source recovery,
+[43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372),
+now receives `b9f7dfb2` with the same scientific source/pandas and full core,
+Python and notebook selection. Complete pre-dispatch inventories have no
+active, queued or exact-head dispatch, and the subsequent exact-head inventory
+contains only this run. Its first observation is pending; #244 remains open.

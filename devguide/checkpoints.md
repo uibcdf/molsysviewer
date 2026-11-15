@@ -907,6 +907,17 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Scientific mirror recovery — 2026-11-15:**
+[43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
+is active on `b9f7dfb2673dd80b1fc4dd04ba19c7d04e16e0c0`, with the same
+scientific source `aee7aa65` and pandas 3.1.0. Only the mirror's aggregate
+allowance changes to 480 seconds; all operations/assertions/core selection
+remain. Its complete diagnostic measurement passes; the unoverridden local
+pair is resource-interrupted. Canonical entry build, 474 metadata/link/E2E
+policy cases and Ruff pass. One complete Linux dispatch retains all core,
+Python and notebook work; the first receptor is pending with one active job.
+Keep #244 open, do not duplicate the run or credit a terminal result early.
+
 **Complete Linux recovery after #394 — 2026-11-14:**
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
 on `a8fc5273b6aa274cb5fc343b79ddf613b3458a54`, retaining scientific source

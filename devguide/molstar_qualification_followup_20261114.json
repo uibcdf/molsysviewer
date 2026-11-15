@@ -1448,5 +1448,43 @@
       "manifest_sha256": "8fa1d03a5f34e3afd067d7777e2772e0f1e967b6469cca8dbc6fdca8ae02807b",
       "originals_retained": true
     }
+  },
+  "scientific_mirror_source_recovery": {
+    "state": "dispatch_sent",
+    "at": "2026-11-15T06:37:16.483957+00:00",
+    "head_sha": "b9f7dfb2673dd80b1fc4dd04ba19c7d04e16e0c0",
+    "workflow": "ci-python-314-source-pair.yaml",
+    "ref": "main",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "ubuntu-latest",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "encoder_diagnostics": "false"
+    },
+    "complete_exact_head_manual_inventory_before": 0,
+    "complete_active_inventory_before": 0,
+    "complete_queued_inventory_before": 0,
+    "scope": "One complete Linux source recovery receives the bounded scientific mirror aggregate correction after a real full diagnostic, canonical build and 474 policy/link/Ruff checks. The local unoverridden pair is resource-interrupted and not counted as passing. Full core/Python/notebooks remain selected. Prior other-platform sources, installed qualification, versions/tags/packages and publication remain separate.",
+    "native_exit": 0,
+    "stdout": "https://github.com/uibcdf/molsysviewer/actions/runs/43686277372\n",
+    "stderr": "",
+    "run": 43686277372,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43686277372",
+    "observed_status": "in_progress",
+    "observed_conclusion": null,
+    "first_receptor_exit": 3,
+    "first_receptor_version": "1.1.1",
+    "complete_exact_head_manual_inventory_after": 1,
+    "duplicate_dispatch": false,
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/mirror-recovery-dispatch-20261115",
+      "files": 8,
+      "bytes": 19353,
+      "manifest_sha256": "b2d498c51d544428899f6091a6630c9f9742c6b94171ffbc59c38d1369e5d72e",
+      "originals_retained": true
+    }
   }
 }
