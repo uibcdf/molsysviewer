@@ -255,6 +255,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
             await canvas.getByTitle("Float panel", { exact: true }).click();
             await canvas.locator("canvas").focus(); await canvas.keyboard.press("Escape");
         }
+        progress("window-local Dock received");
         await fixture("hide");
         for (const canvas of [page, peer]) await canvas.waitForFunction(() => {
             const c = (window as any).__mirrorController;
@@ -267,6 +268,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         // playback engine's actual rate in each endpoint, including while live.
         for (const endpoint of [page, peer]) await endpoint.waitForFunction(() =>
             (window as any).__mirrorController.trajectory.getTrajectoryState().fps === 8);
+        progress("shared scene visibility and playback rate received");
 
         // With derived geometry in flight, stop must leave both actual frames
         // and each set's frame-specific geometry at the authority's final frame.
@@ -291,6 +293,7 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
             await peer.evaluate(async () => { for (let i = 0; i < 12; i++) await new Promise(requestAnimationFrame); });
             await frameEqual();
             assert.equal(await peer.evaluate(() => (window as any).__mirrorController.trajectory.getTrajectoryState().currentFrame), stoppedFrame);
+            progress(`stopped ${canvas === page ? "primary" : "popup"} trajectory geometry received`);
         }
         await cameraEqual();
         assert.deepEqual(errors, []);

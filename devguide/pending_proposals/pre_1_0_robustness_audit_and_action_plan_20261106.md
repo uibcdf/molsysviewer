@@ -526,6 +526,16 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current complete-core recovery — 2026-11-15:**
+[43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
+on `a8fc5273` passes Python and 25 notebooks, then the outer runner retires
+scientific mirror entry 4/63 at 300 seconds. The earlier controls/science
+partition remains intact; [#244 is reopened](../pending_bugs/scientific_mirror_aggregate_budget_recurrence.md)
+for the independent workflow's aggregate allowance. The complete unchanged
+mirror passes a diagnostic measurement locally; canonical/covering receiving
+remains separate. Later DataCard/plot/Movie guards are unreached in this run.
+Neither original outcome counter changes.
+
 **Current initial-canvas audit — 2026-11-14:** [#384's owned audit](../pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 distinguishes the original executing-cell timeout from a separate earlier
 fixture oracle exception. [#392's independent source fix](../archive/runtime_source_replies_require_scene_lock.md)

@@ -109,8 +109,9 @@ passes the complete card entry locally; complete current core remains open.
 now passes 72 controls independently, with real plain-Jupyter and synthetic
 controller scopes separate. Original #354/#615 causes remain unresolved.
 The complete Linux recovery [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
-is active on `a8fc5273`; the full core/Python/notebook selection is retained
-and no terminal result is credited. After the original resource interruption,
+on `a8fc5273` passes Python and all 25 notebooks, but its outer runner kills
+the scientific mirror at 300 seconds, entry 4/63. [#244 is reopened](pending_bugs/scientific_mirror_aggregate_budget_recurrence.md);
+later core guards are unreached. After the original resource interruption,
 the committed receiver now passes one complete real molecular cycle on
 `a8fc5273`; both attempts retire all their owned processes. This does not
 explain the historical frame disagreement or replace prolonged acceptance.

@@ -117,8 +117,8 @@ def test_controls_and_scientific_mirror_keep_separate_mandatory_owners():
     assert mirror.count("await checkCanvasPopupMirror(page, dir);") == 1
     assert 'withFixtureWorkspace("canvas-popup-mirror", run).catch(' in mirror
     assert "finally { await browser.close(); }" in mirror
-    for suite in ["controls-visibility", "canvas-popup-mirror"]:
-        assert f'"{suite}": 300_000' in runner
+    assert '"controls-visibility": 300_000' in runner
+    assert '"canvas-popup-mirror": 480_000' in runner
 
 
 def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():

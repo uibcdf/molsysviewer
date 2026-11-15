@@ -78,9 +78,10 @@ now pass independent consumer receiving. Original #354/#615, installed-candidate
 and postponed human exits remain separate.
 The complete Linux source recovery
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
-now receives the #394 correction on `a8fc5273`, with the same scientific
-source and all 63 core entries/25 notebooks selected. Its outcome is pending;
-prior other-platform evidence retains its original exact producer.
+on `a8fc5273` passes Python and all 25 notebooks but fails the outer scientific
+mirror budget at entry 4/63. [#244 is reopened](pending_bugs/scientific_mirror_aggregate_budget_recurrence.md);
+later core assertions, including #394's guard, are unreached. Prior
+other-platform evidence retains its original exact producer.
 The committed #754 receiver also passes one full molecular Jupyter cycle on
 `a8fc5273`, including both popups, the unchanged Python frame assertion and
 save/recovery. Its earlier resource interruption is retained; original failure

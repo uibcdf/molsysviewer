@@ -1256,6 +1256,64 @@
       "links": "pass",
       "diff_checks": "pass",
       "scope": "Documentation-only receiving; not the pending source CI outcome."
+    },
+    "terminal": {
+      "status": "completed",
+      "conclusion": "failure",
+      "job": 132704289792,
+      "failure": "canvas-popup-mirror exceeded 300000 ms",
+      "failed_core_entry": 4,
+      "selected_core_entries": 63,
+      "completed_prior_core_entries": [
+        "context-menu",
+        "native-picking-readiness",
+        "controls-visibility"
+      ],
+      "reported_mirror_phases_seconds": {
+        "bidirectional_camera_and_single_motion_clock": 262,
+        "native_picks_and_edited_annotation_markers": 284
+      },
+      "complete_mirror": false,
+      "later_core_entries_reached": false,
+      "notebooks": {
+        "total": 25,
+        "executed": 25,
+        "failed": 0
+      },
+      "original_artifacts": [
+        {
+          "id": 14148200574,
+          "name": "source-receiving-Linux-py3.14",
+          "sha256": "8536a758f27b194fcec9d7ddc8ed700dd7e57be1922815fda1388061962f7882",
+          "bytes": 82932,
+          "junit": {
+            "tests": 4786,
+            "errors": 0,
+            "failures": 0,
+            "skipped": 42,
+            "passed": 4744
+          }
+        },
+        {
+          "id": 14148180690,
+          "name": "movie-encoder-native-Linux",
+          "sha256": "b563ef3ced30696be59c6e94efae298fbc7e682da4ec97b6d9217e97ee17319c",
+          "bytes": 14696
+        }
+      ],
+      "root_log_sha256": "8d739b1a21f1ab28a4b7ff0eb5393c0bef16db317e5857b297d309d3491314c8",
+      "receptor_report_sha256": "00090fe035a0a2b825b6d5cd8ded91c506c1d42945eb91bb42ea42a6f40cd885",
+      "reopened_issue": "uibcdf/molsysviewer#244",
+      "record": "pending_bugs/scientific_mirror_aggregate_budget_recurrence.md",
+      "scope": "Original complete Linux source recovery is failure at an aggregate receiving cut. Python and notebooks pass independently; later DataCard/static/Movie assertions are unreached. No installed, complete-core or product-cause acceptance.",
+      "custody": {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/scientific-mirror-budget-20261115",
+        "files": 43,
+        "bytes": 23433832,
+        "manifest_sha256": "8fa1d03a5f34e3afd067d7777e2772e0f1e967b6469cca8dbc6fdca8ae02807b",
+        "originals_retained": true
+      }
     }
   },
   "committed_receiver_molecular_recovery": {
@@ -1266,5 +1324,129 @@
     "completed_cycles": 1,
     "original_354_615_causes": "unresolved",
     "prior_interrupted_profile": "receiver-754-molecular-871"
+  },
+  "scientific_mirror_budget_recurrence": {
+    "date": "2026-11-15",
+    "issue": "uibcdf/molsysviewer#244",
+    "state": "source_corrected_hosted_receiving_pending",
+    "profiles": {
+      "mirror-budget-probe-875": {
+        "source_base": "ed8127bea82ca72553e9c0045ea69a31ea5d7957",
+        "native_exit": 0,
+        "seconds": 234.14376425510272,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 16,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null,
+        "peak_owned_rss_mib": 3143.2,
+        "raw_invocation_sha256": "f5f0ed5e41413d4446e2e2ea410aee3d97b71e5c3a860631c482dbb60924ec6b"
+      },
+      "build-mirror-budget-876": {
+        "source_base": "ed8127bea82ca72553e9c0045ea69a31ea5d7957",
+        "native_exit": 0,
+        "seconds": 2.999854452908039,
+        "selected_inputs": 9977,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 8,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null,
+        "peak_owned_rss_mib": 258.5,
+        "raw_invocation_sha256": "69db0bb6c77970a368fe38164570633cbfd6a80b529e37d53b0ef65df37e499d"
+      },
+      "controls-mirror-canonical-877": {
+        "source_base": "ed8127bea82ca72553e9c0045ea69a31ea5d7957",
+        "native_exit": 0,
+        "seconds": 243.35390412295237,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 22,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": "Shared resource margin requires releasing this execution",
+        "peak_owned_rss_mib": 2880.3,
+        "raw_invocation_sha256": "e8649b01fd9adf671bafc6224ea62437cb786fb9182800abd29fa944ecf61b59",
+        "last_global_observation": {
+          "available_gib": 14.88,
+          "memory_pressure_avg10": 0.0,
+          "swap_in_bytes": 0,
+          "swap_out_bytes": 84815872,
+          "swap_activity_bytes": 84815872
+        },
+        "owned_cgroup": {
+          "memory.current": "1641500672",
+          "memory.peak": "1778479104",
+          "memory.max": "4294967296",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+          "memory.pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0"
+        },
+        "classification": "Incomplete supervisor resource stop despite native child exit zero; not a product failure or passing canonical pair."
+      },
+      "mirror-budget-records-878": {
+        "source_base": "ed8127bea82ca72553e9c0045ea69a31ea5d7957",
+        "native_exit": 1,
+        "seconds": 6.585122246760875,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 4,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null,
+        "peak_owned_rss_mib": 196.0,
+        "raw_invocation_sha256": "a40e4244877205c5f6ab0d040d224ac1fa46bb0bdfff0a6216071773ed5804fe",
+        "classification": "473 passes and one clean-checkout link failure because the new report had not been staged; consumer setup corrected without changing assertions."
+      },
+      "mirror-budget-records-879": {
+        "source_base": "ed8127bea82ca72553e9c0045ea69a31ea5d7957",
+        "native_exit": 0,
+        "seconds": 5.717266745865345,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 4,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null,
+        "peak_owned_rss_mib": 187.9,
+        "raw_invocation_sha256": "260973d3b1e6ae64e83a816fa562395bdd1e3768c38d49cf3c64d912051d8f40"
+      }
+    },
+    "diagnostic_override_ms": 540000,
+    "new_canonical_mirror_aggregate_ms": 480000,
+    "unchanged_controls_aggregate_ms": 300000,
+    "operation_deadlines_changed": false,
+    "assertions_removed": false,
+    "suite_selection_changed": false,
+    "explicit_override_precedence_changed": false,
+    "production_runtime_changed": false,
+    "native_integrity_files": 6356,
+    "record_checks": {
+      "profile": "mirror-budget-records-879",
+      "passed": 474,
+      "indexes": "up to date",
+      "links": "pass",
+      "ruff": "pass"
+    },
+    "record": "pending_bugs/scientific_mirror_aggregate_budget_recurrence.md",
+    "remaining": "Canonical paired/complete source core hosted receiving; the diagnostic pass and resource-interrupted paired attempt do not qualify the whole lane or close #244.",
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/scientific-mirror-budget-20261115",
+      "files": 43,
+      "bytes": 23433832,
+      "manifest_sha256": "8fa1d03a5f34e3afd067d7777e2772e0f1e967b6469cca8dbc6fdca8ae02807b",
+      "originals_retained": true
+    }
   }
 }

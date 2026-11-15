@@ -909,13 +909,14 @@ previous qualification records retain their original candidate and environment.
 
 **Complete Linux recovery after #394 — 2026-11-14:**
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
-is active on `a8fc5273b6aa274cb5fc343b79ddf613b3458a54`, retaining scientific
-source `aee7aa65` and pandas 3.1.0. One exact-head dispatch follows the causal
-receiving correction and complete local card entry; the complete 63-entry
-core, Python and 25-notebook lanes remain selected. It has no terminal result.
-Prior Windows/macOS evidence stays on `ad470cdf`; only the browser guard changes
-inside the package/dependency input scope. No new installed or three-platform
-candidate is qualified by this selected-platform recovery. Do not duplicate it.
+on `a8fc5273b6aa274cb5fc343b79ddf613b3458a54`, retaining scientific source
+`aee7aa65` and pandas 3.1.0, ends in failure. Python passes 4,744 cases with 42
+explicit skips and all 25 notebooks execute. The outer runner kills scientific
+mirror entry 4/63 at 300 seconds, after camera/motion and native-picking
+milestones; the three preceding entries pass. [#244 is reopened](pending_bugs/scientific_mirror_aggregate_budget_recurrence.md).
+No DataCard/plot/Movie assertion is reached in this run. Original ZIPs match
+GitHub hashes. Prior Windows/macOS evidence stays on `ad470cdf`; no current
+complete-core, installed or three-platform candidate acceptance is inferred.
 
 **Current complete source checkpoint — 2026-11-14:**
 [43662871581](https://github.com/uibcdf/molsysviewer/actions/runs/43662871581)
@@ -964,7 +965,7 @@ The complete native authoring/export guard and all 491 JS cases pass. The
 causal old-runtime failure and exact inputs. Full M2 host/accessibility,
 installed and postponed human acceptance remain open; original progress stays
 39/46. The failed source checkpoints did not reach Movie's complete browser
-scope; the current complete Linux recovery has no terminal result yet.
+scope; the latest complete Linux recovery also stops before Movie.
 
 **Initial-canvas audit — 2026-11-14:** [#384](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 leads the #615 investigation and source-resolves the independent

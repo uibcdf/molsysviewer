@@ -97,10 +97,12 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
     // and any explicit caller override unchanged.
     const integratedBudgets: Readonly<Record<string, number>> = {
         "controls-visibility": 300_000,
-        // This existing scientific workflow owns an independent Python view,
-        // scene and popup. Keep it mandatory without charging the preceding
-        // exported-control/bootstrap workflows to the same wall-clock budget.
-        "canvas-popup-mirror": 300_000,
+        // The unchanged mirror completes locally in 210s. Hosted receiving
+        // reaches its native-picking milestone only at 284s, before its Dock
+        // and stopped-trajectory checks, so the former 300s aggregate cap
+        // retires a progressing workflow. Keep all operation deadlines and
+        // bound this complete scientific workflow independently (#244).
+        "canvas-popup-mirror": 480_000,
         "studio-usability": 360_000,
         // The unchanged persistent owner completes its primary, popup and
         // detached state/session roundtrips in 321s with Mol* 5.13.1 at 8 CPU/
