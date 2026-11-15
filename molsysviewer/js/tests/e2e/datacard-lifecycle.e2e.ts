@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { BrowserContext, Frame, Page } from "playwright";
+import type { BrowserContext, Frame, Locator, Page } from "playwright";
 import { chromium } from "./e2e-browser";
 import { fixtureEnvironment, withFixtureWorkspace } from "./fixture-workspace";
 
@@ -32,6 +32,45 @@ async function withinHost(page: Page) {
         return card.width > 0 && card.height > 0 && card.left >= host.left && card.top >= host.top
             && card.right <= host.right + 0.1 && card.bottom <= host.bottom + 0.1;
     });
+}
+
+async function receiveCardKey(target: Page | Frame, slider: Locator, key: "End" | "Home", frame: number,
+    concurrentLayout = false) {
+    await target.evaluate(({ frame, concurrentLayout }) => {
+        const w = window as any, controller = w.__controller;
+        if (w.__cardKeyReceiving) throw new Error("Card keyboard receiving already has an owner");
+        const receipt = w.__cardKeyReceiving = { published: null as number | null, layoutReceived: false,
+            stop: () => {} };
+        const stop = controller.trajectory.onTrajectoryState((state: any) => { receipt.published = state.currentFrame; },
+            { immediate: false });
+        const native = concurrentLayout ? controller.plugin.state.data.events.object.updated.subscribe(() => {
+            if (receipt.layoutReceived || controller.trajectory.getTrajectoryState().currentFrame !== frame) return;
+            receipt.layoutReceived = true;
+            // A genuine layout operation while the native model is applying.
+            // It must not be mistaken for the final trajectory publication.
+            controller.trajectoryPlotOverlay.setBottomInset(24);
+        }) : undefined;
+        receipt.stop = () => { stop(); if (native) native.unsubscribe(); };
+    }, { frame, concurrentLayout });
+    try {
+        await slider.focus(); await slider.press(key);
+        // The native model index can change before annotations and subscriber
+        // projections finish. One bounded wait receives all three outcomes.
+        await target.waitForFunction(frame => {
+            const w = window as any, receipt = w.__cardKeyReceiving;
+            const input = document.querySelector<HTMLInputElement>('[data-molsysviewer-datacard="literal-card"] input[type="range"]');
+            return receipt.published === frame
+                && w.__controller.trajectory.getTrajectoryState().currentFrame === frame
+                && input?.value === String(frame);
+        }, frame);
+        assert.equal(await target.evaluate(() => (window as any).__controller.trajectory.getTrajectoryState().currentFrame), frame);
+        assert.equal(await slider.inputValue(), String(frame));
+        if (concurrentLayout) assert.equal(await target.evaluate(() => (window as any).__cardKeyReceiving.layoutReceived), true);
+    } finally {
+        await target.evaluate(() => {
+            const w = window as any; w.__cardKeyReceiving.stop(); delete w.__cardKeyReceiving;
+        });
+    }
 }
 
 async function checkCards(context: BrowserContext, fixture: any) {
@@ -105,11 +144,8 @@ async function checkCards(context: BrowserContext, fixture: any) {
                 { width: `${width}px`, height: `${height}px` }), { width, height });
             await withinHost(page);
             const slider = card.getByRole("slider");
-            await slider.focus(); await slider.press("End");
-            await page.waitForFunction(() => (window as any).__controller.trajectory.getTrajectoryState().currentFrame === 2);
-            assert.equal(await slider.inputValue(), "2");
-            await slider.press("Home");
-            await page.waitForFunction(() => (window as any).__controller.trajectory.getTrajectoryState().currentFrame === 0);
+            await receiveCardKey(page, slider, "End", 2);
+            await receiveCardKey(page, slider, "Home", 0);
         }
         await page.locator("#root").evaluate(host => host.requestFullscreen());
         await page.waitForFunction(() => !!document.fullscreenElement); await withinHost(page);
@@ -214,9 +250,8 @@ async function checkWindowPolicies(context: BrowserContext, fixture: any) {
             }
             await status.getByRole("button", { name: "Dismiss", exact: true }).click();
             await status.waitFor({ state: "hidden" });
-            const slider = card.getByRole("slider"); await slider.focus(); await slider.press("End");
-            await target.waitForFunction(() => (window as any).__controller.trajectory.getTrajectoryState().currentFrame === 2);
-            assert.equal(await slider.inputValue(), "2");
+            const slider = card.getByRole("slider");
+            await receiveCardKey(target, slider, "End", 2, policy === "trusted-types");
             assert.equal(await target.evaluate(() => (window as any).__controller.getStructureData().elementCount), fixture.expected.atoms);
             console.log(`[E2E DataCard] real ${policy} blocked/bootstrap policy, retry/dismiss and preserved source received`);
         } finally { await targetDispose(page); await page.close(); }

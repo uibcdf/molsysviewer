@@ -56,8 +56,10 @@ identity. Its opening includes the exact original traceback and requests real
 Jupyter negative controls. The owner has closed it in published commit
 `c4fa8552e9696ee225dd9abd51be4e2e441228c4`; it reports 72 selected pytest
 passes and distinguishes real Jupyter from synthetic controller controls.
-The next step is independent receiving of those committed tools, not waiting
-for an unimplemented owner fix. No result is credited here yet.
+[Independent receiving](../receiver_754_independent_receiving_20261114.json)
+now passes all 72 selected tests with those committed tools. Their real
+plain-Jupyter and synthetic controller scopes remain explicit; the original
+pre-save frame cause is still unestablished.
 Do not increase deadlines, repair-seek, suppress
 the Python precondition or silently retry to make it pass. Receive that
 instrumentation, then distinguish pending communication from a lost/newer

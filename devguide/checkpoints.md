@@ -909,15 +909,35 @@ previous qualification records retain their original candidate and environment.
 
 **Current complete source checkpoint — 2026-11-14:**
 [43662871581](https://github.com/uibcdf/molsysviewer/actions/runs/43662871581)
-runs on exact producer `ad470cdf07a6c8746b909010e9d5f9caaaa85258` and scientific
-source `aee7aa65da56e896d1cb2d655bf73736f6453a43`, with pandas 3.1.0.
-This one substantive checkpoint receives all three Python 3.14 hosts and
-Linux's complete 63-entry core/25-notebook gates, including #392/#393 and
-the static-bootstrap observer. Complete exact-head manual inventory was zero;
-GH Run Receptor records three active jobs and no terminal outcome. It does
-not qualify a candidate or authorize version assignment/packages/publication.
-Do not duplicate it. The [followup receipt](molstar_qualification_followup_20261114.json)
-retains inputs and the earlier failed attempt separately.
+on `ad470cdf07a6c8746b909010e9d5f9caaaa85258` is terminal failure: all three
+Python hosts and 25 Linux notebooks pass, while core entry 35/63 fails at the
+DataCard slider after Trusted Types popup refusal. The preceding 34 core
+entries pass; plot/Movie entries are not reached. Six original ZIPs match
+GitHub hashes. Windows/macOS jobs pass; native/optional skips stay explicit.
+[#394's receiving correction](archive/datacard_applied_frame_receiving.md)
+now passes the full native card entry in `869`, including real concurrent
+layout and actual applied trajectory publication, without a runtime/deadline
+change. The [receipt](datacard_applied_receiving_20261114.json) keeps the exact
+source, counterexample and causal limits. Complete current core and #391's
+older static-bootstrap diagnosis remain open; no new matrix has been launched
+by this source correction. Installed/candidate/publication decisions stay
+separate. The [followup](molstar_qualification_followup_20261114.json) retains
+original platform evidence without combining successful prefixes/suffixes.
+
+**Owner receiver #754 independently received — 2026-11-14:**
+[72 tests](receiver_754_independent_receiving_20261114.json) pass against the
+committed `c4fa8552` receiver over unchanged scientific/native bytes. They
+include thirteen nested Node controls, two actual plain-Jupyter profiles and
+six explicitly synthetic controller-identity cases. Errors, markers, exact
+cell/request/socket association, bounds/redaction and before-binding failure
+are received. Molecular libraries remain unloaded in those plain kernels;
+these controls do not explain the original #354/#384/#615 failures. A subsequent
+one-cycle molecular check (`871`) is resource-interrupted: global swap-out is
+46,870,528 bytes in about five seconds, with 14.39 GiB globally available and
+no own cgroup OOM. All 26 owned processes retire. Its later closed-browser
+error is not a product failure; zero complete cycles are credited. Keep that
+check pending and continue light work until shared pressure permits it.
+Continue the investigations with committed tools, without editing MolSysMT.
 
 **Movie keyboard authoring — 2026-11-14:**
 [#393](archive/movie_authoring_keyboard_and_key_actions.md) is source-resolved:
@@ -985,9 +1005,9 @@ partial: the exact original notebook fails its Python frame assertion before
 save/recovery, not a recovered frontend's frame wait. MolSysMT #754 owns the
 receiver's missing Python-error/owner diagnostics. The
 owner now publishes that correction in `c4fa8552e9696ee225dd9abd51be4e2e441228c4`
-and has closed #754. Its 72-case and native-Jupyter results remain owner
-evidence; consume the frozen committed receiver next, without crediting it as
-independent MolSysViewer receiving or a cause for #354/#615. The
+and has closed #754. The independent 72-case receiving above now consumes
+that frozen committed receiver; it does not establish a cause for #354/#615.
+The
 [closeout receipt](prolonged_receiving_closeout_20261114.json) preserves that
 correction, the unchanged thirty-cycle source scope and outstanding E2 exits.
 

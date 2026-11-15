@@ -1,0 +1,136 @@
+{
+  "schema": "molsysviewer.receiver_754_receiving@1",
+  "date": "2026-11-14",
+  "owner_issue": "uibcdf/molsysmt#754",
+  "viewer_source": "1bc123fe763804a3e3a37cf98bf4fdea52434086",
+  "receiver_source": "c4fa8552e9696ee225dd9abd51be4e2e441228c4",
+  "receiver_files": 161,
+  "receiver_archive_sha256": "96e1695c903bccd1d0bd2a88ed7b3808957bafe1b3541bd8c10f071e7b9f3ace",
+  "composition_sha256": "48af833dd945bb50c0b095e982484cc7385df3f601686977b378e475dea58547",
+  "scope": "Independent receiving of committed owner diagnostics from a frozen copy. Scientific/native bytes preserved; actual plain-Jupyter controls intentionally import no molecular libraries. No direct owner edits or scientific/long-campaign/final-pair acceptance.",
+  "guard": "tests/molsysviewer_molsysmt/test_jupyter_cell_receiving.py",
+  "owner_guard_repository": "uibcdf/molsysmt",
+  "profiles": {
+    "receiver-754-independent-863": {
+      "native_exit": 1,
+      "seconds": 2.5825279909186065,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 73.0,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "1e22d41608801643ab5a4e5fc2fa9623b5d01ec64070fbcbdf0da370863fffc3",
+      "stdout_sha256": "cbd233c63429e658920865a2a9b3e34835d9f9354a2c68e629f21c55ea88e3a3",
+      "junit": {
+        "tests": 3,
+        "errors": 3,
+        "failures": 0,
+        "skipped": 0
+      }
+    },
+    "receiver-754-final-864": {
+      "native_exit": 0,
+      "seconds": 46.49512088205665,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1744.2,
+      "cleanup": {
+        "tracked": 47,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "1c66dd8904f606414ad74f09a88433baa84a6c955e3bf7def9f90ce763d3b9d3",
+      "stdout_sha256": "8112c0d69d9d86521b418ef318b94cbd337a9a91dc28c985beffefa18775e33f",
+      "junit": {
+        "tests": 72,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "first_setup_failure": "Consumer launcher used MolSysViewer as cwd, shadowing the frozen tests namespace: three import collection errors, pytest exit 2. Only the consumer cwd changes; owner tests/errors/deadlines are unchanged. Not a provider defect.",
+  "received": {
+    "pytest_passed": 72,
+    "pytest_failed": 0,
+    "pytest_skipped": 0,
+    "nested_node_controls": 13,
+    "actual_jupyter": [
+      "Python error before expected marker with typed original error, actual cell/request/socket identity and not_started binding.",
+      "Successful marker after error and repeat execution in the same cell.",
+      "Completed cell without marker, warning/stderr success, bounded large error and credential redaction.",
+      "Actual prolonged receiver entry fails as intended before molecular work/binding; no previous controller is attributed to recovery."
+    ],
+    "synthetic_controller_controls": 6,
+    "synthetic_scope": "Six distinct controller/surface identity and binding controls; these are not six actual recovered molecular canvases.",
+    "kernel_python": "3.14.7 conda-forge",
+    "molecular_imports_in_plain_kernels": []
+  },
+  "unchanged_scientific_snapshot": {
+    "source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "files": 3542,
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "scope": "Composition identity only; no scientific algorithm is exercised by these plain-kernel controls."
+  },
+  "remaining": [
+    "Original #354 pre-save frame disagreement and #384/#615 initial canvas cause/disposition.",
+    "Qualified scale/prolonged/installed/manual acceptance; a closed upstream diagnostic issue does not close those outcomes."
+  ],
+  "molecular_followup": {
+    "profile": "receiver-754-molecular-871",
+    "state": "incomplete_resource_stop",
+    "native_child_exit": 0,
+    "supervisor_result": "nonzero; resource-stop invalidates acceptance regardless of child exit",
+    "seconds": 58.48283755220473,
+    "inputs_unchanged": true,
+    "peak_summed_owned_rss_mib": 3003.6,
+    "resource_stop": "Shared resource margin requires releasing this execution",
+    "last_global_observation": {
+      "available_gib": 14.39,
+      "memory_pressure_avg10": 0.0,
+      "swap_activity_bytes": 46870528,
+      "swap_in_bytes": 0,
+      "swap_out_bytes": 46870528
+    },
+    "owned_cgroup": {
+      "memory.current": "1930342400",
+      "memory.peak": "1968893952",
+      "memory.max": "4294967296",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "memory.pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=17607\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=17401"
+    },
+    "cleanup": {
+      "tracked": 26,
+      "survivors": [],
+      "errors": []
+    },
+    "receiving_phase": "cycle 1 stale rejection and windows; its Python cell/marker completed and no Python error was observed",
+    "browser_failure": "Target page/context/browser closed after the supervisor retired owned processes. This is not a product failure or original #354/#615 diagnosis.",
+    "completed_cycles": 0,
+    "remaining": "One complete current molecular cycle with committed diagnostics; do not repeat under active shared pressure. Prior canonical thirty-cycle receiving keeps its own earlier exact source.",
+    "raw_receipt_sha256": "f310c9787694557bac009919c66e776bab5e46e729ab68d89202b9fc67d22404"
+  },
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/receiver-datacard-20261114",
+    "files": 119,
+    "bytes": 47826887,
+    "manifest_sha256": "2d9fa0006f452f1a2926aebf5f5fafee1fe5fac95b3bbe0dcf4ba38cae487fa3",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
+  },
+  "record_checks": {
+    "profile": "receiver-datacard-records-870",
+    "passed": 470,
+    "ruff_check": "pass",
+    "ruff_format": "1067 files already formatted",
+    "indexes": "up to date",
+    "links": "pass",
+    "diff_checks": "pass",
+    "scope": "Scoped records/runner registration; product/browser and provider controls retain their separate execution scope."
+  }
+}

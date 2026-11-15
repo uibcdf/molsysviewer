@@ -68,6 +68,12 @@ Claims about what is *rendered* are asserted against the simulated Mol\* plugin
 **Never assert only the message dict.** A test that reads back the message it just sent proves the
 message was sent.
 
+Asynchronous trajectory receiving waits for the owning applied-state
+publication and checks the final native index and relevant UI together within
+one operation budget. The native index can change before subscriber projections
+finish. The DataCard guard receives this boundary with actual keyboard input
+and a real concurrent-layout operation; see #394's scoped receiving record.
+
 ### Never `as any` + `?.()` on internal APIs in tests
 
 ```ts

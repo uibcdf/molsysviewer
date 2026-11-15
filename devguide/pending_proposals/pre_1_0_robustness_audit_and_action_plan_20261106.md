@@ -555,7 +555,10 @@ actual-Jupyter release guard passes after the evidenced callback/cache fixes.
 Both source defects are resolved. #354 remains partial: original cycle 9
 fails `v.player.index==1` before saving or recovering; its browser marker
 timeout and previously bound controller were misattributed to recovery.
-MolSysMT #754 owns that diagnostic gap. The thirty-cycle campaign retains its
+MolSysMT #754 now has a committed correction and
+[72 independent receiving passes](../receiver_754_independent_receiving_20261114.json),
+including real plain-Jupyter profiles; synthetic controller cases remain
+explicit. Those tools are available for the next causal investigation. The thirty-cycle campaign retains its
 own successful source scope; this correction neither explains original packet
 ordering nor completes every E2/installed/human exit. Original counters stay
 unchanged by those two source closures; the later D6.7 delivery above owns the current counter.

@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [DataCard applied-frame receiving](datacard_applied_frame_receiving.md) — #394 waits for the actual trajectory publication and coherent native/slider values, with a real concurrent-layout control and unchanged product deadlines.
+
 - [Movie keyboard authoring](movie_authoring_keyboard_and_key_actions.md) — #393 receives workflow tabs, labelled content and exact-time saved-key actions in the primary and both popup endpoints, retaining the full native authoring/export guard.
 
 - [Runtime source and scene ownership](runtime_source_replies_require_scene_lock.md) — #392 serves immutable bootstrap replies on the connector caller thread during scene edits, with causal and actual-Jupyter controls.

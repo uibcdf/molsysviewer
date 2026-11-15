@@ -1008,8 +1008,8 @@
     "complete_exact_head_manual_inventory_before": 0,
     "run": 43662871581,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43662871581",
-    "observed_status": "in_progress",
-    "observed_conclusion": null,
+    "observed_status": "completed",
+    "observed_conclusion": "failure",
     "notice": "Single substantive complete current source checkpoint. Three Python 3.14 source hosts; Linux 63 core entries and 25 notebooks. Includes later #392/#393 and bounded static-bootstrap diagnostics. Candidate version defaults are unused with source_receiving=true. No tag, package build, promotion or publication.",
     "duplicate_dispatch": false,
     "attempt": 1,
@@ -1037,6 +1037,170 @@
       "links": "pass",
       "diff_checks": "pass",
       "scope": "Documentation only; not terminal CI or product receiving."
+    },
+    "initial_observed_status": "in_progress",
+    "terminal_receiving": {
+      "run": 43662871581,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43662871581",
+      "producer": "ad470cdf07a6c8746b909010e9d5f9caaaa85258",
+      "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "status": "completed",
+      "conclusion": "failure",
+      "platform_artifacts": [
+        {
+          "id": 14141746079,
+          "name": "movie-encoder-native-Windows",
+          "sha256": "f36dd56f5b099fac421246fdc0c69b624e724f1bf00a498c07b5957f36771d8c",
+          "bytes": 14805
+        },
+        {
+          "id": 14141322063,
+          "name": "source-receiving-Windows-py3.14",
+          "sha256": "21abda8ba01efede0d5b9792a4865bb08def10c2f2fb3f5bbbddfb54cb20bc53",
+          "bytes": 84112,
+          "junit": {
+            "tests": 4785,
+            "errors": 0,
+            "failures": 0,
+            "skipped": 69,
+            "passed": 4716
+          },
+          "skip_reasons": [
+            "Explicit frontend TypeScript compiler receiving is required.",
+            "Explicit qualified-browser receiving; core E2E also runs this scenario",
+            "Explicit qualified-browser receiving; core E2E runs the same scenario",
+            "Explicit real Mol*/Chromium Cartesian Movie receiving is required.",
+            "Explicit real Mol*/Chromium Movie receiving is required.",
+            "Explicit real Mol*/Chromium legacy migration receiving is required.",
+            "Explicit real Mol*/Chromium offline Movie receiving is required.",
+            "Legacy MolSysMT entry point is not installed",
+            "Linux /proc residency probes",
+            "POSIX Ctrl-C subprocess guard",
+            "POSIX read-only directory permission guard",
+            "Requires installed scientific artifacts",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 for actual Jupyter Movie receiving.",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and Playwright available.",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and native Chromium available.",
+            "Select the actual Mol*/Chromium Movie composition guard explicitly.",
+            "Select the real molecular-story browser receiving explicitly.",
+            "imageio is installed; cannot test ImportError path",
+            "molsysviewer_elastnetmt is not installed",
+            "molsysviewer_pharmacophoremt is not installed",
+            "molsysviewer_topomt is not installed",
+            "needs a Chromium-family browser on PATH to open the page for real",
+            "requires an explicitly selected real Chromium/GPU environment",
+            "template has no placeholders"
+          ]
+        },
+        {
+          "id": 14141311346,
+          "name": "source-receiving-macOS-py3.14",
+          "sha256": "f22ba903c2a17c35c73d37682acb78a632b21bd1de5bb6b1b2d42b29f5396441",
+          "bytes": 85590,
+          "junit": {
+            "tests": 4785,
+            "errors": 0,
+            "failures": 0,
+            "skipped": 73,
+            "passed": 4712
+          },
+          "skip_reasons": [
+            "Explicit frontend TypeScript compiler receiving is required.",
+            "Explicit qualified-browser receiving; core E2E also runs this scenario",
+            "Explicit qualified-browser receiving; core E2E runs the same scenario",
+            "Explicit real Mol*/Chromium Cartesian Movie receiving is required.",
+            "Explicit real Mol*/Chromium Movie receiving is required.",
+            "Explicit real Mol*/Chromium legacy migration receiving is required.",
+            "Explicit real Mol*/Chromium offline Movie receiving is required.",
+            "Legacy MolSysMT entry point is not installed",
+            "Linux /proc residency probes",
+            "Optional headless PNG backend",
+            "Requires installed scientific artifacts",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 for actual Jupyter Movie receiving.",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and Playwright available.",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and native Chromium available.",
+            "Select the actual Mol*/Chromium Movie composition guard explicitly.",
+            "Select the real molecular-story browser receiving explicitly.",
+            "Windows process memory API",
+            "could not import 'PySide6.QtAsyncio': No module named 'PySide6'",
+            "could not import 'PySide6.QtCore': No module named 'PySide6'",
+            "imageio is installed; cannot test ImportError path",
+            "molsysviewer_elastnetmt is not installed",
+            "molsysviewer_pharmacophoremt is not installed",
+            "molsysviewer_topomt is not installed",
+            "needs a Chromium-family browser on PATH to open the page for real",
+            "requires an explicitly selected real Chromium/GPU environment",
+            "template has no placeholders"
+          ]
+        },
+        {
+          "id": 14141296374,
+          "name": "movie-encoder-native-macOS",
+          "sha256": "1ff254a0c74046ff6dcdd6e3ed53cd5e1569e315b0f6573211813570512879ef",
+          "bytes": 14717
+        },
+        {
+          "id": 14141078068,
+          "name": "movie-encoder-native-Linux",
+          "sha256": "0ee60a55923eca0011f6fca1db397e6d4a922d72d7b1962a55bd3261b7c544ad",
+          "bytes": 14696
+        },
+        {
+          "id": 14140774446,
+          "name": "source-receiving-Linux-py3.14",
+          "sha256": "1a1ee8edb02647d01a64d680665a4c741887bd4e2ba60e0c0d9639dead3260ab",
+          "bytes": 82565,
+          "junit": {
+            "tests": 4785,
+            "errors": 0,
+            "failures": 0,
+            "skipped": 42,
+            "passed": 4743
+          },
+          "skip_reasons": [
+            "Explicit frontend TypeScript compiler receiving is required.",
+            "Explicit qualified-browser receiving; core E2E also runs this scenario",
+            "Explicit qualified-browser receiving; core E2E runs the same scenario",
+            "Explicit real Mol*/Chromium Cartesian Movie receiving is required.",
+            "Explicit real Mol*/Chromium Movie receiving is required.",
+            "Explicit real Mol*/Chromium legacy migration receiving is required.",
+            "Explicit real Mol*/Chromium offline Movie receiving is required.",
+            "Legacy MolSysMT entry point is not installed",
+            "Optional headless PNG backend",
+            "Requires installed scientific artifacts",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 for actual Jupyter Movie receiving.",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and Playwright available.",
+            "Select MOLSYSVIEWER_JUPYTER_TEST=1 with JupyterLab, ipykernel and native Chromium available.",
+            "Select the actual Mol*/Chromium Movie composition guard explicitly.",
+            "Select the real molecular-story browser receiving explicitly.",
+            "Windows process memory API",
+            "imageio is installed; cannot test ImportError path",
+            "molsysviewer_elastnetmt is not installed",
+            "molsysviewer_pharmacophoremt is not installed",
+            "molsysviewer_topomt is not installed",
+            "requires an explicitly selected real Chromium/GPU environment",
+            "template has no placeholders"
+          ]
+        }
+      ],
+      "core": {
+        "declared": 63,
+        "complete_prefix": 34,
+        "failure_entry": 35,
+        "entry": "datacard-lifecycle",
+        "phase": "Trusted Types source slider after native End key; native index predicate 2 and immediate slider 0.",
+        "later_plot_and_movie_entries": "not reached"
+      },
+      "notebooks": {
+        "executed": 25,
+        "failed": 0
+      },
+      "source_scope": "Python passes on all three hosts with original skips retained; native windows/macOS jobs pass. Whole Linux/core remains failed. JUnit and original six ZIP hashes independently received; no combined prefix/suffix acceptance."
     }
+  },
+  "datacard_applied_receiving": {
+    "receipt": "datacard_applied_receiving_20261114.json",
+    "guard_profile": "datacard-applied-final-869",
+    "complete_core": "pending"
   }
 }
