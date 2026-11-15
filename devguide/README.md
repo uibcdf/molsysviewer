@@ -112,14 +112,16 @@ its send. A kernel-only reproduction now isolates the ipykernel 7.3.0 comm
 stall; original 7.4.0 bytes pass 30 native cycles and the maintained complete
 Movie pytest in `916`, including ten edit/seeks. Recipes require >=7.4.0;
 [MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200) owns the
-unchanged legacy-prefix transition. Current full CI, installed pair and
+unchanged legacy-prefix transition. Exact installed pair and
 postponed human exits remain distinct and open.
 The [single current full source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 receives `3aff1d48` / published MT `bc5a9297` on three Python 3.14 hosts,
-initially all active, with all 63 Linux core entries and 25 notebooks.
+now successful on all hosts, with all 63 Linux core entries and 25 notebooks.
 Previous `43743095366` fails one stale environment-test expectation per host
 after the ipykernel floor change. Its corrected assertion and four-recipe
-guard pass 549 selected checks. The new run remains pending and assigns no
+guard pass 549 selected checks. Native JUnit records 4,764 Linux, 4,733 macOS
+and 4,737 Windows passes, with explicit skips and no failures/errors. All six
+original ZIPs match GitHub hashes. The source run assigns no
 candidate version/tag and is not an installed package gate.
 The [initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 now leads #384/MolSysMT #615 and source-resolves the independent
@@ -131,6 +133,11 @@ Paired kernel-only and actual-Jupyter controls now reproduce an initial
 execute notification loss with original ipykernel 7.3.0; the matched 7.4.0
 arm draws all 3,983 atoms in 6.55 seconds. The controlled scheduling is not
 proof of the original history or final-candidate acceptance; #615 stays open.
+The distinct normal startup now passes on current MT source with original
+7.4.0: 3,983 atoms and a new draw in 10.79 seconds, without timing barriers.
+The joint technical-closeout recommendation is ready for Diego's review;
+historical exact cause, installed qualification and shared-prefix adoption
+remain separately recorded.
 The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
 the complete native authoring/export entry and all 491 JS cases. Full M2

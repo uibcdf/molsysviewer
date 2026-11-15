@@ -68,15 +68,16 @@ Current complete source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
 >=7.4.0 notebook profile. Linux retains all 63 core entries and 25 notebooks.
-It initially has three active jobs. Previous `43743095366` fails one stale
+All three jobs now pass. Previous `43743095366` fails one stale
 unversioned ipykernel expectation per host. The corrected four-recipe floor
-guard passes 549 scoped checks; complete receiving remains pending.
+guard passes 549 scoped checks; all 63 core entries and 25 notebooks now pass
+in the complete source run, with original ZIPs/hash/JUnit verified.
 There is one exact-head dispatch; no candidate
 version/tag or installed acceptance is assigned.
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus applicable Python/notebook/platform evidence. Latest full run [43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436) on `28147339` / `aee7aa65` passes #397, 4,760 Python cases, all 25 notebooks and 53 core entries, then fails #391's static bootstrap. Real hidden-iframe control `907` demonstrates stopped animation-frame polling despite a ready controller; the timer-based correction and hidden/revealed molecular regression pass the complete plot guard in `909`. Historical page visibility remains unknown. #395's complete story passes locally. A new uninterrupted gate is still required; reconcile #244/#388/#391 against actual guards and causal limits. |
+| Complete integrated source receiving | **Received in source:** [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. Earlier failed campaigns and causal limits remain preserved. Reconcile the individual queue records against these guards; source success does not close installed/manual exits or establish unobserved historical causes. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 

@@ -218,6 +218,54 @@ original historical cause, qualify every platform or complete the final
 installed candidate. **#384/#615 remain open** for that evidence review and
 the applicable candidate receiving, rather than an unknown-cause waiver.
 
+## Normal corrected-host receiving and joint recommendation — 2026-11-15
+
+The joint review identified one distinct missing control: an ordinary TcTIM
+startup on 7.4.0 without a forced overlap. Earlier `845`/`847` use the older
+host; the corrected-kernel Movie control `916` uses 62 atoms. Neither replaces
+this case. The [joint owner proposal](https://github.com/uibcdf/molsysmt/blob/0ff6af80a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#joint-recommendation-requested-by-the-maintainer--2026-11-15)
+keeps the issue open pending this result and the principal maintainer's review.
+
+Normal control `928` now passes the unchanged owner #762 startup guard:
+**3,983 atoms and a new eligible post-registration draw after 10,788.4 ms**,
+inside the original 30-second bound. It uses no history injection, held reply,
+timing barrier, modified kernel launcher or scheduling/server/comm delegate.
+Only isolated provider selection and passive post-preparation provenance
+recording are added to the private generated notebook. The actual kernel
+loads original ipykernel 7.4.0; all 57 selected provider files are verified
+before and after. No shared-prefix installation is performed.
+
+MolSysViewer source base is `6f80cc915a9f44b6eb47ace336fa543c9e0b35e1`;
+both scientific and receiver sources match MolSysMT `bc5a9297` through
+3,707 Git-verified package/receiver/manifest files. The reused native backend
+is the recorded `4ffb82e4…` binary from `aee7aa65`, with unchanged Rust/Cargo
+inputs. This is exact isolated source receiving, not installed/ABI or final
+artifact qualification. The [receipt](../initial_canvas_edge_receiving_20261115.json)
+retains actual loaded kernel/core origins, native hash, complete draw marks
+and private custody. Both the plain Jupyter control and molecular page have
+the same single `No active debugger session` fingerprint; this is not a
+zero-page-error claim. Output and observer errors are zero.
+
+The native owner CLI and supervisor both exit zero. The complete control
+takes 35.77 seconds, peaks at 2,346.1 MiB under 8 CPU/4 GiB, preserves all
+9,983 selected inputs and retires all 27 tracked processes without a resource
+stop. Initial preparation attempt `927` never starts a browser: the frozen
+review directory lacks `pyproject.toml`, leaving the wrapper preflight
+incomplete. It is preserved as a setup failure; exact committed metadata and
+an executable/version preflight are received before `928`. Only one normal
+browser attempt is credited.
+
+**Recommendation ready for review:** close the technical host defect with
+`ipykernel>=7.4.0` as the supported Jupyter baseline, retaining the original
+failure and its unproven exact historical cause. The causal controls,
+upstream correction, normal startup and the four-recipe minimum guard support
+that engineering resolution; reconstructing observations that were never
+captured is not required. This adds no mandatory core/headless dependency.
+Shared legacy-prefix adoption remains MolSysSuite #200. Exact candidate,
+installed, human and public-release gates remain separate. **No issue closure
+or approval is inferred:** review the result with Diego before changing the
+current open state of #384/#615.
+
 Reuse the owning cold Analysis diagnostic and its actual kernel/session/browser
 timeline, with unchanged deadlines and no warmed molecular imports. Receive
 current source identities and targeted startup/transport controls before a

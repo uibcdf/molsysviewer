@@ -910,7 +910,10 @@ previous qualification records retain their original candidate and environment.
 **Current Mol* closeout — 2026-11-15:** source checkpoint
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 receives `3aff1d48` / published MT `bc5a9297` on all three Python 3.14
-hosts, initially active, retaining all 63 Linux core entries and 25 notebooks.
+hosts, now all successful, with all 63 Linux core entries and 25 notebooks
+received. Native JUnit preserves 4,764 Linux, 4,733 macOS and 4,737 Windows
+passes with zero failures/errors and explicit skips; all six original ZIPs
+match GitHub hashes.
 Previous `43743095366` fails one stale literal `ipykernel` expectation per
 host. The corrected floor guard passes 549 selected checks. It is one source-only
 dispatch, without candidate version/tag assignment. The
@@ -921,7 +924,7 @@ hidden/revealed molecular export pass the complete plot guard. #396 reproduces
 independently on ipykernel 7.3.0; original 7.4.0 bytes pass 30 native cycles
 and the complete actual Movie pytest with ten edit/seeks. Component notebook
 recipes now require >=7.4.0. MolSysSuite #200 owns legacy-prefix adoption;
-that shared prefix is unchanged. Current full source, exact installed pair,
+that shared prefix is unchanged. Exact installed pair,
 causal #615 investigation and applicable human exits remain separate and
 pending. Follow the [decision packet](molstar_closeout_decisions_20261115.md).
 Kernel-only `919` and actual-TcTIM `923` demonstrate a controlled original
@@ -929,6 +932,10 @@ Kernel-only `919` and actual-TcTIM `923` demonstrate a controlled original
 6.55 seconds. Offline `924` distinguishes late entry from entry before the
 original deadline without rewriting the combined driver's exit 1. #615 stays
 open; historical cause and final candidate receiving remain uncredited.
+Normal current-source startup `928` now passes separately on original
+ipykernel 7.4.0 without scheduling barriers: 3,983 atoms and a new draw in
+10.79 seconds. The joint technical-closeout recommendation is ready for
+Diego's review; no issue is closed or final qualification inferred.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**

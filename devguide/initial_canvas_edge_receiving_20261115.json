@@ -228,5 +228,89 @@
     "Receive final exact candidate on corrected ipykernel baseline with original new-draw/30-second guard.",
     "Controlled legacy-prefix adoption belongs to MolSysSuite #200; no shared install performed.",
     "Complete source, installed pair, applicable human exits and publication decisions remain separate."
-  ]
+  ],
+  "normal_startup_928": {
+    "profile": "initial-canvas-normal-740-928",
+    "source_base": "6f80cc915a9f44b6eb47ace336fa543c9e0b35e1",
+    "source": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+    "git_verified_package_receiver_manifest_files": 3707,
+    "composition_sha256": "72af43fec3a4d1673fddb6b0568dcf66184b652ce151df4f25f8bbc6026225f3",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "provider_origin": {
+      "version": "7.4.0",
+      "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/ipykernel-7.4.0-original/ipykernel/__init__.py",
+      "sha256": "ec5345c0a0d8b78de253fb60e1b15173c0c344a7c5ca2d4c7d0bb9978964c07a",
+      "core_origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/viewer/core.py",
+      "core_sha256": "fe8735cf63c8e948e854728f6f3eabf360eeb8d95f493dc63162213c52fcfa6f"
+    },
+    "original_kernel_archive_sha256": "9ea2c55f4a9aa9146f614f827412716c6f53cd08eace21297b687301b804bb97",
+    "scope": "One normal current-source TcTIM/Jupyter startup, no scheduling barriers/delegates and unchanged native first-draw guard. Passive origins only. Not final installed/human or original historical-cause acceptance.",
+    "atoms": 3983,
+    "run_to_new_draw_ms": 10788.400000095367,
+    "trace": {
+      "attempt": "59d16dc3ff616f6191bf33c50083d7ae",
+      "anchor": "observer_arm_before_run_click",
+      "run_epoch_ms": 1794773251598.4,
+      "run_clicked_epoch_ms": 1794773251733.2998,
+      "elapsed_ms": 14103.5,
+      "marks": {
+        "run_clicked": 134.90000009536743,
+        "runtime_available": 9204,
+        "widget_mount_started": 9206.900000095367,
+        "controller_ready": 9607.599999904633,
+        "canvas_connected": 9607.699999809265,
+        "draw_observer_armed": 9607.800000190735,
+        "scene_registered": 9892.5,
+        "first_native_draw": 10923.300000190735
+      },
+      "expected_atoms": 3983,
+      "observed_atoms": 3983,
+      "belongs_to_initial_cell": true,
+      "canvas": {
+        "connected": true,
+        "x": 378,
+        "y": 554.1875,
+        "width": 1008,
+        "height": 480
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 1100,
+        "visible": true
+      },
+      "output_errors": 0,
+      "observer_errors": 0
+    },
+    "actual_page_errors": 1,
+    "plain_control_errors": 1,
+    "page_error_scope": "All actual page errors match the original plain-Jupyter fingerprint (No active debugger session). Not a zero-page-error claim. Output/observer errors are zero.",
+    "supervised": {
+      "native_exit": 0,
+      "seconds": 35.77187985414639,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2346.1,
+      "cleanup": {
+        "tracked": 27,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "retained_setup_failure_927": "Frozen review directory lacked pyproject.toml, preventing completion of preparation/executable-wrapper setup; native CLI --version fails before any browser/kernel. Corrected from exact Git metadata and preflighted before 928. No molecular attempt or successful result credited.",
+    "guard": "Original MolSysMT #762 receiver unchanged, selected via system_panel_jupyter.py --scenario analysis --initial-canvas-only; normal Python preparation and actual fresh native draw of 3983 atoms inside 30s.",
+    "minimum_guard": "tests/test_source_workflow_coverage.py::test_notebook_environments_require_the_corrected_native_shell_transport",
+    "custody": {
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/normal-initial-canvas-740-20261115",
+      "manifest_sha256": "bad93b2fc1d446b90cbf7a942a361f74c1a273ebb8cf1181a185a1a242108ab6",
+      "files": 37,
+      "originals_retained": true
+    }
+  },
+  "joint_technical_recommendation": {
+    "state": "Joint recommendation ready for principal-maintainer review; not a closure decision.",
+    "owner_proposal": "https://github.com/uibcdf/molsysmt/blob/0ff6af80a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#joint-recommendation-requested-by-the-maintainer--2026-11-15",
+    "recommendation": "Close the technical host defect with the supported Jupyter minimum ipykernel>=7.4.0 after review of causal 919/923 and normal 928 receiving. Keep the original historical cause explicitly unproven and preserve its evidence. Do not require reconstructing absent observations.",
+    "scope": "Jupyter host profile only, not a new mandatory core/headless dependency. Shared legacy-prefix adoption remains MolSysSuite #200; exact source/installed/candidate/human/publication exits stay separate. No issue closed, approval inferred or new package/matrix requested."
+  }
 }

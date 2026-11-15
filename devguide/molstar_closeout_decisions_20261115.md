@@ -47,13 +47,18 @@ checks in `921`; a new exact checkpoint is due. Browser/core entries were not
 reached. `source_receiving=true` skips
 candidate version/tag assignment; intended 1.0.0 input fields are not artifacts.
 
-One corrected successor is now active:
+The corrected successor is now successful:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
 producer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb`, with unchanged published
 MT `bc5a9297`, full three-platform scope, all 63 Linux core entries and
 25 notebooks. Fresh complete inventories establish zero prior/active/queued
 dispatches before launch and one exact-head dispatch afterwards. The first
-receptor is pending, with three active native jobs; no result is credited.
+receptor was pending; terminal inspection now receives all three successful
+native jobs, all 63 core suites and all 25 notebooks. The six original ZIPs
+match GitHub hashes, with zero native Python failures/errors. An initial
+local reception counter also matched the final success banner and failed
+its 63-start assertion; offline verification checks exact ordered distinct
+1–63 suite entries and native successful steps without rerunning the workflow.
 
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
 Reconcile #244/#395 against their complete guards and #388/#391 against the
@@ -69,7 +74,7 @@ The four old MT build-0 files belong to `6dc80725`; preserve them unchanged.
 The owner review source `96988b6e` is not yet a frozen MT producer. Current
 source receiving uses its later published `bc5a9297` delivery: Git confirms
 no package/native/manifest source differences from `96988b6e`. That current
-checkpoint requires its corrected successor; earlier `aee7aa65` campaigns do not qualify their 165
+checkpoint now has its successful corrected successor; earlier `aee7aa65` campaigns do not qualify their 165
 changed scientific package files merely through native binary equality.
 
 The existing `prepare_release.py` has prepared and validated a private copy of
@@ -145,6 +150,14 @@ Preserve `923`'s combined exit 1 from its post-retirement marker assertion;
 rerun. This is controlled scheduling, not a spontaneous recurrence or proof
 of the original history. Review the [causal evidence](pending_bugs/initial_jupyter_canvas_timeout_audit.md#actual-jupytertctim-overlap--2026-11-15)
 with MolSysMT; #615 stays open and no historical waiver is pending.
+
+The distinct ordinary startup is now received in `928`, without a forced
+overlap or timing delegates: original ipykernel 7.4.0, exact current MT
+`bc5a9297` source/receiver, 3,983 atoms and a new draw in 10.79 seconds.
+The [joint recommendation](pending_bugs/initial_jupyter_canvas_timeout_audit.md#normal-corrected-host-receiving-and-joint-recommendation--2026-11-15)
+is ready for Diego's review: close the technical host defect with the
+>=7.4.0 notebook baseline, retaining the unproven exact historical cause
+and separate final gates. This is a recommendation, not a closure decision.
 
 Actual Jupyter and native Wayland/Qt/NVIDIA source receiving retain exact
 input identities. Recheck changed boundaries: the current runtime changes
