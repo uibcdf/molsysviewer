@@ -17,6 +17,12 @@ The earlier #395 story correction also passes its complete entry locally.
 All 63 core entries remain required in one uninterrupted successful current
 run; neither failed prefix nor a local suffix supplies that acceptance.
 
+The corrected full source checkpoint is now
+[43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436),
+producer `28147339afe0315c1b252095c1442a1674fc5c9e` with the same scientific
+source/pandas and all 63 core entries. Its first observation is pending;
+exact-head/active inventories confirm one dispatch. Do not duplicate it.
+
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
 Reconcile #244/#395 against their complete guards and #388/#391 against the
 actual diagnostics and remaining causal limits. A successful source gate

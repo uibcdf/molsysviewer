@@ -121,6 +121,16 @@ no historical cause or complete current-host acceptance is inferred. The
 [decision packet](../molstar_closeout_decisions_20261115.md) names the remaining
 staging and historical/host prerequisites.
 
+The single new full Linux source checkpoint
+[43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436)
+receives producer `28147339afe0315c1b252095c1442a1674fc5c9e` with the same
+scientific `aee7aa65` and pandas 3.1.0. Its first GH Run Receptor observation
+is pending; the complete before/after inventory confirms zero competing runs
+and exactly one dispatch for this head. It retains all 63 core entries, Python
+and 25 notebooks. Canonical lifecycle `903` and 536 scoped headless controls
+pass before dispatch; #396's actual-Jupyter uncertainty remains separate.
+No installed qualification, package/tag or publication is credited.
+
 ## Ownership and limits
 
 The component-cache repair remains until #363 receives a published native fix;

@@ -115,6 +115,16 @@ receives positive popup-role readiness before the lifecycle helper uses its
 controller. The earlier story correction is unreached here. Keep both failed
 runs and the requirement for one complete current core pass.
 
+The single new full Linux source checkpoint
+[43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436)
+receives producer `28147339afe0315c1b252095c1442a1674fc5c9e` with the same
+scientific `aee7aa65` and pandas 3.1.0. Its first GH Run Receptor observation
+is pending; the complete before/after inventory confirms zero competing runs
+and exactly one dispatch for this head. It retains all 63 core entries, Python
+and 25 notebooks. Canonical lifecycle `903` and 536 scoped headless controls
+pass before dispatch; #396's actual-Jupyter uncertainty remains separate.
+No installed qualification, package/tag or publication is credited.
+
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
 once the relevant functionality is settled. Do not leave its first technical
