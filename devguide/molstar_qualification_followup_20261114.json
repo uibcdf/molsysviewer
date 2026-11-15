@@ -1447,6 +1447,48 @@
       "bytes": 23433832,
       "manifest_sha256": "8fa1d03a5f34e3afd067d7777e2772e0f1e967b6469cca8dbc6fdca8ae02807b",
       "originals_retained": true
+    },
+    "later_single_mirror_receiving": {
+      "source_base": "1b7aa1d529a1c92581fef034eeac4562646c091c",
+      "native_exit": 0,
+      "seconds": 62.612326150760055,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "peak_owned_rss_mib": 2112.0,
+      "profile": "mirror-canonical-880",
+      "state": "incomplete_resource_stop",
+      "timeout_override": null,
+      "owned_cgroup": {
+        "memory.current": "1120768000",
+        "memory.peak": "1120768000",
+        "memory.max": "4294967296",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+        "memory.pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0"
+      },
+      "last_global_observation": {
+        "available_gib": 15.61,
+        "memory_pressure_avg10": 0.0,
+        "swap_in_bytes": 0,
+        "swap_out_bytes": 93261824,
+        "swap_activity_bytes": 93261824
+      },
+      "native_integrity_files": 6356,
+      "classification": "Supervisor exits nonzero despite child exit zero. No complete mirror or product failure credited. Heavy local retries deferred during recurring shared swap; existing hosted gate continues.",
+      "raw_receipt_sha256": "4d2478b2f9dadbe7217241b30bc4e6937161224d54f1e7788c5ffc52f4b183a3",
+      "custody": {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/mirror-and-session-contract-20261115",
+        "files": 10,
+        "bytes": 4856789,
+        "manifest_sha256": "954d0c5b711c8bf2d25edd9b89829a95947d36bd5d2578f8921f39ed8e5fb764",
+        "originals_retained": true
+      }
     }
   },
   "scientific_mirror_source_recovery": {
@@ -1484,6 +1526,44 @@
       "files": 8,
       "bytes": 19353,
       "manifest_sha256": "b2d498c51d544428899f6091a6630c9f9742c6b94171ffbc59c38d1369e5d72e",
+      "originals_retained": true
+    }
+  },
+  "session_guide_contract_followup": {
+    "date": "2026-11-15",
+    "guide": "docs/content/user/export/session.md",
+    "guide_sha256": "00c6a8ed3ddfa738bb3fe4d4cd879b6c8df0f441db9a3e81a60411dc44490341",
+    "source_cases": {
+      "run": 43678661843,
+      "viewer_source": "a8fc5273b6aa274cb5fc343b79ddf613b3458a54",
+      "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "artifact": 14148200574,
+      "artifact_sha256": "8536a758f27b194fcec9d7ddc8ed700dd7e57be1922815fda1388061962f7882",
+      "cases": [
+        "test_session_schema_preserves_scene_science_and_queries[0.5]",
+        "test_session_schema_preserves_scene_science_and_queries[1.0]",
+        "test_recovered_setter_invalidates_only_changed_frames[frames0-0.5]",
+        "test_recovered_setter_invalidates_only_changed_frames[frames0-1.0]",
+        "test_recovered_setter_invalidates_only_changed_frames[frames1-0.5]",
+        "test_recovered_setter_invalidates_only_changed_frames[frames1-1.0]",
+        "test_independent_interactions_attach_without_replacing_system[0.5]",
+        "test_independent_interactions_attach_without_replacing_system[1.0]",
+        "test_mechanics_10_session_default_save_preserves_data_or_refuses_loss",
+        "test_session_default_schema_roundtrip_is_explicit"
+      ],
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Original source Python H5MSM 0.5/1.0 session, query, mapping, selective invalidation, independent analysis import and default-schema guards. The whole CI run fails later at a separate aggregate browser limit; not installed or final documentation-build qualification."
+    },
+    "checks": "Existing document target, unique MyST label, queue index and diff checks; no new scientific run, final Sphinx build or installed qualification.",
+    "scope": "F2 partial editorial clarification of saved named analyses/occurrence identity and MSV-container versus H5MSM schema. Core/scientific code unchanged; broader final documentation and source/installed acceptance remain open.",
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/mirror-and-session-contract-20261115",
+      "files": 10,
+      "bytes": 4856789,
+      "manifest_sha256": "954d0c5b711c8bf2d25edd9b89829a95947d36bd5d2578f8921f39ed8e5fb764",
       "originals_retained": true
     }
   }

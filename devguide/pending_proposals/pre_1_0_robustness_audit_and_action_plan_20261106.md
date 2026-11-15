@@ -1500,6 +1500,12 @@ the distinct compatibility boundary without freezing private implementation.
 now names the Whole and Region conversions explicitly, and the
 [addon development cookbook](../../docs/content/user/cookbook/addon_development.md)
 describes installed entry-point discovery and explicit development registration.
+The [session guide](../../docs/content/user/export/session.md) now states the
+preserved molecular/analysis content, limits occurrence identity to the saved
+analysis version and distinguishes the MSV container version from H5MSM.
+Ten original source H5MSM 0.5/1.0 cases pass without skips in `43678661843`;
+that entire run still fails later in the browser budget. This receives those
+scientific source guards, not a new installed pair or final site build.
 The broader reference, examples, installation and capability reconciliation
 remains pending until the relevant functionality is settled. Check canonical
 generated capability judgements against current Movie export, observed

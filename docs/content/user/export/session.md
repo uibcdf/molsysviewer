@@ -1,3 +1,4 @@
+(User_Export_Session)=
 # Saving a whole session
 
 `save_session` writes the scene **and the system it was built on** to a single file, and
@@ -65,11 +66,20 @@ movie.json         the version-2 Movie recipe, if one is configured
 
 It is an ordinary zip, so you can look inside one with any tool you already have.
 
-The structure is written as `.h5msm` rather than `.pdb` on purpose: PDB collapses chains
-and misassigns waters, and holds one structure where a trajectory has thousands. `.h5msm`
-is MolSysMT's own format, and it preserves the structure's topological fingerprint — which
-is what lets a reloaded session recognise its own system as the one its own state was
-written for.
+H5MSM stores the molecular system with its loaded coordinate structures and
+periodic boxes. With a compatible MolSysMT backend, it also preserves chemical
+states and named interaction analyses. The system's topological fingerprint
+lets the restored scene check that its atom indices refer to the saved system.
+
+Named analyses are saved even when you have not added an interaction
+representation to the scene. Recovery preserves parallel observations,
+occurrence indices, atom and structure maps, and the distinction between an
+evaluated structure with no observations and an unevaluated structure.
+Occurrence indices refer to that saved version of the analysis; they are not
+global identifiers across later replacements or remapping. Saving or loading
+the session does not recalculate the analyses. See
+{doc}`../overlays/interactions` for their experimental contract and how to
+import an analysis stored separately.
 
 A session restores an [experimental Movie recipe](../movie/timeline.md#independent-tracks-experimental)
 alongside the saved scene. You can evaluate the recipe after reopening the
@@ -84,6 +94,8 @@ trajectory where it already lives.
 
 ## Experimental
 
-The format carries `version: 1` and is declared **experimental**: it may change before it
-is declared stable, and a future MolSysViewer may refuse an old session rather than migrate
-it. `save_state` is the stable one. Do not use a session as an archival format yet.
+The MolSysViewer session container carries `version: 1` and is **experimental**.
+This is separate from the embedded H5MSM schema version, which MolSysMT owns.
+The session format may change before it is declared stable, and a future
+MolSysViewer may refuse an old session rather than migrate it. `save_state` is
+the stable one. Do not use a session as an archival format yet.

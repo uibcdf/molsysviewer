@@ -93,3 +93,14 @@ now receives `b9f7dfb2` with the same scientific source/pandas and full core,
 Python and notebook selection. Complete pre-dispatch inventories have no
 active, queued or exact-head dispatch, and the subsequent exact-head inventory
 contains only this run. Its first observation is pending; #244 remains open.
+
+A smaller unoverridden attempt, `mirror-canonical-880`, follows a fresh quiet
+resource assessment and selects only the affected scientific mirror. It is
+also resource-interrupted, after 62.61 seconds: the final sample records
+93,261,824 bytes of global swap-out in about five seconds, 15.61 GiB available
+and zero memory-pressure avg10. Its own cgroup peaks at 1,120,768,000 bytes
+without OOM; all 15 owned processes retire and all 9,979 inputs stay unchanged.
+The child exit of zero remains subordinate to the supervisor's nonzero stop.
+No complete mirror is credited. The hosted run now owns the remaining native
+receiving; further heavy local retries are deferred during recurring shared
+swap activity. Light documentation/evidence checks remain applicable.
