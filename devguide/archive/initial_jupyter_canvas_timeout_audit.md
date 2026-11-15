@@ -94,7 +94,7 @@ Its SHA-256 is
 and its installed-package inventory reports ipykernel 7.3.0. The neighbouring
 failure still matches the original `f7bfe46f…` digest above. The independently
 reproduced newer comm stall and 7.4.0 source-host solution are tracked under
-[#396](../pending_bugs/jupyter_movie_seek_pending.md). An associated environment inventory is
+[#396](../archive/jupyter_movie_seek_pending.md). An associated environment inventory is
 not an observation of the module loaded in the original kernel, nor proof of
 its missing transition. Neither failure is relabelled. A separately hashed
 private supplement preserves both originals; the current closure receipt

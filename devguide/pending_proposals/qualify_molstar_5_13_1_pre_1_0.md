@@ -125,7 +125,7 @@ helper choosing a popup role before a positive bootstrap condition. The
 unreached Movie/story assertions cannot qualify #395 in this run. Receive its
 readiness correction and one new complete gate; neither source run is green.
 
-The additional current actual-Jupyter Movie receiving finds [#396](../pending_bugs/jupyter_movie_seek_pending.md).
+The actual-Jupyter Movie boundary [#396](../archive/jupyter_movie_seek_pending.md) is now source-resolved by original 7.4.0 and complete current-source guard 933.
 Its original failed seek, later complete notebook pass and diagnostic controls
 remain distinct. Native Qt's current stopped/moving work-file receiving passes;
 no historical cause or complete current-host acceptance is inferred. The
@@ -139,7 +139,7 @@ scientific `aee7aa65` and pandas 3.1.0. Its first GH Run Receptor observation
 is pending; the complete before/after inventory confirms zero competing runs
 and exactly one dispatch for this head. It retains all 63 core entries, Python
 and 25 notebooks. Canonical lifecycle `903` and 536 scoped headless controls
-pass before dispatch; #396's actual-Jupyter uncertainty remains separate.
+pass before dispatch; #396's source-host resolution does not qualify final installed or other-host scope.
 No installed qualification, package/tag or publication is credited.
 
 ## Ownership and limits

@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Actual-Jupyter Movie seek](jupyter_movie_seek_pending.md) — #396 adopts corrected kernel transport and receives ten same-kernel edit/seeks plus all eight phases on current scientific source; shared-prefix and final artifact gates stay separate.
+
 - [#397: Popup work-file readiness](moving_work_file_popup_readiness.md) — Requires a positive role/owner before work-file operations and receives the complete canonical lifecycle.
 
 - [#395: Integrated Movie key receiving](movie_story_saved_key_action.md) — Edits the current saved-key action while retaining scientific, encoder, session and offline assertions.

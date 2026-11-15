@@ -102,7 +102,7 @@ media/session/offline assertions. The whole run remains failed; one complete
 current core pass is required. The [three-block receipt](molstar_closeout_three_blocks_20261115.json)
 keeps exact installed/host prerequisites distinct from source recovery.
 
-The separate [#396 actual-Jupyter Movie observation](pending_bugs/jupyter_movie_seek_pending.md)
+The separate [#396 actual-Jupyter Movie observation](archive/jupyter_movie_seek_pending.md)
 records an intermittent pending seek after authoring and Python editing. Current
 native Qt captures pass; the complete uninstrumented notebook Movie guard also
 passes later, while the original failed attempts and unknown cause remain.
@@ -130,9 +130,9 @@ A current full source gate remains due. #396's separate actual-Jupyter delay
 is now reproduced independently on ipykernel 7.3.0. Original 7.4.0 bytes pass
 30 native comm cycles and the complete actual Movie pytest in `916`, including
 ten same-kernel edit/seeks. The component notebook baseline is now >=7.4.0;
-MolSysSuite #200 owns the still-paused legacy-prefix adoption. The source-host
-solution is received; full current CI, installed qualification, package/tag
-and public publication remain separate.
+MolSysSuite #200 owns the still-paused legacy-prefix adoption. The source-host solution is now also received on current scientific source
+in 933; full source CI passes. Installed qualification, package/tag and public
+publication remain separate.
 
 The single current [three-platform source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 receives `3aff1d48` with owner-published MT `bc5a9297` (Git package/native

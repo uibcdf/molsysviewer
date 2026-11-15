@@ -936,8 +936,9 @@ outcomes once to **40/46 (87.0%)**, with **1/46 final acceptance unchanged**.
 Historical exact cause and final installed/candidate receiving remain separate.
 The complete core gate also receives and closes source reports #244/#391/
 #395/#397; each archived record names its durable guard and original failures.
-#396's corrected host source scope, residual #388/#354 questions, exact
-artifacts and postponed human exits remain separately tracked.
+#396 now also closes after the current-source actual-Jupyter guard 933
+passes ten edit/seeks and all eight phases. Residual #388/#354 questions,
+exact artifacts and postponed human exits remain separately tracked.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**

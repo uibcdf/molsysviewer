@@ -106,7 +106,7 @@ polling starvation; timer polling with the unchanged deadline and its actual
 hidden/revealed molecular regression pass the complete plot entry in `909`.
 Historical visibility is unknown. The native Qt guard and 55-case source
 integration with MT `96988b6e` pass. Actual-Jupyter
-[#396](pending_bugs/jupyter_movie_seek_pending.md) reproduces in `910`: the
+[#396](archive/jupyter_movie_seek_pending.md) reproduces in `910`: the
 correlated action reaches Python about 35.5 seconds after the browser records
 its send. A kernel-only reproduction now isolates the ipykernel 7.3.0 comm
 stall; original 7.4.0 bytes pass 30 native cycles and the maintained complete
@@ -130,6 +130,10 @@ The complete gate closes the source-receiving reports
 [#397](archive/moving_work_file_popup_readiness.md). Their original failed and
 resource-interrupted campaigns remain preserved; these additional receiving
 closures do not increment the original 46-outcome counter.
+The [#396 actual-Jupyter Movie source closure](archive/jupyter_movie_seek_pending.md)
+now additionally receives current exact MT source and original kernel 7.4.0:
+ten same-kernel edit/seeks and all eight phases pass in guard 933. Operational
+legacy-prefix adoption and installed/human qualification remain separate.
 The [initial-canvas audit](archive/initial_jupyter_canvas_timeout_audit.md)
 is technically resolved after Diego accepts the >=7.4.0 notebook host profile
 and MolSysMT closes #615 in `5afa582f8`. Controlled 919/923 plus normal

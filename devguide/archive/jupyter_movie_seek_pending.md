@@ -1,9 +1,9 @@
 ---
 summary: Receive notebook Movie on the corrected ipykernel comm transport.
 issue: uibcdf/molsysviewer#396
-status: partial
+status: resolved
 opened: 2026-11-15
-closed:
+closed: 2026-11-15
 severity: high
 verification: reproduced
 area: [movie, jupyter, concurrency, receiving]
@@ -14,6 +14,45 @@ supersedes: []
 ---
 
 # Correlated Movie seek in an actual notebook
+
+**Resolved in source — 2026-11-15.**
+
+## Resolution
+
+The corrected supported notebook host uses `ipykernel>=7.4.0`, whose native
+shell transport includes upstream #1529. Independent kernel-only control 913
+and actual server/kernel observations 910/912 identify the pre-handler
+notification-loss mechanism; no Movie calculation was running during that
+observed interval. Original failures and their timelines remain preserved.
+
+The original-provider 7.4.0 controls and earlier complete guard 916 are now
+complemented by **current-source actual-Jupyter receiving 933**. The maintained
+`guard` passes one test with zero failures/errors/skips in 108.92 seconds.
+It executes ten Python-edit/kept-draft/seek cycles in one kernel and all eight
+Movie phases: both popups, Python/Studio pause, native media, independent
+session recovery and close/cancel/late-reply protection. Scientific coordinates
+and source identity remain unchanged. There are no Python/server/scheduling
+delegates or altered operation deadlines.
+
+Actual loaded kernel provenance confirms original isolated ipykernel 7.4.0.
+The consumed scientific source is Git-verified MolSysMT `bc5a9297`, with its
+unchanged recorded `4ffb82e4` native backend; MolSysViewer source base is
+`df9f898c770347719bac02d2e240050f9d620af1`. The
+[receipt](../molstar_closeout_three_blocks_20261115.json) records actual imports,
+57 provider-file verification, original archive SHA, native media and private
+custody. All 9,983 selected inputs remain unchanged, all 20 owned processes
+retire and no resource stop occurs. Peak summed own RSS is 3,246 MiB under
+8 CPU/4 GiB; supervisor duration is 112.61 seconds.
+
+The complete source checkpoint 43748320908 also passes three Python 3.14
+hosts, all 63 core entries and 25 notebooks. This closes the reproduced
+source-host comm defect. Shared legacy-prefix adoption stays with MolSysSuite
+#200, and clean installed/final-candidate, other-host and human qualification
+remain separate. No shared environment, upstream source or Movie algorithm
+is changed in this archival step.
+
+## Earlier investigation and receiving history
+
 
 **Source correction received — 2026-11-15:** the interleaved comm/execute stall
 is reproduced without MolSysViewer on ipykernel 7.3.0. Original 7.4.0 provider

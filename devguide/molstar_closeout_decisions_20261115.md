@@ -159,21 +159,19 @@ input identities. Recheck changed boundaries: the current runtime changes
 Movie's editor since the preceding Qt receipt. Automated capture is distinct
 from human inspection. Qt remains experimental; v6 remains post-1.0.
 
-Current native Qt receiving `888` passes. The additional actual-Jupyter Movie
-guard `889` finds a pending seek after its first two phases, tracked separately
-in [#396](pending_bugs/jupyter_movie_seek_pending.md). This must be investigated
-and received before claiming current actual-host Movie acceptance. It does not
-explain the older first-canvas #615 observation or invalidate the narrower Qt
-result. A source core pass alone would not close this live-kernel boundary.
+Native Qt receiving `888` retains its exact source scope. Earlier
+actual-Jupyter Movie receiving `889` independently found a pending seek.
+The kernel-only/actual transport controls identify the 7.3.0 notification
+fault; original 7.4.0 passes the complete guard in `916`. Current-source
+receiving `933` now also passes the maintained guard on committed MT `bc5a9297`:
+ten same-kernel edit/seeks and all eight popup/media/session/lifecycle phases,
+without Python/server/scheduling delegates. #396 is source-resolved.
 
-The current investigation now reproduces the comm/execute stall independently
-on ipykernel 7.3.0. The original 7.4.0 provider, incorporating upstream #1529,
-passes 30 native comm cycles and the maintained complete Movie guard in `916`,
-including ten same-kernel Python-edit/seek cycles. The component notebook
-recipes require `ipykernel>=7.4.0`. The unchanged shared legacy prefix remains
-on 7.3.0; [MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200)
-owns its controlled migration. This is a received source-host solution, not
-an installed-candidate gate or a cause assigned to the older #615 observation.
+Notebook recipes require `ipykernel>=7.4.0`; the unchanged shared legacy prefix
+remains on 7.3.0, with controlled migration under
+[MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200).
+Source-host resolution, native Qt, other platforms and final installed/human
+acceptance retain their separate scopes.
 
 Prepare the postponed human round against the received artifact, rather than
 an unrelated development overlay. It should cover the already agreed molecular
@@ -188,6 +186,6 @@ nor continuous-development authorization count as that human observation.
 ## Closure
 
 Only completed source, installed, compatibility and applicable host/human exits
-close #372, followed by reconciliation of #369. The 39/46 source-delivered
+close #372, followed by reconciliation of #369. The 40/46 source-delivered
 and 1/46 final-acceptance counters do not move because a preparation document,
 single guard or prefix passes. Public publication retains its later decision.

@@ -2194,5 +2194,76 @@
         "resource_stop": null
       }
     }
+  },
+  "current_actual_jupyter_movie_receiving_933": {
+    "profile": "current-jupyter-movie-740-933",
+    "source_base": "df9f898c770347719bac02d2e240050f9d620af1",
+    "molsysmt_source": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+    "git_verified_source_composition_sha256": "72af43fec3a4d1673fddb6b0568dcf66184b652ce151df4f25f8bbc6026225f3",
+    "actual_kernel": {
+      "python": "3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:08:32) [GCC 15.3.0]",
+      "executable": "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+      "modules": {
+        "molsysviewer": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+        "molsysmt": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/receiver-bc5-current/molsysmt/__init__.py",
+        "pyunitwizard": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+        "molsysmt._rust": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/receiver-bc5-current/molsysmt/_rust.abi3.so"
+      },
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "notebook_host": {
+        "ipykernel_version": "7.4.0",
+        "ipykernel_origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/ipykernel-7.4.0-original/ipykernel/__init__.py"
+      }
+    },
+    "pytest": {
+      "tests": 1,
+      "passed": 1,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 108.908
+    },
+    "movie_cases": 8,
+    "same_kernel_seek_cycles": 10,
+    "native_media": {
+      "frames": 2,
+      "resolution": {
+        "width": 320,
+        "height": 180
+      },
+      "bytes": 31303
+    },
+    "source_unchanged": true,
+    "cancel_late_reply_preserved": true,
+    "python_studio_pause": true,
+    "scope": "Current exact isolated source receiving through the maintained actual-Jupyter guard without timing delegates. Original kernel provider bytes verified before/after. Not a clean installed resolver/ABI, other-host or human/final candidate result. Legacy-prefix adoption remains MolSysSuite #200.",
+    "supervised": {
+      "native_exit": 0,
+      "seconds": 112.60678150225431,
+      "peak_owned_rss_mib": 3246.0,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "custody": {
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/current-jupyter-movie-740-20261115",
+      "manifest_sha256": "d8efba4ce46bc13fd4de20b9fa36d470ed1afbc91246482b92bd74b01162f5bd",
+      "files": 15,
+      "originals_retained": true
+    },
+    "resolution": "Source-host defect resolved under the corrected notebook baseline; shared-prefix adoption and final installed/human gates remain separate.",
+    "closing_record": "devguide/archive/jupyter_movie_seek_pending.md",
+    "record_validation": {
+      "pytest_passed": 458,
+      "profile": "movie-source-closure-records-934",
+      "native_exit": 0,
+      "inputs_unchanged": true,
+      "resource_stop": null
+    }
   }
 }

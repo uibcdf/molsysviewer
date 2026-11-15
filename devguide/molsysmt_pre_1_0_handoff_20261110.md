@@ -252,7 +252,7 @@ owner #256/BindingMT #73 acceptance, the two-way dependency/promotion-order
 review and the existing separate publication hold.
 
 Current native Qt work-file receiving passes. Actual-Jupyter Movie's original
-pending seek remains tracked in [#396](pending_bugs/jupyter_movie_seek_pending.md),
+pending seek remains tracked in [#396](archive/jupyter_movie_seek_pending.md),
 with later complete uninstrumented receiving kept separate from causality.
 Neither those passes nor #397's source test correction explains historical
 #615. Return any accepted principal-maintainer disposition to its owner.
