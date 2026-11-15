@@ -1,0 +1,232 @@
+{
+  "schema": "molsysviewer.initial_execute_causal_receiving@1",
+  "date": "2026-11-15",
+  "issues": [
+    "uibcdf/molsysviewer#384",
+    "uibcdf/molsysmt#615",
+    "uibcdf/molsysviewer#396",
+    "uibcdf/molsyssuite#200"
+  ],
+  "state": "Controlled kernel and actual-browser initial-execute mechanism demonstrated; #615 remains open for review and candidate receiving. No spontaneous-incidence or exact historical-cause claim.",
+  "source_base": "f6765f6c680b82f47de0ae94dcd459ac32a79138",
+  "runtime_sha256": "f613c7b4fb2b9693442ecf46a86a749f0d9912d3e488ef1aa6f2832a47fe6446",
+  "provider_scope": {
+    "receiver_source": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "route": "Original isolated Linux kernel providers through a private per-attempt kernelspec/PYTHONPATH. Shared environment unchanged; not clean solver or final installed qualification."
+  },
+  "kernel_control_919": {
+    "scope": "Controlled actual native kernel schedule, one overlap per original provider. No Viewer/science/browser, no fabricated packet, resend or deadline change. Not original historical-cause proof or unmodified candidate acceptance.",
+    "arms": [
+      {
+        "provider": "7.3.0",
+        "original_sha256": "305ad9226363ff5f259c404dd9a7508183a2e150739b2adc43db7d817234da66",
+        "first_line_entered_within_30s": false,
+        "seconds": 30.00253999978304,
+        "edge_qualified": true
+      },
+      {
+        "provider": "7.4.0",
+        "original_sha256": "9ea2c55f4a9aa9146f614f827412716c6f53cd08eace21297b687301b804bb97",
+        "first_line_entered_within_30s": true,
+        "seconds": 0.012737476266920567,
+        "edge_qualified": true
+      }
+    ],
+    "supervised": {
+      "native_exit": 0,
+      "seconds": 34.78134610503912,
+      "peak_owned_rss_mib": 107.9,
+      "selected_inputs": 9980,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "comparison_sha256": "9609c40c276dcb8e796455278cd4dce9425b377cdb848229699807f70d447247"
+  },
+  "actual_browser_control_923": {
+    "scope": "Offline causal receiving of retained paired actual-browser diagnostic. No fresh execution or rewritten verdict. Original combined driver remains native exit 1: its assertion looked for marker absence after retirement instead of entry before the deadline. Timestamped original observations discriminate late entry and current success. Historical cause, spontaneous incidence, uninstrumented/final installed qualification remain separate.",
+    "original_driver_native_exit": 1,
+    "original_driver_assertion_defect": "Both markers exist after host retirement; old marker first appears after the failed unchanged 30-second browser deadline.",
+    "arms": [
+      {
+        "provider": "7.3.0",
+        "owner_native_exit": 1,
+        "execute_id": "30881615-4e42-447f-b3f2-b10169bc4bdb",
+        "history_parent": "82ade974-a45f-4eae-9c42-4c1dfc1aa753",
+        "browser_send_to_server_send_ms": 1.1865234375,
+        "server_send_to_kernel_dispatch_ms": 30523.916259765625,
+        "first_line_after_run_click_ms": 30500.521240234375,
+        "first_line_before_30s_deadline": false,
+        "kernel_dispatch_before_browser_verdict": false,
+        "post_retirement_marker_exists": true,
+        "edge_qualified": true,
+        "canvas_outcome": "canvas_wait_failed",
+        "atoms": null,
+        "original_provider_sha256": "305ad9226363ff5f259c404dd9a7508183a2e150739b2adc43db7d817234da66"
+      },
+      {
+        "provider": "7.4.0",
+        "owner_native_exit": 0,
+        "execute_id": "60d7fb0f-9466-40fd-8189-c36f35a2fe27",
+        "history_parent": "16cd013e-b673-4653-a80f-5b11f2fac25d",
+        "browser_send_to_server_send_ms": 1.525146484375,
+        "server_send_to_kernel_dispatch_ms": 1.601318359375,
+        "first_line_after_run_click_ms": -13.7607421875,
+        "first_line_before_30s_deadline": true,
+        "kernel_dispatch_before_browser_verdict": true,
+        "post_retirement_marker_exists": true,
+        "edge_qualified": true,
+        "canvas_outcome": "canvas_visible",
+        "atoms": 3983,
+        "original_provider_sha256": "9ea2c55f4a9aa9146f614f827412716c6f53cd08eace21297b687301b804bb97",
+        "first_fresh_draw_after_run_click_ms": 6547.0
+      }
+    ],
+    "supervised": {
+      "native_exit": 1,
+      "seconds": 78.21608029399067,
+      "peak_owned_rss_mib": 2364.0,
+      "selected_inputs": 9980,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 53,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "offline_verifier_924": {
+      "native_exit": 0,
+      "seconds": 1.6334296148270369,
+      "peak_owned_rss_mib": 7.1,
+      "selected_inputs": 9980,
+      "inputs_unchanged": true,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null
+    },
+    "raw_original_hashes": {
+      "7.3.0/result.json": "d13d82186f66ea51573ea653ae210f392760d795efe16729a5d2c1da858ccb72",
+      "7.3.0/owner-stdout.log": "43cbf9ed52c52adea453339a6962be610ce6bb294e61cff7897611c68b574cd2",
+      "7.3.0/owner-stderr.log": "c2832f2e2d879ffdb160b2cd9066085ff0f944a28a77622c5a3ae146040c763e",
+      "7.3.0/initial_canvas_edge_diagnostic.mjs": "084ef2c650c8c1a027261a3781b29ddad57ad9f2f52872ab23fbaabd582513dd",
+      "7.3.0/session/initial-cell-first-line.txt": "2af3eb10fad30973a9f4541136e26e370039e9f766a631bdbbc5ac6c160dded0",
+      "7.3.0/session/initial-kernel-messages.json": "45227d98892578ead074ab4821a78400aeacf290c8fded01490d0c22862fc519",
+      "7.3.0/session/initial-edge-armed.json": "3ca84eff02f9a74a8416e0afdfdadbb795043492d1874fe0761a99f6d4b5b82f",
+      "7.3.0/session/initial-canvas.json": "bab5e9484ac58e2cafe8ceaa0fcec2bbcba4d18bd6d9ecca8a99840e4700017e",
+      "7.3.0/session/diagnostic-scope.json": "46990eb45d919a74e6b988219b0d271676b9793d917e2867ae630616057b3179",
+      "7.3.0/session/server-channel-events.jsonl": "74fe5b8892ccad85e267a91e2e19869faee8dfe0e5070f9a4b509c6e560a1e1c",
+      "7.3.0/session/server-channel-origin.json": "f265e37ded7b3cf962024367bb4579bbd1f66c9a538d729aca8fe92de7bdc810",
+      "7.3.0/session/kernel-edges/kernel-f0cfbbbe-d6b6-4f11-98be-61f22cb66028/events.jsonl": "66cbe8ad0b083b8a79e1116655b5fcaff5301bd6118509f6402b36b68da2abee",
+      "7.3.0/session/kernel-edges/kernel-f0cfbbbe-d6b6-4f11-98be-61f22cb66028/held.json": "f0452fbf86cabff1be88f30cdcbb302c3f352e25d4a84ce53c16fda2bc67f6fc",
+      "7.3.0/session/kernel-edges/kernel-f0cfbbbe-d6b6-4f11-98be-61f22cb66028/stack-15s.log": "282ba02bb4b330369bf9aa7d90126908ebcf0ed541225987cf184d044cfe7cba",
+      "7.4.0/result.json": "4f72506aec1f9f5578513f8cf10cc846653a3e6934b045669fc9988736054029",
+      "7.4.0/owner-stdout.log": "8d68410174f2bbd9a2bf63c4efb763a2e6a1a3457d73a757fe97f6b8c892a33a",
+      "7.4.0/owner-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "7.4.0/initial_canvas_edge_diagnostic.mjs": "084ef2c650c8c1a027261a3781b29ddad57ad9f2f52872ab23fbaabd582513dd",
+      "7.4.0/session/initial-cell-first-line.txt": "cceccd4da74a8abbc7e5970c4b95fcbd0d650b3789d5389ef0ac9f460ab301ca",
+      "7.4.0/session/initial-kernel-messages.json": "5290774155de706c86d20019d309bdfba25784360c9d35f6ce9dc7801f6fe9fb",
+      "7.4.0/session/initial-edge-armed.json": "4df602c5d539302a0df0a1ce4d387193fa205cee0b07bd5995b0354b9ad41216",
+      "7.4.0/session/initial-canvas.json": "72d098f2d920868542433bf76d17deed0ed3efd5cb79725b21576212df80b882",
+      "7.4.0/session/diagnostic-scope.json": "189c34ddb43957dcc0aaa03a222635a8443869b4fee5fa57f6588e0232db1fae",
+      "7.4.0/session/server-channel-events.jsonl": "c93ef137879d8e8010b3bead9b46678a56dcdae65ec1fd4586ef3a1e762bbf2e",
+      "7.4.0/session/server-channel-origin.json": "f265e37ded7b3cf962024367bb4579bbd1f66c9a538d729aca8fe92de7bdc810",
+      "7.4.0/session/kernel-edges/kernel-96f453b9-be05-43e1-9cb5-bf41c8f369d5/events.jsonl": "b3eb495f352aa360a6bdb941d2f5759c9ea65f0d061fb92324e84bb99382eef9",
+      "7.4.0/session/kernel-edges/kernel-96f453b9-be05-43e1-9cb5-bf41c8f369d5/held.json": "7d037d5ff6b00c3cb7697ab9f3fa85615dac5b3cba188b6d400d4c4d7a4116bc",
+      "7.4.0/session/kernel-edges/kernel-96f453b9-be05-43e1-9cb5-bf41c8f369d5/stack-15s.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "timing_limit": "The browser click observation may follow actual request send or first kernel entry. Do not interpret a negative first-line/click delta as latency. Admission uses actual correlated server/kernel timestamps; the eligible draw retains the owner observer anchors."
+  },
+  "retained_setup_failures": {
+    "920": {
+      "cause": "Private executable wrapper lacked its executable bit/shebang; no browser control armed.",
+      "supervised": {
+        "native_exit": 1,
+        "seconds": 2.0960873612202704,
+        "peak_owned_rss_mib": 47.1,
+        "selected_inputs": 9980,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 2,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null
+      }
+    },
+    "922": {
+      "cause": "The chosen temporary root exceeded Chromium native Unix socket-path length; no scheduling control armed. Corrected with a managed short /tmp directory.",
+      "supervised": {
+        "native_exit": 1,
+        "seconds": 8.545110641047359,
+        "peak_owned_rss_mib": 471.9,
+        "selected_inputs": 9980,
+        "inputs_unchanged": true,
+        "cleanup": {
+          "tracked": 12,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null
+      }
+    }
+  },
+  "diagnostic_programs": [
+    {
+      "name": "kernel_initial_edge_launcher.py",
+      "sha256": "0a861ed4e512229f519eafff6282c7ed31f207fd2830492ec1397a5ed3276ba0"
+    },
+    {
+      "name": "probe_kernel_initial_dispatch.py",
+      "sha256": "409abd4260b3d04b0e5dcc1f3408a9dfbc1d4df95d9b343c79510acbfd75b99a"
+    },
+    {
+      "name": "initial_canvas_edge_node.py",
+      "sha256": "af291025b013b5c7b7a6ae36296cd83dfd1907a6dd069c12b5975e8f13494e28"
+    },
+    {
+      "name": "initial_canvas_edge_launcher.py",
+      "sha256": "0b4cffb39458ff69fed3f3049859614b9527425573a2ed5e745f9fd27b86f2ce"
+    },
+    {
+      "name": "initial_canvas_owner_observer.py",
+      "sha256": "b4c99b141b2b54983f4ecc544982ac8c844ad527a2df3c071a93635a1fab21fc"
+    },
+    {
+      "name": "receive_initial_canvas_edge.py",
+      "sha256": "490a0154845fb43c647b53c9bf47c55dcd8de5db81fe39decfec593dcfe96c1f"
+    },
+    {
+      "name": "verify_initial_canvas_edge_offline.py",
+      "sha256": "62cb9fccab2a1ce22b39306f858cc579ab219c21bfafe4a1dec9aa31aed6e556"
+    },
+    {
+      "name": "observe_jupyter_server.py",
+      "sha256": "3b98f01ee0bce4fcb05e76b8ce3dd33e33754bc2e6935dced92e61817d441d45"
+    }
+  ],
+  "custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/initial-shell-edge-20261115",
+    "state": "preserved_and_hash_verified",
+    "files": 248,
+    "bytes": 27597870,
+    "manifest_sha256": "8be2ca80b51d8b9851fd82c6164b4d3b1fa0c4565052be57e5c00609fcac9fd9",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0
+  },
+  "remaining": [
+    "Review causal evidence with MolSysMT/principal maintainer; preserve #615 open and the absent original timing/source observations.",
+    "Receive final exact candidate on corrected ipykernel baseline with original new-draw/30-second guard.",
+    "Controlled legacy-prefix adoption belongs to MolSysSuite #200; no shared install performed.",
+    "Complete source, installed pair, applicable human exits and publication decisions remain separate."
+  ]
+}

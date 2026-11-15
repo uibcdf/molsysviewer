@@ -114,12 +114,23 @@ Movie pytest in `916`, including ten edit/seeks. Recipes require >=7.4.0;
 [MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200) owns the
 unchanged legacy-prefix transition. Current full CI, installed pair and
 postponed human exits remain distinct and open.
+The [single new full source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366)
+ends in failure on `f6765f6c` / published MT `bc5a9297`: all three Python 3.14
+hosts reject one stale environment-test expectation after the ipykernel floor
+change. The corrected assertion and four-recipe guard pass 549 selected
+checks; all 63 Linux core entries and 25 notebooks remain required in the
+next complete checkpoint. It assigns no
+candidate version/tag and is not an installed package gate.
 The [initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 now leads #384/MolSysMT #615 and source-resolves the independent
 [#392 bootstrap lock defect](archive/runtime_source_replies_require_scene_lock.md).
 Five causal and 38 affected Python cases, plus normal/contended actual-kernel
 startup controls, pass in their overlapping scopes. The historical timeout's
 cause remains unresolved; its source outcome and the 39/46 counter are unchanged.
+Paired kernel-only and actual-Jupyter controls now reproduce an initial
+execute notification loss with original ipykernel 7.3.0; the matched 7.4.0
+arm draws all 3,983 atoms in 6.55 seconds. The controlled scheduling is not
+proof of the original history or final-candidate acceptance; #615 stays open.
 The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
 the complete native authoring/export entry and all 491 JS cases. Full M2

@@ -64,6 +64,16 @@ published native replacement or a separately reviewed dependency update.
 The technical assessment and source corrections are delivered in their declared
 scopes. Closing this qualification still requires these three exits:
 
+Current complete source checkpoint:
+[43743095366](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366)
+on `f6765f6c` / owner-published `bc5a9297`, three Python 3.14 hosts and the
+>=7.4.0 notebook profile. Linux retains all 63 core entries and 25 notebooks.
+It ends in failure because all three hosts reject a stale unversioned
+ipykernel test expectation. The corrected four-recipe floor guard passes
+549 scoped checks; complete receiving on the corrected source remains due.
+There is one exact-head dispatch; no candidate
+version/tag or installed acceptance is assigned.
+
 | Exit | Remaining evidence |
 | --- | --- |
 | Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus applicable Python/notebook/platform evidence. Latest full run [43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436) on `28147339` / `aee7aa65` passes #397, 4,760 Python cases, all 25 notebooks and 53 core entries, then fails #391's static bootstrap. Real hidden-iframe control `907` demonstrates stopped animation-frame polling despite a ready controller; the timer-based correction and hidden/revealed molecular regression pass the complete plot guard in `909`. Historical page visibility remains unknown. #395's complete story passes locally. A new uninterrupted gate is still required; reconcile #244/#388/#391 against actual guards and causal limits. |

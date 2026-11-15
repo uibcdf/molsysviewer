@@ -33,6 +33,20 @@ receiving correction uses timer polling under the same 30-second bound and
 adds an actual hidden/revealed molecular export. This does not assign the
 original hosted page's visibility; affected and full source gates remain due.
 
+The subsequent complete source checkpoint is now terminal:
+[43743095366](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366),
+MolSysViewer `f6765f6c680b82f47de0ae94dcd459ac32a79138` with owner-published
+MolSysMT `bc5a9297a762d451742734f9e11c7f54c6a832a0`, pandas 3.1.0 and the
+>=7.4.0 notebook profile. It selects all three Python 3.14 source hosts, all
+63 Linux core entries and 25 notebooks. The first receptor reports three
+active jobs; complete exact-head inventories confirm one dispatch. All three
+later fail the same stale literal `ipykernel` test expectation, rejecting
+the corrected `ipykernel>=7.4.0` recipe. The six original ZIPs match GitHub
+hashes. The corrected assertion and four-recipe floor guard pass 549 scoped
+checks in `921`; a new exact checkpoint is due. Browser/core entries were not
+reached. `source_receiving=true` skips
+candidate version/tag assignment; intended 1.0.0 input fields are not artifacts.
+
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
 Reconcile #244/#395 against their complete guards and #388/#391 against the
 actual diagnostics and remaining causal limits. A successful source gate
@@ -44,9 +58,11 @@ The agreed final public pair remains MolSysViewer 1.0.0 / MolSysMT 1.0.0.
 The reviewed proposal is **MolSysViewer build 0** and **MolSysMT ABI3 build 1**,
 staging only. These are proposed coordinates, not files or reserved names.
 The four old MT build-0 files belong to `6dc80725`; preserve them unchanged.
-The owner review source `96988b6e` is not yet a frozen MT producer, and the
-active source run uses older `aee7aa65`. Native binary equality does not make
-their 165 changed scientific package files equivalent.
+The owner review source `96988b6e` is not yet a frozen MT producer. Current
+source receiving uses its later published `bc5a9297` delivery: Git confirms
+no package/native/manifest source differences from `96988b6e`. That current
+checkpoint requires its corrected successor; earlier `aee7aa65` campaigns do not qualify their 165
+changed scientific package files merely through native binary equality.
 
 The existing `prepare_release.py` has prepared and validated a private copy of
 five changed metadata/route surfaces for review. Main's citation, release plan,
@@ -103,15 +119,24 @@ and the independently proven/fixed #392 source-reply lock defect. The original
 timeout cannot be assigned to either from the preserved evidence. Current
 normal/contended startup passes are useful controls, not a historical cause.
 
-A concrete possible disposition for principal-maintainer review is to retain
-the original failure and its unknown cause, receive the exact candidate through
-the unchanged phase-observed startup guard, and block acceptance on any
-recurrence with its captured Python/comm/controller/draw timeline. Keep #392's
-causal regression and the committed #754 observer; do not raise the 30-second
-canvas deadline, retry blindly or describe the old failure as fixed. Return
-any accepted bounded disposition to MT's owner before final pair acceptance.
-Until explicitly accepted, the existing causal-or-disposition prerequisite
-continues to apply. This note does not close #615/#384.
+The maintainer's [decision recorded by MolSysMT](https://github.com/uibcdf/molsysmt/blob/c80e7380a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#maintainer-decision-continue-the-investigation--2026-11-15)
+keeps #615 open and requires further investigation; the proposed historical
+disposition is not accepted or awaiting approval. #384 leads the causal work.
+Keep #392's causal regression and the strengthened #754/#762 observations;
+do not raise the 30-second canvas deadline, retry blindly or describe the old
+failure as fixed. The next control distinguishes initial execute admission
+from molecular preparation, bootstrap and drawing. Candidate receiving still
+requires a real eligible draw after scene registration within the same bound.
+
+That discriminating work now demonstrates the old-kernel mechanism in the
+kernel-only `919` and actual TcTIM/Jupyter `923` controls. The correlated
+execute is admitted after 30.52 seconds with 7.3.0, but after 1.6 ms with
+7.4.0; the latter renders all 3,983 atoms on a new draw in 6.55 seconds.
+Preserve `923`'s combined exit 1 from its post-retirement marker assertion;
+`924` verifies the actual pre-deadline/late-entry timing offline, without a
+rerun. This is controlled scheduling, not a spontaneous recurrence or proof
+of the original history. Review the [causal evidence](pending_bugs/initial_jupyter_canvas_timeout_audit.md#actual-jupytertctim-overlap--2026-11-15)
+with MolSysMT; #615 stays open and no historical waiver is pending.
 
 Actual Jupyter and native Wayland/Qt/NVIDIA source receiving retain exact
 input identities. Recheck changed boundaries: the current runtime changes

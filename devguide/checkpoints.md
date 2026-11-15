@@ -907,17 +907,28 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current Mol* closeout — 2026-11-15:** the
+**Current Mol* closeout — 2026-11-15:** source checkpoint
+[43743095366](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366)
+fails on `f6765f6c` / published MT `bc5a9297`: all three Python 3.14
+hosts reject the same stale literal `ipykernel` test expectation. The corrected
+version-floor guard passes 549 selected checks; all 63 Linux core entries and
+25 notebooks remain required in the successor checkpoint. It is one source-only
+dispatch, without candidate version/tag assignment. The
 [three-block receipt](molstar_closeout_three_blocks_20261115.json) retains
-terminal failure `43698930436`: 4,760 Python cases, 25 notebooks and 53 core
+earlier terminal failure `43698930436`: 4,760 Python cases, 25 notebooks and 53 core
 entries pass, including #397. #391's corrected timer-based bootstrap and real
 hidden/revealed molecular export pass the complete plot guard. #396 reproduces
 independently on ipykernel 7.3.0; original 7.4.0 bytes pass 30 native cycles
 and the complete actual Movie pytest with ten edit/seeks. Component notebook
 recipes now require >=7.4.0. MolSysSuite #200 owns legacy-prefix adoption;
 that shared prefix is unchanged. Current full source, exact installed pair,
-historical #615 disposition and applicable human exits remain separate and
+causal #615 investigation and applicable human exits remain separate and
 pending. Follow the [decision packet](molstar_closeout_decisions_20261115.md).
+Kernel-only `919` and actual-TcTIM `923` demonstrate a controlled original
+7.3.0 initial-execute stall; the matched 7.4.0 arm draws all 3,983 atoms in
+6.55 seconds. Offline `924` distinguishes late entry from entry before the
+original deadline without rewriting the combined driver's exit 1. #615 stays
+open; historical cause and final candidate receiving remain uncredited.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**

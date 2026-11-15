@@ -20,6 +20,9 @@ by the principal maintainer; uibcdf/molsysmt#615 retains its consumer/release
 dependency. MolSysMT's [owner handoff](https://github.com/uibcdf/molsysmt/issues/615#issuecomment-6866859272)
 does not establish a product-code cause. The earlier unresolved-risk acceptance
 proposal was not adopted. A later passing attempt is not a causal correction.
+The [maintainer decision recorded by MolSysMT](https://github.com/uibcdf/molsysmt/blob/c80e7380a/devguide/pending_bugs/intermittent_jupyter_initial_canvas_timeout.md#maintainer-decision-continue-the-investigation--2026-11-15)
+keeps #615 open and requires causal investigation. Approval of that historical
+disposition is not an outstanding action. This report retains the lead.
 The [existing integration handoff](../molsysmt_pre_1_0_handoff_20261110.md#molsysmt-615-first-canvas-evidence)
 retains the diagnostic contribution and its original source scope.
 
@@ -83,7 +86,137 @@ The normal presentation surface's own source response/shared cache is a
 different route. Neither this counterexample nor its fix establishes the
 unrecorded historical concurrency or the cause of #615.
 
+## Controlled initial-execute counterexample — 2026-11-15
+
+Control `919` demonstrates that the ipykernel shell notification defect can
+strand the **initial execute request before cell entry**, independently of
+MolSysViewer, molecular imports, widgets, a browser or rendering. This is a
+new causal control, not an uninstrumented recurrence or proof of the cause of
+the preserved #615 attempt.
+
+Two fresh kernels use the original isolated Conda providers, verifying all
+57 selected provider files before and after each arm:
+
+| Original provider | Archive SHA-256 | First cell-entry marker within 30 seconds |
+| --- | --- | --- |
+| ipykernel 7.3.0, `pyha191276_0` | `305ad9226363ff5f259c404dd9a7508183a2e150739b2adc43db7d817234da66` | Absent; the correlated execute never enters `dispatch_shell`. |
+| ipykernel 7.4.0, `pyh4a3486f_0` | `9ea2c55f4a9aa9146f614f827412716c6f53cd08eace21297b687301b804bb97` | Present after 12.7 ms; the same request enters native dispatch. |
+
+The diagnostic changes only scheduling. Each arm sends one real history
+request. A bounded in-process delegate holds its real `history_reply` until
+the first real execute is queued, then calls the original send exactly once.
+It records real parent/request IDs and observes the native ZeroMQ descriptor
+with `select.select`; it never reads `ZMQ_EVENTS`, manufactures a packet or
+resends execute. The descriptor changes from not ready to ready before the
+native reply send in both arms. After the original 7.3.0 send it is no longer
+ready, yet execute has not entered dispatch. The 15-second native traceback
+shows the shell event loop waiting in `select`, before molecular work exists.
+The corresponding 7.4.0 arm dispatches and executes immediately.
+
+The diagnostic's essential ordering is:
+
+```python
+# Diagnostic-only delegate around the original kernel reply method.
+fd = shell_socket.getsockopt(zmq.FD)
+before = bool(select.select([fd], [], [], 0)[0])
+record_real_history_parent_and_release_the_client_to_send_execute()
+wait_for_the_client_send_marker_at_most_two_seconds()
+ready = bool(select.select([fd], [], [], 2)[0])
+faulthandler.dump_traceback_later(15, file=private_stack)
+return original_send(self, original_reply_parts)  # exactly once
+```
+
+Those descriptive recording/barrier helpers stand for the private program's
+file synchronization; they are not product APIs or a replacement transport.
+The original full programs, correlated timelines, provider origins, hashes
+and traceback are retained under private custody referenced by the
+[three-block receipt](../molstar_closeout_three_blocks_20261115.json).
+[Upstream #1529](https://github.com/ipython/ipykernel/pull/1529) changes this
+7.3.0 raw-socket send to the owning `ZMQStream.send_multipart` route; the
+observed control is consistent with that released correction. The shared
+prefix remains unchanged. The whole paired control takes 34.78 seconds,
+peaks at 107.9 MiB under 1 CPU/1 GiB, preserves every selected input and
+retires all three tracked processes without a resource stop.
+
+The original #615 environment inventory reports the affected kernel version,
+but lacks a loaded-module identity, actual history/execute overlap and
+pre-deadline stack. Its symptom is compatible with this mechanism; causality
+for that particular historical execution remains unproven. Keep #615 open.
+
 ## Next bounded work and closure
+
+**Next discriminating control:** the original cell's first explicit work is a
+45-second traceback prelude, followed by molecular imports, TcTIM construction,
+coordinate/chemical-state/scene snapshots and the independent distance oracle,
+then the final display expression. No entry marker survives from the failed
+30-second attempt; its actual mutable client source revision is not recovered
+from the associated host-version inventory. Do not call a current replay an
+exact historical source reproduction.
+
+The initial kernel-only transition is demonstrated in `919`; the paired
+actual-browser diagnostic below receives the same mechanism with TcTIM.
+Next, review that causal evidence with MolSysMT and the principal maintainer,
+then receive the final candidate on its explicit corrected notebook baseline.
+Do not retry unchanged diagnostics to accumulate passes or retrospectively
+assign the original execution a missing observation.
+
+The required full startup receiver still distinguishes actual preparation,
+runtime-source exchange, controller/scene registration and a fresh native draw
+of all 3,983 atoms. Keep historical causality, current source receiving and the
+final installed candidate separate.
+
+## Actual Jupyter/TcTIM overlap — 2026-11-15
+
+Diagnostic `923` uses the real Jupyter client to request history, then clicks
+the normal Run control once while that actual reply is held. Only the
+scheduling delegate, bounded header observations and a first-line marker are
+added. Owner tests come from MolSysMT `bc5a9297`, over unchanged scientific
+source/native bytes from `aee7aa65`; this is a declared older scientific
+composition, not final-source or installed qualification. The unchanged owner
+receiver still requires the actual 3,983-atom scene and an eligible new native
+draw within 30 seconds. The isolated loopback server exposes its real client
+object for observation; no replacement client, product reply, warmed
+molecular import or extended product deadline is used.
+
+| Original kernel | Correlated execute: server send to kernel dispatch | Browser's original 30-second verdict |
+| --- | --- | --- |
+| 7.3.0 | 30,523.9 ms | Fails; no cell-entry marker, registered molecular scene or draw before the verdict. |
+| 7.4.0 | 1.6 ms | Passes the complete owner startup entry; 3,983 atoms and a fresh post-registration draw 6,547 ms after the recorded Run click. |
+
+The actual browser-send-to-server-send interval is 1.2 and 1.5 ms,
+respectively. Both real socket edges qualify, with the actual history parent
+and execute IDs retained. The old kernel's 15-second stack again waits in the
+shell event loop, before molecular preparation. Its cell-entry marker appears
+only **after** the browser verdict, during retirement; it does not repair that
+failed attempt. Browser click-mark timing can lag the first kernel entry, so
+do not interpret cross-boundary negative marker deltas as a latency metric.
+Server-to-kernel admission and the native draw use their explicitly recorded
+anchors.
+
+Keep the original combined driver's **exit 1**: its final postprocessing
+assertion expected the old marker to remain absent after retirement, rather
+than checking entry before the deadline. The retained timestamps disprove
+that expectation. Offline verifier `924` independently checks the unchanged
+raw messages, unique correlated execute, server send, native admission,
+pre-verdict absence, late marker and the new kernel's exact scene/draw. It
+passes without rerunning either browser arm or rewriting their outcomes.
+The old owner arm remains failed; the new owner arm's native exit is zero.
+
+Preparation attempts `920` (non-executable private Node wrapper) and `922`
+(Chromium's native Unix socket path limit under an overly long temporary
+root) never reach the scheduling control. Both are retained as setup failures;
+the wrapper permission and managed short temporary root are corrected before
+`923`. They are not molecular recurrences or receiving passes. The paired
+actual-host diagnostic takes 78.22 seconds, peaks at 2,364.0 MiB under
+8 CPU/4 GiB, preserves all 9,980 selected inputs and retires all 53 tracked
+processes without a resource stop. No shared environment is changed.
+
+This demonstrates a concrete host mechanism producing the initial-canvas
+symptom under controlled timing, and its absence in the matched corrected
+provider arm. It does not measure spontaneous recurrence, authenticate the
+original historical cause, qualify every platform or complete the final
+installed candidate. **#384/#615 remain open** for that evidence review and
+the applicable candidate receiving, rather than an unknown-cause waiver.
 
 Reuse the owning cold Analysis diagnostic and its actual kernel/session/browser
 timeline, with unchanged deadlines and no warmed molecular imports. Receive

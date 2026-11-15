@@ -24,6 +24,14 @@ shared-prefix transition belongs to [MolSysSuite #200](https://github.com/uibcdf
 and remains paused. Complete current source/installed receiving is separate.
 This does not explain the earlier #615 first-canvas timeout.
 
+The three-platform source checkpoint `43743095366` preserves one failing
+environment-contract assertion per host: its older literal `ipykernel`
+expectation rejects the corrected versioned recipe. The test now requires
+`ipykernel>=7.4.0` and separately protects that floor in all four maintained
+notebook recipes. All 549 selected source-workflow/reporting/link checks pass
+in `921`; source CI must still receive the corrected input. This is a test
+expectation correction, not an additional runtime or transport change.
+
 The current source receives native Qt's stopped/moving work-file flow in
 `888`, but the separate actual-Jupyter Movie guard fails in `889` on
 MolSysViewer `21474b8c`, scientific source `aee7aa65` and the reviewed 5.13.1

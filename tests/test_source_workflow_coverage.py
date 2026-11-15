@@ -214,7 +214,18 @@ def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():
     assert "failure()" in logs["if"]
     assert "molsysviewer-source/docs/content/**/*.nbconvert.log" in logs["with"]["path"]
     environment = yaml.safe_load((ROOT / "devtools/conda-envs/test_source_pair_py314.yaml").read_text(encoding="utf-8"))
-    assert {"nbconvert", "ipykernel", "jupyterlab", "psutil"} <= set(environment["dependencies"])
+    assert {"nbconvert", "ipykernel>=7.4.0", "jupyterlab", "psutil"} <= set(environment["dependencies"])
+
+
+@pytest.mark.parametrize(
+    "name", ["test_source_pair_py314.yaml", "test_env.yaml", "development_env.yaml", "docs_env.yaml"]
+)
+def test_notebook_environments_require_the_corrected_native_shell_transport(name):
+    environment = yaml.safe_load((ROOT / "devtools/conda-envs" / name).read_text(encoding="utf-8"))
+    kernels = [
+        value for value in environment["dependencies"] if isinstance(value, str) and value.startswith("ipykernel")
+    ]
+    assert kernels == ["ipykernel>=7.4.0"]
 
 
 def test_candidate_versions_are_bound_before_source_installation():
