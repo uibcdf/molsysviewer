@@ -101,6 +101,11 @@ The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
 the complete native authoring/export entry and all 491 JS cases. Full M2
 host/accessibility and installed/human acceptance remain open.
+One complete current source checkpoint
+[43662871581](https://github.com/uibcdf/molsysviewer/actions/runs/43662871581)
+is now active on `ad470cdf`: three Python hosts plus Linux core/notebooks,
+with the earlier exact scientific source retained. It has no terminal result
+and does not assign a version or qualify installed artifacts.
 Execution has started: approved private evidence custody is received; factory
 failure cleanup and non-destructive state validation are delivered with their
 scoped guards. Their hosted receiving remains separate. The active ledger owns

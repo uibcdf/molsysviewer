@@ -991,5 +991,52 @@
     "native_exit": 0,
     "original_hosted_cause": "unknown",
     "current_core_qualification": false
+  },
+  "current_complete_source_checkpoint": {
+    "at": "2026-11-15T01:23:27.346382+00:00",
+    "head_sha": "ad470cdf07a6c8746b909010e9d5f9caaaa85258",
+    "ref": "main",
+    "workflow": "ci-python-314-source-pair.yaml",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "all",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+      "encoder_diagnostics": "false"
+    },
+    "complete_exact_head_manual_inventory_before": 0,
+    "run": 43662871581,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43662871581",
+    "observed_status": "in_progress",
+    "observed_conclusion": null,
+    "notice": "Single substantive complete current source checkpoint. Three Python 3.14 source hosts; Linux 63 core entries and 25 notebooks. Includes later #392/#393 and bounded static-bootstrap diagnostics. Candidate version defaults are unused with source_receiving=true. No tag, package build, promotion or publication.",
+    "duplicate_dispatch": false,
+    "attempt": 1,
+    "initial_receptor_version": "1.1.1",
+    "initial_receptor_exit": 3,
+    "initial_receptor_summary": "PENDING, three jobs in progress, no terminal artifacts",
+    "original_receipts_sha256": {
+      "movie-current-checkpoint-before.json": "f2aa3f2f9ea19c33f16347ee49859287a9b12cde87a89f7d6927ecb020c6b673",
+      "movie-current-checkpoint-dispatch.json": "3822769c64fe12fee7b27eef4c5903f65508b712c3d549fabd60778d41ddcd89",
+      "movie-current-checkpoint-first-runs.json": "41a46ff04710de327f972812ff8348a825c0175805de14b0c8c080f47b8e1376",
+      "movie-current-checkpoint-first-receptor.txt": "00dd2648989b2b2ed1bca72c091ab4f5240a446fb8343f0d5e2e3a0fe469034b"
+    },
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/current-source-dispatch-20261114",
+      "files": 12,
+      "bytes": 4024599,
+      "manifest_sha256": "cfd81b651bf981a654080c71fc21324541123ab0cf898f8250b6cab4bae28fc4",
+      "originals_retained": true
+    },
+    "record_checks": {
+      "profile": "current-source-handoff-862",
+      "passed": 459,
+      "indexes": "up to date",
+      "links": "pass",
+      "diff_checks": "pass",
+      "scope": "Documentation only; not terminal CI or product receiving."
+    }
   }
 }

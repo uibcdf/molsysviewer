@@ -68,6 +68,12 @@ The [terminal receipt](source_core_terminal_receiving_20261114.json) preserves
 4,732 Python passes, 42 explicit skips, all 25 notebooks and 53 complete core
 entries. The earlier inspector correction passes, but static failure diagnosis
 and complete current core acceptance remain open.
+The single complete current source checkpoint
+[43662871581](https://github.com/uibcdf/molsysviewer/actions/runs/43662871581)
+is active on `ad470cdf`, including #392/#393 and the new before-retirement
+static-bootstrap observer, all three Python source hosts and Linux core/
+notebooks. It has no terminal qualification yet; installed-candidate and
+publication authorization remain separate.
 The [#384 initial-canvas audit](pending_bugs/initial_jupyter_canvas_timeout_audit.md)
 now source-resolves the distinct #392 immutable-source lock defect, with causal
 guards and actual-kernel normal/contended receiving. The historical #615

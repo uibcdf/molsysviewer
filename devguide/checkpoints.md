@@ -907,6 +907,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current complete source checkpoint — 2026-11-14:**
+[43662871581](https://github.com/uibcdf/molsysviewer/actions/runs/43662871581)
+runs on exact producer `ad470cdf07a6c8746b909010e9d5f9caaaa85258` and scientific
+source `aee7aa65da56e896d1cb2d655bf73736f6453a43`, with pandas 3.1.0.
+This one substantive checkpoint receives all three Python 3.14 hosts and
+Linux's complete 63-entry core/25-notebook gates, including #392/#393 and
+the static-bootstrap observer. Complete exact-head manual inventory was zero;
+GH Run Receptor records three active jobs and no terminal outcome. It does
+not qualify a candidate or authorize version assignment/packages/publication.
+Do not duplicate it. The [followup receipt](molstar_qualification_followup_20261114.json)
+retains inputs and the earlier failed attempt separately.
+
 **Movie keyboard authoring — 2026-11-14:**
 [#393](archive/movie_authoring_keyboard_and_key_actions.md) is source-resolved:
 one keyboard tab stop, labelled content, local arrow/Home/End navigation and
