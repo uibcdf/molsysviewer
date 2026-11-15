@@ -47,6 +47,14 @@ checks in `921`; a new exact checkpoint is due. Browser/core entries were not
 reached. `source_receiving=true` skips
 candidate version/tag assignment; intended 1.0.0 input fields are not artifacts.
 
+One corrected successor is now active:
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+producer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb`, with unchanged published
+MT `bc5a9297`, full three-platform scope, all 63 Linux core entries and
+25 notebooks. Fresh complete inventories establish zero prior/active/queued
+dispatches before launch and one exact-head dispatch afterwards. The first
+receptor is pending, with three active native jobs; no result is credited.
+
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
 Reconcile #244/#395 against their complete guards and #388/#391 against the
 actual diagnostics and remaining causal limits. A successful source gate

@@ -132,15 +132,15 @@ MolSysSuite #200 owns the still-paused legacy-prefix adoption. The source-host
 solution is received; full current CI, installed qualification, package/tag
 and public publication remain separate.
 
-The single new [three-platform source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366)
-receives `f6765f6c` with owner-published MT `bc5a9297` (Git package/native
+The single current [three-platform source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+receives `3aff1d48` with owner-published MT `bc5a9297` (Git package/native
 sources unchanged from `96988b6e`), pandas 3.1.0 and ipykernel >=7.4.0.
-All three Python 3.14 jobs fail one stale literal environment expectation;
-the corrected guard now receives the >=7.4.0 floor across all four notebook
-recipes in 549 passing scoped checks. Linux keeps all 63 core entries and
-25 notebooks in the required successor checkpoint. It is source receiving
-without assigning candidate versions/tags. This failed result qualifies neither
-an installed pair nor the postponed human exits.
+Its three Python 3.14 jobs are initially active. Previous `43743095366` fails
+one stale literal environment expectation per host; the corrected guard
+receives the >=7.4.0 floor across all four notebook recipes in 549 passing
+scoped checks. Linux keeps all 63 core entries and 25 notebooks. It is pending
+source receiving without assigning candidate versions/tags, and qualifies
+neither an installed pair nor the postponed human exits.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

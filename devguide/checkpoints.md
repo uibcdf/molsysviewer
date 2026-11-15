@@ -908,11 +908,11 @@ previous qualification records retain their original candidate and environment.
 ## Resume in one page
 
 **Current Mol* closeout — 2026-11-15:** source checkpoint
-[43743095366](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366)
-fails on `f6765f6c` / published MT `bc5a9297`: all three Python 3.14
-hosts reject the same stale literal `ipykernel` test expectation. The corrected
-version-floor guard passes 549 selected checks; all 63 Linux core entries and
-25 notebooks remain required in the successor checkpoint. It is one source-only
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+receives `3aff1d48` / published MT `bc5a9297` on all three Python 3.14
+hosts, initially active, retaining all 63 Linux core entries and 25 notebooks.
+Previous `43743095366` fails one stale literal `ipykernel` expectation per
+host. The corrected floor guard passes 549 selected checks. It is one source-only
 dispatch, without candidate version/tag assignment. The
 [three-block receipt](molstar_closeout_three_blocks_20261115.json) retains
 earlier terminal failure `43698930436`: 4,760 Python cases, 25 notebooks and 53 core

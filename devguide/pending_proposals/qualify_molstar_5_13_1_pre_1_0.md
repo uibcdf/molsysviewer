@@ -65,12 +65,12 @@ The technical assessment and source corrections are delivered in their declared
 scopes. Closing this qualification still requires these three exits:
 
 Current complete source checkpoint:
-[43743095366](https://github.com/uibcdf/molsysviewer/actions/runs/43743095366)
-on `f6765f6c` / owner-published `bc5a9297`, three Python 3.14 hosts and the
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
 >=7.4.0 notebook profile. Linux retains all 63 core entries and 25 notebooks.
-It ends in failure because all three hosts reject a stale unversioned
-ipykernel test expectation. The corrected four-recipe floor guard passes
-549 scoped checks; complete receiving on the corrected source remains due.
+It initially has three active jobs. Previous `43743095366` fails one stale
+unversioned ipykernel expectation per host. The corrected four-recipe floor
+guard passes 549 scoped checks; complete receiving remains pending.
 There is one exact-head dispatch; no candidate
 version/tag or installed acceptance is assigned.
 

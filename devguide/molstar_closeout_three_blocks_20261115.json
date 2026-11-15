@@ -837,8 +837,8 @@
   },
   "latest_complete_source_dispatch": {
     "state": "dispatch_sent",
-    "at": "2026-11-15T17:47:38.236995+00:00",
-    "head_sha": "f6765f6c680b82f47de0ae94dcd459ac32a79138",
+    "at": "2026-11-15T18:43:07.577269+00:00",
+    "head_sha": "3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb",
     "workflow": "ci-python-314-source-pair.yaml",
     "ref": "main",
     "inputs": {
@@ -854,26 +854,24 @@
     "complete_exact_head_manual_inventory_before": 0,
     "complete_active_inventory_before": 0,
     "complete_queued_inventory_before": 0,
-    "scope": "One full three-platform Python 3.14 source checkpoint receives #391 timer bootstrap/real hidden export and #396 qualified notebook transport after complete affected guards and 587 headless controls. All 63 Linux core suites, native Python and 25 notebooks remain selected. MolSysMT bc5a9297 is an owner-published review source, production-equivalent by Git tree to 96988b6e; not a frozen producer. Source_receiving skips version/tag assignment: 1.0.0 fields are intended future release identities only. Earlier failed runs remain failed. Exact installed artifacts, historical #615 disposition, shared-prefix adoption, manual acceptance and any construction/publication authorization remain separate.",
+    "scope": "One full three-platform source checkpoint receives the corrected ipykernel floor expectation after 549 selected source-workflow checks and 476 record checks. Previous 43743095366 failures and all original six ZIPs remain retained. #391/#396 receiving scope remains complete; #384/#615 diagnostic results do not imply historical-cause closure or candidate qualification. All 63 Linux core suites, native Python and 25 notebooks remain selected. MolSysMT bc5a9297 is an owner-published review source, production-equivalent by Git tree to 96988b6e; not a frozen producer. Source_receiving skips version/tag assignment: 1.0.0 fields are intended future release identities only. Earlier failed runs remain failed. Exact installed artifacts, causal #615 review, shared-prefix adoption, manual acceptance and any construction/publication authorization remain separate.",
     "native_exit": 0,
-    "stdout": "https://github.com/uibcdf/molsysviewer/actions/runs/43743095366\n",
+    "stdout": "https://github.com/uibcdf/molsysviewer/actions/runs/43748320908\n",
     "stderr": "",
-    "run": 43743095366,
-    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43743095366",
-    "observed_status": "completed",
-    "observed_conclusion": "failure",
+    "run": 43748320908,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43748320908",
+    "observed_status": "in_progress",
+    "observed_conclusion": null,
     "first_receptor_exit": 3,
     "first_receptor_version": "1.1.1",
     "complete_exact_head_inventory_after": 1,
     "duplicate_dispatch": false,
     "custody": {
-      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/static-kernel-current-dispatch-20261115",
-      "files": 13,
-      "bytes": 40466,
-      "manifest_sha256": "39eb381c730ce694db2a4729e1ab6f51741be47405f1f998a5af2f58a145bdae",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/kernel-floor-source-dispatch-20261115",
+      "manifest_sha256": "864473d68e041877a51360e5c2f1560f8bf70ccf70ac1bde8de3d50feb01f3f4",
+      "files": 10,
       "originals_retained": true
-    },
-    "terminal_receptor_exit": 1
+    }
   },
   "board_reconciliation": {
     "tool": "devtools/devguide_issue.py sync",
@@ -1869,5 +1867,45 @@
       },
       "resource_stop": null
     }
+  },
+  "previous_complete_source_dispatch_43743095366": {
+    "state": "dispatch_sent",
+    "at": "2026-11-15T17:47:38.236995+00:00",
+    "head_sha": "f6765f6c680b82f47de0ae94dcd459ac32a79138",
+    "workflow": "ci-python-314-source-pair.yaml",
+    "ref": "main",
+    "inputs": {
+      "source_receiving": "true",
+      "receiving_scope": "full",
+      "platform": "all",
+      "pandas_version": "3.1.0",
+      "molsysmt_sha": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+      "encoder_diagnostics": "false",
+      "molsysmt_version": "1.0.0",
+      "viewer_version": "1.0.0"
+    },
+    "complete_exact_head_manual_inventory_before": 0,
+    "complete_active_inventory_before": 0,
+    "complete_queued_inventory_before": 0,
+    "scope": "One full three-platform Python 3.14 source checkpoint receives #391 timer bootstrap/real hidden export and #396 qualified notebook transport after complete affected guards and 587 headless controls. All 63 Linux core suites, native Python and 25 notebooks remain selected. MolSysMT bc5a9297 is an owner-published review source, production-equivalent by Git tree to 96988b6e; not a frozen producer. Source_receiving skips version/tag assignment: 1.0.0 fields are intended future release identities only. Earlier failed runs remain failed. Exact installed artifacts, historical #615 disposition, shared-prefix adoption, manual acceptance and any construction/publication authorization remain separate.",
+    "native_exit": 0,
+    "stdout": "https://github.com/uibcdf/molsysviewer/actions/runs/43743095366\n",
+    "stderr": "",
+    "run": 43743095366,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43743095366",
+    "observed_status": "completed",
+    "observed_conclusion": "failure",
+    "first_receptor_exit": 3,
+    "first_receptor_version": "1.1.1",
+    "complete_exact_head_inventory_after": 1,
+    "duplicate_dispatch": false,
+    "custody": {
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/static-kernel-current-dispatch-20261115",
+      "files": 13,
+      "bytes": 40466,
+      "manifest_sha256": "39eb381c730ce694db2a4729e1ab6f51741be47405f1f998a5af2f58a145bdae",
+      "originals_retained": true
+    },
+    "terminal_receptor_exit": 1
   }
 }
