@@ -10,6 +10,7 @@ dependencies:
 
   # --- Jupyter / widget development ---
   - jupyterlab
+  - ipykernel>=7.4.0
   - ipywidgets
   - aiohttp>=3.10
   - anywidget>=0.9.15

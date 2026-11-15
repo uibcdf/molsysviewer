@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
+import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { BrowserContext, Page } from "playwright";
+import type { BrowserContext, Frame, Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
 import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas-popup-fixture";
 import { fixtureEnvironment, withFixtureWorkspace } from "./fixture-workspace";
@@ -82,7 +83,7 @@ async function capturePlotIntents(source: Page) {
     });
 }
 
-async function rendered(page: Page, index: number, coordinates: number[][][]) {
+async function rendered(page: Page | Frame, index: number, coordinates: number[][][]) {
     await page.waitForFunction(({ index, coordinates }) => {
         const controller = (window as any).__mirrorController;
         if (controller?.trajectory.getTrajectoryState().currentFrame !== index) return false;
@@ -109,8 +110,18 @@ async function calculationDetails(page: Page, expected: any) {
     await details.locator("summary").click();
 }
 
+async function waitForStaticController(target: Page | Frame) {
+    // This is initialization state, not a completed draw. Native Chromium
+    // suspends animation frames in display:none iframes while module/timer
+    // work can still create the controller. Keep the 30-second bound and let
+    // the separate native-coordinate assertions receive actual rendering.
+    await target.waitForFunction(() => !!(window as any).__molsysviewerDocsController
+        || document.getElementById("molsysviewer-root")?.getAttribute("data-molsysviewer-error") === "true",
+    undefined, { polling: 100, timeout: 30000 });
+}
+
 /** Observe this real page before navigation; retain a bounded failure before its owner closes it. */
-function staticBootstrap(page: Page, report: (observation: any) => void = observation =>
+async function staticBootstrap(page: Page, report: (observation: any) => void = observation =>
     console.error("[E2E trajectory plot static bootstrap]", JSON.stringify(observation))) {
     const events: Array<{ kind: string; text: string }> = [];
     const record = (kind: string, text: string) => {
@@ -119,10 +130,34 @@ function staticBootstrap(page: Page, report: (observation: any) => void = observ
     page.on("pageerror", error => record("pageerror", String(error)));
     page.on("console", message => { if (message.type() === "error") record("console", message.text()); });
     page.on("requestfailed", request => record("requestfailed", `${new URL(request.url()).protocol} ${request.failure()?.errorText}`));
+    // Distinguish a late initialization from a ready controller that the
+    // default animation-frame poller did not observe. Never change bootstrap,
+    // force a draw, or extend the existing readiness deadline.
+    await page.addInitScript(() => {
+        const w = window as any;
+        const trace = w.__plotBootstrapTrace = {
+            started: Date.now(), firstController: null as number | null,
+            samples: 0, animationFrames: 0, lastAnimationFrame: null as number | null,
+            visibility: document.visibilityState,
+        };
+        const timer = setInterval(() => {
+            trace.samples++;
+            if (w.__molsysviewerDocsController && trace.firstController === null) trace.firstController = Date.now();
+            if (trace.samples >= 140) clearInterval(timer);
+        }, 250);
+        const frame = () => {
+            trace.animationFrames++;
+            trace.lastAnimationFrame = Date.now();
+            if (Date.now() - trace.started < 35000) requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+    });
     const snapshot = async () => {
         const state = await page.evaluate(() => {
             const root = document.getElementById("molsysviewer-root");
-            return { readyState: document.readyState, controller: !!(window as any).__molsysviewerDocsController,
+            return { epoch_ms: Date.now(), visibility: document.visibilityState,
+                timing: (window as any).__plotBootstrapTrace,
+                readyState: document.readyState, controller: !!(window as any).__molsysviewerDocsController,
                 rendered: root?.getAttribute("data-molsysviewer-rendered"),
                 failed: root?.getAttribute("data-molsysviewer-error"),
                 message: root?.getAttribute("data-molsysviewer-error") ? root.textContent?.slice(0, 1200) : undefined,
@@ -132,8 +167,7 @@ function staticBootstrap(page: Page, report: (observation: any) => void = observ
     };
     return async () => {
         try {
-            await page.waitForFunction(() => !!(window as any).__molsysviewerDocsController
-                || document.getElementById("molsysviewer-root")?.getAttribute("data-molsysviewer-error") === "true");
+            await waitForStaticController(page);
             assert.equal((await snapshot()).controller, true,
                 "The independent exported page must initialize its own controller");
         } catch (error) {
@@ -142,6 +176,34 @@ function staticBootstrap(page: Page, report: (observation: any) => void = observ
             throw error;
         }
     };
+}
+
+/** A real exported molecular page can initialize before its iframe is shown. */
+async function hiddenStaticBootstrap(context: BrowserContext, workspace: string, coordinates: number[][][]) {
+    const host = resolve(workspace, "hidden-plot.html");
+    await writeFile(host, '<!doctype html><html><body><iframe style="display:none" src="plot.html"></iframe></body></html>');
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on("pageerror", error => errors.push(String(error)));
+    try {
+        const attached = page.waitForEvent("frameattached");
+        const navigation = page.goto(pathToFileURL(host).href, { waitUntil: "commit" });
+        const frame = await attached;
+        // Start while this actual frame is navigating, before the export's
+        // asynchronous controller appears. No scene, readiness flag or native
+        // clock is replaced, and the iframe remains display:none throughout.
+        const ready = waitForStaticController(frame);
+        await Promise.all([navigation, ready]);
+        assert.equal(await page.locator("iframe").evaluate(node => getComputedStyle(node).display), "none");
+        assert.equal(await frame.evaluate(() => !!(window as any).__molsysviewerDocsController), true);
+        await page.locator("iframe").evaluate(node => {
+            node.style.cssText = "display:block;width:1000px;height:720px";
+        });
+        await frame.evaluate(() => { (window as any).__mirrorController = (window as any).__molsysviewerDocsController; });
+        await rendered(frame, 2, coordinates);
+        assert.deepEqual(errors, []);
+        console.log("[E2E trajectory plot] native hidden-iframe bootstrap and revealed molecular coordinates passed");
+    } finally { await page.close(); }
 }
 
 /** A real click must reach the retained Python owner, not just a local playhead. */
@@ -241,7 +303,7 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             const staticPage = await context.newPage();
             staticPage.on("pageerror", error => errors.push(String(error)));
             try {
-                const receiveBootstrap = staticBootstrap(staticPage);
+                const receiveBootstrap = await staticBootstrap(staticPage);
                 await staticPage.goto(pathToFileURL(state.static_path).href);
                 await receiveBootstrap();
                 await captureCanvasPopupControllers(staticPage);
@@ -255,13 +317,14 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                 assert.equal(state.index, 0);
                 assert.deepEqual(state.callbacks.map((event: any) => event.frame), expectedCallbacks);
             } finally { await staticPage.close(); }
+            await hiddenStaticBootstrap(context, workspace, state.coordinates);
             // A real explicit unavailable runtime must preserve its native load
             // error and visible failure before retiring the page. This checks
             // the receiver, not the cause of the older hosted timeout.
             const unavailablePage = await context.newPage();
             try {
                 let failure: any;
-                const receiveBootstrap = staticBootstrap(unavailablePage, observation => { failure = observation; });
+                const receiveBootstrap = await staticBootstrap(unavailablePage, observation => { failure = observation; });
                 await unavailablePage.goto(pathToFileURL(state.unavailable_runtime_path).href);
                 await assert.rejects(receiveBootstrap, /independent exported page must initialize its own controller/);
                 assert.equal(unavailablePage.isClosed(), false, "Bootstrap evidence must be captured before page retirement");

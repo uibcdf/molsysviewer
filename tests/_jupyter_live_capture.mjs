@@ -268,6 +268,16 @@ try{
  if(process.env.PW_CHROMIUM_BIN)options.executablePath=process.env.PW_CHROMIUM_BIN;
  browser=await chromium.launch(options);
  page=await browser.newPage({viewport:{width:1440,height:1100}});page.setDefaultTimeout(30000);
+ report.websocket_frames=[];
+ page.on('websocket',socket=>{
+  if(!new URL(socket.url()).pathname.endsWith('/channels'))return;
+  const record=(direction,payload)=>{
+   report.websocket_frames.push({direction,epoch_ms:Date.now(),bytes:Buffer.byteLength(payload)});
+   if(report.websocket_frames.length>512)report.websocket_frames.shift();
+  };
+  socket.on('framesent',event=>record('send',event.payload));
+  socket.on('framereceived',event=>record('recv',event.payload));
+ });
  page.on('console',message=>{if(['error','warning'].includes(message.type())&&report.runtime_console.length<64)report.runtime_console.push({stage,type:message.type(),text:message.text().slice(0,2048)});});
  page.on('pageerror',error=>report.page_errors.push({stage,message:error.message,stack:error.stack}));await observeControllers(page);
  await page.goto(`http://127.0.0.1:${config.port}/lab/workspaces/capture-${Date.now()}/tree/capture.ipynb?token=${config.token}`,{waitUntil:'domcontentloaded'});
@@ -280,9 +290,17 @@ try{
  await page.waitForFunction(()=>window.__captureControllers?.[0]?.getStructureData()?.elementCount===62);
  await observeDraws(page);
  await page.evaluate(()=>{
-  window.__captureTraffic=[];window.__captureProtocolTraffic=[];window.__captureKernelErrors=[];
+  window.__captureTraffic=[];window.__captureProtocolTraffic=[];window.__captureKernelErrors=[];window.__captureKernelMessages=[];
   const kernel=window.jupyterapp.shell.currentWidget.sessionContext.session.kernel;
+  const recordKernel=(phase,message,direction)=>{
+   const rows=window.__captureKernelMessages;
+   rows.push({phase,direction,epoch_ms:Date.now(),monotonic_ms:performance.now(),
+    type:message.header?.msg_type,id:message.header?.msg_id,parent:message.parent_header?.msg_id});
+   if(rows.length>512)rows.shift();
+  };
+  kernel.iopubMessage.connect((_sender,message)=>recordKernel('processed-iopub',message,'recv'));
   kernel.anyMessage.connect((_sender,args)=>{
+   recordKernel('wire',args.msg,args.direction);
    const content=args.msg?.content?.data?.content,data=content?.payload??content;
    if(args.msg?.header?.msg_type==='error'&&window.__captureKernelErrors.length<12)window.__captureKernelErrors.push({ename:args.msg.content.ename,evalue:args.msg.content.evalue});
    if(data?.event==='visual_state_snapshot')window.__captureTraffic.push(JSON.parse(JSON.stringify(data)));

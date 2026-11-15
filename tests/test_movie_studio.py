@@ -268,6 +268,7 @@ def test_live_jupyter_movie_authoring(tmp_path):
     assert receipt["profile"] == "movie" and receipt["browser_summary"]["movie_authoring_cases"] == 8
     observed = json.loads((output / "observations.json").read_text())
     assert observed["outcome"] == "passed" and observed["movie_source_unchanged"]
+    assert observed["movie_seek_cycles"] == 10
     assert observed["movie_cancel_late_reply_preserved"]
     assert observed["movie_python_studio_pause"]
     assert receipt["process_cleanup"]["survivors"] == [] and receipt["process_cleanup"]["errors"] == []

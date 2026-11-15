@@ -10,6 +10,7 @@ def notebook_cells(output, expected):
         f"""from pathlib import Path
 import asyncio, faulthandler, hashlib, importlib, json, sys, zipfile
 import numpy as np
+import ipykernel
 import molsysviewer as msv
 import molsysmt as msm
 from IPython.display import display
@@ -22,7 +23,8 @@ _origins = {{name: str(Path(importlib.import_module(name).__file__).resolve()) f
 assert _origins == {{name: str(Path(path).resolve()) for name, path in _expected.items()}}, _origins
 _native_sha = hashlib.sha256(Path(_origins['molsysmt._rust']).read_bytes()).hexdigest()
 assert _native_sha == {native_sha!r}
-Path({str(output / "kernel-origin.json")!r}).write_text(json.dumps({{'python': sys.version, 'executable': sys.executable, 'modules': _origins, 'native_sha256': _native_sha}}, indent=2))
+Path({str(output / "kernel-origin.json")!r}).write_text(json.dumps({{'python': sys.version, 'executable': sys.executable, 'modules': _origins, 'native_sha256': _native_sha,
+    'notebook_host': {{'ipykernel_version': ipykernel.__version__, 'ipykernel_origin': ipykernel.__file__}}}}, indent=2))
 with msv.demo['pentalanine'] as seed:
     view = seed.extract(structure_indices=[0, 8, 3])
 view.whole.set_representation('ball-and-stick', color='blue')

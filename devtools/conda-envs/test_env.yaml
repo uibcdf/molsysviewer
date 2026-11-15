@@ -15,7 +15,7 @@ dependencies:
   - pytest-cov
   # Actual widget/kernel/browser receiving for live work-file capture (#319).
   - jupyterlab
-  - ipykernel
+  - ipykernel>=7.4.0
   - psutil
   # The distribution-contract tests parse the Conda YAML recipe during collection.
   - pyyaml>=6.0

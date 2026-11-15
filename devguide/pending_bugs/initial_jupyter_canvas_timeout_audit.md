@@ -52,6 +52,19 @@ finishing its initial cell in 3.357631 seconds. That is useful later evidence,
 not a reconstruction of the original missing phase or an accepted resolution.
 The original files remain private and unchanged.
 
+**Retained environment supplement — 2026-11-15:** the same original failure
+directory still contains `environment.json`, written before its failure JSON.
+Its SHA-256 is
+`f460e8b970e9c71c6fb6ec32a3b9f6b51ff9144e8584002b13b0ddc1a14f6b98`
+and its installed-package inventory reports ipykernel 7.3.0. The neighbouring
+failure still matches the original `f7bfe46f…` digest above. The independently
+reproduced newer comm stall and 7.4.0 source-host solution are tracked under
+[#396](jupyter_movie_seek_pending.md). An associated environment inventory is
+not an observation of the module loaded in the original kernel, nor proof of
+its missing transition. Neither failure is relabelled. A separately hashed
+private supplement preserves both originals; the current closure receipt
+records that custody and the owner handoff without a new execution.
+
 ## Current startup path and discriminating observations
 
 | Boundary | Current owner and ordering | Evidence needed before attributing a failure |

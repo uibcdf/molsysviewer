@@ -195,6 +195,11 @@ Its static bootstrap observer retains bounded console/page/network and root
 failure state before closing a failed page, without extending the 30-second
 ready deadline. A real export with an explicit unavailable local runtime
 receives that diagnostic path; it does not explain earlier unobserved failures.
+Initialization uses a 100-ms timer poll rather than animation-frame polling:
+the real hidden-iframe export initializes before revelation, then its actual
+frame-two molecular coordinates are received after revelation. No native
+clock or readiness flag is replaced. The initialization deadline stays 30
+seconds; initialization is not itself an assertion of a completed draw.
 Its precision scenario additionally checks actual labels, complete raw-value
 access, SVG geometry against independent Decimal/binary64 controls and
 perturbed state-file recovery, retaining explicit units and frame identity.

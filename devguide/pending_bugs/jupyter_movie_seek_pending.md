@@ -1,11 +1,11 @@
 ---
-summary: Actual Jupyter Movie seek remains pending after authoring and Python editing.
+summary: Receive notebook Movie on the corrected ipykernel comm transport.
 issue: uibcdf/molsysviewer#396
-status: active
+status: partial
 opened: 2026-11-15
 closed:
 severity: high
-verification: measured
+verification: reproduced
 area: [movie, jupyter, concurrency, receiving]
 guard: tests/test_movie_studio.py::test_live_jupyter_movie_authoring
 normative:
@@ -14,6 +14,15 @@ supersedes: []
 ---
 
 # Correlated Movie seek in an actual notebook
+
+**Source correction received — 2026-11-15:** the interleaved comm/execute stall
+is reproduced without MolSysViewer on ipykernel 7.3.0. Original 7.4.0 provider
+bytes pass the minimal 30-cycle control and the complete selected Movie pytest,
+now requiring ten edit/seek cycles before its existing popup/media/recovery
+suffix. Component notebook recipes require `ipykernel>=7.4.0`; the legacy
+shared-prefix transition belongs to [MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200)
+and remains paused. Complete current source/installed receiving is separate.
+This does not explain the earlier #615 first-canvas timeout.
 
 The current source receives native Qt's stopped/moving work-file flow in
 `888`, but the separate actual-Jupyter Movie guard fails in `889` on
@@ -98,3 +107,76 @@ ownership, distinguish an unknown outcome from failure, and avoid repeating an
 export or accepting a late reply as completion of a different command. This
 observation is a recovery constraint, not a diagnosis of the missing original
 completion or permission to hide it behind a timer.
+
+## Discriminating transport observation
+
+Control `910` reproduces the same failure with comparable browser/Python epoch
+clocks, bounded wire-versus-processed-IOPub header observations and a read-only
+pending-task observer. The browser records sending the correlated `movie_seek`
+at `1794762213767` ms; the Python comm handler first admits that same request
+at approximately `1794762249312` ms, about 35.5 seconds later. The browser's
+pre-retirement snapshot is earlier, at `1794762243782` ms: kernel connection
+is connected, status is idle, editor revision is six, native frame is zero
+and the action is still pending. No correlated Python seek operation or
+renderer request has been observed during that UI wait. The two preceding
+Movie authoring/edit phases pass; later phases remain unreached.
+
+This localizes the measured delay before Python's application-level handler;
+Jupyter's `anyMessage` send signal alone does not prove actual socket delivery
+or a server-to-kernel send. Browser-native WebSocket frame times and the real
+server incoming/ZMQ-send boundaries are the next discriminating observations.
+They must delegate once and retain bounded metadata, not message bodies,
+tokens or scientific payloads. Do not assign a browser/server/kernel cause
+until those stages are observed. The earlier failures retain their original
+unknown scope. All 9,979 selected inputs stay unchanged and all 19 owned
+processes retire; the supervisor records no resource stop.
+
+Control `911` adds actual server incoming/ZMQ-send and browser-native WebSocket
+frame observations; the full eight-phase workflow passes, so it does not
+explain the failing attempt. Control `912` then repeats the critical
+Python-edit/kept-draft/seek sequence ten times in one kernel before the same
+suffix. Six cycles pass. The next seek reaches the server and ZMQ send in
+approximately 1–2 ms, but Python admits the correlated request about 35.7
+seconds later. Neither browser-side queuing nor an already-running Movie
+calculation accounts for that observed pre-handler interval. Original handler,
+server, wire and pre-retirement observations remain in private custody.
+
+## Existing upstream correction and bounded adoption
+
+Minimal control `913` uses only a real ipykernel and jupyter_client comm target,
+without MolSysViewer, widgets, browser, server or science. A cell publishes a
+comm and the client answers during and after execution. Thirteen cycles pass
+with ipykernel 7.3.0; the next two messages do not reach the callback within the
+diagnostic five-second admission bound. The application's 30-second deadline
+has not changed. This native result, together with `912`, distinguishes the
+provider transport boundary from molecular scene execution.
+
+The existing [upstream correction](https://github.com/ipython/ipykernel/pull/1529)
+is included in public 7.4.0. The inspected 7.3.0 shell reply bypasses its
+ZMQStream with a raw socket send; 7.4.0 sends through the owning stream, avoiding
+the documented lost read-edge mechanism. No upstream patch is copied into
+MolSysViewer, and no new external issue is published for an already fixed bug.
+
+Control `914` verifies all 57 selected package files from original conda-forge
+`ipykernel-7.4.0-pyh4a3486f_0.conda` (SHA-256
+`9ea2c55f4a9aa9146f614f827412716c6f53cd08eace21297b687301b804bb97`)
+and passes 30/30 native comm cycles through an isolated provider path. `915`
+passes the ten-cycle real Movie diagnostic and all eight original phases.
+The maintained guard now keeps those ten native edit/seeks and asserts their
+completed count. Kernel-origin evidence records the actual loaded version/path.
+
+The uninstrumented selected pytest then passes in `916`: 1 passed in 95.76 s,
+ten edit/seeks, eight Movie phases, both popup owners, Python/Studio pause,
+native media, independent session recovery and close/late-reply protection.
+There are no Python delegates, observer threads or modified server in this
+receiving. Original provider bytes match before/after; all 9,979 selected inputs
+stay unchanged, all 20 owned processes retire and no resource stop occurs.
+This receives the source solution on that notebook-host profile, not a clean
+solver-installed candidate, other platform, native Qt or human acceptance.
+
+The maintained notebook recipes and installation/developer instructions now
+require ipykernel >=7.4.0. This is a host requirement; headless/Qt runtime
+dependencies remain unchanged. The shared legacy prefix still has 7.3.0 and
+was not modified. MolSysSuite #200 owns its controlled migration/adoption and
+other-consumer review. Keep that pending ownership visible, and keep the
+historical #615 uncertainty separate from this reproduced comm-transport fault.

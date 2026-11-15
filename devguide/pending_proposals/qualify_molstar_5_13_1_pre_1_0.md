@@ -66,7 +66,7 @@ scopes. Closing this qualification still requires these three exits:
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus applicable Python/notebook/platform evidence. Latest full run [43692655949](https://github.com/uibcdf/molsysviewer/actions/runs/43692655949) on `21474b8c` / `aee7aa65` fails at #397 after nine complete core entries; 4,752 Python cases and all 25 notebooks pass. #395's complete story and #397's complete lifecycle pass locally after their test-only corrections. A new uninterrupted gate is still required; reconcile #244/#388/#391 against actual guards and causal limits. |
+| Complete integrated source receiving | Receive all 63 mandatory core entries in one successful current source run, plus applicable Python/notebook/platform evidence. Latest full run [43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436) on `28147339` / `aee7aa65` passes #397, 4,760 Python cases, all 25 notebooks and 53 core entries, then fails #391's static bootstrap. Real hidden-iframe control `907` demonstrates stopped animation-frame polling despite a ready controller; the timer-based correction and hidden/revealed molecular regression pass the complete plot guard in `909`. Historical page visibility remains unknown. #395's complete story passes locally. A new uninterrupted gate is still required; reconcile #244/#388/#391 against actual guards and causal limits. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 
@@ -76,8 +76,8 @@ a 480-second aggregate allowance. Individual operation deadlines, assertions
 and core inclusion are unchanged. The complete diagnostic mirror passes;
 the unoverridden paired and later single-mirror attempts are resource-interrupted,
 not canonical passes. The terminal hosted run receives the complete mirror boundary. Its later
-Movie selector failure belongs to #395; repeat the complete source lane only
-after receiving that correction. Do not repeat heavy local work during
+Movie selector failure belongs to #395; the latest receiving also passes #397
+and now requires #391's received static-bootstrap correction. Do not repeat heavy local work during
 recurring shared swap.
 
 This checklist does not reopen the architectural comparison or add v6 work.

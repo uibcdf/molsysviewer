@@ -61,6 +61,23 @@ Linux/macOS matrix retains Python 3.11–3.13 comparison cells and adds 3.14;
 JS/coverage, documentation and core browser jobs use 3.14. The exact-source
 three-host 3.14 pair and experimental Qt lane keep their separate scopes.
 
+### Notebook kernel baseline
+
+The maintained notebook environments require **ipykernel >= 7.4.0**. With
+7.3.0, interleaved Python execution and widget comms can stop reaching their
+Python handlers while the kernel reports idle. MolSysViewer #396 reproduced
+this independently of the viewer; upstream
+[ipython/ipykernel#1529](https://github.com/ipython/ipykernel/pull/1529),
+included in 7.4.0, routes shell replies through their owning ZMQ stream.
+Keep the original operation deadlines; a longer wait or resending an unknown
+operation is not the remedy.
+
+This is a notebook-host requirement, not an additional runtime dependency for
+headless Python or Qt. An already-running kernel keeps its loaded version;
+changing an environment requires starting a new kernel. Shared-prefix changes
+remain under the owning MolSysSuite workspace procedure and its current pause.
+The component recipe does not authorize changing that shared environment.
+
 ### Standalone Qt host note
 
 The final standalone packaging story is still open.

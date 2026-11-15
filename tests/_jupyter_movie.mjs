@@ -53,14 +53,17 @@ export async function receiveJupyterMovie({page,kernel,config,report,openCanvas,
   await page.getByRole('button',{name:'Save key',exact:true}).click();await idle(page);
   assert.equal((await status()).recipe.tracks.length,3);report.movie_authoring_cases++;
 
+  // Repeated Python edits must not strand later comms in this same kernel (#396).
+  for(let cycle=0;cycle<10;cycle++){
+  await page.getByRole('tab',{name:'Timeline',exact:true}).click();
   phase('Movie Python edit');
-  await page.getByLabel('Track name',{exact:true}).fill('kept notebook draft');
+  await page.getByLabel('Track name',{exact:true}).fill('kept notebook draft '+cycle);
   await kernel("view.movie.set_duration(1000)\nprint('MSV_CAPTURE_JSON '+json.dumps(True))");
   await page.getByRole('button',{name:'Use kept draft',exact:true}).waitFor();
   assert.equal(await page.getByRole('button',{name:'Save key',exact:true}).isDisabled(),true);
   await page.getByRole('button',{name:'Use kept draft',exact:true}).click();await idle(page);
-  assert.equal(await page.getByLabel('Track name',{exact:true}).inputValue(),'kept notebook draft');
-  report.movie_authoring_cases++;
+  assert.equal(await page.getByLabel('Track name',{exact:true}).inputValue(),'kept notebook draft '+cycle);
+  if(cycle===9)report.movie_authoring_cases++;
 
   phase('Movie notebook seek');
   await page.getByRole('tab',{name:'Preview',exact:true}).click();
@@ -68,7 +71,10 @@ export async function receiveJupyterMovie({page,kernel,config,report,openCanvas,
   await page.getByRole('button',{name:'Go to time',exact:true}).click();await idle(page);
   observed=await fresh(page);assert.equal(observed.frame,2);assert.equal(observed.trajectory,true);assert.equal(observed.annotations,true);
   assert.equal(observed.region_hidden,true);assert.ok(observed.representations.length>0&&observed.representations.every(Boolean));
-  assert.equal((await status()).frame,2);report.movie_authoring_cases++;
+  assert.equal((await status()).frame,2);if(cycle===9)report.movie_authoring_cases++;
+
+  report.movie_seek_cycles=(report.movie_seek_cycles??0)+1;
+  }
 
   phase('Movie popup camera');popup=await openCanvas();
   popup.on('pageerror',error=>report.page_errors.push({stage:'Movie popup camera',message:error.message}));
@@ -149,9 +155,11 @@ export async function receiveJupyterMovie({page,kernel,config,report,openCanvas,
    return {epoch_ms:Date.now(),hidden:document.hidden,frame,editor:p&&{state:p.state,pending:p.pending,message:p.message},
     kernel_transport:kernel&&{connection_status:kernel.connectionStatus,status:kernel.status,is_disposed:kernel.isDisposed},
     native:c&&{trajectory:c.trajectory.isCaptureFrameReady(frame),annotations:c.annotations.isGeometryCurrent(),movie:c.movie.isCaptureSafe},
-    traffic:window.__captureProtocolTraffic?.slice(-40),replies:window.__captureTraffic?.slice(-4)};
+    traffic:window.__captureProtocolTraffic?.slice(-40),replies:window.__captureTraffic?.slice(-4),
+    kernel_messages:window.__captureKernelMessages?.slice(-96)};
   }).catch(e=>({diagnostic_error:e.name}));
-  report.movie_failure={pages:await Promise.all([inspect(page),inspect(popup),inspect(panel)])};
+  report.movie_failure={pages:await Promise.all([inspect(page),inspect(popup),inspect(panel)]),
+   websocket_frames:report.websocket_frames?.slice(-96)};
   await writeFile(config.output+'/movie-failure-before-kernel.json',JSON.stringify(report.movie_failure,null,2));
   let diagnosticTimer;
   try{

@@ -907,16 +907,18 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Scientific mirror recovery — 2026-11-15:**
-[43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
-is active on `b9f7dfb2673dd80b1fc4dd04ba19c7d04e16e0c0`, with the same
-scientific source `aee7aa65` and pandas 3.1.0. Only the mirror's aggregate
-allowance changes to 480 seconds; all operations/assertions/core selection
-remain. Its complete diagnostic measurement passes; the unoverridden local
-pair is resource-interrupted. Canonical entry build, 474 metadata/link/E2E
-policy cases and Ruff pass. One complete Linux dispatch retains all core,
-Python and notebook work; the first receptor is pending with one active job.
-Keep #244 open, do not duplicate the run or credit a terminal result early.
+**Current Mol* closeout — 2026-11-15:** the
+[three-block receipt](molstar_closeout_three_blocks_20261115.json) retains
+terminal failure `43698930436`: 4,760 Python cases, 25 notebooks and 53 core
+entries pass, including #397. #391's corrected timer-based bootstrap and real
+hidden/revealed molecular export pass the complete plot guard. #396 reproduces
+independently on ipykernel 7.3.0; original 7.4.0 bytes pass 30 native cycles
+and the complete actual Movie pytest with ten edit/seeks. Component notebook
+recipes now require >=7.4.0. MolSysSuite #200 owns legacy-prefix adoption;
+that shared prefix is unchanged. Current full source, exact installed pair,
+historical #615 disposition and applicable human exits remain separate and
+pending. Follow the [decision packet](molstar_closeout_decisions_20261115.md).
+The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)

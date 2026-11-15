@@ -20,8 +20,18 @@ run; neither failed prefix nor a local suffix supplies that acceptance.
 The corrected full source checkpoint is now
 [43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436),
 producer `28147339afe0315c1b252095c1442a1674fc5c9e` with the same scientific
-source/pandas and all 63 core entries. Its first observation is pending;
-exact-head/active inventories confirm one dispatch. Do not duplicate it.
+source/pandas and all 63 core entries. It is now terminal failure: 4,760 Python
+cases and all 25 notebooks pass, followed by 53 complete core entries. #397's
+popup lifecycle passes; entry 54 repeats the independent static bootstrap
+timeout tracked under #391. Its new diagnostics observe a controller at
+retirement, without captured page/console/network errors. Keep the failed
+run and its original verified ZIPs. Do not rerun unchanged inputs blindly.
+
+Real-export control `907` demonstrates that a hidden iframe creates its
+controller while the default animation-frame predicate stops polling. The
+receiving correction uses timer polling under the same 30-second bound and
+adds an actual hidden/revealed molecular export. This does not assign the
+original hosted page's visibility; affected and full source gates remain due.
 
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
 Reconcile #244/#395 against their complete guards and #388/#391 against the
@@ -114,6 +124,15 @@ in [#396](pending_bugs/jupyter_movie_seek_pending.md). This must be investigated
 and received before claiming current actual-host Movie acceptance. It does not
 explain the older first-canvas #615 observation or invalidate the narrower Qt
 result. A source core pass alone would not close this live-kernel boundary.
+
+The current investigation now reproduces the comm/execute stall independently
+on ipykernel 7.3.0. The original 7.4.0 provider, incorporating upstream #1529,
+passes 30 native comm cycles and the maintained complete Movie guard in `916`,
+including ten same-kernel Python-edit/seek cycles. The component notebook
+recipes require `ipykernel>=7.4.0`. The unchanged shared legacy prefix remains
+on 7.3.0; [MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200)
+owns its controlled migration. This is a received source-host solution, not
+an installed-candidate gate or a cause assigned to the older #615 observation.
 
 Prepare the postponed human round against the received artifact, rather than
 an unrelated development overlay. It should cover the already agreed molecular

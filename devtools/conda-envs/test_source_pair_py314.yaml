@@ -16,7 +16,8 @@ dependencies:
   - pyyaml>=6.0
   # Execute every documented notebook against this same exact source pair.
   - nbconvert
-  - ipykernel
+  # 7.3.0 can strand shell comms; 7.4.0 includes ipython/ipykernel#1529 (#396).
+  - ipykernel>=7.4.0
   # Actual widget/kernel/browser diagnostics share the same source provider (#319).
   - jupyterlab
   - psutil

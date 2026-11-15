@@ -267,7 +267,7 @@
       "Agree exact producers/refs, new unused builds, manifests, original file hashes and one installed 16-cell dispatch after prerequisite review."
     ],
     "matrix": "Four platforms x Python 3.11-3.14; no new installed dispatch performed.",
-    "additional_current_prerequisite": "Diagnose and receive actual-Jupyter Movie #396 before final current-host/candidate acceptance.",
+    "additional_current_prerequisite": "Current notebook host profile requires ipykernel>=7.4.0; receive exact candidate on this explicit host baseline. Legacy-prefix adoption belongs to MolSysSuite #200. Historical #615 disposition and installed pair remain separate.",
     "current_owner_source_controls": {
       "profile": "mt-review-session-interactions-897",
       "source": "96988b6ea42fb02a662fa3dda5eb2f7659f28c56",
@@ -330,6 +330,10 @@
         "invocation.json": "39c899a5e50df8a8fe774a99f8751d8f926fe178ccb7c3ceda8432027e91bc03",
         "producer-origin.json": "71726a88ea4bdd6226555004cd893a30f87ddd8f1117fe88d1d69e24fa53fabd",
         "inputs-before.json": "b51a73f1bfa76c802ec08a001129043e2414de426506c745ebe929cb2062f7ad"
+      },
+      "owner_review": {
+        "commit": "2801677bcceb6f1b9c9bb64405c8e0bab8a04443",
+        "scope": "Owner independently verified 11 immutable public blobs, guard definitions, selected source/native identities and production equality. Original JUnit/invocation/origin remain in MolSysViewer custody; no independent replay, installed/ABI/floor/BindingMT/producer acceptance."
       }
     },
     "metadata_proposal": {
@@ -421,6 +425,109 @@
         "cause": "Still unknown. Diagnostic task samples capture an already completed seek. Later complete success does not resolve original #396 failures. No further identical heavy retry without a new hypothesis/input.",
         "receiver_change": "Passive bounded browser/kernel clock/correlation and connection-state diagnostics; no runtime, operation, response, timeout or extra production timer change."
       }
+    },
+    "current_notebook_host_solution": {
+      "issue": "uibcdf/molsysviewer#396",
+      "state": "Source notebook profile received; full current CI/installed receiving and shared-prefix owner transition remain separate.",
+      "shared_workspace_issue": "uibcdf/molsyssuite#200",
+      "upstream_correction": "https://github.com/ipython/ipykernel/pull/1529",
+      "upstream_release": "https://github.com/ipython/ipykernel/releases/tag/v7.4.0",
+      "profile_requirement": "ipykernel>=7.4.0 in component notebook recipes; no new core runtime dependency or shared-prefix mutation.",
+      "provider_file": "ipykernel-7.4.0-pyh4a3486f_0.conda",
+      "provider_channel": "conda-forge/noarch; this selected original build declares __linux.",
+      "provider_sha256": "9ea2c55f4a9aa9146f614f827412716c6f53cd08eace21297b687301b804bb97",
+      "provider_files_verified": 57,
+      "failing_same_kernel_repetition": {
+        "profile": "jupyter-movie-repeated-912",
+        "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+        "native_exit": 1,
+        "seconds": 81.48404018720612,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "peak_owned_rss_mib": 2583.8,
+        "resource_stop": null,
+        "cleanup": {
+          "tracked": 18,
+          "survivors": [],
+          "errors": []
+        },
+        "raw_receipt_sha256": "a78761c9d57ef18973c9e3a960bcb78444f08edf8edcf6ce9b586d18ad63c1c1"
+      },
+      "successful_repeated_seek_cycles_before_failure": 6,
+      "server_zmq_send_delay_ms_upper_bound": 2,
+      "observed_python_admission_delay_ms_approx": 35700,
+      "minimal_native_730": {
+        "profile": "native-kernel-comm-913",
+        "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+        "native_exit": 1,
+        "seconds": 11.999959559645504,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "peak_owned_rss_mib": 107.9,
+        "resource_stop": null,
+        "cleanup": {
+          "tracked": 2,
+          "survivors": [],
+          "errors": []
+        },
+        "raw_receipt_sha256": "34053193d8f3d3cf0fb37b56697b6ddf4fa9a27a7c5a2a32021bed661633bcfd"
+      },
+      "minimal_native_730_completed_cycles": 13,
+      "minimal_native_740": {
+        "profile": "native-kernel-740-914",
+        "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+        "native_exit": 0,
+        "seconds": 10.378206187393516,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "peak_owned_rss_mib": 108.4,
+        "resource_stop": null,
+        "cleanup": {
+          "tracked": 2,
+          "survivors": [],
+          "errors": []
+        },
+        "raw_receipt_sha256": "6f15b14f2b821bcc628ae417566385c059d09d57fcc509bb9a0d4b3a1504c7c8"
+      },
+      "minimal_native_740_completed_cycles": 30,
+      "diagnostic_full_740": {
+        "profile": "jupyter-movie-740-repeated-915",
+        "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+        "native_exit": 0,
+        "seconds": 102.75619671540335,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "peak_owned_rss_mib": 3149.2,
+        "resource_stop": null,
+        "cleanup": {
+          "tracked": 18,
+          "survivors": [],
+          "errors": []
+        },
+        "raw_receipt_sha256": "46aa90e4317f6145392fecaeb4a249100e1a5734cf028fa9b7ae694212267abf"
+      },
+      "canonical_full_740": {
+        "profile": "jupyter-movie-740-canonical-916",
+        "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+        "native_exit": 0,
+        "seconds": 100.08285252796486,
+        "selected_inputs": 9979,
+        "inputs_unchanged": true,
+        "peak_owned_rss_mib": 3245.1,
+        "resource_stop": null,
+        "cleanup": {
+          "tracked": 20,
+          "survivors": [],
+          "errors": []
+        },
+        "raw_receipt_sha256": "dc49a2c7d5f4aa87d4846abde9116b6deb81ef371bcddae01a7574be54340dcd"
+      },
+      "canonical_pytest_passed": 1,
+      "canonical_pytest_seconds": 95.76,
+      "canonical_movie_phases": 8,
+      "canonical_repeated_edit_seek_cycles": 10,
+      "no_python_delegates_observer_threads_or_modified_server_in_canonical": true,
+      "scope": "Original provider bytes through isolated copied PYTHONPATH; actual Jupyter/kernel/Mol*/widget receiving, not a clean solver install or other-platform/general human acceptance. Older first-canvas #615 cause remains unassigned. Prior complete passes do not rewrite earlier failed attempts."
     }
   },
   "resource_policy": "One heavy local execution at a time; bounded <=8 logical CPU/6 GiB, current story 8 CPU/4 GiB, zero own swap, conservative 6.5 GiB global reserve and PSI/swap stops. No shared-prefix installs or foreign process termination.",
@@ -751,8 +858,8 @@
     "stderr": "",
     "run": 43698930436,
     "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43698930436",
-    "observed_status": "in_progress",
-    "observed_conclusion": null,
+    "observed_status": "completed",
+    "observed_conclusion": "failure",
     "first_receptor_exit": 3,
     "first_receptor_version": "1.1.1",
     "complete_exact_head_inventory_after": 1,
@@ -773,5 +880,342 @@
     "sync_exit": 0,
     "bodies_comments_closures_changed": false,
     "source_scope": "Only canonical derived active/partial labels reconciled; no issue closure or acceptance inferred."
+  },
+  "latest_complete_source_terminal": {
+    "run": 43698930436,
+    "producer": "28147339afe0315c1b252095c1442a1674fc5c9e",
+    "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+    "status": "completed",
+    "conclusion": "failure",
+    "artifacts": [
+      {
+        "id": 14155623670,
+        "name": "movie-encoder-native-Linux",
+        "sha256": "a010d0c0d57ebcb5230f9559f6b3f746c9645b8d6bab1cdca44be7ddebde8625",
+        "bytes": 14696
+      },
+      {
+        "id": 14155588923,
+        "name": "source-receiving-Linux-py3.14",
+        "sha256": "cf1dcb5f36415174fa4e178be24868373c7e3f0fb5fa4fb746a95e6126863418",
+        "bytes": 82380,
+        "junit": {
+          "tests": 4802,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 42,
+          "passed": 4760
+        }
+      }
+    ],
+    "core_entries_started": 54,
+    "core_completed_63": false,
+    "notebooks_25_passed": true,
+    "original_log_sha256": "5f72dce97846cc6365ebae80d2d755517c4823fa9bc980033b350565087e01ad",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate source-recovery scope",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check out MolSysViewer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check out the exact MolSysMT source candidate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Require an exact MolSysMT commit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Select MolSysMT's pinned Rust toolchain",
+        "conclusion": "success"
+      },
+      {
+        "name": "Create the Python 3.14 source-pair environment",
+        "conclusion": "success"
+      },
+      {
+        "name": "Validate and locally tag the exact Viewer source candidate",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Locally tag the exact MolSysMT candidate version",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Install both exact source candidates",
+        "conclusion": "success"
+      },
+      {
+        "name": "Remove the temporary Viewer tag after installation",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Remove the temporary MolSysMT tag after installation",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Install JavaScript test dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "Synchronize the development runtime before source validation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Audit dependency routes and the installed exact source provider",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check installed Rust and viewer resources",
+        "conclusion": "success"
+      },
+      {
+        "name": "Record published pytest tool versions",
+        "conclusion": "success"
+      },
+      {
+        "name": "Guard native MolSysMT paths in the installed pair",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test MolSysMT integration against the installed pair",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run MolSysViewer Python tests",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve native Movie encoder identity and diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve the original source-receiving JUnit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Register the exact source-pair notebook kernel",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build the source-pair browser runtime and harness",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify the hosted source-pair browser",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run all core browser suites against the exact source pair",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Run focused mirror receiving diagnostics",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Receive live Jupyter diagnostics",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Preserve safe source-pair receiving diagnostic receipts",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Execute every documented notebook against the exact source pair",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve source-pair notebook failure logs",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Post Create the Python 3.14 source-pair environment",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Check out the exact MolSysMT source candidate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Check out MolSysViewer",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ],
+    "complete_core_entries_passed": 53,
+    "failing_entry": "trajectory-plot",
+    "issue": "uibcdf/molsysviewer#391",
+    "scope": "Exact source receiving only. Test-only #397 boundary passes; no uninterrupted current core acceptance. Original failed runs and all artifact identities retained."
+  },
+  "static_bootstrap_receiving": {
+    "issue": "uibcdf/molsysviewer#391",
+    "passive_diagnostic": {
+      "profile": "plot-static-clock-906",
+      "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+      "native_exit": 0,
+      "seconds": 162.31739950925112,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3498.2,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "a9e24b6ba8105c9b7af683f3e63e1607e214c0821db64a9bf003bc44ab1fc2bd"
+    },
+    "discriminating_control": {
+      "profile": "plot-hidden-bootstrap-907",
+      "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+      "native_exit": 0,
+      "seconds": 14.062163626309484,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1711.8,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "3c243edf0d6946d5b93b738ce73cacf9b19e81e52ada5945d1aa86f9dc5f83c5"
+    },
+    "control": {
+      "start": 1794761802725,
+      "old": {
+        "passed": false,
+        "end": 1794761807733,
+        "name": "TimeoutError"
+      },
+      "timerPoll": true,
+      "state": {
+        "trace": {
+          "start": 1794761802743,
+          "polls": 2,
+          "firstController": 1794761804289
+        },
+        "controller": true,
+        "hidden": false,
+        "visibility": "visible"
+      },
+      "molecular": {
+        "atoms": 62,
+        "frames": 3
+      }
+    },
+    "change": "Timer-based 100-ms controller initialization polling under the unchanged 30-second deadline; actual hidden-iframe initialization and revealed frame-two coordinates added to complete plot guard. Runtime/scientific code unchanged.",
+    "complete_guard": {
+      "profile": "plot-static-polling-909",
+      "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+      "native_exit": 0,
+      "seconds": 149.0834417170845,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3461.9,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 23,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "66d19fddf1a524f83bdf8c732326c93ab06fd2634c5e60e46314e11f8a3fdb79"
+    },
+    "native_files_verified": 6356,
+    "timeout_override": null,
+    "browser_seconds": 146.01857830910012,
+    "historical_causal_limit": "Native hidden iframe demonstrates RAF polling starvation, not original hosted page visibility or the cause of every old timeout. Complete current core acceptance pending."
+  },
+  "current_jupyter_movie_investigation": {
+    "issue": "uibcdf/molsysviewer#396",
+    "profile": "jupyter-movie-progress-910",
+    "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+    "native_exit": 1,
+    "seconds": 76.99692966323346,
+    "selected_inputs": 9979,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 2528.0,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 19,
+      "survivors": [],
+      "errors": []
+    },
+    "completed_movie_cases": 2,
+    "required_movie_cases": 8,
+    "observed_browser_send_epoch_ms": 1794762213767,
+    "python_admission_epoch_ms": 1794762249312,
+    "pre_retirement_browser_snapshot_epoch_ms": 1794762243782,
+    "interpretation": "Observed delay precedes Python Movie handler admission. anyMessage send is not socket/server/ZMQ delivery proof. Actual browser/server transport stage investigation remains due. No product fix, timeout extension or acceptance.",
+    "raw_receipt_sha256": "24a20bb143bf75c254a6ccf8737abb0c108164b8074187d4b5de3d87d33274a4"
+  },
+  "record_validation_static_movie": {
+    "interrupted": {
+      "profile": "static-movie-headless-917",
+      "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+      "native_exit": 0,
+      "seconds": 32.2751818401739,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 528.0,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "cleanup": {
+        "tracked": 7,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "9684b17ebf398b4c53965016967d9b1fd3852f219f5df67f51824eb30f241f00"
+    },
+    "interruption_scope": "Global swap-out burst 88,866,816 bytes despite >17 GiB available triggered supervisor stop; no own OOM. Original attempt is not accepted.",
+    "reduced_lightweight": {
+      "profile": "static-movie-light-918",
+      "source_base": "342e6309be736dc802b6c2642133649f188d847d",
+      "native_exit": 0,
+      "seconds": 67.63799735484645,
+      "selected_inputs": 9979,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 622.2,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "fc0cdc5362ad2f0cf272d4da91d80af2c1a8c13644c5777e8029c80e2cb054e1"
+    },
+    "passed": 587,
+    "skipped": 1,
+    "deselected": 3,
+    "scope": "Explicitly headless contracts/reporting/distribution/async owners; live Movie received separately in 916. Types, Node syntax, full Ruff checks, indexes/diffs pass. No new heavy run during measured swap."
+  },
+  "static_kernel_private_custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/static-and-kernel-closeout-20261115",
+    "files": 263,
+    "bytes": 67544966,
+    "manifest_sha256": "135497ab658318aed227076c38eae11081f4e8778b987af60c857eed52502b32",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 2
+  },
+  "historical_initial_canvas_environment_supplement": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/initial-canvas-environment-supplement-20261115",
+    "manifest_sha256": "5729f47a8695f4daa939fcbf97fc916eb1dc8efc7a6214c3ce5aa7497e913545",
+    "originals_retained": true,
+    "ipykernel_distribution_version": "7.3.0",
+    "environment_sha256": "f460e8b970e9c71c6fb6ec32a3b9f6b51ff9144e8584002b13b0ddc1a14f6b98",
+    "failure_sha256": "f7bfe46f2da867e9768cf031a37b503fe3413d5d43af16e0ce2270957455701d",
+    "causal_limit": "Associated installed-environment inventory, not original actual-kernel module identity or proof of the missing phase."
   }
 }

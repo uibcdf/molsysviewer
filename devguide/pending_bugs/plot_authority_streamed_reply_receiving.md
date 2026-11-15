@@ -15,6 +15,33 @@ supersedes: []
 
 # Plot authority inspection — receiving correction in progress
 
+**Current receiving — 2026-11-15:** source run
+[43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436)
+passes 4,760 Python cases (42 explicit skips), all 25 notebooks and 53 complete
+core entries, including #397's corrected popup lifetime. Entry 54 again times
+out in the independent static bootstrap. Its pre-retirement snapshot now has
+a controller, one canvas and no captured page/console/network error. Original
+ZIPs and JUnit are verified; the run remains failed and Movie entries remain
+unreached. A controller observed after timeout does not date its creation.
+
+Control `906` receives the complete plot workflow with passive initialization
+and animation-frame timing. It passes; that is not a reproduction or a fix.
+Discriminating control `907` then opens a real pentalanine export inside a
+native `display:none` iframe. Its controller appears 1,546 ms after document
+initialization, but Playwright's default animation-frame predicate executes
+only twice and times out after 5 seconds. The unchanged page's timer-based
+predicate receives the controller; showing the iframe yields 62 actual atoms
+and three structures. No native clock, controller or reply is substituted.
+
+The receiving correction uses a 100-ms timer poll for the initialization
+predicate, retaining the 30-second deadline and separate native-coordinate,
+callback, precision and failure assertions. The complete guard additionally
+opens the real static file in a hidden iframe, receives initialization before
+showing it and checks the revealed frame-two coordinates. This protects a
+demonstrated receiving mechanism. It does not establish that the original
+hosted page was hidden or that every historical timeout had this cause.
+Complete affected and current core receiving remain required before closure.
+
 Source run [43646263694](https://github.com/uibcdf/molsysviewer/actions/runs/43646263694)
 fails in the first authority inspection of core entry 54, `trajectory-plot`,
 on MolSysViewer `eae573467c71e14b7f8e7216ca71d7e6b9b562c2` and scientific

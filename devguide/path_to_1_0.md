@@ -118,12 +118,19 @@ runs and the requirement for one complete current core pass.
 The single new full Linux source checkpoint
 [43698930436](https://github.com/uibcdf/molsysviewer/actions/runs/43698930436)
 receives producer `28147339afe0315c1b252095c1442a1674fc5c9e` with the same
-scientific `aee7aa65` and pandas 3.1.0. Its first GH Run Receptor observation
-is pending; the complete before/after inventory confirms zero competing runs
-and exactly one dispatch for this head. It retains all 63 core entries, Python
-and 25 notebooks. Canonical lifecycle `903` and 536 scoped headless controls
-pass before dispatch; #396's actual-Jupyter uncertainty remains separate.
-No installed qualification, package/tag or publication is credited.
+scientific `aee7aa65` and pandas 3.1.0. It is terminal failure: 4,760 Python
+cases, all 25 notebooks and 53 complete core entries pass. #397's lifecycle
+passes; #391's static bootstrap times out. Native hidden-export control `907`
+demonstrates animation-frame polling starvation despite a ready controller;
+the timer-based correction and real hidden/revealed molecular regression pass
+the complete plot guard in `909`, retaining the original 30-second deadline.
+A current full source gate remains due. #396's separate actual-Jupyter delay
+is now reproduced independently on ipykernel 7.3.0. Original 7.4.0 bytes pass
+30 native comm cycles and the complete actual Movie pytest in `916`, including
+ten same-kernel edit/seeks. The component notebook baseline is now >=7.4.0;
+MolSysSuite #200 owns the still-paused legacy-prefix adoption. The source-host
+solution is received; full current CI, installed qualification, package/tag
+and public publication remain separate.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks
