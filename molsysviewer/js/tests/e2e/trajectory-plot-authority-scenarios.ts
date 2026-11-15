@@ -109,11 +109,47 @@ async function calculationDetails(page: Page, expected: any) {
     await details.locator("summary").click();
 }
 
+/** Observe this real page before navigation; retain a bounded failure before its owner closes it. */
+function staticBootstrap(page: Page, report: (observation: any) => void = observation =>
+    console.error("[E2E trajectory plot static bootstrap]", JSON.stringify(observation))) {
+    const events: Array<{ kind: string; text: string }> = [];
+    const record = (kind: string, text: string) => {
+        if (events.length < 16) events.push({ kind, text: text.slice(0, 1200) });
+    };
+    page.on("pageerror", error => record("pageerror", String(error)));
+    page.on("console", message => { if (message.type() === "error") record("console", message.text()); });
+    page.on("requestfailed", request => record("requestfailed", `${new URL(request.url()).protocol} ${request.failure()?.errorText}`));
+    const snapshot = async () => {
+        const state = await page.evaluate(() => {
+            const root = document.getElementById("molsysviewer-root");
+            return { readyState: document.readyState, controller: !!(window as any).__molsysviewerDocsController,
+                rendered: root?.getAttribute("data-molsysviewer-rendered"),
+                failed: root?.getAttribute("data-molsysviewer-error"),
+                message: root?.getAttribute("data-molsysviewer-error") ? root.textContent?.slice(0, 1200) : undefined,
+                canvases: document.querySelectorAll("canvas").length };
+        });
+        return { phase: "static-bootstrap", ...state, events: [...events] };
+    };
+    return async () => {
+        try {
+            await page.waitForFunction(() => !!(window as any).__molsysviewerDocsController
+                || document.getElementById("molsysviewer-root")?.getAttribute("data-molsysviewer-error") === "true");
+            assert.equal((await snapshot()).controller, true,
+                "The independent exported page must initialize its own controller");
+        } catch (error) {
+            try { report(await snapshot()); }
+            catch (diagnosticError) { console.error("[E2E static bootstrap diagnostic unavailable]", String(diagnosticError)); }
+            throw error;
+        }
+    };
+}
+
 /** A real click must reach the retained Python owner, not just a local playhead. */
 export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir: string) {
     await withFixtureWorkspace("plot-authority", async workspace => {
         const bridge = new PythonFixtureBridge(resolve(dir, "trajectory-plot-bridge.py"), resolve(dir, "../../../.."),
-            90000, { args: ["--static-path", resolve(workspace, "plot.html")], env: fixtureEnvironment(workspace) });
+            90000, { args: ["--static-path", resolve(workspace, "plot.html"),
+                "--unavailable-runtime-path", resolve(workspace, "unavailable-runtime.html")], env: fixtureEnvironment(workspace) });
         const source = await context.newPage();
         const errors: string[] = [];
         source.on("pageerror", error => errors.push(String(error)));
@@ -205,8 +241,9 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
             const staticPage = await context.newPage();
             staticPage.on("pageerror", error => errors.push(String(error)));
             try {
+                const receiveBootstrap = staticBootstrap(staticPage);
                 await staticPage.goto(pathToFileURL(state.static_path).href);
-                await staticPage.waitForFunction(() => !!(window as any).__molsysviewerDocsController);
+                await receiveBootstrap();
                 await captureCanvasPopupControllers(staticPage);
                 await rendered(staticPage, 2, state.coordinates);
                 await calculationDetails(staticPage, observation);
@@ -218,6 +255,27 @@ export async function checkTrajectoryPlotAuthority(context: BrowserContext, dir:
                 assert.equal(state.index, 0);
                 assert.deepEqual(state.callbacks.map((event: any) => event.frame), expectedCallbacks);
             } finally { await staticPage.close(); }
+            // A real explicit unavailable runtime must preserve its native load
+            // error and visible failure before retiring the page. This checks
+            // the receiver, not the cause of the older hosted timeout.
+            const unavailablePage = await context.newPage();
+            try {
+                let failure: any;
+                const receiveBootstrap = staticBootstrap(unavailablePage, observation => { failure = observation; });
+                await unavailablePage.goto(pathToFileURL(state.unavailable_runtime_path).href);
+                await assert.rejects(receiveBootstrap, /independent exported page must initialize its own controller/);
+                assert.equal(unavailablePage.isClosed(), false, "Bootstrap evidence must be captured before page retirement");
+                assert.equal(failure.controller, false); assert.equal(failure.failed, "true");
+                assert.ok(failure.message.includes("MolSysViewer failed to load"));
+                // An opaque file origin can be refused by CORS before the
+                // filesystem is consulted (ERR_FAILED), rather than reporting
+                // ERR_FILE_NOT_FOUND. Retain the actual native error, not an
+                // assumed filesystem cause.
+                const nativeErrors = failure.events.filter((event: any) => event.kind === "requestfailed");
+                assert.ok(nativeErrors.some((event: any) => /^file: net::ERR_[A-Z_]+$/.test(event.text)), JSON.stringify(failure));
+                assert.ok(failure.events.some((event: any) => event.kind === "console" && event.text.includes("Failed to load runtime")), JSON.stringify(failure));
+                console.log("[E2E trajectory plot] real unavailable-runtime diagnostics captured before page retirement:", JSON.stringify(nativeErrors));
+            } finally { await unavailablePage.close(); }
             assert.deepEqual(await source.evaluate(() => (window as any).__popupFixtureErrors), []);
             assert.deepEqual(errors, []);
             console.log("[E2E trajectory plot] actual source/popup clicks, Python callbacks, physical structures, reverse navigation and independent static HTML passed");

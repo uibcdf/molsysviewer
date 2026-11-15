@@ -212,5 +212,12 @@
     "links": "pass",
     "ruff": "pass",
     "scope": "Scoped documentation/reporting checks; queue entry parametrization changes when records move to archive, not a dropped product test."
+  },
+  "owner_754_followup_20261114": {
+    "state": "closed_in_owner",
+    "commit": "c4fa8552e9696ee225dd9abd51be4e2e441228c4",
+    "reported_pytest_passed": 72,
+    "independently_received_here": false,
+    "notice": "Owner-reported real plain-Jupyter and nested Node tests are distinct from six synthetic controller controls. The historical #354 pre-save error and #615 remain unresolved."
   }
 }

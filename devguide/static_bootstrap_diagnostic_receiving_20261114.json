@@ -1,0 +1,135 @@
+{
+  "schema": "molsysviewer.static_bootstrap_diagnostic_receiving@1",
+  "date": "2026-11-14",
+  "issue": "uibcdf/molsysviewer#391",
+  "status": "partial",
+  "viewer_source_base": "ae7336dadc8ee8571f86d6a8e1a1938d517f7612",
+  "scope": "Receiving-tool diagnostics and real exported-page negative control. Original hosted static timeout remains unexplained; no product/bootstrap/science/API fix, new deadline, opt-out or qualification claim.",
+  "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+  "runtime_changed": false,
+  "runtime_sha256": "f613c7b4fb2b9693442ecf46a86a749f0d9912d3e488ef1aa6f2832a47fe6446",
+  "source_sha256": {
+    "molsysviewer/js/tests/e2e/trajectory-plot-authority-scenarios.ts": "e0b4f725131ee91577f7dff9ba49b8caa245b90baca9bd808c6ee340787e2ef4",
+    "molsysviewer/js/tests/e2e/trajectory-plot-bridge.py": "39d143a9dde489b8d91a40386b3a40792f09955c94f591498d431951740afe29"
+  },
+  "scientific_source": "aee7aa65da56e896d1cb2d655bf73736f6453a43",
+  "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+  "molstar": {
+    "version": "5.13.1",
+    "verified_js_and_declaration_files": 6356,
+    "unchanged_after": true
+  },
+  "profiles": {
+    "build-static-boot-diagnostics-856": {
+      "native_exit": 0,
+      "seconds": 2.7583344038575888,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 256.0,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "926e42ea63d4429cd0159664c5e30c294f65d03fa752048ce731f1a3a9b48255",
+      "stdout_sha256": "9a97701971e72443337a2ca32611f027d896d8b13ff8aff267b954ee19c1ff40"
+    },
+    "static-boot-diagnostics-857": {
+      "native_exit": 1,
+      "seconds": 66.88136483496055,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3479.4,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "8eaeb2d2df7de1192b0faf54801d60582b9933fb63b2969e356dd2aa22dd22d5",
+      "stdout_sha256": "4cf5e100c7215cf62edf635452e7ca13db8934f78f8883f5a25127320fd322b5"
+    },
+    "static-runtime-error-probe-858": {
+      "native_exit": 0,
+      "seconds": 8.268659932073206,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1362.4,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "89684132fd706ab3f5e5bc7519bf91faba4eab8cf4545624bfa67afe7e069de4",
+      "stdout_sha256": "2634117dc2a931b2b19770c1eeec4f0fe2650fdfaea27ff664966a5439c0e89e"
+    },
+    "build-static-boot-final-859": {
+      "native_exit": 0,
+      "seconds": 2.806717162951827,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 242.4,
+      "cleanup": {
+        "tracked": 8,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "acc8490485783dd92a3853fb57f4a16e0079f0191b4175e6675ace3ef15262b5",
+      "stdout_sha256": "b2c7c084c0b7d6e51057f4f4305f8e9d89a4959bd520b2d351fbf6560c7260af"
+    },
+    "static-boot-final-860": {
+      "native_exit": 0,
+      "seconds": 129.43760964926332,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3476.2,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "c9ce3fe88b45fbdc1543a93248d948442a54c225c262c09d66cdb93e3915904f",
+      "stdout_sha256": "12fbe2d0fe8910cf28e80773dc2d88b992400e05cb3e6f5dbeeb425a37298815"
+    }
+  },
+  "retained_receiver_expectation_failure": {
+    "profile": "857",
+    "phase": "New negative control, after successful positive source/popup/static checks, before precision receiving.",
+    "observation": "The initial new receiver assertion assumed ERR_FILE_NOT_FOUND. The actual browser refuses a file-origin ES-module import through CORS and reports net::ERR_FAILED.",
+    "correction": "Directed real public-export probe 858 records the native request/console/root error; final receiver retains the actual native error without inventing a filesystem cause. This is not a new MolSysMT/Chromium/production defect."
+  },
+  "received": [
+    "Complete original trajectory-plot Python authority, callbacks/coordinates/distance, source/canvas/card popups, static independence and 15 Decimal/binary64 precision controls.",
+    "Before-navigation passive observer retains up to 16 console/page/network errors of 1200 characters and a bounded root state before page retirement. Native errors and the original exception remain failures.",
+    "Real export with explicitly unavailable local runtime fails visibly, controller remains absent, native request and console errors are captured while the page is still alive. No monkeypatch, fake runtime, browser retry or repaired molecular state."
+  ],
+  "remaining": [
+    "Diagnose the original hosted static bootstrap failure or establish its reviewed evidenced disposition.",
+    "Complete current core/platform source receiving, then separately authorized installed/human acceptance."
+  ],
+  "owner_754": {
+    "state": "closed_in_owner",
+    "commit": "c4fa8552e9696ee225dd9abd51be4e2e441228c4",
+    "reported_pytest_passed": 72,
+    "independently_received_here": false,
+    "notice": "Owner-reported real plain-Jupyter and nested Node tests are distinct from six synthetic controller controls. The historical #354 pre-save error and #615 remain unresolved."
+  },
+  "custody": {
+    "state": "preserved_and_hash_verified",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/static-bootstrap-diagnostics-20261114",
+    "files": 52,
+    "bytes": 27129735,
+    "manifest_sha256": "9f0de49c555fa8e2d074da2802d18a83b6bb1393e0b9e78af7a8d0349330ba86",
+    "originals_retained": true,
+    "credential_shaped_files_excluded": 0,
+    "custodian": "Diego Prada Gracia"
+  },
+  "metadata": {
+    "profile": "static-bootstrap-records-861",
+    "passed": 469,
+    "ruff_check": "pass",
+    "ruff_format": "1067 files already formatted",
+    "indexes": "up to date",
+    "diff_checks": "pass",
+    "scope": "Scoped reporting/link/runner registration; no second execution or replacement of native browser/JS outcomes."
+  }
+}

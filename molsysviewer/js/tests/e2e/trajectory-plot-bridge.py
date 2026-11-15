@@ -64,7 +64,7 @@ def decimal_fractions(values):
         return [float((value - low) / (high - low)) for value in exact]
 
 
-def serve(static_path=None, state_path=None):
+def serve(static_path=None, state_path=None, unavailable_runtime_path=None):
     with msv.demo["pentalanine"] as seed:
         view = msv.new_view(seed.molsys, structure_indices=[0, 8, 3])
     coordinates = puw.get_value(view.get_coordinates(), to_unit="angstrom").copy()
@@ -91,6 +91,9 @@ def serve(static_path=None, state_path=None):
     view.player.go_to_structure(2)
     if static_path is not None:
         view.export.html(static_path)
+    if unavailable_runtime_path is not None:
+        assert not unavailable_runtime_path.with_name("intentionally-unavailable-runtime.js").exists()
+        view.export.html(unavailable_runtime_path, shared_runtime=["./intentionally-unavailable-runtime.js"])
     callbacks = []
     view.on_frame_change(callbacks.append)
     controls = precision_controls()
@@ -112,6 +115,9 @@ def serve(static_path=None, state_path=None):
                     "plot_count": len(authority.trajectory_plot.records()),
                     "plot_records": authority.trajectory_plot.records(),
                     "static_path": None if static_path is None else str(static_path),
+                    "unavailable_runtime_path": None
+                    if unavailable_runtime_path is None
+                    else str(unavailable_runtime_path),
                     "current_distance": float(
                         puw.get_value(authority.measurements.series("plot-distance"), to_unit="angstrom")[
                             authority.player.index
@@ -190,5 +196,6 @@ if __name__ == "__main__":
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--static-path", type=Path)
     parser.add_argument("--state-path", type=Path)
+    parser.add_argument("--unavailable-runtime-path", type=Path)
     arguments = parser.parse_args()
-    serve(arguments.static_path, arguments.state_path)
+    serve(arguments.static_path, arguments.state_path, arguments.unavailable_runtime_path)

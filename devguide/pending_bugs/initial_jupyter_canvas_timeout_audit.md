@@ -75,8 +75,14 @@ unrecorded historical concurrency or the cause of #615.
 Reuse the owning cold Analysis diagnostic and its actual kernel/session/browser
 timeline, with unchanged deadlines and no warmed molecular imports. Receive
 current source identities and targeted startup/transport controls before a
-bounded actual-host attempt. Do not duplicate the owner observer or modify its
-dirty working tree while MolSysMT develops #754. If a current startup hole is
+bounded actual-host attempt. MolSysMT has now closed #754 in published commit
+`c4fa8552e9696ee225dd9abd51be4e2e441228c4`, with its manifest-cell/request/socket
+error observer and expected/observed controller binding. The owner reports 72
+selected pytest passes, nested Node and real plain-Jupyter controls; six
+controller controls are synthetic. These are owner results, not independent
+MolSysViewer receiving or a diagnosis of #615/#354. Consume that committed
+receiver in a frozen snapshot rather than duplicating it or editing the owner
+worktree. If a current startup hole is
 reproduced, give it its own causal regression and keep applicability to the
 historical observation explicit.
 

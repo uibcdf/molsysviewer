@@ -952,6 +952,10 @@ bootstrap. The original console/boot state is unavailable, so its cause is
 unknown. The [terminal receipt](source_core_terminal_receiving_20261114.json)
 retains original logs and both hash-verified artifact ZIPs. No duplicate run
 was dispatched and complete current core acceptance remains open.
+The [static diagnostic receiving](static_bootstrap_diagnostic_receiving_20261114.json)
+now passes the complete plot entry and real unavailable-runtime control in
+`860`. It records native errors/root state before page retirement, retains the
+30-second deadline and does not assign a cause to the older hosted timeout.
 Prior Windows/macOS Python evidence remains on `eae57346`; this is source
 recovery without candidate versions, tags, packages or installed qualification.
 #388's original event sequence retains its causal limit;
@@ -968,6 +972,10 @@ current actual-Jupyter release guard after the two evidenced retainer fixes.
 partial: the exact original notebook fails its Python frame assertion before
 save/recovery, not a recovered frontend's frame wait. MolSysMT #754 owns the
 receiver's missing Python-error/owner diagnostics. The
+owner now publishes that correction in `c4fa8552e9696ee225dd9abd51be4e2e441228c4`
+and has closed #754. Its 72-case and native-Jupyter results remain owner
+evidence; consume the frozen committed receiver next, without crediting it as
+independent MolSysViewer receiving or a cause for #354/#615. The
 [closeout receipt](prolonged_receiving_closeout_20261114.json) preserves that
 correction, the unchanged thirty-cycle source scope and outstanding E2 exits.
 

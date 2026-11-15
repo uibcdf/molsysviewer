@@ -65,3 +65,20 @@ retains both original ZIPs with verified GitHub hashes and the complete log.
 Keep #391 partial while receiving the static bootstrap and complete current
 core gate. The 53-entry prefix and local nine-Movie suffix are not that gate;
 no deadline change or duplicate dispatch is justified by this observation.
+
+**Diagnostic receiving implemented:** retain a bounded snapshot of the independent
+page's console/page/network failures and explicit bootstrap state before its
+owner retires it. Keep the original 30-second ready deadline and positive
+Python/geometry/static assertions. A second real export deliberately names an
+unavailable local runtime; receive its native file-load error and visible
+failure through the same observer, before page closure. That is a receiver
+control, not a reproduction or explanation of the older hosted failure.
+
+The [diagnostic receipt](../static_bootstrap_diagnostic_receiving_20261114.json)
+receives the complete entry in profile `860`, including the actual unavailable
+runtime control, all original scientific/independent static assertions and
+15 precision controls. The initial new negative-control expectation fails in
+`857`; directed probe `858` identifies native CORS refusal (`ERR_FAILED`), not
+a missing-file error. That receiver expectation is corrected without changing
+the product, original deadline or asserted successful outcomes. All 22 owned
+processes retire; scoped receiving does not explain or clear the hosted failure.

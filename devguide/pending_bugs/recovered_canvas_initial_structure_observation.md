@@ -9,7 +9,7 @@ verification: measured
 area: [jupyter, trajectory, receiving, synchronization]
 guard:
 normative:
-blocked_by: [uibcdf/molsysmt#754]
+blocked_by: []
 supersedes: []
 ---
 
@@ -53,7 +53,12 @@ late feedback or a scientific-data defect. Keep related #331/#332/#314/#307/
 MolSysMT #754 owns the receiver's failure classification: retain the Python
 error, phase actually reached, expected widget/surface and actual controller
 identity. Its opening includes the exact original traceback and requests real
-Jupyter negative controls. Do not increase deadlines, repair-seek, suppress
+Jupyter negative controls. The owner has closed it in published commit
+`c4fa8552e9696ee225dd9abd51be4e2e441228c4`; it reports 72 selected pytest
+passes and distinguishes real Jupyter from synthetic controller controls.
+The next step is independent receiving of those committed tools, not waiting
+for an unimplemented owner fix. No result is credited here yet.
+Do not increase deadlines, repair-seek, suppress
 the Python precondition or silently retry to make it pass. Receive that
 instrumentation, then distinguish pending communication from a lost/newer
 frame intention under the existing scene-authority contract.
