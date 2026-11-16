@@ -197,3 +197,13 @@ earlier startup cause solely to CPU or combine the two outcomes into one pass.
 All 9,833 selected inputs remain unchanged; peak summed owned RSS is 3,537.1
 MiB, no resource stop occurs, and all 23 processes retire. Exact hosted
 Node-22 receiving remains separate from these routine-environment controls.
+
+Hosted `43796373853` also fails that exported-HTML initialization before the
+numerical cases: its timer observes the first controller at 42.392 s, beyond
+the unchanged 30-second preparation bound. The document is visible, native
+canvas exists, no page/request error is recorded and the event loop supplies
+only three diagnostic samples and one animation frame. This is not a zero-SVG
+reference or a Decimal discrepancy. Preserve both this Node-22 failure and
+isolated `960`; profile the actual startup path before assigning a shader,
+scheduler or source cause. No deadline, oracle or quality change is authorized
+by these observations.

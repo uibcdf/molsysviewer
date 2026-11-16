@@ -982,6 +982,22 @@ checkpoint pins that receiver and independently receives all four browser
 owners; it is prepared, not passed. Original counters/publication stay unchanged.
 The dated receiving entries below retain their original inputs and outcomes.
 
+**Current residual checkpoint — 2026-11-16:** `43796373853` on `e3fefadc`
+and published MT `4b0b1f8a` is a failed overall diagnostic, with complete
+context-menu, controls and scientific-mirror entries successful. Their causal
+corrections source-close #305/#325; C4 advances the original source counter
+once to **41/46 (89.1%)**, with **1/46 final acceptance unchanged**. The original
+old event orders remain unproved. The owner 5,000-structure cycle passes its
+Python pre-save assertion, both popups, recovery and ten active seconds on
+Node 22.23.5 / ipykernel 7.4.0; aliases in the original ZIP are one cycle, not
+duplicates to count. Plot fails cold exported-HTML initialization before
+numerics; independent actual-Jupyter work-file receiving passes six stopped
+and one moving capture, then fails its second default Python session capture.
+The original safe receipt lacks the underlying Python error, so do not assign
+that failure to a provider or erase the previous complete passing scope.
+The [receipt](residual_four_issues_receiving_20261116.json) preserves original
+ZIP hashes, actual kernel/provider versions and separate remaining exits.
+
 **Complete Linux recovery after #394 — 2026-11-14:**
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
 on `a8fc5273b6aa274cb5fc343b79ddf613b3458a54`, retaining scientific source

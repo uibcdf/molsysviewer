@@ -66,6 +66,12 @@ Important rule:
 - opening or closing the context menu should not mutate scene state by itself
 - the host context menu (for example JupyterLab) should be suppressed inside the viewer canvas when the viewer adopts right-click context handling
 
+Context remains valid when playback-option metadata changes without replacing
+the current molecular frame. A settled mirror's same-frame metadata projection
+must not dismiss the open menu. Explicit seeks, actual frame changes, loading,
+clearing and coordinate updates invalidate the old context. This does not
+pause playback: subsequent actual frame changes still dismiss stale targets.
+
 ### Menu structure and dispatch
 
 The implemented foundation of `uibcdf/molsysviewer#179` separates the target

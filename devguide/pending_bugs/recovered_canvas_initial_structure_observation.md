@@ -169,3 +169,23 @@ addon, dependencies and native inputs are unchanged from received `b8c798474`.
 This unblocks a new actual cycle; it does not receive one or reconstruct the
 old cycle-nine order. The next diagnostic exports the selected Conda Node and
 preserves its safe version/path record.
+
+## Current complete owner cycle received — 2026-11-16
+
+Hosted `43796373853`, source `e3fefadc` / MolSysMT `4b0b1f8a`, passes the
+canonical owner case: one 62-atom/5,000-structure cycle, actual Next focus and
+both popups, the unchanged Python pre-save index-1 assertion, coherent session
+recovery, independent witness, ten seconds of native active playback and
+retirement. Native JUnit is 1 passed / 0 failed/errors/skips; the receiver takes
+73.77 s and retains 189 frame observations. Node 22.23.5 is selected explicitly
+from Conda; kernel origins prove ipykernel 7.4.0, Python 3.14.10, exact owner
+sources and the newly built in-place Rust backend. The ZIP's five pytest
+`current` aliases are identical duplicate files, not extra cycles.
+
+The [current receipt](../residual_four_issues_receiving_20261116.json) retains
+both original ZIPs and their GitHub-matching hashes. The same overall diagnostic
+fails two independent scopes: plot exported-HTML initialization and a moving
+Python session capture in the other Jupyter entry. Those do not erase or extend
+this one-cycle receiving. The old cycle-nine ordering, full current thirty-cycle
+qualification and candidate/installed/human exits remain separate; do not mark
+the historical cause repaired merely because this case now passes.

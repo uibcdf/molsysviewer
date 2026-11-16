@@ -81,3 +81,16 @@ hosted checkpoint pins that published receiver, forwards the chosen Node,
 keeps the unchanged native validator and executes four independent failing
 browser steps. Its safe artifacts add only the owner's version/path record;
 raw notebook/server payloads remain excluded.
+
+Final scoped `43796373853` proves that installation, native validation, four
+independent browser owners and portable owner Jupyter execution now reach
+their intended scopes. Three browser owners and the complete owner cycle pass.
+The overall diagnostic still fails: cold static initialization precedes the
+plot numerics, and independent work-file receiving fails the second default
+moving Python session after six stopped/one moving successes. The latter
+safe receipt again retains only a generic JavaScript `Error`; its underlying
+Python class/reason and native readiness are unavailable after retirement.
+Add closed-vocabulary kernel-error/readiness diagnostics before further
+receiving, preserving the original exception and five-second public budget.
+Do not upload raw messages, secrets or arbitrary failure values, or attribute
+the failure to MolSysMT before that evidence exists.

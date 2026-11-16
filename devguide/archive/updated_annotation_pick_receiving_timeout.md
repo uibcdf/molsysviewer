@@ -1,9 +1,9 @@
 ---
 summary: Updated annotation GPU pick times out in hosted canvas-popup receiving.
 issue: uibcdf/molsysviewer#325
-status: active
+status: resolved
 opened: 2026-11-07
-closed:
+closed: 2026-11-16
 severity: medium
 verification: measured
 area: [annotations, picking, popup, ci]
@@ -14,6 +14,18 @@ supersedes: []
 ---
 
 # Updated annotation picking in hosted popup receiving
+
+**Resolved in source — 2026-11-16.** #389's byte-gated native pending-read
+repair and the complete revised-annotation guard pass hosted `43796373853`,
+source `e3fefadc` / MolSysMT `4b0b1f8a`, Node 22.23.5. The same actual label
+and `10/0/0` native identity survive before/during/after the pending read and
+its completion, with unchanged camera, real clicks and selected markers in
+both endpoints. Full focus/reset/drag/wheel, layout, visibility, playback and
+structure-specific interactions also pass. The independently reproduced
+native class and inspected old hover/click path establish a relevant correction;
+the exact old hosted event order remains unproved. This is scoped source
+resolution, not success of the whole diagnostic or installed/native-Qt/final
+acceptance. See the [receipt](../residual_four_issues_receiving_20261116.json).
 
 ## What
 
@@ -69,6 +81,15 @@ is added. Its actual receiving is pending in the bounded hosted checkpoint;
 the exact original cause remains unproved. See the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json).
 
+The exact old `v5.4.1` caller is also inspected: ordinary pointer movement in
+`interaction-events.ts` calls `canvasAsyncIdentify`, whereas clicks call
+`canvasIdentify`. The shared pending-read class is reachable through normal
+native interaction, not only the deliberate regression probe. This establishes
+relevance of #389's repair; it does not recover which buffer or event was
+pending in the old hosted timeout. The read-only inspection checkout is clean
+`master` at `dabbf29f`; those old files are explicitly read from tag `74ff283e`,
+distinct from the installed/runtime 5.13.1 provider.
+
 
 ## Hosted preparation outcomes — 2026-11-16
 
@@ -77,7 +98,7 @@ suites do not run and the prolonged pytest command executes zero cases.
 Successor `43790196548` passes the audit but the unchanged installed Rust
 validator rejects its editable distribution; the new prerequisite fence
 correctly skips all browser/Jupyter consumers. Neither receives this issue.
-[#399](focused_source_diagnostic_preparation.md) owns those corrections; the
+[#399](../pending_bugs/focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
 

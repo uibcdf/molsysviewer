@@ -142,7 +142,12 @@ in 10.79 seconds. The original event's exact cause remains unproven. D5.4 is
 source-delivered once: **40/46 (87.0%)**; final applicable acceptance remains
 **1/46**, with final artifacts, shared-prefix #200 and human exits separate.
 The independent [#392 bootstrap lock fix](archive/runtime_source_replies_require_scene_lock.md)
-retains its own causal scope. [MolSysMT #763/#766](https://github.com/uibcdf/molsysmt/issues/763)
+retains its own causal scope. C4's later causal context correction and complete
+hosted controls/scientific mirror now source-close #305/#325 and advance the
+current original counter once to **41/46 (89.1%)**, with final acceptance
+**1/46 unchanged**; the [current receipt](residual_four_issues_receiving_20261116.json)
+retains the other failed gates and the separately passing owner Jupyter cycle.
+[MolSysMT #763/#766](https://github.com/uibcdf/molsysmt/issues/763)
 are corrected in `b8c798474`: [independent source receiving](residual_four_issues_receiving_20261116.json)
 passes 114 scientific controls and both complete public Viewer loads,
 preserving 53,592/98,986 atoms and their identities, coordinates and bonds.

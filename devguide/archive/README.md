@@ -1,5 +1,8 @@
 # Archived implementation plans
 
+- [Popup context metadata](hosted_popup_context_menu_receiving.md) — #305 reproduces and fixes unchanged-frame metadata dismissal, preserving real navigation invalidation through complete hosted controls and scientific mirror.
+- [Revised annotation native picking](updated_annotation_pick_receiving_timeout.md) — #325 receives the native pending-read repair on the actual edited label and both endpoint markers; the original old event order remains unproved.
+
 - [Plot navigation and Python authority](trajectory_plot_seek_skips_python_authority.md) — #314 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
 - [Failed factory ownership](failed_factory_retains_owned_view.md) — #316 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
 - [Rejected state preserves open work](direct_state_rejection_erases_scene.md) — #317 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.

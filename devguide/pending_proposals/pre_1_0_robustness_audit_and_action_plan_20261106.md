@@ -24,6 +24,15 @@ human observations and exact installed qualification must not remain hidden
 work after that handoff. Their current pauses require their established
 authorization/resumption route; this objective does not lift them.
 
+**Current original outcomes — 2026-11-16:** C4/#305 now has a matched causal
+correction and complete hosted controls/scientific mirror. It adds one original
+source outcome: **41/46 (89.1%)**, with **1/46 final acceptance unchanged**.
+#325 also receives its native pending-read correction, without another original
+leaf. The [residual-four receipt](../residual_four_issues_receiving_20261116.json)
+retains the failed overall checkpoint, the independent owner cycle that passes,
+and the still-open plot/bootstrap and moving-capture receiving. The dated
+percentages below retain their original decisions.
+
 **Accepted Jupyter startup resolution — 2026-11-15:** Diego accepts the
 joint technical host-profile resolution for D5.4; MolSysMT #615 closes in
 `5afa582f8cbd4b7c59c7be1fb05fb5063141ece4`, and the [lead audit](../archive/initial_jupyter_canvas_timeout_audit.md)
@@ -578,6 +587,19 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current four-observation receiving — 2026-11-16:** C4/#305 now has a
+matched committed-source causal control, a correction and complete hosted
+controls/scientific-mirror receiving in `43796373853`; #325's native
+pending-read class and actual revised-label markers also pass. C4 adds one
+original source outcome: **41/46 (89.1%)**, with **1/46 final acceptance
+unchanged**. The same overall run fails exported-HTML startup before plot
+numerics and the second default moving Python capture. Its owner prolonged
+Jupyter cycle passes the unchanged pre-save assertion, recovery and playback;
+that does not reconstruct #354's old cycle-nine order. The
+[receipt](../residual_four_issues_receiving_20261116.json) retains those separate
+results, original ZIPs and actual kernel/provider versions. The dated
+dashboard checkpoints below keep their original scopes.
+
 **Current complete-core recovery — 2026-11-15:**
 [43678661843](https://github.com/uibcdf/molsysviewer/actions/runs/43678661843)
 on `a8fc5273` passes Python and 25 notebooks, then the outer runner retires
@@ -996,8 +1018,8 @@ history:
 
 | Stage | Completed / original 46 | IDs and evidence meaning |
 | --- | --- | --- |
-| Consumer result complete and locally verified | **40/46 — 87.0%** | Earlier twenty-five plus owner-integrated source/pin receiving C1/C2, coordinate refinement D6.6, chemical repair/assignments D6.4, coherent capture A5, property/report tasks D6.8, qualified visual adoption D6.10, interactions/mechanics D6.9, continuous session E1, physical-model inspection D5.2, independent construction D6.5, consolidated handoff F3, host services C3 and structural observables D6.7, plus the accepted Jupyter startup resolution D5.4. See the receipts for each original outcome and its unaccepted exits. |
-| Consumer result delivered | **40/46 — 87.0%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1–C3/C5, D1–D4, D5.1–D5.6, D6.1–D6.10, E1 and F3. PR #668 and #678/#681/#682/#683 are owner-merged; the owner has integrated #687/#691; #696/#699 are owner-integrated; C3 is received in the current host integration receipt; D6.7 in the structural-observables receipt. |
+| Consumer result complete and locally verified | **41/46 — 89.1%** | Earlier forty plus C4's causal same-frame context correction and complete hosted controls/scientific mirror. See the receipts for each original outcome and its unaccepted exits. |
+| Consumer result delivered | **41/46 — 89.1%** | E0, A1–A6, B1/B2/B3.1–B3.5, C1–C5, D1–D4, D5.1–D5.6, D6.1–D6.10, E1 and F3. C4 adds once through the residual-four receipt; previous owner/source scopes and unaccepted exits remain separate. |
 | Final applicable acceptance recorded | **1/46 — 2.2%** | E0 only. Preserve the remaining acceptance obligations rather than silently promoting source delivery. |
 
 These stages are not additive, equally weighted effort estimates, time
@@ -1135,7 +1157,7 @@ values to the reporting protocol.
 | B4, F1 | Adopted 2026-11-10; B4/F1 source-delivered | Viewer and scientific producer; #315 | Preserve figure provenance and review public-contract signatures; maintain explicit guards and separate completion outside the original denominator |
 | Mol* review | Required pre-1.0 architecture/readiness; adopted 2026-11-12 | Viewer; #369 and its dedicated review record | Compare installed/released/development baselines, native capabilities and version-sensitive assumptions; classify all findings and qualify adopted pre-1.0 changes. No automatic upgrade or change to the original denominator. |
 | C1–C3, C5 | P1 integration of selected source pair | Viewer host and MolSysMT owner; #264 and uibcdf/molsysmt#421 / PR #543 | B1 for the new host pin; publish reviewed sources, receive relevant full/hosted results and owner acceptance |
-| C4 | P1 qualification disposition | Viewer; #305 | Explain the original failure or a bounded evidenced disposition; a later isolated pass is not closure |
+| C4 | Source-delivered; final acceptance separate | Viewer; #305 | Matched old-source metadata dismissal and corrected real input pass complete hosted controls/scientific mirror; original event order remains unrecorded |
 | D1–D5 | P1 for claimed scientific modes; owner handoffs now | MolSysMT owns fixes/definitions; Viewer receives them through uibcdf/molsysmt#421 | Supported owner correction/contract followed by exact consumer evidence; unavailable modes remain explicitly unqualified |
 | D6.1–D6.10 | P2 previously accepted 1.0 families | Owning addon through uibcdf/molsysmt#421; Viewer #264 | Applicable native prerequisites and operation/effect matrix below; source exposure alone is insufficient |
 | E1–E2 | P2 integrated/scale qualification | Viewer/addon receiving; #315 | Required operations ready, agreed test protocol and comparable identified sources |
@@ -1266,13 +1288,10 @@ pending readers (#304) and atomic reviewed replacement (#306) are received and
 archived in the [host integration receipt](../host_integration_closeout_20261110.json).
 #264 retains broader provider/host, installed and postponed human acceptance.
 
-**C4 — open:** #305's hosted context-menu timeout still needs an explained
-disposition. Later non-reproduction is useful evidence, not a causal repair.
-The existing test now collects bounded hit, layout, pointer routing and menu
-state evidence if it recurs. The full local browser entry and the deliberate
-trace-control failure are checked; the original assertion and failed hosted
-run are preserved. See
-[the report](../pending_bugs/hosted_popup_context_menu_receiving.md).
+**C4 — source-delivered:** [#305's archived disposition](../archive/hosted_popup_context_menu_receiving.md)
+receives a matched old-source metadata dismissal, its correction and complete
+hosted controls/scientific mirror; original event-order uncertainty and failed
+receiving remain, with candidate/installed/final acceptance separate.
 
 **C5 — source-received; consolidated acceptance remains separate:**
 uibcdf/molsysmt#587, uibcdf/molsysmt#590, uibcdf/molsysmt#591,

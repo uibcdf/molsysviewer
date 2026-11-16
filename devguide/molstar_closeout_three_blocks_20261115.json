@@ -540,7 +540,7 @@
     "manifest_sha256": "364a7b7b773104f561ea5a2b67a8a8b275c1fbc40165363ae96eaee0a75d4dbc",
     "originals_retained": true
   },
-  "source_delivered_counter": "40/46 (87.0%): D5.4 added once after accepted technical host resolution",
+  "source_delivered_counter": "41/46 (89.1%): C4 added once after causal source correction and complete hosted controls/scientific mirror; final acceptance1/46 unchanged",
   "final_acceptance_counter": "1/46 unchanged; exact candidate/installed/human exits remain separate",
   "public_tags_releases_promotions": "paused",
   "record_validation": {
@@ -2584,5 +2584,19 @@
       "originals_retained": true
     }
   },
-  "residual_four_followup": "residual_four_issues_receiving_20261116.json"
+  "residual_four_followup": "residual_four_issues_receiving_20261116.json",
+  "residual_four_latest_checkpoint": {
+    "record": "residual_four_issues_receiving_20261116.json",
+    "run": 43796373853,
+    "overall": "failure",
+    "source_resolved": [
+      305,
+      325
+    ],
+    "still_partial": [
+      321,
+      354
+    ],
+    "scope": "Three complete browser entries and one owner source cycle pass; plot startup and independent default moving session capture fail. No final/installed acceptance."
+  }
 }

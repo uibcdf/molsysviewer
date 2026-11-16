@@ -672,6 +672,27 @@
       "index": "passed",
       "diff": "passed",
       "scope": "Affected source workflow, dependency, receiver privacy, issue/schema and link checks. Three opt-in GUI cases deselected; no missing GUI pass inferred."
+    },
+    "four-issues-source-closures-963": {
+      "native_exit": 0,
+      "seconds": 5.635005651973188,
+      "selected_inputs": 9996,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 187.9,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "7753821af7004ebff9cc94385c38b8c277d87240b7881f4a6c029fc49de38e48",
+      "passed": 432,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "index": "passed",
+      "diff": "passed",
+      "scope": "Archived report/guard/index/link contract after source closures; no new browser or installed acceptance."
     }
   },
   "changes": {
@@ -858,7 +879,7 @@
     "stops": "Preserved global swap stops; no threshold raised or foreign process interrupted."
   },
   "original_counters": {
-    "source_delivered": 40,
+    "source_delivered": 41,
     "total": 46,
     "final_accepted": 1
   },
@@ -990,14 +1011,200 @@
     "scope": "Owner source CLI/runtime correction, not a new installed artifact/scientific rebuild."
   },
   "next_hosted_checkpoint": {
-    "state": "prepared_not_dispatched",
+    "state": "terminal_failure",
+    "run": 43796373853,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43796373853",
+    "viewer_source": "e3fefadc2e358a023bb729f41eb0a3a71c2b342e",
     "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
-    "scope": "One Linux source diagnostic with four independent browser entries and one owner prolonged cycle, canonical source-pair Node22 and existing full work-file receiving. Not candidate/version/tag assignment or installed qualification."
+    "conclusion": "failure",
+    "scope": "Bounded source diagnostic, not complete core/installed/native Qt/candidate/publication.",
+    "preparation": "Audit, installed native validator, integration, runtime/harness and browser checks pass.",
+    "js_units": {
+      "passed": 491,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "typescript_no_emit": "passed",
+    "browser_entries": {
+      "context-menu": "passed complete entry",
+      "controls-visibility": "passed complete entry, actual compact metadata/menu preservation and frame invalidation",
+      "canvas-popup-mirror": "passed complete entry, real revised-label before/during/resolved/after GPU IDs 10/0/0 and both markers",
+      "trajectory-plot": "failed before numerical controls: cold exported HTML initializes its first controller after 42.392 s, beyond unchanged 30-second preparation guard; no numerical failure inferred"
+    },
+    "owner_prolonged": {
+      "junit": {
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 78.213
+      },
+      "cycles": 1,
+      "native_structures": 5000,
+      "atoms": 62,
+      "active_seconds": 10,
+      "browser_seconds": 73.77,
+      "frame_trace_observations": 189,
+      "pre_save_python_assertion": "Unchanged assert v.player.index==1 passes before save.",
+      "scopes": [
+        "both popups",
+        "coherent save/recovery",
+        "independent witness",
+        "native active playback and retirement"
+      ],
+      "alias_policy": "The original ZIP includes pytest current aliases with identical records; one actual JUnit case/cycle is counted.",
+      "environment": {
+        "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+        "packages": {
+          "jupyterlab": "4.6.6",
+          "ipykernel": "7.4.0",
+          "anywidget": "0.11.0",
+          "ipywidgets": "8.1.9"
+        },
+        "node": "v22.23.5",
+        "node_runtime": {
+          "selection": "environment",
+          "requested": "/home/runner/micromamba/envs/source-pair/bin/node",
+          "executable": "/home/runner/micromamba/envs/source-pair/bin/node",
+          "version": "v22.23.5"
+        }
+      },
+      "actual_kernel_origins_after_cycle": {
+        "schema": "molsysmt.jupyter_receiving_imports@2",
+        "scope": "Already loaded modules only; no imports, full source manifest or installed qualification.",
+        "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+        "modules": {
+          "molsysmt": {
+            "loaded": true,
+            "origin": "/home/runner/work/molsysviewer/molsysviewer/molsysmt-source/molsysmt/__init__.py",
+            "sha256": "dc89c5f21ab7ba4bb94b289927a19856d27cb670baf1b03d7f6fcb7fced03f90",
+            "module_version": "0.23.0+1020.g4b0b1f8a1"
+          },
+          "molsysmt._rust": {
+            "loaded": true,
+            "origin": "/home/runner/work/molsysviewer/molsysviewer/molsysmt-source/molsysmt/_rust.abi3.so",
+            "sha256": "93fb045597549f1df556b64dea682ede49a384ab79d7ef380d66dc7a03bc6d95",
+            "module_version": null
+          },
+          "molsysviewer": {
+            "loaded": true,
+            "origin": "/home/runner/work/molsysviewer/molsysviewer/molsysviewer-source/molsysviewer/__init__.py",
+            "sha256": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4",
+            "module_version": "0.24.0+472.ge3fefadc.dirty"
+          },
+          "molsysviewer_molsysmt": {
+            "loaded": true,
+            "origin": "/home/runner/work/molsysviewer/molsysviewer/molsysmt-source/molsysviewer_molsysmt/__init__.py",
+            "sha256": "1665840cb208aabed8ea4e6f800c3444e3219c14abb5ed1eb90ae3bfa16ef3f0",
+            "module_version": null
+          },
+          "pyunitwizard": {
+            "loaded": true,
+            "origin": "/home/runner/micromamba/envs/source-pair/lib/python3.14/site-packages/pyunitwizard/__init__.py",
+            "sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+            "module_version": "0.29.5"
+          },
+          "smonitor": {
+            "loaded": true,
+            "origin": "/home/runner/micromamba/envs/source-pair/lib/python3.14/site-packages/smonitor/__init__.py",
+            "sha256": "f60b1c2bff72dbbb70fe403e23908e62a8297f6190e18fdcac090092b84e6800",
+            "module_version": "0.23.0"
+          },
+          "argdigest": {
+            "loaded": true,
+            "origin": "/home/runner/micromamba/envs/source-pair/lib/python3.14/site-packages/argdigest/__init__.py",
+            "sha256": "07518ec0f8d53c99d67f40aa76dc1a9f021ab659fc97ee4eb24a2e325e4feaee",
+            "module_version": "0.17.1"
+          },
+          "depdigest": {
+            "loaded": true,
+            "origin": "/home/runner/micromamba/envs/source-pair/lib/python3.14/site-packages/depdigest/__init__.py",
+            "sha256": "401e1f2b69d68053bdf91b524eb9d876fa2839908ca2dc5df17e77d3a389b6b1",
+            "module_version": "0.15.2"
+          }
+        }
+      },
+      "limits": "One source cycle, not original cycle-nine reconstruction, final thirty-cycle/candidate or installed acceptance."
+    },
+    "live_jupyter": {
+      "outcome": "failed",
+      "phase": "Moving default Python notebook session",
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "moving_capture_cases": 1,
+      "error_type": "Error",
+      "seconds": 154.81080556300003,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      },
+      "causal_limit": "Only the safe summary was uploaded; the underlying Python exception/reason and readiness state were not retained. No provider, timing or geometry cause assigned. Prior full passing 43791283994 is not erased or combined."
+    },
+    "artifacts": [
+      {
+        "id": 14195750564,
+        "bytes": 633,
+        "name": "source-pair-receiving-diagnostics-Linux",
+        "sha256": "ec8bd2c302b342cb88b97489e714bc48b3262c9614b98876af1f6ddba38d796a",
+        "original_download_matches_registry": true
+      },
+      {
+        "id": 14194883721,
+        "bytes": 24929,
+        "name": "prolonged-source-receiving-Linux",
+        "sha256": "5e4edeaaed2d4e84ff815b471044ffeeb3fdabea12b4030e5f413432d802fd62",
+        "original_download_matches_registry": true
+      }
+    ],
+    "original_native_log_sha256": "0ab09477378a53130292639678d50fea3249e67edef50a2839daf37924f339ca"
   },
   "private_custody_native_receiving": {
     "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/residual-four-native-receiving-20261116",
     "files": 1198,
     "manifest_sha256": "ce404151a661389a868e6891eedfbe727128fa5a9505dd9954df0550f7904c18",
+    "copied_files_verified": true,
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia"
+  },
+  "old_native_pick_caller_review": {
+    "selected_old_source": "74ff283e00a1254a45b9cd8ac80365b979e0e782",
+    "inspection_checkout_branch": "master",
+    "inspection_checkout_head": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+    "inspection_checkout_clean": true,
+    "old_source_sha256": {
+      "src/mol-canvas3d/helper/pick-helper.ts": "47bd4194ef32412145d139b65fcb3f283718296cf7d9e4e130d261c6bc14aeb1",
+      "src/mol-canvas3d/helper/interaction-events.ts": "bac2c642275032fc27c61c51e44b8bd3abca2935f0460cc9bf2672235ffb1453",
+      "src/mol-canvas3d/canvas3d.ts": "04847385ef927169a3a2625bdf3992e5a7c64b235983e3e7ad587dec930d4724"
+    },
+    "runtime_provider": "Installed declared Mol*5.13.1 plus reviewed byte-gated adapter, not the inspection checkout.",
+    "scope": "Old native hover uses asynchronous identification and click uses synchronous identification. Relevance of independently repaired pending-read class, not original hosted ordering."
+  },
+  "original_counters_before_C4": {
+    "source_delivered": 40,
+    "total": 46,
+    "final_accepted": 1
+  },
+  "delivery_progress_delta": {
+    "leaf": "C4",
+    "previous": 40,
+    "source_delivered": 41,
+    "total": 46,
+    "percent": 89.1,
+    "final_accepted": 1,
+    "evidence": "Matched original menu metadata dismissal plus corrected complete hosted controls/scientific mirror in 43796373853. #325 closure adds no other original leaf. Failed overall diagnostic and other exits remain."
+  },
+  "source_resolved_issues": {
+    "305": "Causal unchanged-frame metadata dismissal fixed, with matched old-source control and complete hosted controls/scientific mirror. Original event order unknown.",
+    "325": "Native pending-read class corrected under389 and received on actual updated annotation/endpoint markers. Old tag natural caller correspondence inspected; original exact event order unknown."
+  },
+  "private_hosted_terminal_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/four-issues-hosted-terminal-20261116",
+    "files": 9,
+    "manifest_sha256": "07e5bbebf8687bfb11472136ea0f1b070fb283c19caf62ccbbd53dd8da52d0bb",
     "copied_files_verified": true,
     "originals_retained": true,
     "custodian": "Diego Prada Gracia"

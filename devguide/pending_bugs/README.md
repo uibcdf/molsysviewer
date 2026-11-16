@@ -19,11 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (3)
+### Being worked on (1)
 
 - [`focused_source_diagnostic_preparation.md`](focused_source_diagnostic_preparation.md) — [#399](https://github.com/uibcdf/molsysviewer/issues/399) — Keep focused source diagnostics behind audited installation and built browser prerequisites. *(medium, reproduced)*
-- [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*
-- [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
 ### Partially done (3)
 

@@ -1,19 +1,31 @@
 ---
 summary: Diagnose the hosted popup context-menu timeout after fullscreen controls receiving.
 issue: uibcdf/molsysviewer#305
-status: active
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-16
 severity: medium
-verification: upstream
+verification: reproduced
 area: [ci, popup, context-menu]
 guard: molsysviewer/js/tests/e2e/controls-visibility.e2e.ts
-normative:
+normative: devguide/interaction_gestures_and_menus.md
 blocked_by: []
 supersedes: []
 ---
 
 # Hosted popup context-menu receiving
+
+**Resolved in source — 2026-11-16.** A committed-source matched negative
+control reproduces dismissal by unchanged-frame Python playback metadata;
+the correction preserves that context and still dismisses it on actual frame
+changes, explicit seeks and coordinate/loading changes. Complete hosted
+controls and scientific-mirror owners both pass in `43796373853`, source
+`e3fefadc` / MolSysMT `4b0b1f8a`, Node 22.23.5. The menu receives real FPS 17
+before its visibility assertion; a genuine frame change then closes it.
+The original hosted input sequence remains unrecorded. This closes the
+evidenced class and C4's bounded source disposition, not an invented exact
+history, the failed overall diagnostic, installed or final acceptance. The
+[receipt](../residual_four_issues_receiving_20261116.json) retains every scope.
 
 ## What
 
@@ -141,7 +153,7 @@ suites do not run and the prolonged pytest command executes zero cases.
 Successor `43790196548` passes the audit but the unchanged installed Rust
 validator rejects its editable distribution; the new prerequisite fence
 correctly skips all browser/Jupyter consumers. Neither receives this issue.
-[#399](focused_source_diagnostic_preparation.md) owns those corrections; the
+[#399](../pending_bugs/focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
 
