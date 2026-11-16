@@ -51,6 +51,15 @@ activity before pre-save receiving and earns no pass. See the
 [three-block receipt](../molstar_closeout_three_blocks_20261115.json);
 final candidate, installed, native-host and human exits are still pending.
 
+**Published provider correction — 2026-11-16:** MolSysMT publishes and closes
+#763/#766 in `b8c7984748f2ca87d19911f4cc3bf63b688d3641`. Consumer review finds
+two changed scientific Python files and no Rust/Cargo/pyproject delta from
+`bc5a9297`. A new frozen source composition verifies 3,559 Git files and both
+complete original input hashes; independent owner-guard/original receiving is
+in progress. The expanded four-observation diagnostic will select this exact
+source. No package floor, installed/candidate claim or original counter changes.
+The earlier finding and its freeze prerequisite remain below.
+
 **New provider finding to receive before the final source freeze:**
 [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) reports valid
 public 3WU2/5XNL mmCIF conversion failures before rendering, caused by entity

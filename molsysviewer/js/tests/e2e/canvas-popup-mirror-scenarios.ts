@@ -218,13 +218,51 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
                 }, { kind, tag });
                 throw new Error(`Native selection ${kind}:${tag} did not mark ${endpoint === page ? "original" : "popup"}: ${JSON.stringify(state)}`, { cause: error });
             });
+            return point;
         };
         await nativePick(peer, "shape", "mirror-sphere", [30, 30, 30]);
         await nativePick(page, "annotation", "mirror-label", [0, 30, 0]);
         await fixture("update-label");
         for (const endpoint of [page, peer]) await endpoint.waitForFunction(() =>
             (window as any).__mirrorController.annotationSummaries.find((x: any) => x.tag === "mirror-label")?.text === "Mirror revised");
-        await nativePick(peer, "annotation", "mirror-label", [0, 30, 0]);
+        const revisedPoint = await nativePick(peer, "annotation", "mirror-label", [0, 30, 0]);
+        const revisedPicking = await peer.evaluate(async point => {
+            const c = (window as any).__mirrorController, gpu = c.plugin.canvas3d;
+            const loop = c.plugin.animationLoop, running = loop.isAnimating;
+            const rect = c.plugin.canvas3dContext.canvas.getBoundingClientRect();
+            const local = [point.x - rect.left, point.y - rect.top];
+            const camera = JSON.stringify(gpu.camera.getSnapshot());
+            const describe = (hit: any) => {
+                const loci = gpu.getLoci(hit?.id).loci;
+                const owner = loci?.shape ? c.state.findShapeOwner(loci.shape.sourceData) : null;
+                return { id: hit?.id ?? null, kind: owner?.kind, tag: owner?.tag };
+            };
+            loop.stop();
+            try {
+                const before = describe(gpu.identify(local));
+                gpu.requestDraw(); gpu.tick(performance.now(), { isSynchronous: true });
+                const pending = gpu.asyncIdentify(local);
+                if (!pending) throw new Error("The revised-label control requires a native asynchronous pick read.");
+                // Same native task and point, without injecting a click/locus.
+                const during = describe(gpu.identify(local));
+                let resolved: any = "pending";
+                const deadline = performance.now() + 5000;
+                while (resolved === "pending" && performance.now() < deadline) {
+                    resolved = pending.tryGet();
+                    if (resolved === "pending") await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+                }
+                if (resolved === "pending") throw new Error("The revised-label native pick read did not complete.");
+                return { before, during, resolved: describe(resolved), after: describe(gpu.identify(local)),
+                    cameraUnchanged: camera === JSON.stringify(gpu.camera.getSnapshot()) };
+            } finally { if (running) loop.start(); }
+        }, revisedPoint);
+        for (const observed of [revisedPicking.before, revisedPicking.during, revisedPicking.resolved, revisedPicking.after]) {
+            assert.equal(observed.kind, "annotation");
+            assert.equal(observed.tag, "mirror-label");
+            assert.deepEqual(observed.id, revisedPicking.before.id);
+        }
+        assert.equal(revisedPicking.cameraUnchanged, true);
+        console.log("[E2E popup mirror] revised annotation native pending/synchronous pick " + JSON.stringify(revisedPicking));
         for (const endpoint of [page, peer]) assert.equal(await endpoint.evaluate(() => {
             const c = (window as any).__mirrorController;
             const refs = (window as any).Harness.inspectTaggedRefs(c, "annotation", "mirror-label");

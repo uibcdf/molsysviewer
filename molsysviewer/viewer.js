@@ -190605,11 +190605,15 @@ var MolSysViewerController = class _MolSysViewerController {
       hideLayer: (tag2) => this.state.hideLayer({ op: "hide_layer", tag: tag2, kind: "shape" }),
       notify: (msg) => this.notify?.(msg)
     });
+    let contextFrame = this.trajectory.getTrajectoryState().currentFrame;
     this.trajectory.onTrajectoryState(
       (state) => {
-        this.contextMenu.close();
+        if (state.currentFrame !== contextFrame) {
+          contextFrame = state.currentFrame;
+          this.contextMenu.close();
+          this.groupPanel.clearContextInspection();
+        }
         this.boxDisplay.onFrame(state.currentFrame);
-        this.groupPanel.clearContextInspection();
         this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
         this.trajectoryPlotOverlay.setFrame(state.currentFrame);
         this.prepareFrameDependentQueries(state.currentFrame);
@@ -191577,7 +191581,7 @@ var MolSysViewerController = class _MolSysViewerController {
       console.warn("[MolSysViewer] message missing 'op'", msg);
       return;
     }
-    if (typeof msg.op === "string" && msg.op.startsWith("load_") || msg.op === "clear_all" || msg.op === "set_trajectory_frame") {
+    if (typeof msg.op === "string" && msg.op.startsWith("load_") || msg.op === "clear_all" || msg.op === "set_trajectory_frame" || msg.op === "partial_coordinates_update") {
       this.contextMenu.close();
       this.groupPanel.clearContextInspection();
     }

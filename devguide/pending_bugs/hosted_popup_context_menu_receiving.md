@@ -1,7 +1,7 @@
 ---
 summary: Diagnose the hosted popup context-menu timeout after fullscreen controls receiving.
 issue: uibcdf/molsysviewer#305
-status: open
+status: active
 opened: 2026-11-06
 closed:
 severity: medium
@@ -88,3 +88,37 @@ that the original visibility failure still propagates and the trace records
 the canvas hit, delivered context-menu event, intermediate open style and
 final hidden state. This is a control of the evidence collector, not a
 reproduction of the hosted failure. Keep the issue open.
+
+## Current causal class and receiving — 2026-11-16
+
+The controller closes a menu on every trajectory-state publication, including
+a playback-option summary that leaves the molecular frame unchanged. A native
+empty-canvas control receives one real right-click and then a real Python FPS
+summary: 30 becomes 17, frame zero is unchanged, and the menu closes. The
+source correction retains context for those metadata publications. Explicit
+seeks, loading, clearing, coordinate edits and actual structure changes retain
+context invalidation. The real popup guard now checks Python FPS publication
+without dismissing the menu, and an actual frame change that does dismiss it.
+
+Current real-pentalanine receiving `944` passes with three structures: the hit
+is CANVAS, ordinary pointer-down/contextmenu/up opens the menu, and FPS 17
+preserves it at frame zero. All 9,983 selected inputs remain unchanged and all
+13 owned processes retire; native exit is zero without a resource stop. This
+receives that corrected class, not the original unrecorded hosted sequence.
+An exact pre-correction-source molecular comparison and the expanded hosted
+diagnostic are prepared. The original `939` popup attempt is interrupted by
+global swap; reduced empty-view `943` times out before metadata and lacks the
+input trace, so neither is credited as a passing or causal metadata result.
+See the [four-issue receipt](../residual_four_issues_receiving_20261116.json).
+
+The exact pre-correction-source comparison is now received in `948`. It
+builds 351 Git-verified JavaScript/manifests from committed `9bc3f2f6` using
+the same native provider/adapter, and reuses the exact complete pentalanine
+fixture bytes from successful corrected `944`. Both receive a CANVAS hit and
+frame zero; FPS 17 closes the original menu and preserves the corrected menu.
+The original close stack is `applySummary -> updateTrajectoryState ->
+onTrajectoryState -> contextMenu.close`. The negative-control checker expects
+and preserves that original Node assertion failure. Preparation failure `946`
+lacked two manifests and never ran the browser; `947` supplies those exact
+committed inputs. This establishes the corrected metadata dismissal class,
+while the historical hosted event ordering remains unrecorded.

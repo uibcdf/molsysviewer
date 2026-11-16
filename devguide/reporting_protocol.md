@@ -319,8 +319,9 @@ layout and frame-specific calculated hbonds in both windows. The exported-page
 scenario guards context rotation and bidirectional selection without Python.
 These scientific scene checks use the persistent real Python fixture and actual
 Mol* rendering; a control-style comparison cannot substitute for them.
-The controls and independent scientific-mirror entries each retain a bounded
-300-second default runner allowance. All operation deadlines and scientific
+The controls entry retains its bounded 300-second runner allowance; the
+complete independent scientific mirror retains the 480-second allowance
+received under #244. All operation deadlines and scientific
 assertions are unchanged. Other integrated owners retain their separately
 documented allowances in `e2e-runner.ts`; ordinary entries keep 180 seconds. An explicit
 `E2E_SUITE_TIMEOUT_MS` retains precedence. Scientific phase timing must retain
@@ -335,6 +336,25 @@ The paired mirror entry also uses `withFixtureWorkspace` and a failing catch
 after awaited browser/fixture retirement. The offline validator requires
 both owners in the build and mandatory core inventory. Running just one entry
 is partial evidence for this combined historical guard profile.
+
+### Independent scientific popup-mirror browser guard profile
+
+The bounded selector is exactly
+`molsysviewer/js/tests/e2e/canvas-popup-mirror.e2e.ts`, without suffixes,
+globs or commands. From `molsysviewer/js`, build with `npm run build:harness`
+and `npm run build:e2e:all`, then run
+`node tests/e2e/e2e-runner.js --lane=core --suites=canvas-popup-mirror`.
+The same entry is mandatory in `test:e2e:core`, with its complete 480-second
+suite allowance and unchanged operation deadlines. Browser/WebGL failure fails.
+
+Its persistent real pentalanine/Python authority and two native canvases retain
+camera, exact selection, molecular geometry, named-analysis and playback checks.
+Revised annotation receiving requires an actual native GPU hit, real click and
+selected markers in both endpoints. Its pending-read control requires the same
+revised annotation identity before/during/after a native asynchronous GPU read,
+with the native drawing loop restored. The offline validator verifies the
+exact entry, fixture, receiving owner and build/core registration; that proves
+addressability, not actual-host, installed, human or historical-cause acceptance.
 
 ### Managed-edit and pending-reader browser guard profile
 

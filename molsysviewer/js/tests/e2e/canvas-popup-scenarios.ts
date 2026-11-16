@@ -289,6 +289,18 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         const canvas = await popup.locator("canvas").boundingBox();
         assert.ok(canvas);
         const menu = await openPopupContextMenu(popup, canvas.x + 30, canvas.y + canvas.height - 30);
+        // A late playback-metadata reply must not dismiss an open menu when
+        // the rendered molecular structure has not changed. Use the real
+        // Python player and receive its projected FPS before reading the menu.
+        await page.evaluate(() => (window as any).__popupWidgetModel.send({ mirror_fixture: "fps", fps: 17 }));
+        await popup.waitForFunction(() => document.querySelector<HTMLInputElement>('input[title="FPS"]')?.value === "17");
+        assert.equal(await menu.isVisible(), true, "unchanged-frame playback metadata must preserve the open context menu");
+        await page.evaluate(() => (window as any).__popupWidgetModel.send({ mirror_fixture: "frame", index: 1 }));
+        await popup.waitForFunction(() => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === "2 / 3");
+        assert.equal(await menu.isVisible(), false, "an actual structure change must invalidate the old context");
+        await page.evaluate(() => (window as any).__popupWidgetModel.send({ mirror_fixture: "frame", index: 0 }));
+        await popup.waitForFunction(() => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === "1 / 3");
+        await openPopupContextMenu(popup, canvas.x + 30, canvas.y + canvas.height - 30);
         await menu.locator('[data-molsysviewer-context-submenu="View"]').click();
         await menu.getByText("Cinema", { exact: true }).click();
         await page.waitForFunction(() => (window as any).__popupWidgetModel.get("controls_mode") === "cinema");

@@ -379,7 +379,12 @@ async function precisionRendered(page: Page, control: PrecisionControl, frame: n
     await page.waitForFunction(expected => document.querySelector(
         '[data-molsysviewer-datacard="precision-plot"] [data-molsysviewer-plot-value="readout"]',
     )?.getAttribute("aria-label") === expected, expectedRaw);
-    const observation = await svg.evaluate(node => {
+    // Resolve and measure in the same browser task. An element handle selected
+    // before a public update can refer to the retired SVG: its numeric points
+    // remain, but native getBBox() returns zero for that disconnected tree.
+    const observation = await page.evaluate(() => {
+        const node = document.querySelector<SVGSVGElement>('[data-molsysviewer-datacard="precision-plot"] svg:has(polyline)');
+        if (!node) throw new Error("The current precision plot has no SVG.");
         const axisNode = node.querySelector("path")!;
         const axis = axisNode.getBBox();
         const rect = (element: Element) => {
@@ -428,6 +433,9 @@ async function precisionRendered(page: Page, control: PrecisionControl, frame: n
     // Keep the original atomic observation even when a later assertion fails.
     // The receiving command owns this log; it contains no notebook/server data.
     console.log("B2_PRECISION_OBSERVATION " + JSON.stringify({ case: control.name, frame, ...observation }));
+    assert.equal(observation.layout.svg.isConnected, true, "measure the current plot generation");
+    assert.ok(observation.axis.width > 0 && observation.axis.height > 0,
+        `${control.name}: the current connected SVG must have a measurable native axis`);
     // The oracle is produced from exact represented floats using Python Decimal;
     // observed axis bounds come from the browser's SVG, not copied layout math.
     assert.equal(observation.points.length, control.x.length);
@@ -504,6 +512,28 @@ export async function checkTrajectoryPlotPrecision(context: BrowserContext, dir:
                     await plotFixtureAction(source, { plot_fixture: "go", index: frame });
                     await rendered(source, frame, state.coordinates);
                     await precisionRendered(source, control, frame);
+                }
+                if (name === "large-offset") {
+                    // A deliberate public update retires the prior SVG. This
+                    // native control preserves the exact float/Decimal oracle
+                    // while distinguishing old geometry from the live plot.
+                    const previous = await source.locator('[data-molsysviewer-datacard="precision-plot"] svg:has(polyline)').elementHandle();
+                    assert.ok(previous);
+                    try {
+                        await plotFixtureAction(source, { plot_fixture: "precision", case: name });
+                        const retired = await previous.evaluate(node => ({
+                            connected: node.isConnected,
+                            width: node.querySelector("path")!.getBBox().width,
+                            points: node.querySelector("polyline")!.getAttribute("points"),
+                        }));
+                        console.log("B2_RETIRED_SVG_CONTROL " + JSON.stringify(retired));
+                        assert.equal(retired.connected, false);
+                        assert.equal(retired.width, 0);
+                        assert.ok(retired.points?.trim(), "a retired SVG can retain numeric points without drawable bounds");
+                        const replaced = await inspect(bridge, source);
+                        assert.deepEqual(replaced.precision.records, control.records);
+                        await precisionRendered(source, control, 2);
+                    } finally { await previous.dispose(); }
                 }
                 if (["tiny", "angstrom", "signed", "large-offset", "wide", "subnormal"].includes(name)) {
                     await plotFixtureAction(source, { plot_fixture: "restore-precision" });

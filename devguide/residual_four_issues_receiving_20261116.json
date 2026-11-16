@@ -1,0 +1,466 @@
+{
+  "schema": "molsysviewer.residual_four_receiving@1",
+  "date": "2026-11-16",
+  "issues": [
+    321,
+    325,
+    305,
+    354
+  ],
+  "source_base": "9bc3f2f6",
+  "scope": "Development source and bounded receiving; not final source candidate, installed artifacts, full core, postponed human acceptance or publication.",
+  "profiles": {
+    "menu-metadata-red-939": {
+      "native_exit": 0,
+      "seconds": 37.23183281207457,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2291.7,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "ece7ee40ddd90d7d0205e2358cb37ca0e8807a6e74460d029e3dc7f91522f48e",
+      "classification": "Resource-interrupted original popup flow, before the new metadata assertion; no pass or product-failure inference."
+    },
+    "menu-metadata-native-red-940": {
+      "native_exit": 1,
+      "seconds": 15.40395162627101,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1713.7,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "5f89a63db131e541133e6faa96d09dab0b4e1ed345eee95f29525e1076d9f3b2",
+      "classification": "Actual empty native canvas receives a real right-click; a Python FPS summary changes 30 to 17 without changing frame zero and closes the menu. Expected assertion failure. This pre-rebuild local harness is hash-recorded; an exact committed-source matched molecular comparison is prepared separately."
+    },
+    "build-menu-context-941": {
+      "native_exit": 0,
+      "seconds": 11.800422199070454,
+      "selected_inputs": 9981,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 461.1,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "cleanup": {
+        "tracked": 9,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "377b84f7bc3bcfda96613055c8b249edb73d095b7f5629c82ca260308c31fd25",
+      "classification": "Runtime build completes, then global swap interrupts harness/remaining checks. Not a completed build/unit/type cohort."
+    },
+    "build-menu-harness-942": {
+      "native_exit": 0,
+      "seconds": 7.543516186065972,
+      "selected_inputs": 9980,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 301.0,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "6e98aed04086aec7524083bc12c55d87b5ebfcb30397409fbc6e3ba47fa9d570",
+      "classification": "Ordinary current harness build completes; source inputs unchanged."
+    },
+    "menu-metadata-native-green-943": {
+      "native_exit": 1,
+      "seconds": 47.66553725395352,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1719.8,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "b9c2f5056e28e57067d2a315aa44efe67d74829130d5b12b4a2e7743442426b0",
+      "classification": "Unexpected hidden-menu timeout before metadata, on an empty canvas. No passive input trace was present; target/cause not established. Retained separately, not treated as a metadata regression or a pass."
+    },
+    "menu-metadata-molecular-944": {
+      "native_exit": 0,
+      "seconds": 20.061861482914537,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1883.0,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "d224826a431d6ecad8e29c97301be406a7e1c95af7aaa57938766e40032c6368",
+      "classification": "Real pentalanine, three structures: hit is CANVAS, one native right-click opens the menu; real Python FPS summary 30 to 17 preserves menu and frame zero. Passive exact pointer/open trace retained; no forced click, fake loci or changed deadline.",
+      "observations": {
+        "before": {
+          "menu": true,
+          "state": {
+            "frameCount": 3,
+            "currentFrame": 0,
+            "isPlaying": false,
+            "hasTrajectory": true,
+            "expectedFrameCount": 3,
+            "fps": 30,
+            "step": 1
+          }
+        },
+        "after": {
+          "menu": true,
+          "state": {
+            "frameCount": 3,
+            "currentFrame": 0,
+            "isPlaying": false,
+            "hasTrajectory": true,
+            "expectedFrameCount": 3,
+            "fps": 17,
+            "step": 1
+          }
+        },
+        "trace": {
+          "hit": {
+            "tag": "CANVAS",
+            "id": "",
+            "point": {
+              "x": 38,
+              "y": 478
+            }
+          },
+          "events": [
+            {
+              "phase": "pointermove",
+              "detail": {
+                "target": "CANVAS",
+                "button": -1,
+                "buttons": 0,
+                "x": 38,
+                "y": 478
+              },
+              "at": 5775.199999809265
+            },
+            {
+              "phase": "pointerdown",
+              "detail": {
+                "target": "CANVAS",
+                "button": 2,
+                "buttons": 2,
+                "x": 38,
+                "y": 478
+              },
+              "at": 5777.199999809265
+            },
+            {
+              "phase": "contextmenu",
+              "detail": {
+                "target": "CANVAS",
+                "button": 2,
+                "buttons": 2,
+                "x": 38,
+                "y": 478
+              },
+              "at": 5777.599999904633
+            },
+            {
+              "phase": "menu-open",
+              "detail": "Error\n    at c.contextMenu.<computed> [as open] (eval at evaluate (:290:30), <anonymous>:3:129)\n    at HTMLDivElement.handleCanvasContextMenu (/home/diego/repos@uibcdf/molsysviewer/molsysviewer/js/tests/e2e/harness.bundle.js:202037:32)",
+              "at": 7830.5
+            },
+            {
+              "phase": "pointerup",
+              "detail": {
+                "target": "DIV",
+                "button": 2,
+                "buttons": 0,
+                "x": 38,
+                "y": 478
+              },
+              "at": 7840
+            }
+          ]
+        },
+        "scope": "Actual three-structure pentalanine Python FPS summary, native Mol*/Chromium and one real right-click; no fake loci, delayed events, forced menu opening, retry or changed deadline."
+      }
+    },
+    "four-issues-workflow-945": {
+      "native_exit": 0,
+      "seconds": 7.32930098567158,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 181.5,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "raw_receipt_sha256": "cf227ffe202fff9aabbff60b2fd85dda9f7fa98bfa1c765d18539c65ff38f56c",
+      "tests": {
+        "passed": 84,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "ruff": "passed",
+        "diff": "passed"
+      }
+    },
+    "build-original-menu-946": {
+      "native_exit": 1,
+      "seconds": 9.237093213014305,
+      "selected_inputs": 9981,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 253.8,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "classification": "Preparation failure before browser: two imported protocol/action manifests absent from the bounded archive. Original failure retained; corrected archive adds those same-commit inputs in 947."
+    },
+    "build-original-menu-947": {
+      "native_exit": 0,
+      "seconds": 3.9947802661918104,
+      "selected_inputs": 9981,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 356.4,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 4,
+        "survivors": [],
+        "errors": []
+      },
+      "source_receipt": {
+        "source": "9bc3f2f687b3848b604ccd323ff2967d14c6e4c0",
+        "harness_sha256": "d1aa3031d2f21af68b35fa5d0283bdd4467362e3ad119c056e940666bca8e7f6",
+        "archive_sha256": "de91ab2d88fa7fb87b2674bfea8901f0c0ee9008e9076d7bd23df954d3a723d7",
+        "native_provider": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/js/node_modules/molstar",
+        "native_version": "5.13.1",
+        "scope": "Exact committed pre-correction JavaScript source, ordinary harness build and the same installed dependency/qualified adapter. Auxiliary original-side comparison; no publication or artifact qualification."
+      }
+    },
+    "menu-metadata-original-matched-948": {
+      "native_exit": 0,
+      "seconds": 11.600120589137077,
+      "selected_inputs": 9983,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1481.4,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 13,
+        "survivors": [],
+        "errors": []
+      },
+      "observations": {
+        "before": {
+          "menu": true,
+          "state": {
+            "frameCount": 3,
+            "currentFrame": 0,
+            "isPlaying": false,
+            "hasTrajectory": true,
+            "expectedFrameCount": 3,
+            "fps": 30,
+            "step": 1
+          }
+        },
+        "after": {
+          "menu": false,
+          "state": {
+            "frameCount": 3,
+            "currentFrame": 0,
+            "isPlaying": false,
+            "hasTrajectory": true,
+            "expectedFrameCount": 3,
+            "fps": 17,
+            "step": 1
+          }
+        },
+        "trace": {
+          "hit": {
+            "tag": "CANVAS",
+            "id": "",
+            "point": {
+              "x": 38,
+              "y": 478
+            }
+          },
+          "events": [
+            {
+              "phase": "pointermove",
+              "detail": {
+                "target": "CANVAS",
+                "button": -1,
+                "buttons": 0,
+                "x": 38,
+                "y": 478
+              },
+              "at": 5772.199999809265
+            },
+            {
+              "phase": "pointerdown",
+              "detail": {
+                "target": "CANVAS",
+                "button": 2,
+                "buttons": 2,
+                "x": 38,
+                "y": 478
+              },
+              "at": 5773.699999809265
+            },
+            {
+              "phase": "contextmenu",
+              "detail": {
+                "target": "CANVAS",
+                "button": 2,
+                "buttons": 2,
+                "x": 38,
+                "y": 478
+              },
+              "at": 5774.099999904633
+            },
+            {
+              "phase": "menu-open",
+              "detail": "Error\n    at c.contextMenu.<computed> [as open] (eval at evaluate (:290:30), <anonymous>:3:129)\n    at HTMLDivElement.handleCanvasContextMenu (/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build-original-menu-947/source/molsysviewer/js/tests/e2e/harness.bundle.js:202037:32)",
+              "at": 7786.699999809265
+            },
+            {
+              "phase": "pointerup",
+              "detail": {
+                "target": "DIV",
+                "button": 2,
+                "buttons": 0,
+                "x": 38,
+                "y": 478
+              },
+              "at": 7801.599999904633
+            },
+            {
+              "phase": "menu-close",
+              "detail": "Error\n    at c.contextMenu.<computed> [as close] (eval at evaluate (:290:30), <anonymous>:3:129)\n    at trajectory.onTrajectoryState.immediate (/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build-original-menu-947/source/molsysviewer/js/tests/e2e/harness.bundle.js:202271:32)\n    at TrajectoryHandlers.notifyListeners (/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build-original-menu-947/source/molsysviewer/js/tests/e2e/harness.bundle.js:181586:55)\n    at TrajectoryHandlers.updateTrajectoryState (/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build-original-menu-947/source/molsysviewer/js/tests/e2e/harness.bundle.js:181608:16)\n    at TrajectoryHandlers.applySummary (/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build-original-menu-947/source/molsysviewer/js/tests/e2e/harness.bundle.js:181331:16)\n    at _MolSysViewerController.handleMessage (/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/robustness-20261106/next-ten-20261109/build-original-menu-947/source/molsysviewer/js/tests/e2e/harness.bundle.js:203428:33)\n    at eval (eval at evaluate (:290:30), <anonymous>:1:48)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+              "at": 7833.900000095367
+            }
+          ]
+        },
+        "scope": "Actual three-structure pentalanine Python FPS summary, native Mol*/Chromium and one real right-click; no fake loci, delayed events, forced menu opening, retry or changed deadline."
+      },
+      "comparison": {
+        "source": "9bc3f2f687b3848b604ccd323ff2967d14c6e4c0",
+        "harness_sha256": "d1aa3031d2f21af68b35fa5d0283bdd4467362e3ad119c056e940666bca8e7f6",
+        "same_molecular_fixture_as": "menu-metadata-molecular-944",
+        "fixture_sha256": "63cf62381749828d753aca8d09f3edb0074c3a6e65470899bcbd60b82f5ee45b",
+        "original_source_files_verified": 351
+      },
+      "classification": "Expected original Node assertion failure at menu preservation, received by an explicit negative-control checker. Same complete molecular fixture as corrected 944, native CANVAS input and unchanged frame; menu-close stack identifies applySummary -> trajectory publication. Not a product pass."
+    }
+  },
+  "changes": {
+    "305": "Preserve contextual menu/inspection on playback-option publications at the same frame. Explicit seeks, loads, clears and coordinate updates retain invalidation; real structure changes still invalidate. Extend actual popup guard with real Python FPS and frame operations.",
+    "321": "Read the current connected SVG and its native bounds within one browser task, rather than keeping a locator-selected element across a possible public replacement. Add a real public-update retired-SVG counterexample without changing the Decimal oracle or tolerances.",
+    "325": "Retain actual revised-label GPU query, real click and both selected markers; add synchronous/before/during/after native pending-read identities for that revised annotation, preserving/restoring the native animation loop. Mol* v5.4.1 tag 74ff283e contains the same dirty-only read gate as the independently repaired current 5.13.1 mechanism; source inspection is not reconstruction of the original hosted ordering.",
+    "354": "Receive the existing owner one-cycle prolonged Jupyter guard on a dedicated hosted runner. Its original pre-save Python assertion, 5000 structures, both popups, recovery and active playback remain. Prepare exact-source native importability with an editable build as confirmed by the owner; retain actual kernel/module/hash records. Prior local 937 remains resource-interrupted."
+  },
+  "hosted": {
+    "status": "prepared_not_dispatched",
+    "scope": "One Linux source_receiving=true / receiving_scope=diagnostics checkpoint; four affected browser owners, JS units/types and one actual owner prolonged cycle. Full default source gate is unchanged.",
+    "molsysmt_sha": "b8c7984748f2ca87d19911f4cc3bf63b688d3641"
+  },
+  "provider_coordination": {
+    "763_766": {
+      "state": "owner_fixed_published_consumer_receiving_in_progress",
+      "source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
+      "owner_reported": "961 CIF/BinaryCIF guards and eight complete original-entry routes; source/policy/type/unit receiving remain separately scoped.",
+      "consumer_source_review": "Only two scientific Python files differ from bc5; Rust/Cargo/pyproject inputs unchanged.",
+      "consumer_source_composition": "3559 Git-verified files and exact original compressed/decoded hashes; unchanged received native backend 4ffb82e4, no rebuild or installed-artifact claim.",
+      "consumer_tests": {
+        "state": "passed",
+        "profile": "provider-cif-763-766-949",
+        "passed": 114,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "warnings": 35,
+        "warning_type": "CrossChainCovalentBondsWarning",
+        "seconds": 73.60377828078344,
+        "selected_inputs": 9833,
+        "inputs_unchanged": true,
+        "peak_owned_rss_mib": 587.4,
+        "cleanup": {
+          "tracked": 1,
+          "survivors": [],
+          "errors": []
+        },
+        "resource_stop": null,
+        "actual_origin": {
+          "source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
+          "verified_git_files": 3559,
+          "native_reuse_rationale": "Rust/Cargo/pyproject input delta bc5..b8c is empty; reuse exact received backend for these Python parsing changes. Not a new installed artifact or source/native rebuild claim.",
+          "origins": {
+            "molsysmt": {
+              "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/provider-b8c-current/molsysmt/__init__.py",
+              "sha256": "dc89c5f21ab7ba4bb94b289927a19856d27cb670baf1b03d7f6fcb7fced03f90",
+              "version": "0+unknown"
+            },
+            "molsysmt._rust": {
+              "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/provider-b8c-current/molsysmt/_rust.abi3.so",
+              "sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+              "version": null
+            },
+            "pyunitwizard": {
+              "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+              "sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f",
+              "version": "0.29.4+2.g9bb4f5f"
+            }
+          },
+          "pytest_native_exit": 0,
+          "scope": "Independent consumer source receiving; 2 original complete public entries, four policies/units each, plus synthetic source-identity/link guards. No Viewer rendering, installed-package or final candidate claim."
+        },
+        "scope": "106 synthetic identity/explicit-link guards plus eight complete original-entry routes, including alternate units. This is independent scientific source receiving; full MolSysViewer loading/rendering, installed and candidate receiving remain separate."
+      }
+    }
+  },
+  "limits": {
+    "maximum_logical_cpus_used": 4,
+    "maximum_ram_gib_used": 4,
+    "owned_swap_gib": 0,
+    "global_reserve_gib": 6.5,
+    "stops": "Preserved global swap stops; no threshold raised or foreign process interrupted."
+  },
+  "original_counters": {
+    "source_delivered": 40,
+    "total": 46,
+    "final_accepted": 1
+  },
+  "publication": "paused",
+  "source_files_sha256": {
+    "molsysviewer/js/src/managers/viewer-controller.ts": "26c5ca7c21ee21cd8ec1be98bee5953faddc178cc30f4024be8c220c0308b064",
+    "molsysviewer/js/tests/e2e/canvas-popup-scenarios.ts": "8575c4951f3a3445b65d33ffe37cc93997fbc8bc72bbd3d85254bc4216b0051e",
+    "molsysviewer/js/tests/e2e/canvas-popup-mirror-scenarios.ts": "78f345107c1c3c08379b5f6486a7dd949c6543fdc8198648ad5667353945864f",
+    "molsysviewer/js/tests/e2e/trajectory-plot-authority-scenarios.ts": "abcdf5a29ed3f95099b9eb87bdf8e507751c32f4fd8e0f8ef0b621faa777fe44",
+    ".github/workflows/ci-python-314-source-pair.yaml": "6a98eadc5e3cd56cc654968c5799edde37f488fee8ffdf3af8bfc68658815276",
+    "tests/test_source_workflow_coverage.py": "f93797ed29a48e9652acc208b1f5a448c7a42c255940db7f2d797fe8f4006e96",
+    "tests/test_reporting_protocol.py": "f43f500e63657472460517d0445e0950a81e46508e8cbcaf36de1a62db9cef60"
+  },
+  "record_checks": {
+    "profile": "four-issues-records-950",
+    "passed": 518,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "ruff": "passed",
+    "diff": "passed",
+    "selected_inputs": 9983,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "limits": {
+      "logical_cpus": 1,
+      "ram_gib": 1
+    }
+  }
+}

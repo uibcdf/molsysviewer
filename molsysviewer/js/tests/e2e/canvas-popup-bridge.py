@@ -72,6 +72,8 @@ def serve(view=None, fixture_event_handler=None, *, async_processing=False):
                         view.active_selection.set(event["indices"])
                     elif action == "fps":
                         view.player.set_fps(event["fps"])
+                    elif action == "frame":
+                        view.player.go_to_structure(event["index"])
                     elif action == "update-label":
                         view.annotations["mirror-label"].set_text("Mirror revised")
                     elif action == "hide":

@@ -118,3 +118,19 @@ retire. There is no pre-save receipt or JUnit result. The supervisor child's
 zero exit is not a passing test, and no loaded-kernel or cycle acceptance is
 inferred. Keep the failed/interrupted private records and postpone this
 unchanged diagnostic while shared swap pressure is active.
+
+## Dedicated hosted receiving prepared — 2026-11-16
+
+The expanded Linux-only source diagnostic selects the owner's existing
+`test_actual_jupyter_prolonged_popup_controls`: one complete 5,000-structure
+cycle, both popups, the unchanged independent Python pre-save assertion,
+recovery, active playback and native retirement. MolSysMT confirms that its
+launcher prepends the checkout to PYTHONPATH and needs the same source's
+native backend there; the isolated runner prepares an editable/in-place
+build and retains actual import/hash records. It does not copy an unrelated
+old binary into new scientific sources. JS units/types and the four affected
+browser owners remain separate steps. The original full default matrix is
+unchanged. This checkpoint is prepared, not yet dispatched or received;
+current-source one-cycle success would not reconstruct the original cycle-nine
+message order or replace the thirty-cycle/installed/human scopes. See the
+[four-issue receipt](../residual_four_issues_receiving_20261116.json).

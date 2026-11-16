@@ -359,6 +359,14 @@ jobs:
           test -x /usr/bin/google-chrome
           /usr/bin/google-chrome --version
 
+      - name: Check JavaScript units and types for focused diagnostics
+        if: runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        run: |
+          npm run test:js
+          npx --no-install tsc --noEmit
+
       - name: Run all core browser suites against the exact source pair
         if: runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
@@ -373,7 +381,35 @@ jobs:
         working-directory: molsysviewer-source/molsysviewer/js
         env:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
-        run: node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror,trajectory-plot
+
+      - name: Receive one prolonged Jupyter source cycle
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' }}
+        timeout-minutes: 10
+        shell: bash -l {0}
+        working-directory: molsysviewer-source
+        env:
+          MOLSYSVIEWER_ROOT: ${{ github.workspace }}/molsysviewer-source
+        run: |
+          # The owner receiver prepends its checkout to PYTHONPATH. An editable
+          # build puts the native backend from that exact source there too;
+          # a non-editable wheel alone would leave this source unimportable.
+          python -m pip install --no-deps --no-build-isolation --editable ../molsysmt-source
+          python -m pytest --receptor=ci -n0 -c pyproject.toml --confcutdir=../molsysmt-source/tests/molsysviewer_molsysmt ../molsysmt-source/tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls --basetemp=.pytest_cache/prolonged-source --junitxml=prolonged-source.xml
+
+      - name: Preserve bounded prolonged source receiving
+        if: always() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prolonged-source-receiving-Linux
+          path: |
+            molsysviewer-source/prolonged-source.xml
+            molsysviewer-source/.pytest_cache/prolonged-source/**/full-result.json
+            molsysviewer-source/.pytest_cache/prolonged-source/**/full-failure.json
+            molsysviewer-source/.pytest_cache/prolonged-source/**/kernel-molecular-imports*.json
+            molsysviewer-source/.pytest_cache/prolonged-source/**/cycle-*-memory.json
+          include-hidden-files: true
+          if-no-files-found: warn
 
       - name: Receive live Jupyter diagnostics
         if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' }}

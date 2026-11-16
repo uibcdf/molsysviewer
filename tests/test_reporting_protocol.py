@@ -47,6 +47,7 @@ MOVIE_STUDIO_BROWSER_GUARD = "molsysviewer/js/tests/e2e/movie-studio.e2e.ts"
 TRAJECTORY_PLOT_BROWSER_GUARD = "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts"
 CONTEXT_MENU_BROWSER_GUARD = "molsysviewer/js/tests/e2e/context-menu.e2e.ts"
 CONTROLS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/controls-visibility.e2e.ts"
+SCIENTIFIC_MIRROR_BROWSER_GUARD = "molsysviewer/js/tests/e2e/canvas-popup-mirror.e2e.ts"
 MANAGED_EDITS_BROWSER_GUARD = "molsysviewer/js/tests/e2e/coordinate-edits.e2e.ts"
 WORKSPACE_BROWSER_GUARD = "molsysviewer/js/tests/e2e/panel-popup-welcome.e2e.ts"
 STUDIO_LIST_BROWSER_GUARD = "molsysviewer/js/tests/e2e/studio-list-workflows.e2e.ts"
@@ -118,6 +119,7 @@ def validate_guard(root: Path, selector: str) -> list[str]:
         TRAJECTORY_PLOT_BROWSER_GUARD,
         CONTEXT_MENU_BROWSER_GUARD,
         CONTROLS_BROWSER_GUARD,
+        SCIENTIFIC_MIRROR_BROWSER_GUARD,
         MANAGED_EDITS_BROWSER_GUARD,
         WORKSPACE_BROWSER_GUARD,
         STUDIO_BROWSER_GUARD,
@@ -356,6 +358,21 @@ def validate_guard(root: Path, selector: str) -> list[str]:
             'msv.demo["pentalanine"]' in fixture,
             'first.keyboard.type("retained native reader")' in receiving,
             'report.unit, "nm"' in receiving,
+        )
+    elif selector == SCIENTIFIC_MIRROR_BROWSER_GUARD:
+        try:
+            receiving = (js_root / "tests/e2e/canvas-popup-mirror-scenarios.ts").read_text(encoding="utf-8")
+        except OSError as error:
+            return [f"guard {selector!r} has no scientific mirror receiving owner: {error}"]
+        requirements += (
+            "await checkCanvasPopupMirror(page, dir);" in entry,
+            'withFixtureWorkspace("canvas-popup-mirror", run).catch(' in entry,
+            "PythonFixtureBridge" in receiving,
+            'await fixture("update-label")' in receiving,
+            'await nativePick(peer, "annotation", "mirror-label"' in receiving,
+            "gpu.asyncIdentify(local)" in receiving,
+            "value & 2" in receiving,
+            (js_root / "tests/e2e/canvas-popup-bridge.py").is_file(),
         )
     elif selector == CONTROLS_BROWSER_GUARD:
         try:
@@ -783,6 +800,7 @@ def test_browser_guard_resolves_its_build_entrypoint_and_core_lane() -> None:
     assert validate_guard(ROOT, TRAJECTORY_PLOT_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTEXT_MENU_BROWSER_GUARD) == []
     assert validate_guard(ROOT, CONTROLS_BROWSER_GUARD) == []
+    assert validate_guard(ROOT, SCIENTIFIC_MIRROR_BROWSER_GUARD) == []
     assert validate_guard(ROOT, MANAGED_EDITS_BROWSER_GUARD) == []
     assert validate_guard(ROOT, WORKSPACE_BROWSER_GUARD) == []
     assert validate_guard(ROOT, STUDIO_BROWSER_GUARD) == []

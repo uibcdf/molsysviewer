@@ -1845,11 +1845,17 @@ export class MolSysViewerController {
             notify: (msg) => this.notify?.(msg),
         });
         // Subscriptions to local event bus
+        let contextFrame = this.trajectory.getTrajectoryState().currentFrame;
         this.trajectory.onTrajectoryState(
             (state) => {
-                this.contextMenu.close();
+                // Playback options also publish trajectory state. They do not
+                // invalidate a pick in the unchanged molecular structure.
+                if (state.currentFrame !== contextFrame) {
+                    contextFrame = state.currentFrame;
+                    this.contextMenu.close();
+                    this.groupPanel.clearContextInspection();
+                }
                 this.boxDisplay.onFrame(state.currentFrame);
-                this.groupPanel.clearContextInspection();
                 this.triggerLocalAddonEvent("frame-changed", state.currentFrame);
                 this.trajectoryPlotOverlay.setFrame(state.currentFrame);
                 this.prepareFrameDependentQueries(state.currentFrame);
@@ -2551,7 +2557,8 @@ export class MolSysViewerController {
             console.warn("[MolSysViewer] message missing 'op'", msg);
             return;
         }
-        if ((typeof msg.op === "string" && msg.op.startsWith("load_")) || msg.op === "clear_all" || msg.op === "set_trajectory_frame") {
+        if ((typeof msg.op === "string" && msg.op.startsWith("load_")) || msg.op === "clear_all"
+            || msg.op === "set_trajectory_frame" || msg.op === "partial_coordinates_update") {
             this.contextMenu.close();
             this.groupPanel.clearContextInspection();
         }

@@ -925,7 +925,7 @@ independently on ipykernel 7.3.0; original 7.4.0 bytes pass 30 native cycles
 and the complete actual Movie pytest with ten edit/seeks. Component notebook
 recipes now require >=7.4.0. MolSysSuite #200 owns legacy-prefix adoption;
 that shared prefix is unchanged. Exact installed pair,
-MolSysMT #763 owner correction/consumer receiving and applicable human exits remain separate and
+MolSysMT #763/#766 consumer receiving and applicable human exits remain separate and
 pending. Follow the [decision packet](molstar_closeout_decisions_20261115.md).
 Kernel-only `919` and actual-TcTIM `923` demonstrate the controlled
 7.3.0 initial-execute stall; normal current-source `928` receives 3,983 atoms
@@ -948,6 +948,15 @@ delivered source fixes now close without changing the original counters.
 separate dispositions. #354 diagnostic 937 is interrupted by global swap
 activity before its pre-save receipt, with all 26 owned processes retired;
 it earns no pass and is not relaunched under that pressure.
+The [four-observation follow-up](residual_four_issues_receiving_20261116.json)
+now isolates a concrete same-frame playback-metadata dismissal under #305 and
+receives its correction with real pentalanine. #321 adds atomic current-SVG
+observation, #325 adds a native revised-label pending-read control, and a
+bounded hosted checkpoint is prepared for those owners plus #354's existing
+one-cycle receiver. Local resource interruptions remain uncredited. MolSysMT
+publishes the #763/#766 correction in `b8c798474`; its two Python parsing
+changes and unchanged Rust inputs are reviewed, with independent consumer
+receiving in progress. No source counter or publication decision changes.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**

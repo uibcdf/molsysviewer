@@ -7,7 +7,7 @@ closed:
 severity: medium
 verification: measured
 area: [annotations, picking, popup, ci]
-guard: molsysviewer/js/tests/e2e/controls-visibility.e2e.ts
+guard: molsysviewer/js/tests/e2e/canvas-popup-mirror.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
@@ -51,3 +51,20 @@ label picks/selected markers under the original deadlines. Only passive
 diagnostics changed; this is non-reproduction, not a causal product fix. The
 independent Jupyter step fails its missing-tool preflight; both facts remain
 separate.
+
+## Native pending-read class and revised-label guard — 2026-11-16
+
+The actual Mol* `v5.4.1` source tag is `74ff283e00a1254a45b9cd8ac80365b979e0e782`.
+Its `src/mol-canvas3d/helper/pick-helper.ts` has the same dirty-only synchronous
+read gate and asynchronous read path as the independently reproduced current
+5.13.1 gap repaired under #389. This is inspected source correspondence, not
+a reproduction of the old hosted ordering. The current complete gate passes
+the original revised-label query, real click and both selected markers.
+
+The added mirror control uses the actual revised annotation's identified
+point, pauses/restores only its native draw loop and requires the same live
+annotation identity before/during/after a native asynchronous GPU read. No
+click/locus injection, alternate point, timeout increase or marker weakening
+is added. Its actual receiving is pending in the bounded hosted checkpoint;
+the exact original cause remains unproved. See the
+[four-issue receipt](../residual_four_issues_receiving_20261116.json).

@@ -152,3 +152,18 @@ capture the SVG geometry and ancestor visibility before changing the product
 or the numerical oracle. All 3,947 selected inputs remain unchanged and all 17
 owned process identities exit. The earlier passing run retains its own inputs;
 the current shared-runtime receiving remains pending.
+
+## Current geometry observation boundary — 2026-11-16
+
+The corrected numerical implementation is received by complete source gate
+`43748320908`, including all fifteen Decimal controls in both endpoints. The
+earlier zero-reference-bounds observation still has no captured endpoint or
+DOM generation. The new receiving helper resolves and measures the current
+SVG in one browser task, explicitly requires connected nonzero native axes,
+and retains the same Decimal oracle/tolerances. Its added control holds the
+prior SVG across a real public plot update: the retired node retains points
+but is disconnected with zero native bounds; the new current plot must still
+match the independent oracle. This is a discriminating DOM-lifetime control,
+not a cause assigned to the unrecorded original read. Actual receiving of this
+new guard is pending in the bounded hosted checkpoint; no pass is inferred
+from source edits. See the [four-issue receipt](../residual_four_issues_receiving_20261116.json).

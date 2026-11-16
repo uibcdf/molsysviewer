@@ -19,8 +19,9 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (1)
+### Being worked on (2)
 
+- [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
 ### Partially done (3)
@@ -29,9 +30,8 @@ list.
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose the pre-save Python frame assertion in prolonged Jupyter receiving. *(medium, measured)*
 - [`trajectory_plot_numeric_precision.md`](trajectory_plot_numeric_precision.md) — [#321](https://github.com/uibcdf/molsysviewer/issues/321) — Trajectory labels hide nonzero values and narrow-offset axes lose numerical precision. *(medium, reproduced)*
 
-### Open (2)
+### Open (1)
 
-- [`hosted_popup_context_menu_receiving.md`](hosted_popup_context_menu_receiving.md) — [#305](https://github.com/uibcdf/molsysviewer/issues/305) — Diagnose the hosted popup context-menu timeout after fullscreen controls receiving. *(medium, upstream)*
 - [`qt_dbus_conda_prefix_address.md`](qt_dbus_conda_prefix_address.md) — [#278](https://github.com/uibcdf/molsysviewer/issues/278) — Qt startup reports an invalid D-Bus system address in Conda prefixes containing @. *(low, reproduced)*
 
 <!-- /generated -->

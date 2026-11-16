@@ -37,13 +37,38 @@ def test_focused_browser_diagnostics_retain_both_mirror_owners_and_click_boundar
     diagnostic = next(step for step in steps if step.get("name") == "Run focused mirror receiving diagnostics")
     assert diagnostic["if"] == "runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'"
     assert diagnostic["run"] == (
-        "node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror"
+        "node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror,trajectory-plot"
     )
     complete = next(
         step for step in steps if step.get("name") == "Run all core browser suites against the exact source pair"
     )
     assert complete["run"] == "npm run test:e2e:core"
     assert complete["if"] == "runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics'"
+
+
+def test_focused_diagnostics_keep_real_prolonged_receiving_and_native_source_preparation():
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci-python-314-source-pair.yaml").read_text(encoding="utf-8"),
+        Loader=yaml.BaseLoader,
+    )
+    steps = workflow["jobs"]["source-pair"]["steps"]
+    units = next(
+        step for step in steps if step.get("name") == "Check JavaScript units and types for focused diagnostics"
+    )
+    assert units["if"] == "runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'"
+    assert "npm run test:js" in units["run"] and "npx --no-install tsc --noEmit" in units["run"]
+    owner = next(step for step in steps if step.get("name") == "Receive one prolonged Jupyter source cycle")
+    assert "!cancelled()" in owner["if"] and "receiving_scope == 'diagnostics'" in owner["if"]
+    assert owner["timeout-minutes"] == "10"
+    assert owner["env"]["MOLSYSVIEWER_ROOT"] == "${{ github.workspace }}/molsysviewer-source"
+    assert "--editable ../molsysmt-source" in owner["run"]
+    assert "jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls" in owner["run"]
+    assert "--receptor=ci -n0" in owner["run"] and "--junitxml=prolonged-source.xml" in owner["run"]
+    assert "continue-on-error" not in owner and "E2E_ALLOW_SKIP" not in owner["run"]
+    artifact = next(step for step in steps if step.get("name") == "Preserve bounded prolonged source receiving")
+    assert artifact["if"].startswith("always()")
+    assert "full-result.json" in artifact["with"]["path"] and "full-failure.json" in artifact["with"]["path"]
+    assert "kernel-molecular-imports*.json" in artifact["with"]["path"]
 
 
 def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets():
