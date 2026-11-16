@@ -1,5 +1,10 @@
 # Archived implementation plans
 
+- [#344: Primary capture presentation](jupyter_moving_capture_current_projection_timeout.md) — The primary's existing clock retains a coherent frame until its native draw; full moving/hidden/Movie/lifecycle receiving preserves deadlines and runnable science.
+- [#399: Source diagnostic preparation](focused_source_diagnostic_preparation.md) — Canonical prerequisites, portable explicit Node selection and private, typed failure/readiness diagnostics receive actual owner/kernel boundaries.
+
+- [#321: Trajectory plot precision](trajectory_plot_numeric_precision.md) — Significant-digit labels, stable finite normalization, fifteen Decimal controls and current-SVG lifetime receiving resolve the numerical source defect; #400 retains independent HTML startup.
+
 - [Popup context metadata](hosted_popup_context_menu_receiving.md) — #305 reproduces and fixes unchanged-frame metadata dismissal, preserving real navigation invalidation through complete hosted controls and scientific mirror.
 - [Revised annotation native picking](updated_annotation_pick_receiving_timeout.md) — #325 receives the native pending-read repair on the actual edited label and both endpoint markers; the original old event order remains unproved.
 

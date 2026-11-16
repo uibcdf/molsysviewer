@@ -59,3 +59,8 @@ search gives no replacement. This is an acquisition/identity uncertainty,
 not evidence that the deliverable was completed or withdrawn. Preserve this
 valid record and its work; clarification of a possible transfer, visibility
 change or deletion is pending with the maintainer.
+
+The maintainer explicitly postpones follow-up of #294 on 2026-11-16. Keep
+the record and unresolved deliverable; perform no further dedicated issue
+lookup or identity investigation until that work is resumed. This does not
+withdraw the artifact contract or authorize candidate/publication actions.

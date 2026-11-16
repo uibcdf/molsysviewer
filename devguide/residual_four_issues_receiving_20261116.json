@@ -1199,7 +1199,10 @@
   },
   "source_resolved_issues": {
     "305": "Causal unchanged-frame metadata dismissal fixed, with matched old-source control and complete hosted controls/scientific mirror. Original event order unknown.",
-    "325": "Native pending-read class corrected under389 and received on actual updated annotation/endpoint markers. Old tag natural caller correspondence inspected; original exact event order unknown."
+    "325": "Native pending-read class corrected under389 and received on actual updated annotation/endpoint markers. Old tag natural caller correspondence inspected; original exact event order unknown.",
+    "321": "Numerical correction and 15 independent Decimal controls received in complete source 43748320908 and unchanged full local entry960. Atomic current-SVG/retired-SVG receiving passes. Distinct native HTML startup remains active as #400; no overall/candidate pass or original-count gain.",
+    "344": "Primary ready-frame/native-draw race class corrected using the existing clock; independent scientific queue remains runnable. Full local default/delayed Jupyter, hidden/Movie, native geometry and lifecycle guards pass. Prior exact event orders remain unproved.",
+    "399": "Preparation/provenance and safe actual failure diagnostics received; prior whole hosted failure remains preserved, residual HTML/history scopes stay distinct."
   },
   "private_hosted_terminal_custody": {
     "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/four-issues-hosted-terminal-20261116",
@@ -1374,6 +1377,286 @@
       "bytes": 48952742,
       "manifest_sha256": "f71e48fc253dae47644ab3a44d6977860e82c0f6abca717163a5722c32550050",
       "originals_retained": true
+    },
+    "exact_node22_attempt_975": {
+      "native_exit": 1,
+      "seconds": 311.6352841020562,
+      "node": "22.23.4",
+      "node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "retired_processes": 20,
+      "resource_stop": null,
+      "inputs_unchanged": 9996,
+      "peak_summed_owned_rss_mib": 4744.4,
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "moving_capture_cases": 7,
+      "default_python_cases_passed": 2,
+      "outcome": "Incomplete: the 300-second aggregate owner timer terminates the browser during moving Studio popup session; Target page/context/browser closed is the resulting observation. No exact prior hosted default-session cause is established.",
+      "next_change": "Bound the complete full-profile owner at 420 seconds; retain every readiness, public five-second default and explicit ten-second delayed-operation deadline."
+    },
+    "exact_node22_976": {
+      "native_exit": 1,
+      "seconds": 201.1832610759884,
+      "node": "22.23.4",
+      "node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "peak_summed_owned_rss_mib": 3871.9,
+      "inputs_unchanged": 9996,
+      "retired_processes": 21,
+      "resource_stop": null,
+      "aggregate_budget_seconds": 420,
+      "counts": {
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4,
+        "moving_capture_cases": 5
+      },
+      "default_python_cases_passed": 2,
+      "failure_phase": "Moving Python notebook session",
+      "failure_timeout_scope": "Explicitly delayed real-query case, 10 seconds. Not the public-default case or the aggregate timer.",
+      "kernel_failure": {
+        "python_error_type": "FrontendRequestError",
+        "reason": "request_timeout"
+      },
+      "observed_at_failure": {
+        "frame": 1,
+        "disposed": false,
+        "hidden": false,
+        "updating": false,
+        "trajectory": true,
+        "box": true,
+        "shapes": true,
+        "interactions": false,
+        "annotations": true,
+        "movie": true,
+        "dynamic_applied": 0,
+        "dynamic_pending": null,
+        "dynamic_inflight": 1,
+        "dynamic_requests": 1,
+        "interaction_requests": 1,
+        "requests": 6,
+        "replies": 6,
+        "held_queries": 0,
+        "draws": 15
+      },
+      "classification": "Current projection-coherence starvation class; Python heartbeat and playback continue. Reopen #344 investigation without claiming the original exact rejection/font cause or assigning it to MolSysMT. Historical #354 remains independent.",
+      "record": "devguide/pending_bugs/jupyter_moving_capture_current_projection_timeout.md"
     }
-  }
+  },
+  "active_residual_ownership": {
+    "400": "Independent HTML initialization with several live native draw loops; former #321 receiving exit.",
+    "354": "Historical Python index zero before saving; current owner cycle passes, old cause unknown."
+  },
+  "primary_capture_presentation_followup": {
+    "state": "Final reduced correction locally received across required native/Jupyter boundaries; full hosted/candidate acceptance remains separate.",
+    "scope": "Primary existing-clock retention only; original follower serial fence unchanged. Primary scientific-message queue remains runnable. No new clock/settings, weakened readiness, fake reply, seek or capture deadline change.",
+    "unit_and_build_977": {
+      "native_exit": 0,
+      "node": "22.23.4",
+      "js_cases": 494,
+      "js_passed": 494,
+      "js_failures": 0,
+      "js_skipped": 0,
+      "types": "passed",
+      "runtime_harness_all_e2e_builds": "passed, build:runtime only; no version sync",
+      "seconds": 32.42148930719122,
+      "inputs_unchanged": 9995,
+      "peak_owned_rss_mib": 555.2,
+      "retired_processes": 26,
+      "resource_stop": null
+    },
+    "actual_jupyter_978": {
+      "native_exit": 0,
+      "node": "22.23.4",
+      "kernel": "isolated original ipykernel 7.4.0",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "pytest_cases": 1,
+      "pytest_seconds": 309.77,
+      "seconds": 313.3918555667624,
+      "counts": {
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4,
+        "moving_capture_cases": 8
+      },
+      "all_eight_files_independently_recovered": true,
+      "all_pending_saves_and_captures_zero": true,
+      "late_writes_refused_after_cancel_and_timeout": true,
+      "unexpected_page_errors": 0,
+      "inputs_unchanged": 9997,
+      "peak_summed_owned_rss_mib": 4550.0,
+      "retired_processes": 20,
+      "resource_stop": null,
+      "limit": "First local complete receiving of this current working runtime, not the newer hosted support packages or installed qualification."
+    },
+    "required_boundary_receiving": [
+      "moving-state-capture",
+      "moving-capture-lifecycle",
+      "actual Jupyter hidden/visible retry",
+      "actual Jupyter Movie authoring"
+    ],
+    "guard": "tests/test_jupyter_live_capture.py::test_live_jupyter_work_files",
+    "current_variant": "Primary existing-clock retention only; original follower serial fence unchanged. Primary message queue remains runnable. Variant978 also retained the primary serial queue and is not evidence for this reduced variant.",
+    "unit_and_build_980": {
+      "native_exit": 0,
+      "node": "22.23.4",
+      "js_cases": 494,
+      "js_passed": 494,
+      "failures": 0,
+      "skips": 0,
+      "types": "passed",
+      "runtime_harness_all_e2e_builds": "passed",
+      "seconds": 37.66593693289906,
+      "inputs_unchanged": 9995,
+      "peak_owned_rss_mib": 554.4,
+      "retired_processes": 26,
+      "resource_stop": null
+    },
+    "boundary_981": {
+      "native_exit": 0,
+      "passed_pytest_cases": 2,
+      "pytest_seconds": 164.21,
+      "seconds": 168.31770544918254,
+      "node": "22.23.4",
+      "kernel": "isolated original ipykernel7.4.0",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "hidden_state_and_session": "Both correctly refuse while hidden, preserve destination and progress Python heartbeat by490; both visible retries recover fresh actual draws.",
+      "movie_authoring_cases": 8,
+      "inputs_unchanged": 9997,
+      "peak_owned_rss_mib": 3262.6,
+      "retired_processes": 52,
+      "resource_stop": null
+    },
+    "native_979": {
+      "native_exit": 1,
+      "seconds": 187.71962960995734,
+      "moving_samples_completed": 6,
+      "failure": "180-second aggregate retires the progressing complete entry before empty-frame/camera receiving; lifecycle/background/Movie are unreached in that driver.",
+      "variant": "Earlier primary serial+clock fence, not reduced variant.",
+      "resource_stop": null
+    },
+    "native_982": {
+      "native_exit": 1,
+      "seconds": 195.08292381325737,
+      "moving_samples_completed": 5,
+      "failure": "180-second aggregate retires entry during detached-session UI preparation, after enable is acknowledged. No operation/scientific failure observed. Lifecycle remains unreached.",
+      "variant": "Reduced primary clock retention",
+      "artifacts": "Original five capture timing records and files preserved in private profile.",
+      "inputs_unchanged": 9997,
+      "peak_owned_rss_mib": 3737.0,
+      "retired_processes": 22,
+      "resource_stop": null
+    },
+    "native_measurement_983": {
+      "native_exit": 0,
+      "seconds": 199.80506927100942,
+      "entry_seconds": 198.1681736879982,
+      "node": "22.23.4",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "explicit_aggregate_override_seconds": 360,
+      "moving_samples_completed": 6,
+      "stopped_evaluated_empty_sample": 1,
+      "camera_projections_received": [
+        "perspective",
+        "orthographic"
+      ],
+      "additional_native_observations": [
+        "three-axis callout/text/leader transforms",
+        "alternate-camera PNG and live restoration",
+        "CPU loci and GPU selection markers"
+      ],
+      "original_capture_timing_records": 7,
+      "inputs_unchanged": 9997,
+      "peak_owned_rss_mib": 4108.8,
+      "retired_processes": 16,
+      "resource_stop": null,
+      "limit": "Complete unchanged entry under explicit existing aggregate override. Not default180 receiving or a full core/candidate pass. Every operation/science/quality assertion unchanged.",
+      "next_budget": "Set moving-state-capture integrated budget to300 seconds; original180 failures remain. Other suite/per-operation bounds unchanged."
+    },
+    "final_reduced_984": {
+      "native_exit": 0,
+      "seconds": 577.834137337748,
+      "node": "22.23.4",
+      "kernel": "Isolated original ipykernel7.4.0",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "native_lifecycle_entry": "Complete, unchanged normal240-second budget; real hidden/detached/recovery/owner close/transport loss and dynamic-freeze/pending-View close assertions pass.",
+      "pytest_passed": 1,
+      "pytest_seconds": 348.64,
+      "counts": {
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4,
+        "moving_capture_cases": 8
+      },
+      "all_eight_files_independently_restored": true,
+      "all_pending_captures_and_saves_zero": true,
+      "cancel_and_expiry_refuse_late_writes": true,
+      "inputs_unchanged": 9997,
+      "peak_owned_rss_mib": 4711.9,
+      "retired_processes": 44,
+      "resource_stop": null,
+      "limit": "Complete current controlled local source/support receiving. Not the newer hosted support, installed artifact, native desktop or human acceptance."
+    },
+    "final_offline_985": {
+      "native_exit": 0,
+      "python_passed": 600,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "live_cases_deselected": 3,
+      "pytest_seconds": 15.83,
+      "seconds": 20.137496306095272,
+      "inputs_unchanged": 9997,
+      "peak_owned_rss_mib": 237.8,
+      "retired_processes": 42,
+      "resource_stop": null,
+      "other_checks": [
+        "Dependency contract",
+        "whole-repository Ruff",
+        "whole-repository Ruff format1067 files",
+        "devguide indexes",
+        "git diff --check"
+      ],
+      "original_policy_negative": {
+        "scope": "Exact AST-extracted pure pacing functions from committed original and current owner. Original software-policy negative expected; not a molecular computation, native-browser qualification or reconstruction of 976 event order.",
+        "original_commit": "8060986c",
+        "node": "v22.23.4",
+        "typescript": "5.9.3",
+        "original": {
+          "owner_sha256": "222e305b3be3b8458fabc2a78b3781591e5c3cef683b0d5132284d1bf3ebb83f",
+          "function_sha256": "20309e33ff00da07df899aa6a168a85c4a7b3b7a07882f420611549e7e32ed94",
+          "advances_ready_pending_capture": true
+        },
+        "corrected": {
+          "owner_sha256": "7ff718f23ff5b813fc6fd730d7a0284d0367fa185ca50666c6424e9d501ec289",
+          "function_sha256": "186253ec67199bc8599f3729770ec6b648621f785a3a7eeccb18e1fb64291e8a",
+          "retains_ready_pending_capture": true,
+          "pending_science_remains_runnable": true,
+          "completion_or_hidden_fallback_restores_cadence": true,
+          "native_model_updates_do_not_overlap": true
+        }
+      }
+    },
+    "private_custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/primary-capture-20261116",
+      "files": 165,
+      "bytes": 56642171,
+      "manifest_sha256": "f1781a1f5ef53582457fbe09991db72974e8412e3ed38ea996df2a346062ecbb",
+      "originals_retained": true
+    }
+  },
+  "additional_issue_ownership": [
+    344,
+    399,
+    400
+  ]
 }

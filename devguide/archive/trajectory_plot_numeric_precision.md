@@ -1,9 +1,9 @@
 ---
 summary: Trajectory labels hide nonzero values and narrow-offset axes lose numerical precision.
 issue: uibcdf/molsysviewer#321
-status: partial
+status: resolved
 opened: 2026-11-07
-closed:
+closed: 2026-11-16
 severity: medium
 verification: reproduced
 area: [trajectory-plot, numeric, frontend]
@@ -15,8 +15,11 @@ supersedes: []
 
 # Numerical reading and geometry of trajectory plots
 
-**B2 — corrected and delivered in `ebe3d46b`; source receiving passes;
-consolidated acceptance pending.** Viewer owns formatting and axis
+**Resolved in source.** The correction in `ebe3d46b` and fifteen independent
+Decimal controls pass the complete source gate `43748320908`; the revised
+DOM-lifetime receiving also passes unchanged full local entry `960`.
+The independent slow HTML initialization is tracked by [#400](../pending_bugs/multi_canvas_export_startup.md).
+Consolidated/installed acceptance remains separate. Viewer owns formatting and axis
 arithmetic. This is a core visualization defect, not evidence of incorrect
 MolSysMT calculations. [#321](https://github.com/uibcdf/molsysviewer/issues/321)
 records the scoped work under #315.
@@ -228,3 +231,16 @@ a production fix or canonical qualification. Do not silently stop another
 user's animation, prewarm the test or relax the startup bound. An appropriate
 multi-canvas scheduling solution or independently justified receiving scope
 remains to be settled.
+
+## Source closure — 2026-11-16
+
+Source resolution covers significant-digit labels, finite narrow-span
+arithmetic, raw values, physical source/popup frames and state recovery.
+The registered complete browser guard retains all fifteen independent
+oracles. Its atomic current-SVG read and intentionally retired-SVG control
+pass in full unmodified `960`; private scheduling intervention `972` is kept
+separate and contributes no canonical qualification. Earlier unknown DOM
+generation and failed cold-start receiving remain in their original scopes.
+#400 owns the measured initialization failure; #344 and #354 own separate
+Jupyter capture/pre-save observations. Closing #321 adds no original delivery
+leaf and does not turn overall CI or final candidate acceptance green.

@@ -1,9 +1,9 @@
 ---
 summary: Keep focused source diagnostics behind audited installation and built browser prerequisites.
 issue: uibcdf/molsysviewer#399
-status: active
+status: resolved
 opened: 2026-11-16
-closed:
+closed: 2026-11-16
 severity: medium
 verification: reproduced
 area: [ci, jupyter, diagnostics]
@@ -13,7 +13,13 @@ blocked_by: []
 supersedes: []
 ---
 
+
 # Focused source diagnostic preparation
+
+**Resolved in source.** Canonical installation/native prerequisites, independent
+source consumers, portable explicit Node selection and closed-vocabulary
+failure/readiness reporting are implemented and regression-received.
+
 
 Run [43786553755](https://github.com/uibcdf/molsysviewer/actions/runs/43786553755)
 at MolSysViewer `391e004d` / MolSysMT `b8c798474` fails its dependency audit
@@ -130,3 +136,24 @@ Node 22.23.4 and its hash. This private prefix runs zero molecular/capture
 cases and does not qualify the background profile used to launch it. The
 601 affected Python/workflow/privacy/reporting cases in `974` pass without
 failures/errors/skips; three live cases are explicitly deselected.
+
+The explicit Node-22/4-CPU control `975` receives both ordinary defaults and
+seven moving cases, then the 300-second aggregate retires the last popup
+session. The scoped aggregate-only correction permits 420 seconds, retaining
+every per-operation deadline. Successor `976` instead fails inside 201.18 s
+with the newly preserved `FrontendRequestError/request_timeout`: interactions
+and dynamic membership lag while Python and playback continue. This is the
+independent [#344 recurrence](../archive/jupyter_moving_capture_current_projection_timeout.md),
+not a further preparation failure or a proven MolSysMT defect. #400 separately
+owns multi-canvas exported-HTML startup. Overall receiving remains failed.
+
+## Source closeout
+
+The original preparation failures remain preserved. Their corrected hosted
+prerequisites already reach the four actual owners and the portable Jupyter
+cycle in `43796373853`. Current local controls additionally receive explicit
+Node selection, original real-kernel errors, safe diagnostics and the complete
+Jupyter work-file guard. Product/receiving exits are owned by the separate
+#344/#400/#354 records. None is converted into a green overall hosted result.
+The owning guard remains `tests/test_source_workflow_coverage.py`; actual
+Jupyter/privacy/runtime controls complement that preparation guard.

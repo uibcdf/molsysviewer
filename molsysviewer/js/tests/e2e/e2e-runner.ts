@@ -113,6 +113,11 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
         // take 172s at 8 CPU/4 GiB. Bound the complete workflow separately;
         // each individual PNG still has its original operation deadline.
         "studio-image-export": 240_000,
+        // The complete 5.13.1 entry takes 198s at 4 CPU/4 GiB: six moving
+        // captures, the stopped empty frame and two native camera/image/pick
+        // projections. The old 180s cap retires a progressing fifth/sixth
+        // capture (#399, controls 979/982). Keep every operation deadline.
+        "moving-state-capture": 300_000,
         // Two independently initialized molecular fixtures receive owner
         // retirement/transport loss, then dynamic freeze/pending View close.
         // The unchanged workflow completes in 169s; a colder 180s attempt

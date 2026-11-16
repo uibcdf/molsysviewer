@@ -7,6 +7,8 @@ export class CapturePresentationFence {
     private readonly releases = new Set<() => void>();
     private closed = false;
 
+    get isPending(): boolean { return this.pending.size > 0; }
+
     retain(capture: Promise<unknown>): () => void {
         if (this.closed) return () => {};
         let resolve!: () => void;

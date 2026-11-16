@@ -21,6 +21,7 @@ import "./popup-host.test";
 import "./popup-scene-snapshots.test";
 import "./popup-logic.test";
 import "./frontend-requests.test";
+import "./capture-presentation.test";
 import "./camera-sync.test";
 import "./popup-replay-log.test";
 import "./runtime-router.test";

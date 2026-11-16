@@ -21,13 +21,12 @@ list.
 
 ### Being worked on (1)
 
-- [`focused_source_diagnostic_preparation.md`](focused_source_diagnostic_preparation.md) — [#399](https://github.com/uibcdf/molsysviewer/issues/399) — Keep focused source diagnostics behind audited installation and built browser prerequisites. *(medium, reproduced)*
+- [`multi_canvas_export_startup.md`](multi_canvas_export_startup.md) — [#400](https://github.com/uibcdf/molsysviewer/issues/400) — Independent exported HTML starts slowly while other molecular canvases draw. *(medium, measured)*
 
-### Partially done (3)
+### Partially done (2)
 
 - [`qt_file_dialog_absolute_path_typing.md`](qt_file_dialog_absolute_path_typing.md) — [#287](https://github.com/uibcdf/molsysviewer/issues/287) — Native Qt file-dialog guard types while its modal window is inactive. *(medium, reproduced)*
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose the pre-save Python frame assertion in prolonged Jupyter receiving. *(medium, measured)*
-- [`trajectory_plot_numeric_precision.md`](trajectory_plot_numeric_precision.md) — [#321](https://github.com/uibcdf/molsysviewer/issues/321) — Trajectory labels hide nonzero values and narrow-offset axes lose numerical precision. *(medium, reproduced)*
 
 ### Open (1)
 

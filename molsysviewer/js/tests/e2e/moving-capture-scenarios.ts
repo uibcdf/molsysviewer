@@ -108,6 +108,10 @@ export async function checkMovingCapture(page: Page, dir: string,
             });
             await page.evaluate(observeMovingCaptureCanvas);
             const command = async (moving_fixture: string, details = {}) => {
+                const started = Date.now();
+                if (process.env.E2E_MOVING_CAPTURE_ARTIFACT_DIR) {
+                    console.log(`[E2E moving command] ${moving_fixture} started`);
+                }
                 const result = await page.evaluate(async message => {
                     const result = await (window as any).__popupWidgetModel.send(message);
                     const monitor = (window as any).__movingCapture;
@@ -115,6 +119,9 @@ export async function checkMovingCapture(page: Page, dir: string,
                     if (monitor.timing.length > 128) monitor.timing.shift();
                     return result;
                 }, { moving_fixture, ...details });
+                if (process.env.E2E_MOVING_CAPTURE_ARTIFACT_DIR) {
+                    console.log(`[E2E moving command] ${moving_fixture} received after ${Date.now() - started}ms`);
+                }
                 assert.deepEqual(await page.evaluate(() => (window as any).__popupFixtureErrors), []);
                 return result;
             };

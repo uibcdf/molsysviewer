@@ -98,7 +98,7 @@ suites do not run and the prolonged pytest command executes zero cases.
 Successor `43790196548` passes the audit but the unchanged installed Rust
 validator rejects its editable distribution; the new prerequisite fence
 correctly skips all browser/Jupyter consumers. Neither receives this issue.
-[#399](../pending_bugs/focused_source_diagnostic_preparation.md) owns those corrections; the
+[#399](../archive/focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
 

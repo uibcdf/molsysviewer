@@ -23,6 +23,8 @@ export interface TrajectoryContext {
     afterFrameApplied?: () => Promise<void>;
     onFrameModelApplied?: (frame: number) => void;
     isFrameReady?: (frame: number) => boolean;
+    /** Retain an already coherent frame only until its requested native draw. */
+    isFramePresentationRetained?: () => boolean;
     /** Called when playback stops; receives the final frame index. */
     onPlaybackStopped?: (frame: number, navigationRevision?: number) => void;
     notify?: (msg: any) => void;
@@ -78,12 +80,14 @@ export function nextPlaybackStep(
     return { index: wrapped, delta, stop: false };
 }
 
-/** Ready scenes keep their requested cadence. A pending scene receives at
+/** Ready scenes keep their requested cadence unless their native capture draw
+ * still owns that coherent prefix. A pending scene receives at
  * most one ordinary frame period after its first draw (or application when
  * hidden); unavailable replies never become an indefinite playback barrier. */
 export function canAdvancePlaybackFrame(pendingUpdates: number, frameReady: boolean,
-    presentedOrAppliedAt: number, now: number, intervalMs: number): boolean {
-    return pendingUpdates === 0 && (frameReady || now - presentedOrAppliedAt >= intervalMs);
+    presentedOrAppliedAt: number, now: number, intervalMs: number, presentationRetained = false): boolean {
+    return pendingUpdates === 0 && !(frameReady && presentationRetained)
+        && (frameReady || now - presentedOrAppliedAt >= intervalMs);
 }
 
 export class TrajectoryHandlers {
@@ -309,7 +313,8 @@ export class TrajectoryHandlers {
         this.playbackTimer = setInterval(() => {
             const current = this.getCurrentFrameIndex();
             if (!canAdvancePlaybackFrame(this.pendingFrames.size, this.context.isFrameReady?.(current) ?? true,
-                this.framePacingSince, performance.now(), intervalMs)) return;
+                this.framePacingSince, performance.now(), intervalMs,
+                this.context.isFramePresentationRetained?.() ?? false)) return;
             const next = nextPlaybackStep(current, delta, frameCount, mode);
             delta = next.delta;
             void this.setTrajectoryFrame(next.index, delta < 0 ? "backward" : "forward");

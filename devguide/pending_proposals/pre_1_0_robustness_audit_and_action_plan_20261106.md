@@ -588,6 +588,17 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current residual ownership — 2026-11-16:** #305/#325 and numerical #321
+are source-resolved. #344's primary-presentation correction also receives
+the full default/delayed Jupyter, native geometry, hidden/Movie and lifecycle
+guards; #399's preparation/provenance correction is source-resolved.
+[#400](../pending_bugs/multi_canvas_export_startup.md) owns independent HTML
+initialization, and #354 remains the unrelated historical pre-save assertion.
+Original failures and old event-order uncertainty remain preserved. These
+source/receiving closures add no original leaf: **41/46 source deliveries and
+1/46 final acceptances** remain unchanged. Final hosted/candidate, installed
+and human exits are separate.
+
 **Current four-observation receiving — 2026-11-16:** C4/#305 now has a
 matched committed-source causal control, a correction and complete hosted
 controls/scientific-mirror receiving in `43796373853`; #325's native
@@ -1233,7 +1244,7 @@ issue is not a declaration that any of them is fixed.
 | ID / status | Required work and rationale | Acceptance |
 | --- | --- | --- |
 | **B1 — source-verified, #314** | Finish plot-origin navigation through the existing authority route. The broad guard calls a queue drain before a popup's asynchronous `postMessage` is necessarily received; this is a plausible guard race, not a proven exclusive explanation of the failure. | One actual click must have correlated Python acceptance, one appropriate public callback and correct coordinates in both renderers. Exercise repeated selection, reverse Python navigation, retained plots, independent exported HTML and a single playback clock. Preserve the original causal red and broad failure; diagnose before rerunning. |
-| **B2 — corrected in `ebe3d46b`, hosted checkpoint pending, #321** | [Actual browser controls](../pending_bugs/trajectory_plot_numeric_precision.md) show the original nonzero/equal-limit/narrow-offset defects; their source corrections and fifteen Decimal controls are delivered. Raw records survive state round trips. | Current source/popup/state receiving passes. Retain the unexplained earlier zero-reference-bounds guard failure and its atomic diagnostic; complete applicable hosted acceptance and normal closeout. |
+| **B2 — source-resolved in `ebe3d46b`, #321; #400 remains separate** | [Actual browser controls](../archive/trajectory_plot_numeric_precision.md) show the original nonzero/equal-limit/narrow-offset defects; their source corrections and fifteen Decimal controls are delivered. Raw records survive state round trips. | Current source/popup/state and atomic-SVG receiving pass; #321 closes in source. Preserve the old unknown DOM generation. #400 owns the independent multi-canvas HTML startup; applicable candidate acceptance remains separate. |
 | **B3.1–B3.5 — source-corrected/received, #345; consolidated acceptance pending** | Complete the DataCard lifecycle around A3: visible errors/retry for blocked or failed windows, current titles after update, usable bounds on small/resized hosts, keyboard/value access, and disposal during drag/resize. Original active-listener and bounds failures are reproduced and corrected, including omitted controller cleanup; no universal retained-memory leak is claimed. | Exercise ordinary popup gestures, failure acknowledgement, resize/fullscreen, rename/restore, active-gesture disposal and source independence. Apply the same semantics across hosts. Evaluate blur/opacity consistency as polish, not as a violation of Studio's specific accepted settings. |
 | **B4 — source-delivered and producer owner-integrated, 2026-11-10** | Retained conformational plots store values/title/axes but not the exact calculation recipe from the private mounted report. After Clear, different references/populations can become indistinguishable. | Implement producer-supplied, versioned observation metadata that core preserves without interpreting science. Persist method/software, parameters, exact ordered populations/reference, weights and mass source, native/display units, structure coverage and source/revision linkage. Keep historical observations distinct from current applicability and never recalculate implicitly. |
 

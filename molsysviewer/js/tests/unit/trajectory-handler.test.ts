@@ -258,6 +258,17 @@ test("playback preserves ready cadence and gives pending projections a bounded p
     assert.equal(canAdvancePlaybackFrame(2, false, 0, 10000, 33), false);
 });
 
+test("a pending native capture retains only a coherent prefix without stranding scientific replies", () => {
+    assert.equal(canAdvancePlaybackFrame(0, true, 0, 5000, 500, true), false,
+        "The owner's clock must not replace a ready scene before its requested native draw.");
+    assert.equal(canAdvancePlaybackFrame(0, false, 0, 500, 500, true), true,
+        "Incomplete scenes still progress, including deliberately held scientific queries.");
+    assert.equal(canAdvancePlaybackFrame(0, true, 0, 5000, 500, false), true,
+        "Completion, cancellation or hidden-canvas fallback restores ordinary cadence.");
+    assert.equal(canAdvancePlaybackFrame(1, true, 0, 5000, 500, false), false,
+        "A capture may never overlap an in-flight molecular model update.");
+});
+
 test("disposing trajectory ownership closes both timers and its draw observer", () => {
     const notifications: any[] = [];
     let drawReleases = 0;

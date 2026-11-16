@@ -535,10 +535,13 @@ def run(output: Path, *, profile: str = "full", node=None) -> int:
             browser = subprocess.Popen([str(node), str(entry)], env=env, stdout=log, stderr=log)
             process = psutil.Process(browser.pid)
             owned[(process.pid, process.create_time())] = process
-            # Eight full-profile moving cases now take 232 seconds on the
-            # qualified shared host. Bound the aggregate independently of
-            # the unchanged five-second defaults and explicit delayed calls.
-            result["browser_timeout_seconds"] = 300 if profile == "full" else 240
+            # At 4 CPU, exact Node-22 receiving reaches seven moving successes
+            # after all six stopped roundtrips, then the old 300-second total
+            # retires the progressing eighth case (#399, control 975). Allow
+            # that last roundtrip and the final camera/cancellation controls;
+            # retain each operation's 30-second readiness bound, public
+            # five-second capture default and explicit ten-second delays.
+            result["browser_timeout_seconds"] = 420 if profile == "full" else 240
             deadline = time.monotonic() + result["browser_timeout_seconds"]
             while browser.poll() is None:
                 if _track_owned_processes(owned):

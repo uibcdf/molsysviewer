@@ -170109,8 +170109,8 @@ function nextPlaybackStep(current2, delta2, frameCount, mode) {
   const wrapped = (raw2 % frameCount + frameCount) % frameCount;
   return { index: wrapped, delta: delta2, stop: false };
 }
-function canAdvancePlaybackFrame(pendingUpdates, frameReady, presentedOrAppliedAt, now2, intervalMs) {
-  return pendingUpdates === 0 && (frameReady || now2 - presentedOrAppliedAt >= intervalMs);
+function canAdvancePlaybackFrame(pendingUpdates, frameReady, presentedOrAppliedAt, now2, intervalMs, presentationRetained = false) {
+  return pendingUpdates === 0 && !(frameReady && presentationRetained) && (frameReady || now2 - presentedOrAppliedAt >= intervalMs);
 }
 var TrajectoryHandlers = class {
   constructor(plugin, context2) {
@@ -170322,7 +170322,8 @@ var TrajectoryHandlers = class {
         this.context.isFrameReady?.(current2) ?? true,
         this.framePacingSince,
         performance.now(),
-        intervalMs
+        intervalMs,
+        this.context.isFramePresentationRetained?.() ?? false
       )) return;
       const next = nextPlaybackStep(current2, delta2, frameCount, mode);
       delta2 = next.delta;
@@ -171486,6 +171487,9 @@ var CapturePresentationFence = class {
     this.pending = /* @__PURE__ */ new Set();
     this.releases = /* @__PURE__ */ new Set();
     this.closed = false;
+  }
+  get isPending() {
+    return this.pending.size > 0;
   }
   retain(capture) {
     if (this.closed) return () => {
@@ -190555,6 +190559,7 @@ var MolSysViewerController = class _MolSysViewerController {
       afterFrameApplied: () => this.annotations.refresh(),
       onFrameModelApplied: (frame2) => this.prepareFrameDependentQueries(frame2),
       isFrameReady: (frame2) => this.areFrameProjectionsCurrent(frame2),
+      isFramePresentationRetained: () => this.capturePresentation?.isPending === true && document.visibilityState !== "hidden",
       getLoadedStructure: () => this.loadedStructure,
       notifyTrajectoryState: () => this.notifyTrajectoryState(),
       onPlaybackStopped: (frame2, navigationRevision) => {
@@ -194014,7 +194019,7 @@ var MolSysViewerController = class _MolSysViewerController {
     this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
   }
   retainMovingCapturePresentation(capture) {
-    if (this.disposed || !this.trajectory.isFollower) return () => {
+    if (this.disposed) return () => {
     };
     return (this.capturePresentation ??= new CapturePresentationFence()).retain(capture);
   }

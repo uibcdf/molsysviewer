@@ -958,7 +958,7 @@ receiver. Its first run `43786553755` fails preparation: the audit rejects a
 later installation, the prolonged command uses unavailable xdist, and the
 Jupyter consumer runs after its harness build was skipped. Its six stopped
 roundtrips pass before an unclassified error; the retained final Studio phase
-is stale. [#399](pending_bugs/focused_source_diagnostic_preparation.md) corrects
+is stale. [#399](archive/focused_source_diagnostic_preparation.md) corrects
 prerequisites and preserves safe actionable preparation diagnostics before
 another dispatch. Successor `43790196548` passes the audit, then the unchanged
 installed Rust validator rejects its editable distribution. Prepare the source

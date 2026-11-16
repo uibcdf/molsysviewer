@@ -2127,13 +2127,20 @@ control in `js/tests/unit/frontend-requests.test.ts` protects this liveness
 boundary; native moving-capture receiving retains actual geometry and deadlines.
 
 A follower's serial scene queue retains an already coherent prefix while a
-version-2 capture waits for its fresh native draw. Later projections must not
-replace that prefix before it is presented. Incoherent prefixes never wait:
-their scientific replies must remain runnable. This presentation fence owns
-no playback clock and changes neither camera motion nor the primary player's
-cadence. Completion, rejection, the existing capture deadline, cancellation
-and teardown release it. A later capture cannot prolong an earlier prefix.
-The draw reader still samples synchronously inside the native notification.
+version-2 capture waits for its fresh native draw. The primary's existing
+playback interval retains that ready frame until the draw: otherwise its
+own timer can replace the prefix independently of queued scene commands.
+The primary's message queue remains runnable throughout.
+Incoherent prefixes never wait; scientific replies and the bounded ordinary
+frame progression remain runnable, including deliberately delayed queries.
+This fence adds no clock, changes no requested playback rate/mode/step or
+playing state, and leaves native camera motion active. A hidden primary does
+not retain its clock for an unavailable draw. Completion, rejection, the
+existing capture deadline, cancellation and teardown release every reservation.
+A later capture cannot prolong an earlier prefix. The draw reader still
+samples synchronously inside the native notification. The native moving and
+background/lifecycle guards receive these distinct boundaries; a passing
+prefix is not a complete guard or installed-candidate qualification.
 
 Frame-dependent scientific queries also survive short cross-thread scene
 ownership. Preserve their correlation, endpoint and caller context until the

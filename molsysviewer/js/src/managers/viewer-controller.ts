@@ -1793,6 +1793,8 @@ export class MolSysViewerController {
             afterFrameApplied: () => this.annotations.refresh(),
             onFrameModelApplied: frame => this.prepareFrameDependentQueries(frame),
             isFrameReady: frame => this.areFrameProjectionsCurrent(frame),
+            isFramePresentationRetained: () => this.capturePresentation?.isPending === true
+                && document.visibilityState !== "hidden",
             getLoadedStructure: () => this.loadedStructure,
             notifyTrajectoryState: () => this.notifyTrajectoryState(),
             onPlaybackStopped: (frame, navigationRevision) => {
@@ -3451,10 +3453,10 @@ export class MolSysViewerController {
             else if (PANEL_REFRESH_BY_OPERATION[msg.op as KnownViewerMessage["op"]]?.includes("addons")) {
                 this.updateWelcomeState();
             }
-            // A follower has no playback clock of its own. Without this fence,
-            // its next queued projection can replace a coherent scene before
-            // the browser presents it. Never hold an incoherent prefix: queries
-            // queued after it are needed to complete the capture.
+            // A follower's next queued projection must not replace a coherent
+            // prefix before its capture draw. The primary retains its ready
+            // frame through its own clock, leaving its message queue runnable.
+            // Incoherent prefixes never wait for their scientific replies.
             await this.capturePresentation?.afterSceneMessage(() => !this.disposed && this.trajectory.isFollower
                 && this.areFrameProjectionsCurrent(this.trajectory.getTrajectoryState().currentFrame));
         }
@@ -5119,7 +5121,7 @@ export class MolSysViewerController {
     }
 
     retainMovingCapturePresentation(capture: Promise<unknown>): () => void {
-        if (this.disposed || !this.trajectory.isFollower) return () => {};
+        if (this.disposed) return () => {};
         return (this.capturePresentation ??= new CapturePresentationFence()).retain(capture);
     }
 

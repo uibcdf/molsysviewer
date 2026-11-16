@@ -2598,5 +2598,23 @@
       354
     ],
     "scope": "Three complete browser entries and one owner source cycle pass; plot startup and independent default moving session capture fail. No final/installed acceptance."
+  },
+  "current_residual_ownership": {
+    "source_closed": [
+      305,
+      325,
+      321,
+      344,
+      399
+    ],
+    "active": [
+      400,
+      354
+    ],
+    "preparation_tracking": "399 source-resolved",
+    "source_delivery_counter": "41/46",
+    "final_acceptance_counter": "1/46",
+    "receipt": "devguide/residual_four_issues_receiving_20261116.json",
+    "limit": "No new original leaf, no overall green CI, no final candidate/installed/human acceptance or publication."
   }
 }
