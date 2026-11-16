@@ -2265,5 +2265,44 @@
       "inputs_unchanged": true,
       "resource_stop": null
     }
+  },
+  "shape_click_source_closure_388": {
+    "date": "2026-11-15",
+    "status": "source_receiving_resolved",
+    "guard": "molsysviewer/js/tests/e2e/context-menu.e2e.ts",
+    "run": 43748320908,
+    "producer": "3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb",
+    "scientific_source": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+    "sequence": [
+      "native GPU pick",
+      "shape hover",
+      "single real screen click",
+      "active selection",
+      "selected native marker"
+    ],
+    "core_entries": 63,
+    "causal_limit": "Original hosted event sequence unavailable; #389 is independently reproduced and repaired but not established as the original cause.",
+    "original_audit_counter_unchanged": {
+      "source_delivered": 40,
+      "total": 46,
+      "final_accepted": 1
+    },
+    "archive": "archive/hosted_shape_click_selection_timeout.md",
+    "record_validation": {
+      "profile": "shape-source-closure-records-936",
+      "passed": 455,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "ruff": "passed",
+      "index_and_diff": "passed",
+      "selected_inputs_unchanged": 9983,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1
+      },
+      "prior_preparation": "935 could not access the systemd user bus inside sandbox; no tests executed. Preserved separately."
+    }
   }
 }

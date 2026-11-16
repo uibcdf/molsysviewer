@@ -61,8 +61,10 @@ its 63-start assertion; offline verification checks exact ordered distinct
 1–63 suite entries and native successful steps without rerunning the workflow.
 
 After terminal inspection, retain original logs and ZIP/hash/JUnit evidence.
-The complete guards now resolve #244/#391/#395/#397 in source. Retain #388
-and other independent historical questions with their actual causal limits. A successful source gate
+The complete guards now resolve #244/#391/#395/#397 and #388 in source.
+#388 retains its original unknown click event sequence: passing the repaired
+native control and unchanged consumer sequence does not identify that cause.
+#354 remains open for the independent pre-save Python authority observation. A successful source gate
 does not qualify a different provider or an installed artifact.
 
 ## 2. Proposed staging preparation, still subject to its separate approval

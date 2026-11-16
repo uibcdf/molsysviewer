@@ -1,5 +1,7 @@
 # Archived implementation plans
 
+- [Hosted shape-click receiving](hosted_shape_click_selection_timeout.md) — #388 retains its original causal limit and closes after the unchanged single-click selection/marker sequence and repaired native picking pass the complete 63-entry source gate.
+
 - [Actual-Jupyter Movie seek](jupyter_movie_seek_pending.md) — #396 adopts corrected kernel transport and receives ten same-kernel edit/seeks plus all eight phases on current scientific source; shared-prefix and final artifact gates stay separate.
 
 - [#397: Popup work-file readiness](moving_work_file_popup_readiness.md) — Requires a positive role/owner before work-file operations and receives the complete canonical lifecycle.

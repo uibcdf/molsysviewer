@@ -1,19 +1,51 @@
 ---
 summary: Hosted shape click does not reach active selection after GPU and hover succeed.
 issue: uibcdf/molsysviewer#388
-status: active
+status: resolved
 opened: 2026-11-14
-closed:
+closed: 2026-11-15
 severity: medium
 verification: measured
 area: [selection, picking, input, ci, qualification]
-guard:
+guard: molsysviewer/js/tests/e2e/context-menu.e2e.ts
 normative:
 blocked_by: []
 supersedes: []
 ---
 
 # Shape click-to-selection receiving
+
+
+## Resolution — complete current-source receiving, 2026-11-15
+
+The remaining complete-core prerequisite is received by
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908),
+MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and MolSysMT
+`bc5a9297a762d451742734f9e11c7f54c6a832a0`. All 63 Linux core entries
+complete in one uninterrupted run, including `context-menu` and
+`native-picking-readiness`; all 25 notebooks and the three Python 3.14 host
+jobs also pass in their separately recorded scopes. Original logs and six
+ZIPs are hash-verified in the [terminal receipt](../molstar_closeout_three_blocks_20261115.json).
+
+The guard `molsysviewer/js/tests/e2e/context-menu.e2e.ts` retains the same
+rendered shape, native GPU pick, hover, single real screen click, active
+selection and selected-marker assertions. On failure its bounded passive
+DOM/native/plugin observations distinguish the failed phase. There is no
+selection injection, repeated click, broader timeout or weakened predicate.
+The independently reproduced pending-read/synchronous-pick defect is repaired
+and guarded under #389. Its native two-controller control and this complete
+consumer sequence receive the corrected implementation.
+
+This closes the source receiving observation after its declared prerequisite,
+not a claim that #389 caused the original hosted click. That original event
+sequence was not captured and its exact cause remains unknown. Its failed run
+and the subsequent local/hosted non-reproductions remain below. A recurrence
+fails the mandatory core guard and must be triaged with the retained bounded
+event sequence. Installed artifacts, final producers, native Qt and human
+acceptance remain separate. This additional issue closure does not advance
+the original 40/46 outcome counter.
+
+## Earlier investigation — retained evidence and causal limits
 
 Source-only run `43621650307`, MolSysViewer `a72c92ba` and scientific
 provider `aee7aa65`, fails Linux's first context-menu entry at the unchanged

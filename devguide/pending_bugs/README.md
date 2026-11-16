@@ -19,9 +19,8 @@ list.
 
 <!-- generated: devguide_index -->
 
-### Being worked on (2)
+### Being worked on (1)
 
-- [`hosted_shape_click_selection_timeout.md`](hosted_shape_click_selection_timeout.md) — [#388](https://github.com/uibcdf/molsysviewer/issues/388) — Hosted shape click does not reach active selection after GPU and hover succeed. *(medium, measured)*
 - [`updated_annotation_pick_receiving_timeout.md`](updated_annotation_pick_receiving_timeout.md) — [#325](https://github.com/uibcdf/molsysviewer/issues/325) — Updated annotation GPU pick times out in hosted canvas-popup receiving. *(medium, measured)*
 
 ### Partially done (10)

@@ -937,8 +937,10 @@ Historical exact cause and final installed/candidate receiving remain separate.
 The complete core gate also receives and closes source reports #244/#391/
 #395/#397; each archived record names its durable guard and original failures.
 #396 now also closes after the current-source actual-Jupyter guard 933
-passes ten edit/seeks and all eight phases. Residual #388/#354 questions,
-exact artifacts and postponed human exits remain separately tracked.
+passes ten edit/seeks and all eight phases. #388 closes after its unchanged
+single-click selection/marker sequence passes the complete current core gate;
+the original click event sequence remains unknown. #354, exact artifacts and
+postponed human exits remain separately tracked.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**
@@ -1201,7 +1203,7 @@ snapshots, retired native buffers, a retained independent witness and clean
 owned teardown. The followup preserves copied-source/cached-version scope
 and the original host debugger fingerprint. Hosted `43621650307` passes
 4,726/4,695/4,699 native Python cases and all 25 notebooks, but full core
-encounters the distinct [#388 click boundary](pending_bugs/hosted_shape_click_selection_timeout.md).
+encounters the distinct [#388 click boundary](archive/hosted_shape_click_selection_timeout.md).
 Local passive receiving `813` passes; that non-reproduction is not a causal
 fix. Subsequent bounded diagnostic `43626475247` receives context-menu and
 both complete mirror owners. Full Linux `43627876434` passes fifteen entries
