@@ -1208,5 +1208,172 @@
     "copied_files_verified": true,
     "originals_retained": true,
     "custodian": "Diego Prada Gracia"
+  },
+  "remaining_issue_diagnostics": {
+    "scope": "Post-closure diagnostics for remaining #321/#354 and #399. No new original delivery leaf or final acceptance.",
+    "cpu_profile_966": {
+      "native_exit": 1,
+      "seconds": 90.10915099503472,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3251.8,
+      "retired_processes": 17,
+      "resource_stop": null,
+      "first_controller_seconds": 31.782,
+      "ready_deadline_seconds": 30,
+      "profile_duration_seconds": 33.757883,
+      "profile_sha256": "5e935afeb569d143ca32eb8fab40663dab87d2404db2a709e1636d2187750983",
+      "top_self_seconds": {
+        "native_createState": 11.222,
+        "native_getGLContext_get": 3.06,
+        "native_setCanvasSize": 2.791
+      },
+      "limit": "Private profiler changes observation overhead. The measured path blocks in native WebGL context/state/extensions before the precision cases; this is not a standalone Mol* defect or its root cause."
+    },
+    "native_isolated_969": {
+      "native_exit": 0,
+      "seconds": 3.555727885104716,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1077.2,
+      "retired_processes": 16,
+      "resource_stop": null,
+      "node": "22.23.4",
+      "chrome": "157.0.8103.38",
+      "molstar": "5.13.1",
+      "context_ms": 447.5,
+      "state_extensions_ms": 22.200000286102295,
+      "total_ms": 469.7000002861023,
+      "source_manifest_sha256": "6c96bf0a44da743fc145a5c4e8dd5b9cfe31fc107d4cc357a7f3d84a11d46af1",
+      "limit": "One bare, unmodified native WebGL context; same backend and 4 CPU/4 GiB ceiling. Different canvas/context attributes and no prior live Viewer contexts. This refutes a universal native initialization cost, not the multi-view failure."
+    },
+    "retained_preparation_failures": {
+      "964": "Private ESM/CJS import anchor; no browser/product result.",
+      "965": "Private interpreter path typo; no browser/product result.",
+      "967": "Sandbox denied the systemd user bus; no controlled child execution.",
+      "968": "Private Node source newline quoting error; no browser/product result."
+    },
+    "typed_failure_checks_970": {
+      "native_exit": 0,
+      "passed": 119,
+      "skipped": 1,
+      "deselected": 2,
+      "skip_reason": "Unselected real background Jupyter profile; no receiving claim.",
+      "pytest_seconds": 3.96,
+      "seconds": 7.307440348900855,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 203.4,
+      "retired_processes": 6,
+      "resource_stop": null,
+      "guards": [
+        "tests/test_jupyter_live_capture.py",
+        "tests/test_source_workflow_coverage.py"
+      ],
+      "other_checks": [
+        "Ruff scoped Python",
+        "Node22 syntax of both actual Jupyter helpers",
+        "git diff --check"
+      ]
+    },
+    "typed_failure_contract": "Keep the original Python IOPub/reply exception private and rethrow it. Retain only closed error types/reasons and bounded bool/int readiness at failure in the safe receipt. Do not change capture deadlines, fabricate scientific replies or classify an unknown provider failure.",
+    "actual_jupyter_971": {
+      "native_exit": 0,
+      "pytest_passed": 1,
+      "pytest_seconds": 237.76,
+      "seconds": 241.39631186192855,
+      "browser_seconds": 236.85064345505089,
+      "source_base": "022c7dfcbb842a4c2d2e2c9525ee1014ad2c2b5b",
+      "helper_revision": "Working typed diagnostic/readiness helper revision; production runtime unchanged.",
+      "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "node": "Exact browser child version was not recorded; Node22 on PATH was insufficient because the owner preferred the interpreter sibling.",
+      "kernel_provider": "Exact isolated original ipykernel 7.4.0 bytes, verified before and after.",
+      "counts": {
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4,
+        "moving_capture_cases": 8
+      },
+      "moving_default_cases": 2,
+      "explicit_delayed_cases": 6,
+      "all_moving_files_independently_recovered": true,
+      "all_moving_pending_saves_and_captures_zero": true,
+      "late_writes_refused_after_cancel_and_timeout": true,
+      "raw_observations_sha256": "3f2dd5d86433ce72ca35868f4acd89d65c58527f7cf3d92cde757ffbedd4852c",
+      "actual_kernel_origins_sha256": "63c8b33c05c9d091805b5f7dc289898a5fe421ebe47ee02f814b2e96a476894f",
+      "unexpected_page_errors": 0,
+      "known_debugger_host_messages": 34,
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0
+      },
+      "peak_summed_owned_rss_mib": 4550.5,
+      "inputs_unchanged": 9996,
+      "retired_processes": 20,
+      "resource_stop": null,
+      "limit": "Local current controlled-support receiving; not the newer hosted support packages or the final installed pair. Does not erase the hosted failure or exercise a failing kernel branch. Node22 attribution is explicitly withdrawn: runtime selection was not recorded in the original receipt."
+    },
+    "paused_peers_972": {
+      "native_exit": 0,
+      "seconds": 150.29868855280802,
+      "node": "22.23.4",
+      "logical_cpus": 4,
+      "ram_gib": 4,
+      "peak_owned_rss_mib": 3344.7,
+      "inputs_unchanged": 9997,
+      "retired_processes": 23,
+      "resource_stop": null,
+      "paused_native_peers": 3,
+      "static_profile_seconds": 6.551,
+      "full_precision_controls": 15,
+      "limit": "Private explicit scheduling intervention: temporarily stop/restart the other three real native draw loops during static bootstrap. Product, operation deadlines and all numerical oracles unchanged. Not canonical qualification or proof that every source of interference is identified.",
+      "scope": "Same whole plot entry with hidden iframe, independent HTML, actual source/popup navigation, independent Decimal controls, retired SVG, state files and literal DataCard titles."
+    },
+    "actual_kernel_failure_973": {
+      "native_exit": 0,
+      "seconds": 15.352007013279945,
+      "node": "22.23.4",
+      "node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+      "kernel": "Isolated original ipykernel 7.4.0",
+      "actual_iopub_error": "ValueError",
+      "closed_reason": "unclassified",
+      "subsequent_real_kernel_execute": 42,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2
+      },
+      "peak_owned_rss_mib": 1587.0,
+      "inputs_unchanged": 9996,
+      "retired_processes": 18,
+      "resource_stop": null,
+      "limit": "Private prefix only: original live kernel() helper, real error preserved, then a real successful execute. Background names only the launcher option. Zero molecular/widget/rendering/capture cases and no full-profile claim."
+    },
+    "record_checks_974": {
+      "native_exit": 0,
+      "passed": 601,
+      "deselected": 3,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "pytest_seconds": 15.18,
+      "seconds": 18.652260065078735,
+      "inputs_unchanged": 9996,
+      "peak_owned_rss_mib": 241.5,
+      "retired_processes": 40,
+      "resource_stop": null,
+      "other_checks": [
+        "Dependency contract auditor",
+        "whole-repository Ruff",
+        "whole-repository Ruff format, 1067 files",
+        "devguide indexes",
+        "git diff --check"
+      ]
+    },
+    "private_custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/remaining-diagnostics-20261116",
+      "files": 148,
+      "bytes": 48952742,
+      "manifest_sha256": "f71e48fc253dae47644ab3a44d6977860e82c0f6abca717163a5722c32550050",
+      "originals_retained": true
+    }
   }
 }

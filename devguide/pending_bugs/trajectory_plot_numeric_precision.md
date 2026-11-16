@@ -207,3 +207,24 @@ reference or a Decimal discrepancy. Preserve both this Node-22 failure and
 isolated `960`; profile the actual startup path before assigning a shader,
 scheduler or source cause. No deadline, oracle or quality change is authorized
 by these observations.
+
+Private diagnostic `966`, with Node 22 and the original 30-second bound at
+4 CPU / 4 GiB, retains a native CPU profile. Most sampled time is inside
+WebGL state/extension/context initialization (11.22 s in `createState` alone),
+before precision cases. Its instrumentation overhead prevents qualification.
+The bare, unmodified Mol* 5.13.1 control `969`, with the same browser/backend
+and resource ceiling, initializes one WebGL context and state in 0.470 s.
+It has different context attributes and no earlier live Viewer canvases.
+Consequently, neither a universal Mol* slowdown nor a particular multi-view
+contention mechanism is proved. Preserve the actual multi-view observation;
+do not change deadlines, quality or scientific oracles to hide it.
+
+Matched diagnostic `972` explicitly stops the three other real native draw
+loops while the independent HTML initializes, then restarts them. With the
+same Node 22, 4 CPU / 4 GiB and profiler, initialization falls to 6.551 s and
+the complete entry passes in 150.30 s, including all fifteen numerical controls.
+This intervention discriminates concurrent draw-loop interference; it is not
+a production fix or canonical qualification. Do not silently stop another
+user's animation, prewarm the test or relax the startup bound. An appropriate
+multi-canvas scheduling solution or independently justified receiving scope
+remains to be settled.

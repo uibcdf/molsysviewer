@@ -94,3 +94,39 @@ Add closed-vocabulary kernel-error/readiness diagnostics before further
 receiving, preserving the original exception and five-second public budget.
 Do not upload raw messages, secrets or arbitrary failure values, or attribute
 the failure to MolSysMT before that evidence exists.
+
+The next local helper revision retains the original Python exception privately
+and carries its authored class/structured reason into the safe receipt. At
+failure it passively observes frame readiness, pending query counts and
+visibility; only closed names, strict booleans and bounded integers/nulls can
+leave that private report. Control `970` receives 119 tests, one explicitly
+unselected background profile and two deselected live cases; scoped Ruff and
+Node-22 syntax checks pass. Actual live receiving remains separate. The public
+five-second capture budget and every scientific assertion are unchanged.
+
+Actual local isolated-ipykernel-7.4 receiving `971` passes the whole work-file
+entry with the new helpers: six capture/restore and six strong-restore cases,
+four Studio cases and all eight moving cases. Both default Python captures
+keep the public five-second budget; delayed-science cases declare ten seconds.
+All eight files independently recover coherent native draws and leave zero
+pending saves/captures. Cancel/timeout refuse late writes. This source result
+uses the retained local support composition, not the newer hosted packages;
+it cannot erase the unresolved hosted default-session failure. The failing
+kernel branch still needs its own actual transport control.
+
+Review of the receiving launcher reveals that its Node selection preferred
+the interpreter sibling before PATH. Consequently `971` does **not** prove
+Node-22 receiving; no exact browser-child version was originally recorded.
+Add explicit `--node` / `MOLSYSVIEWER_NODE` precedence, refuse a bad explicit
+choice without fallback, and retain the resolved executable/version/hash in
+the receipt. Default legacy selection remains available and is now identified.
+This is receiving provenance work, not a production or scientific correction.
+
+Actual transport control `973` receives a genuine failing Python execute
+through the unchanged live `kernel()` helper, preserves its `ValueError` and
+private sentinel in the original error, exposes only the closed class/reason,
+and then executes a successful real request. The launcher explicitly records
+Node 22.23.4 and its hash. This private prefix runs zero molecular/capture
+cases and does not qualify the background profile used to launch it. The
+601 affected Python/workflow/privacy/reporting cases in `974` pass without
+failures/errors/skips; three live cases are explicitly deselected.

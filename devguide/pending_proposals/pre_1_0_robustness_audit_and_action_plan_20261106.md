@@ -55,8 +55,9 @@ where applicable. #388 also closes after its complete-core prerequisite,
 retaining its historical causal limit. These are acceptance/bookkeeping
 updates to already delivered source outcomes: **40/46 and 1/46 are unchanged**.
 #321's later zero-reference-bounds observation, #325/#305 and #354 retain
-independent dispositions. The current #354 diagnostic stops on global swap
-activity before pre-save receiving and earns no pass. See the
+independent dispositions. The earlier #354 diagnostic `937` stopped on global swap
+activity before pre-save receiving and earned no pass; the later owner cycle
+in `43796373853` passes independently, without recovering the old cause. See the
 [three-block receipt](../molstar_closeout_three_blocks_20261115.json);
 final candidate, installed, native-host and human exits are still pending.
 
@@ -952,7 +953,7 @@ their own inputs and do not supersede this order.
 | --- | --- | --- | --- |
 | A — integrity, restoration and cleanup | A1–A6 retain their delivered source scopes; #319 closes the negotiated capture implementation and #344 receives the consolidated Jupyter recurrence; final platform/installed/human acceptance remains separate | Viewer; #316/#317/#318/#319/#344 and private handling under #315 | Rejection preserves work; ownership/deadline cleanup and complete current API/render/file receiving, with original failed entries retained |
 | B — plots and DataCards | B1/#314, B2/#321 with #322 and B3.1–B3.5/#345 are source-delivered; numerical/state/popup and DataCard receiving pass. Retain the unexplained earlier zero-reference-bounds guard failure; consolidated acceptance remains. B4 is source-delivered through core and producer PR #702; B3.6 needs a scope decision | Viewer and scientific producer; #314, #321, #322, #264, #315 | Python/render agreement, interpretable retained observations, safe literal titles and complete card lifecycle |
-| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691/#696/#699 by verified ancestry; #702/#706 are owner-merged; #707 instrumentation is owner-incorporated. Changed combined-head gates remain. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3 source-delivered; C4 remains open | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #702 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
+| C — contribution and host integration | C1/C2 source-delivered: owner-merged PR #668 and adopted controlled Viewer pin, received on the reconciled source pair. PR #678’s full matrix retains its exact execution/head scope; #678/#681/#682/#683 are owner-merged. Owner main contains #687/#691/#696/#699 by verified ancestry; #702/#706 are owner-merged; #707 instrumentation is owner-incorporated. Changed combined-head gates remain. Preserve #668's seven original test failures and #671 provisioning failure; #670 is owner-resolved. C3/C4 source-delivered; #305/#325 have complete hosted controls/scientific mirror receiving; final acceptance remains separate | Viewer #264/#301/#304/#305/#306; uibcdf/molsysmt#421 and PR #702 | Exact source delivery/adoption is received; covering hosted/installed and remaining host exits are separate |
 | D — scientific prerequisites and approved GUI families | Partial implementation; provider corrections and several task families remain | MolSysMT owns science; addon owns tasks; #264/#315 and uibcdf/molsysmt#421 | Received native fixes plus every required family/effect, without hidden preparation or copied algorithms |
 | E — integrated use, scale and human acceptance | E0 custody received; E1 continuous actual-Jupyter workflow source-delivered with separate native Qt evidence; E2 bounded-scale acceptance pending and E4 human review postponed | Viewer/addon; maintainer owns human observations | TcTIM/ensemble save–recover–continue, independent lifetimes and representative measured limits |
 | F — public contract and documentation | F3 current handoff source-delivered; F2 broad documentation remains pending; the additional F1 compatibility snapshot is source-received | Viewer; #315 | Named stable/experimental contracts, verified references and one usable current handoff |
@@ -1464,8 +1465,10 @@ unrelated successful examples:
 and browser anchors pass in three fresh processes each, with exact input and
 resource records in the [current measurement receipt](../performance/robustness_scale_receiving_20261110.md).
 The thirty active cycles in one kernel remain under receiving and diagnosis; the
-short pilots do not complete that acceptance. The first source campaign retains
-eight passing cycles and a ninth recovered-frame discrepancy under
+short pilots do not complete that acceptance. The original browser timeout
+did not identify the newly recovered view; retain the Python pre-save mismatch
+as the actual observation. The first source campaign retains
+eight passing cycles and a ninth Python frame mismatch before saving under
 [#354](https://github.com/uibcdf/molsysviewer/issues/354). The stronger receiver
 then passes fifteen consecutive cycles before a shared-pressure stop during
 cycle 16; [#356](https://github.com/uibcdf/molsysviewer/issues/356) tracks

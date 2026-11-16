@@ -310,6 +310,128 @@ def test_safe_browser_summary_retains_moving_scope_without_raw_transport(tmp_pat
     assert private not in json.dumps(summary)
 
 
+def test_moving_kernel_failure_uses_structured_reason_without_rendered_messages():
+    from molsysviewer.viewer.frontend_requests import FrontendRequestError
+
+    observe = runpy.run_path(str(Path(__file__).with_name("_jupyter_moving_capture.py")))["_failure_observation"]
+    error = FrontendRequestError("private-error-sentinel", reason="request_timeout")
+    assert observe(error) == {"python_error_type": "FrontendRequestError", "reason": "request_timeout"}
+    assert observe(ValueError("private-error-sentinel")) == {
+        "python_error_type": "ValueError",
+        "reason": "unclassified",
+    }
+    assert "private-error-sentinel" not in json.dumps(observe(error))
+
+
+@pytest.mark.parametrize("untrusted", ["private-error-sentinel", [], {}, None, True])
+def test_moving_kernel_failure_rejects_unknown_reason_and_exception_names(untrusted):
+    observe = runpy.run_path(str(Path(__file__).with_name("_jupyter_moving_capture.py")))["_failure_observation"]
+    error = type("private-error-sentinel", (Exception,), {})("private-message")
+    error.extra = {"reason": untrusted}
+    assert observe(error) == {"python_error_type": "unclassified", "reason": "unclassified"}
+
+
+def test_safe_summary_retains_failure_readiness_and_rejects_private_diagnostics(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    path = tmp_path / "observations.json"
+    path.write_text(
+        json.dumps(
+            {
+                "outcome": "failed",
+                "stage": "Moving default Python notebook session",
+                "error_type": "Error",
+                "kernel_failure": {
+                    "python_error_type": "FrontendRequestError",
+                    "reason": "request_timeout",
+                    "message": "private-sentinel",
+                },
+                "moving_failure": {
+                    "observed": {
+                        "frame": 2,
+                        "trajectory": True,
+                        "interactions": False,
+                        "hidden": False,
+                        "dynamic_applied": 2,
+                        "dynamic_inflight": 1,
+                        "dynamic_pending": None,
+                        "interaction_requests": 1,
+                        "requests": 2,
+                        "replies": 1,
+                        "draws": 17,
+                        "private": "private-sentinel",
+                    },
+                    "protocol": ["private-sentinel"],
+                },
+            }
+        )
+    )
+    summary = owner["_safe_browser_summary"](path)
+    assert summary["kernel_failure"] == {"python_error_type": "FrontendRequestError", "reason": "request_timeout"}
+    assert summary["moving_readiness"] == {
+        "frame": 2,
+        "trajectory": True,
+        "interactions": False,
+        "hidden": False,
+        "dynamic_applied": 2,
+        "dynamic_inflight": 1,
+        "dynamic_pending": None,
+        "interaction_requests": 1,
+        "requests": 2,
+        "replies": 1,
+        "draws": 17,
+    }
+    assert "private-sentinel" not in json.dumps(summary)
+
+
+@pytest.mark.parametrize("untrusted", ["private-sentinel", [], {}, True, -2, 1_000_001])
+def test_safe_summary_rejects_unbounded_or_wrongly_typed_failure_readiness(tmp_path, untrusted):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    path = tmp_path / "observations.json"
+    path.write_text(
+        json.dumps(
+            {
+                "outcome": "failed",
+                "stage": "Moving default Python notebook session",
+                "error_type": "Error",
+                "kernel_failure": {"python_error_type": ["private-sentinel"], "reason": {"private": "sentinel"}},
+                "moving_failure": {"observed": {"frame": untrusted, "updating": "private-sentinel"}},
+            }
+        )
+    )
+    summary = owner["_safe_browser_summary"](path)
+    assert summary["kernel_failure"] == {"python_error_type": "unclassified", "reason": "unclassified"}
+    assert summary["moving_readiness"] == {}
+
+
+def test_jupyter_node_selection_records_real_runtime_and_explicit_choice_wins(tmp_path, monkeypatch):
+    import hashlib
+
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    node = Path(shutil.which("node")).resolve()
+    expected_version = subprocess.check_output([str(node), "--version"], text=True).strip()
+    monkeypatch.setenv("MOLSYSVIEWER_NODE", str(tmp_path / "absent-runtime"))
+    actual = owner["_node_runtime"](str(node))
+    assert actual == {
+        "path": str(node),
+        "version": expected_version,
+        "sha256": hashlib.sha256(node.read_bytes()).hexdigest(),
+    }
+    with pytest.raises(FileNotFoundError):
+        owner["_node_runtime"]()
+    monkeypatch.setenv("MOLSYSVIEWER_NODE", str(node))
+    assert owner["_node_runtime"]() == actual
+
+
+def test_explicit_invalid_jupyter_node_never_falls_back_to_installed_node(tmp_path):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    with pytest.raises(FileNotFoundError):
+        owner["_node_runtime"](tmp_path / "absent-runtime")
+    with pytest.raises(FileNotFoundError):
+        owner["_node_runtime"](tmp_path)
+    with pytest.raises(ValueError, match="canonical version"):
+        owner["_node_runtime"](sys.executable)
+
+
 def test_moving_kernel_helper_collects_without_optional_runtime_dependencies():
     child = Path(__file__).with_name("_jupyter_moving_capture.py")
     received = subprocess.run(

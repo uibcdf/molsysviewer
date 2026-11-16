@@ -49,3 +49,13 @@ or downstream receiving establishes its disposition on the covering artifact.
 DockingMT owns repeating its bounded installed checks; GUI/browser/scientific
 acceptance remain separate. Every addon function need not finish first.
 No candidate, artifact or publication is authorized by this record.
+
+## Board identity unavailable — 2026-11-16
+
+The previous complete inventory retained #294 as open. The newer paginated
+sync cannot retrieve it, and both authenticated issue lookup and the public
+issue URL return 404 without a redirect; a bounded cross-organization title
+search gives no replacement. This is an acquisition/identity uncertainty,
+not evidence that the deliverable was completed or withdrawn. Preserve this
+valid record and its work; clarification of a possible transfer, visibility
+change or deletion is pending with the maintainer.

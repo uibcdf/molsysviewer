@@ -80,7 +80,7 @@ function observePopupChildren(){
 }
 
 async function kernel(code){
- return page.evaluate(async code=>{
+ const result=await page.evaluate(async code=>{
   const kernel=window.jupyterapp.shell.currentWidget.sessionContext.session.kernel;
   const future=kernel.requestExecute({code,stop_on_error:true});let output='',error;
   future.onIOPub=message=>{
@@ -88,11 +88,18 @@ async function kernel(code){
    if(message.header.msg_type==='error')error={name:message.content.ename,value:message.content.evalue,traceback:message.content.traceback};
   };
   const reply=await future.done;
-  if(reply.content.status!=='ok'||error)throw new Error(JSON.stringify({reply:reply.content,error}));
+  if(reply.content.status!=='ok'||error){
+   const lines=output.split('\n').filter(line=>line.startsWith('MSV_CAPTURE_FAILURE '));
+   let diagnostic={python_error_type:error?.name??reply.content.ename,reason:'unclassified'};
+   if(lines.length){try{diagnostic=JSON.parse(lines.at(-1).slice('MSV_CAPTURE_FAILURE '.length));}catch{/* Preserve the native error. */}}
+   return {failed:true,diagnostic,original:{reply:reply.content,error}};
+  }
   const values=output.split('\n').filter(line=>line.startsWith('MSV_CAPTURE_JSON '));
   if(!values.length)throw new Error('The live kernel produced no explicit observation.');
-  return JSON.parse(values.at(-1).slice('MSV_CAPTURE_JSON '.length));
+  return {failed:false,value:JSON.parse(values.at(-1).slice('MSV_CAPTURE_JSON '.length))};
  },code);
+ if(result.failed){report.kernel_failure=result.diagnostic;throw new Error(JSON.stringify(result.original));}
+ return result.value;
 }
 
 async function rotate(target){

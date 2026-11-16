@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -104,6 +105,78 @@ def _safe_browser_summary(path: Path) -> dict:
             summary[target] = value if isinstance(value, str) and value in allowed else "unclassified"
         if report.get("stage") == "moving setup" and report.get("failure_code") == "moving_harness_missing":
             summary["failure_code"] = "moving_harness_missing"
+        kernel = report.get("kernel_failure")
+        if isinstance(kernel, dict):
+            types = {
+                "FrontendRequestError",
+                "TimeoutError",
+                "AssertionError",
+                "RuntimeError",
+                "ValueError",
+                "TypeError",
+            }
+            reasons = {
+                "request_timeout",
+                "renderer_refused",
+                "frame_changed",
+                "scene_changed",
+                "system_edit_pending",
+                "view_closed",
+                "endpoint_closed",
+                "no_live_frontend",
+                "capture_not_supported",
+                "invalid_frame",
+                "invalid_playback",
+                "invalid_camera",
+                "invalid_capture_version",
+                "unexpected_box_display",
+                "request_capacity",
+            }
+            summary["kernel_failure"] = {}
+            for key, allowed in (("python_error_type", types), ("reason", reasons)):
+                value = kernel.get(key)
+                summary["kernel_failure"][key] = (
+                    value if isinstance(value, str) and value in allowed else "unclassified"
+                )
+        moving = report.get("moving_failure")
+        observation = moving.get("observed") if isinstance(moving, dict) else None
+        if isinstance(observation, dict):
+            safe = {}
+            for key in (
+                "disposed",
+                "hidden",
+                "updating",
+                "trajectory",
+                "box",
+                "shapes",
+                "interactions",
+                "annotations",
+                "movie",
+            ):
+                if type(observation.get(key)) is bool:
+                    safe[key] = observation[key]
+            for key in (
+                "frame",
+                "dynamic_applied",
+                "dynamic_pending",
+                "dynamic_inflight",
+                "dynamic_requests",
+                "interaction_requests",
+                "requests",
+                "replies",
+                "held_queries",
+                "draws",
+            ):
+                value = observation.get(key)
+                if type(value) is int and -1 <= value <= 1_000_000:
+                    safe[key] = value
+                elif (
+                    key in ("dynamic_applied", "dynamic_pending", "dynamic_inflight")
+                    and key in observation
+                    and value is None
+                ):
+                    safe[key] = None
+            summary["moving_readiness"] = safe
     for key in (
         "capture_restore_cases",
         "strong_restore_cases",
@@ -216,7 +289,31 @@ def _check_moving_capture_contract(observed: dict) -> None:
         assert len(frames) == 2 and frames[0] != frames[1]
 
 
-def run(output: Path, *, profile: str = "full") -> int:
+def _node_runtime(executable=None):
+    """Resolve an explicit receiving runtime without falling back from a bad choice."""
+    selected = executable if executable is not None else os.environ.get("MOLSYSVIEWER_NODE")
+    if selected is not None:
+        found = shutil.which(str(selected))
+        node = Path(found) if found else Path(selected)
+    else:
+        node = Path(sys.executable).with_name("node.exe" if os.name == "nt" else "node")
+        if not node.is_file():
+            found = shutil.which("node")
+            if not found:
+                raise FileNotFoundError("Node is required for actual Jupyter receiving.")
+            node = Path(found)
+    node = node.resolve(strict=True)
+    if not node.is_file():
+        raise FileNotFoundError("The selected Node runtime is not a file.")
+    version = subprocess.run(
+        [str(node), "--version"], capture_output=True, text=True, check=True, timeout=10
+    ).stdout.strip()
+    if not re.fullmatch(r"v\d+\.\d+\.\d+", version):
+        raise ValueError("The selected Node runtime did not report a canonical version.")
+    return {"path": str(node), "version": version, "sha256": hashlib.sha256(node.read_bytes()).hexdigest()}
+
+
+def run(output: Path, *, profile: str = "full", node=None) -> int:
     if profile not in {"full", "background", "lifecycle", "movie"}:
         raise ValueError("Select the full, background, lifecycle or movie receiving profile.")
     for name in ("jupyterlab", "ipykernel", "anywidget", "psutil"):
@@ -232,12 +329,8 @@ def run(output: Path, *, profile: str = "full") -> int:
     module = importlib.util.find_spec("molsysviewer")
     if module is None:
         raise RuntimeError("MolSysViewer must be importable in the receiving interpreter.")
-    node = Path(sys.executable).with_name("node.exe" if os.name == "nt" else "node")
-    if not node.is_file():
-        found = shutil.which("node")
-        if found is None:
-            raise RuntimeError("The live Jupyter guard requires Node and the repository's Playwright installation.")
-        node = Path(found)
+    node_runtime = _node_runtime(node)
+    node = Path(node_runtime["path"])
 
     # A previous actual Chrome launch exceeded the Unix-socket path limit
     # under the long pytest output path. Browser scratch has a short lifetime
@@ -270,6 +363,7 @@ def run(output: Path, *, profile: str = "full") -> int:
     result = {
         "scope": f"Actual Jupyter/kernel/anywidget/Mol* {profile} receiving; no installed or visible Qt claim.",
         "profile": profile,
+        "node_runtime": node_runtime,
         "state": "starting",
         "output": str(output),
     }
@@ -519,6 +613,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--profile", choices=("full", "background", "lifecycle", "movie"), default="full")
+    parser.add_argument("--node", help="Exact Node executable; otherwise MOLSYSVIEWER_NODE or the existing default.")
     arguments = parser.parse_args()
     selected = arguments.output
     if selected is None:
@@ -527,4 +622,4 @@ if __name__ == "__main__":
         # run() creates this unique directory atomically with exist_ok=False.
         # Neither a previous receiving result nor caller output is reused.
         selected = parent / f"capture-{secrets.token_hex(12)}"
-    raise SystemExit(run(selected.resolve(), profile=arguments.profile))
+    raise SystemExit(run(selected.resolve(), profile=arguments.profile, node=arguments.node))

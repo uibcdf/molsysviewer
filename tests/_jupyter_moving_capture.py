@@ -1,6 +1,35 @@
 """Real scientific/file controls run inside the live Jupyter kernel for #319."""
 
 
+def _failure_observation(error):
+    """Keep authored types/reasons, never the exception's rendered message."""
+    types = {"FrontendRequestError", "TimeoutError", "AssertionError", "RuntimeError", "ValueError", "TypeError"}
+    reasons = {
+        "request_timeout",
+        "renderer_refused",
+        "frame_changed",
+        "scene_changed",
+        "system_edit_pending",
+        "view_closed",
+        "endpoint_closed",
+        "no_live_frontend",
+        "capture_not_supported",
+        "invalid_frame",
+        "invalid_playback",
+        "invalid_camera",
+        "invalid_capture_version",
+        "unexpected_box_display",
+        "request_capacity",
+    }
+    name = type(error).__name__
+    extra = getattr(error, "extra", None)
+    reason = extra.get("reason") if isinstance(extra, dict) else None
+    return {
+        "python_error_type": name if name in types else "unclassified",
+        "reason": reason if isinstance(reason, str) and reason in reasons else "unclassified",
+    }
+
+
 def configure(view, output, root):
     import asyncio
     import hashlib
@@ -72,7 +101,11 @@ def configure(view, output, root):
         # Healthy receiving omits the argument; deliberately delayed science
         # declares its larger budget without changing the public default.
         options = {} if timeout is None else {"timeout": timeout}
-        await operation(output / name, **options)
+        try:
+            await operation(output / name, **options)
+        except Exception as error:
+            print("MSV_CAPTURE_FAILURE " + json.dumps(_failure_observation(error)), flush=True)
+            raise
         return {"heartbeat": beats["count"]}
 
     def inspect(name, kind, draw):

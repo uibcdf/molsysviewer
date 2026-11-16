@@ -172,7 +172,15 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
   report.moving_failure=await page.evaluate(()=>{
    const c=window.__captureControllers[0],p=window.__jupMoving,wire=window.__jupMovingWire;
    const canvas=c.plugin.canvas3dContext?.canvas;
-   return {frames:p?.frames,active:p?.active,draws:p?.draws.slice(-2),readiness:p?.readiness,captureStarts:p?.captureStarts,preparation:window.__jupMovingPreparation,operations:window.__captureOperationTrace,protocol:window.__captureProtocolTraffic,kernel_errors:window.__captureKernelErrors,
+   const frame=c.trajectory.getTrajectoryState().currentFrame;
+   const observed={frame,disposed:c.disposed,hidden:document.hidden,updating:c.plugin.state.data.behaviors.isUpdating.value,
+    trajectory:c.trajectory.isCaptureFrameReady(frame),box:c.boxDisplay.isFrameReady(frame),shapes:c.shapes.isFrameReady(frame),
+    interactions:c.interactions.isFrameReady(frame),annotations:c.annotations.isGeometryCurrent(),movie:c.movie.isCaptureSafe,
+    dynamic_applied:c.dynamicRegionEvaluationAppliedFrame,dynamic_pending:c.dynamicRegionEvaluationPendingFrame,
+    dynamic_inflight:c.dynamicRegionEvaluationInFlight,dynamic_requests:c.dynamicRegionRequests.size,
+    interaction_requests:c.interactions.requests.size,requests:wire.requests.length,replies:wire.replies.length,
+    held_queries:wire.held.length,draws:p?.draws.length};
+   return {observed,frames:p?.frames,active:p?.active,draws:p?.draws.slice(-2),readiness:p?.readiness,captureStarts:p?.captureStarts,preparation:window.__jupMovingPreparation,operations:window.__captureOperationTrace,protocol:window.__captureProtocolTraffic,kernel_errors:window.__captureKernelErrors,
     playback:c.trajectory.getTrajectoryState(),sync:c.systemSyncState,
     canvas:{connected:canvas?.isConnected,visibility:canvas&&getComputedStyle(canvas).visibility,rect:canvas?.getBoundingClientRect().toJSON()},
     queries:wire.queries.slice(-12),requests:wire.requests.slice(-4),replies:wire.replies.slice(-4)};

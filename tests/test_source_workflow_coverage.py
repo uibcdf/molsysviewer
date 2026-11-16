@@ -90,6 +90,7 @@ def test_focused_diagnostics_keep_real_prolonged_receiving_and_native_source_pre
         assert "!cancelled()" in consumer["if"]
         for variable in ("OPENMM_CPU_THREADS", "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "RAYON_NUM_THREADS"):
             assert consumer["env"][variable] == "1"
+        assert 'export MOLSYSVIEWER_NODE="$(command -v node)"' in consumer["run"]
     assert "pip install" not in owner["run"], "a consumer must not change the dependency closure after its audit"
     assert "jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls" in owner["run"]
     assert "--receptor=ci" in owner["run"] and "--junitxml=prolonged-source.xml" in owner["run"]

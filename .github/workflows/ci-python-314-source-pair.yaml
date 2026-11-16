@@ -461,7 +461,9 @@ jobs:
           OMP_NUM_THREADS: '1'
           OPENBLAS_NUM_THREADS: '1'
           RAYON_NUM_THREADS: '1'
-        run: python tests/_jupyter_live_capture.py
+        run: |
+          export MOLSYSVIEWER_NODE="$(command -v node)"
+          python tests/_jupyter_live_capture.py
 
       - name: Preserve safe source-pair receiving diagnostic receipts
         if: always() && inputs.receiving_scope == 'diagnostics'
