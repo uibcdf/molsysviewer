@@ -3,6 +3,7 @@
 import json
 import os
 import runpy
+import shutil
 import subprocess
 import sys
 import time
@@ -129,6 +130,69 @@ def test_safe_browser_summary_retains_phase_and_counts_without_raw_diagnostics(t
     }
     assert private not in json.dumps(summary)
     assert report.read_bytes() == original
+
+
+def test_missing_moving_harness_keeps_the_real_error_and_names_preparation(tmp_path):
+    """Receive the original missing-file boundary without a browser or fake I/O."""
+    node = shutil.which("node")
+    assert node, "The declared development environment requires Node for browser receiving."
+    script = Path(__file__).with_name("_jupyter_moving_capture.mjs").resolve()
+    result = subprocess.run(
+        [
+            node,
+            "--input-type=module",
+            "--eval",
+            """
+import assert from 'node:assert/strict';
+const {receiveJupyterMoving}=await import(process.argv[1]);
+const report={outcome:'failed',stage:'Studio popup session'};
+await assert.rejects(
+ ()=>receiveJupyterMoving({config:{viewer_root:process.argv[2]},report,setStage:value=>{report.stage=value;}}),
+ error=>{
+  assert.equal(error.code,'ENOENT');
+  assert.ok(error.path.startsWith(process.argv[2]));
+  report.error_type=error.name;report.error=String(error);return true;
+ });
+assert.equal(report.stage,'moving setup');
+assert.equal(report.failure_code,'moving_harness_missing');
+assert.equal(report.moving_cases,undefined);
+console.log(JSON.stringify(report));
+""",
+            script.as_uri(),
+            str(tmp_path / "private-sentinel-missing-provider"),
+        ],
+        text=True,
+        capture_output=True,
+        check=True,
+        timeout=10,
+    )
+    report = tmp_path / "observations.json"
+    report.write_text(result.stdout)
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    assert owner["_safe_browser_summary"](report) == {
+        "status": "available",
+        "outcome": "failed",
+        "phase": "moving setup",
+        "error_type": "Error",
+        "failure_code": "moving_harness_missing",
+    }
+    assert "private-sentinel" in json.loads(result.stdout)["error"]
+
+
+@pytest.mark.parametrize(
+    ("stage", "code"),
+    [
+        ("Studio popup session", "moving_harness_missing"),
+        ("moving setup", "private-sentinel-do-not-publish"),
+        ("moving setup", ["moving_harness_missing"]),
+    ],
+)
+def test_safe_preparation_code_cannot_publish_arbitrary_or_misattributed_diagnostics(tmp_path, stage, code):
+    owner = runpy.run_path(str(Path(__file__).with_name("_jupyter_live_capture.py")))
+    report = tmp_path / "observations.json"
+    report.write_text(json.dumps({"outcome": "failed", "stage": stage, "error_type": "Error", "failure_code": code}))
+    summary = owner["_safe_browser_summary"](report)
+    assert "failure_code" not in summary and "private-sentinel" not in json.dumps(summary)
 
 
 @pytest.mark.parametrize("untrusted", ["private-sentinel-do-not-publish", [], {}, None])

@@ -2105,7 +2105,7 @@
     "next_control": "Review joint technical-closeout recommendation with the principal maintainer: original-kernel causal 919/923 plus normal current-source TcTIM/7.4.0 receiving 928 now pass their declared checks. Historical exact cause remains unproven; no issue closure decision inferred. Final candidate/installed receiving remains separate."
   },
   "current_provider_load_blocker_763": {
-    "state": "published_correction_received_by_114_consumer_source_guards_viewer_loading_pending",
+    "state": "published_correction_received_by_114_scientific_guards_and_two_complete_viewer_loads",
     "source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
     "issues": [
       "uibcdf/molsysmt#763",
@@ -2123,7 +2123,8 @@
       "converter_differences_from_qualified_bc5": 0,
       "impact": "Large valid mmCIF conversion fails before rendering. Needs owner correction and bounded consumer receiving before final source freeze; prior source CI does not cover those inputs.",
       "ownership": "MolSysMT; no downstream patch, input cleaning or duplicate owner execution requested."
-    }
+    },
+    "scope": "Headless full-file data/source integration; browser/native Qt, installed artifacts and final candidate remain separate."
   },
   "initial_audit_archive_validation": {
     "initial_unindexed_native_exit": 1,

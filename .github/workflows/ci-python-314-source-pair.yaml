@@ -219,9 +219,17 @@ jobs:
 
       - name: Install both exact source candidates
         shell: bash -l {0}
+        env:
+          RECEIVING_SCOPE: ${{ inputs.receiving_scope || 'full' }}
         run: |
           set -euo pipefail
-          python -m pip install --no-deps --no-build-isolation ./molsysmt-source
+          # The owner Jupyter receiver imports its checkout directly. Prepare
+          # that same source's native backend before auditing or consuming it.
+          if [[ "$RECEIVING_SCOPE" == diagnostics ]]; then
+            python -m pip install --no-deps --no-build-isolation --editable ./molsysmt-source
+          else
+            python -m pip install --no-deps --no-build-isolation ./molsysmt-source
+          fi
           python -m pip install --no-deps --no-build-isolation ./molsysviewer-source
           python -m pip check
 
@@ -263,6 +271,7 @@ jobs:
           python -m pip check
 
       - name: Audit dependency routes and the installed exact source provider
+        id: source-audit
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
@@ -340,6 +349,7 @@ jobs:
         run: python -m ipykernel install --sys-prefix --name python3 --display-name "Python source pair 3.14"
 
       - name: Build the source-pair browser runtime and harness
+        id: source-browser-build
         if: runner.os == 'Linux'
         shell: bash -l {0}
         working-directory: molsysviewer-source/molsysviewer/js
@@ -353,6 +363,7 @@ jobs:
           npm run build:e2e:all
 
       - name: Verify the hosted source-pair browser
+        id: source-browser
         if: runner.os == 'Linux'
         shell: bash -l {0}
         run: |
@@ -384,18 +395,16 @@ jobs:
         run: node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror,trajectory-plot
 
       - name: Receive one prolonged Jupyter source cycle
-        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' }}
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
         timeout-minutes: 10
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:
           MOLSYSVIEWER_ROOT: ${{ github.workspace }}/molsysviewer-source
         run: |
-          # The owner receiver prepends its checkout to PYTHONPATH. An editable
-          # build puts the native backend from that exact source there too;
-          # a non-editable wheel alone would leave this source unimportable.
-          python -m pip install --no-deps --no-build-isolation --editable ../molsysmt-source
-          python -m pytest --receptor=ci -n0 -c pyproject.toml --confcutdir=../molsysmt-source/tests/molsysviewer_molsysmt ../molsysmt-source/tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls --basetemp=.pytest_cache/prolonged-source --junitxml=prolonged-source.xml
+          # Default pytest executes this one explicit case sequentially; this
+          # environment intentionally does not require pytest-xdist.
+          python -m pytest --receptor=ci -c pyproject.toml --confcutdir=../molsysmt-source/tests/molsysviewer_molsysmt ../molsysmt-source/tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls --basetemp=.pytest_cache/prolonged-source --junitxml=prolonged-source.xml
 
       - name: Preserve bounded prolonged source receiving
         if: always() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'
@@ -412,7 +421,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Receive live Jupyter diagnostics
-        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' }}
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
         shell: bash -l {0}
         working-directory: molsysviewer-source
         env:

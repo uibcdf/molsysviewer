@@ -952,11 +952,19 @@ The [four-observation follow-up](residual_four_issues_receiving_20261116.json)
 now isolates a concrete same-frame playback-metadata dismissal under #305 and
 receives its correction with real pentalanine. #321 adds atomic current-SVG
 observation, #325 adds a native revised-label pending-read control, and a
-bounded hosted checkpoint is prepared for those owners plus #354's existing
-one-cycle receiver. Local resource interruptions remain uncredited. MolSysMT
-publishes the #763/#766 correction in `b8c798474`; its two Python parsing
-changes and unchanged Rust inputs are reviewed, with independent consumer
-receiving in progress. No source counter or publication decision changes.
+bounded hosted checkpoint selects those owners plus #354's existing one-cycle
+receiver. Its first run `43786553755` fails preparation: the audit rejects a
+later installation, the prolonged command uses unavailable xdist, and the
+Jupyter consumer runs after its harness build was skipped. Its six stopped
+roundtrips pass before an unclassified error; the retained final Studio phase
+is stale. [#399](pending_bugs/focused_source_diagnostic_preparation.md) corrects
+prerequisites and preserves safe actionable preparation diagnostics before
+another dispatch. No focused browser or prolonged-cycle pass is inferred.
+MolSysMT publishes #763/#766 in `b8c798474`: 114 independent scientific source
+guards pass, then two public complete-file Viewer loads preserve all 53,592
+3WU2 and 98,986 5XNL atoms, identities, coordinates and canonical bonds.
+Rendering, installed and candidate qualification remain separate. Local
+resource interruptions stay uncredited; no counter or publication decision changes.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**

@@ -3,11 +3,18 @@ import {readFile} from 'node:fs/promises';
 
 /** Actual anywidget traffic only: hold/release real requests, never supply science. */
 export async function receiveJupyterMoving({page,kernel,config,report,openWork,openCanvas,setStage}) {
+ setStage('moving setup');
  const json=expression=>`print('MSV_CAPTURE_JSON '+json.dumps(${expression}))`;
- const harness=await readFile(config.viewer_root+'/molsysviewer/js/tests/e2e/harness.bundle.js','utf8');
+ let harness;
+ try{harness=await readFile(config.viewer_root+'/molsysviewer/js/tests/e2e/harness.bundle.js','utf8');}
+ catch(error){
+  // Keep the original exception private; only this exact preparation boundary
+  // may emit the closed public code. Never export paths or arbitrary messages.
+  if(error?.code==='ENOENT')report.failure_code='moving_harness_missing';
+  throw error;
+ }
  let popup;
  report.moving_cases=[];
- setStage('moving setup');
  await page.evaluate(()=>{
   const model=window.__captureControllers[0].model;
   const trace=window.__jupMovingPreparation=[];

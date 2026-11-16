@@ -61,9 +61,25 @@ def test_focused_diagnostics_keep_real_prolonged_receiving_and_native_source_pre
     assert "!cancelled()" in owner["if"] and "receiving_scope == 'diagnostics'" in owner["if"]
     assert owner["timeout-minutes"] == "10"
     assert owner["env"]["MOLSYSVIEWER_ROOT"] == "${{ github.workspace }}/molsysviewer-source"
-    assert "--editable ../molsysmt-source" in owner["run"]
+    install = next(step for step in steps if step.get("name") == "Install both exact source candidates")
+    audit = next(
+        step for step in steps if step.get("name") == "Audit dependency routes and the installed exact source provider"
+    )
+    assert "--editable ./molsysmt-source" in install["run"]
+    assert steps.index(install) < steps.index(audit) < steps.index(owner)
+    for name in ("Receive one prolonged Jupyter source cycle", "Receive live Jupyter diagnostics"):
+        consumer = next(step for step in steps if step.get("name") == name)
+        for prerequisite in ("source-audit", "source-browser-build", "source-browser"):
+            producing_step = next(step for step in steps if step.get("id") == prerequisite)
+            assert steps.index(producing_step) < steps.index(consumer)
+            assert f"steps.{prerequisite}.outcome == 'success'" in consumer["if"]
+        # Successful prerequisites allow independent diagnosis after an unrelated
+        # browser assertion fails; a skipped build must never start Jupyter.
+        assert "!cancelled()" in consumer["if"]
+    assert "pip install" not in owner["run"], "a consumer must not change the dependency closure after its audit"
     assert "jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls" in owner["run"]
-    assert "--receptor=ci -n0" in owner["run"] and "--junitxml=prolonged-source.xml" in owner["run"]
+    assert "--receptor=ci" in owner["run"] and "--junitxml=prolonged-source.xml" in owner["run"]
+    assert " -n" not in owner["run"], "the no-xdist environment must use default sequential pytest"
     assert "continue-on-error" not in owner and "E2E_ALLOW_SKIP" not in owner["run"]
     artifact = next(step for step in steps if step.get("name") == "Preserve bounded prolonged source receiving")
     assert artifact["if"].startswith("always()")

@@ -358,6 +358,134 @@
         "original_source_files_verified": 351
       },
       "classification": "Expected original Node assertion failure at menu preservation, received by an explicit negative-control checker. Same complete molecular fixture as corrected 944, native CANVAS input and unchanged frame; menu-close stack identifies applySummary -> trajectory publication. Not a product pass."
+    },
+    "viewer-complete-cif-load-952": {
+      "native_exit": 0,
+      "seconds": 39.68552120728418,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 634.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "9afc843d8a6274ee85032d4060192d409058b109cc893809acb90275a69dba49",
+      "passed": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "warnings": 2,
+      "warning_type": "CrossChainCovalentBondsWarning",
+      "scope": "Independent headless complete-file public msv.new_view(path) source/data integration. Not browser/Qt rendering or installed/candidate qualification.",
+      "observations": [
+        {
+          "entry": "3WU2",
+          "n_atoms": 53592,
+          "n_entities": 41,
+          "n_structures": 1,
+          "n_bonds": 51770,
+          "frame": 0,
+          "input_sha256": "308668f3ad989ce025b310e9693e47668df6504c8b0809151c383f23f29989b6",
+          "scope": "Whole complete file loaded by public new_view(path), compared with the independently received canonical source conversion. Headless source/data integration, not actual browser or native Qt rendering."
+        },
+        {
+          "entry": "5XNL",
+          "n_atoms": 98986,
+          "n_entities": 42,
+          "n_structures": 1,
+          "n_bonds": 102708,
+          "frame": 0,
+          "input_sha256": "c8e32cae7b6b6950784560b49be64f6c0e343de88183ae235ddde602777c357e",
+          "scope": "Whole complete file loaded by public new_view(path), compared with the independently received canonical source conversion. Headless source/data integration, not actual browser or native Qt rendering."
+        }
+      ],
+      "actual_origin": {
+        "source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
+        "origins": {
+          "molsysmt": {
+            "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/provider-b8c-current/molsysmt/__init__.py",
+            "sha256": "dc89c5f21ab7ba4bb94b289927a19856d27cb670baf1b03d7f6fcb7fced03f90"
+          },
+          "molsysmt._rust": {
+            "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/provider-b8c-current/molsysmt/_rust.abi3.so",
+            "sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345"
+          },
+          "molsysviewer": {
+            "origin": "/home/diego/repos@uibcdf/molsysviewer/molsysviewer/__init__.py",
+            "sha256": "76c5968d9a66d9fe01a475166515f4e0f02c3784b135ec60319cb2bf83b17cd4"
+          },
+          "pyunitwizard": {
+            "origin": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/mt-popup-focus-20261112/current-support/pyunitwizard/__init__.py",
+            "sha256": "0626585fc22e349385955b0abd97b08e4d6e5f8f809d5e5be86ff7f27883973f"
+          }
+        },
+        "pytest_native_exit": 0
+      }
+    },
+    "four-issues-ci-recovery-953": {
+      "native_exit": 0,
+      "seconds": 19.363814331125468,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 214.3,
+      "cleanup": {
+        "tracked": 36,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "1e300f3d28b8cf33fa1ed6396af376faec400fa8adb26bbfb11678b987b2efd5",
+      "passed": 556,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "dependency_auditor": "passed",
+      "ruff": "passed",
+      "diff": "passed",
+      "scope": "Initial CI installation-order/sequential-command corrections only, before additional prerequisite/safe-diagnostic changes."
+    },
+    "four-issues-ci-diagnostics-954": {
+      "native_exit": 1,
+      "seconds": 19.696457032114267,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 232.4,
+      "cleanup": {
+        "tracked": 40,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "7a4933344654905ec2b10db632a69f248deca1a3beb9be7c555c863bca998bd7",
+      "passed": 591,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0,
+      "deselected": 3,
+      "classification": "CI/dependency/privacy guards pass. Clean-checkout link guard fails because the new issue record has not yet been added to the Git index. No product or browser failure; original retained."
+    },
+    "four-issues-ci-links-955": {
+      "native_exit": 0,
+      "seconds": 4.637324559967965,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 181.3,
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "9fb8ba951a9deb41d74a2c64efaeb192fe98a5bb04492a97918b7409be2da152",
+      "passed": 4,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "ruff": "passed",
+      "diff": "passed",
+      "classification": "Affected links rechecked after staging the new issue record; no broad gate repeated. Together with 954 this receives scoped offline checks, not a complete hosted or installed gate."
     }
   },
   "changes": {
@@ -367,9 +495,46 @@
     "354": "Receive the existing owner one-cycle prolonged Jupyter guard on a dedicated hosted runner. Its original pre-save Python assertion, 5000 structures, both popups, recovery and active playback remain. Prepare exact-source native importability with an editable build as confirmed by the owner; retain actual kernel/module/hash records. Prior local 937 remains resource-interrupted."
   },
   "hosted": {
-    "status": "prepared_not_dispatched",
-    "scope": "One Linux source_receiving=true / receiving_scope=diagnostics checkpoint; four affected browser owners, JS units/types and one actual owner prolonged cycle. Full default source gate is unchanged.",
-    "molsysmt_sha": "b8c7984748f2ca87d19911f4cc3bf63b688d3641"
+    "state": "first_dispatch_failed_preparation_successor_pending",
+    "previous_preparation": {
+      "status": "prepared_not_dispatched",
+      "scope": "One Linux source_receiving=true / receiving_scope=diagnostics checkpoint; four affected browser owners, JS units/types and one actual owner prolonged cycle. Full default source gate is unchanged.",
+      "molsysmt_sha": "b8c7984748f2ca87d19911f4cc3bf63b688d3641"
+    },
+    "run": 43786553755,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43786553755",
+    "viewer_source": "391e004dad290f7cee426db20f9a8f7a05af96fb",
+    "molsysmt_source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
+    "conclusion": "failure",
+    "audit": "Failed: later editable installation violates audit ordering.",
+    "prolonged": "Usage exit 4: unrecognized -n0; zero cases executed.",
+    "focused_browsers": "All four skipped after audit; no receiving.",
+    "live_jupyter": {
+      "outcome": "failed",
+      "reported_phase": "Studio popup session",
+      "phase_limit": "All four Studio cases had completed; next moving-preparation harness read occurs before phase update. Original exact exception unavailable. Missing skipped-build harness is an inference, not proved original cause.",
+      "capture_restore_cases": 6,
+      "strong_restore_cases": 6,
+      "studio_cases": 4,
+      "error_type": "Error",
+      "seconds": 122.88964300100002,
+      "cleanup": {
+        "tracked": 18,
+        "survivors": [],
+        "errors": []
+      }
+    },
+    "artifact": {
+      "id": 14190976176,
+      "bytes": 612,
+      "sha256": "69834daf2a23c4c45faf8afd460a1dbaf5c0d02757f7a0445e765ff84b83c58b",
+      "downloaded_original_matches_registry": true,
+      "members": [
+        "capture-e0d2f20ab6273cbc303d8732/command-result.json"
+      ]
+    },
+    "preparation_issue": "uibcdf/molsysviewer#399",
+    "scope": "Bounded source diagnostics; no installed/candidate/publication qualification."
   },
   "provider_coordination": {
     "763_766": {
@@ -423,7 +588,8 @@
         },
         "scope": "106 synthetic identity/explicit-link guards plus eight complete original-entry routes, including alternate units. This is independent scientific source receiving; full MolSysViewer loading/rendering, installed and candidate receiving remain separate."
       }
-    }
+    },
+    "viewer_complete_load_receiving": "profiles.viewer-complete-cif-load-952"
   },
   "limits": {
     "maximum_logical_cpus_used": 4,
@@ -491,5 +657,32 @@
       "ram_gib": 3
     },
     "scope": "Source build/unit/type receiving, not actual affected popup/browser or installed acceptance."
+  },
+  "diagnostic_preparation_followup": {
+    "issue": "uibcdf/molsysviewer#399",
+    "state": "local_checks_received_hosted_successor_not_yet_dispatched",
+    "files_sha256": {
+      ".github/workflows/ci-python-314-source-pair.yaml": "2f9eba21a03e572a2ff7c6f58131241d0b8a4749d2ee4bb7aefb69433edfc02f",
+      "tests/test_source_workflow_coverage.py": "21596d6fe767c5989a2837206be97f88cea4c0b47b68cc8230a9c169aeb5dfdd",
+      "tests/_jupyter_moving_capture.mjs": "9996339b50614a7a87090e82dc36d0b9da582f9824a449a3802accc92a335147",
+      "tests/_jupyter_live_capture.py": "9c67c2049ef939607cfaaec0564824450a1ecb7221a72d40525d38fc6ac9dc57",
+      "tests/test_jupyter_live_capture.py": "189db5b58ecdeff3053484da8b0da12fda727798271c18f329cf7bc84972149b"
+    },
+    "changes": [
+      "Editable scientific source/native installation occurs before audit, never in a consumer.",
+      "The explicit owner case uses default sequential pytest without undeclared xdist.",
+      "Jupyter consumers require successful audit, harness/runtime build and browser prerequisites.",
+      "Moving preparation names its phase before I/O, preserves ENOENT privately and publishes only a context-bound closed missing-harness code."
+    ],
+    "source_outcome_counter_change": 0
+  },
+  "private_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/residual-four-20261116",
+    "files": 2713,
+    "bytes": 222627225,
+    "manifest_sha256": "b28bfe6fcc805c2990a1d0cbaeef26f8706a64ed327f5231984974cb4f2af6f7",
+    "copied_files_verified": true,
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia"
   }
 }

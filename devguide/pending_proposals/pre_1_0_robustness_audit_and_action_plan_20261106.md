@@ -55,9 +55,13 @@ final candidate, installed, native-host and human exits are still pending.
 #763/#766 in `b8c7984748f2ca87d19911f4cc3bf63b688d3641`. Consumer review finds
 two changed scientific Python files and no Rust/Cargo/pyproject delta from
 `bc5a9297`. A new frozen source composition verifies 3,559 Git files and both
-complete original input hashes; independent owner-guard/original receiving is
-in progress. The expanded four-observation diagnostic will select this exact
-source. No package floor, installed/candidate claim or original counter changes.
+complete original input hashes. Independent receiving passes 114 scientific
+source guards and both complete public Viewer file loads, preserving all
+53,592/98,986 atoms, identities, coordinates and canonical bonds. This is
+headless data/source integration, not large-browser rendering or an installed
+candidate. The expanded four-observation diagnostic selects this exact source;
+its first run fails workflow preparation, tracked separately in #399. No
+package floor, installed/candidate claim or original counter changes.
 The earlier finding and its freeze prerequisite remain below.
 
 **New provider finding to receive before the final source freeze:**

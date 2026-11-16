@@ -102,6 +102,8 @@ def _safe_browser_summary(path: Path) -> dict:
         for source, target, allowed in (("stage", "phase", phases), ("error_type", "error_type", error_types)):
             value = report.get(source)
             summary[target] = value if isinstance(value, str) and value in allowed else "unclassified"
+        if report.get("stage") == "moving setup" and report.get("failure_code") == "moving_harness_missing":
+            summary["failure_code"] = "moving_harness_missing"
     for key in (
         "capture_restore_cases",
         "strong_restore_cases",
