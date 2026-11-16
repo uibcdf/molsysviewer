@@ -48,7 +48,7 @@ inputs/heads/statuses unchanged. Published PR correction 8ab2f5474 adds only
 assess_protonation to the expected set; 63 affected and 36 preflight cases pass.
 This is not one green complete run. Isolated new conformation tasks are not
 published: actual Jupyter reaches plotted/navigation/popup observations but
-the final Python index assertion identifies [#314](../pending_bugs/trajectory_plot_seek_skips_python_authority.md).
+the final Python index assertion identifies [#314](../archive/trajectory_plot_seek_skips_python_authority.md).
 Keep that core repair and complete receiving required; do not remove the tasks
 or weaken their scientific/session acceptance. Human/publication remain paused.
 

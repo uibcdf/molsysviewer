@@ -39,6 +39,18 @@ The complete source checkpoint `43748320908` now passes three native Python
 ZIPs match GitHub hashes. This source gate does not independently add another
 original leaf or qualify an installed artifact.
 
+**Consolidated source closeout — 2026-11-16:** the original three-host
+JUnit ZIPs independently receive the delivered #314/#316/#317/#318/#322/
+#323/#324 fixes; their source reports close, with complete plot/core receiving
+where applicable. #388 also closes after its complete-core prerequisite,
+retaining its historical causal limit. These are acceptance/bookkeeping
+updates to already delivered source outcomes: **40/46 and 1/46 are unchanged**.
+#321's later zero-reference-bounds observation, #325/#305 and #354 retain
+independent dispositions. The current #354 diagnostic stops on global swap
+activity before pre-save receiving and earns no pass. See the
+[three-block receipt](../molstar_closeout_three_blocks_20261115.json);
+final candidate, installed, native-host and human exits are still pending.
+
 **New provider finding to receive before the final source freeze:**
 [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) reports valid
 public 3WU2/5XNL mmCIF conversion failures before rendering, caused by entity
@@ -1173,7 +1185,7 @@ original producers and scopes.
 | **A3 — corrected in `38eb8785`, hosted checkpoint pending** | A real DataCard popup parses an inert title marker as markup, while the original card shows literal text. Source: [DataCard](../../molsysviewer/js/src/ui/floating-data-card.ts), `openPopoutWindow`. Executable injection scope was not tested. | Use literal title/header handling consistently; review disclosure privately. Guard initial/restored/updated titles, special characters, ordinary popup input and original/popup parity without executable test payloads. |
 | **A4 — corrected in `611c1574`, hosted checkpoint pending** | `new_view` with a failing selection leaves one unreturned open View and two registered widgets. Source: [factory](../../molsysviewer/new_view.py). Repeated ordinary errors can retain resources. | Close the factory-owned View on initialization failure, preserving the original error. Never close a caller-supplied View. Guard invalid selection, conversion/load rejection, repeated failures and restored widget/resource ownership with real demos. |
 | **A5 — source received, #319** | Negotiated v2 with v1 compatibility, coherent continuous capture, actual Jupyter/Qt moving/background, public-minimum and browser-lifetime receiving pass; original failures remain preserved. | [Resolved source record](../archive/saved_camera_lags_live_notebook.md); final hosted/installed/other-platform/human gates remain separate. |
-| **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../pending_bugs/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
+| **A6 — corrected in `1ea6b26e`, #318** | An actual provider panel close error leaves six owned widgets/layouts registered, another panel mounted and both View links retained; retry returns early. Ordinary successful closes are not claimed to fail. | [Independent cleanup and retry receiving](../archive/view_close_failure_blocks_cleanup.md), including actual provider/transport failures, unrelated View preservation and observable diagnostics. |
 
 Register scoped reports after duplicate review, including related closed #127
 and #210 where useful. The private receipts support A1–A4; the coordination

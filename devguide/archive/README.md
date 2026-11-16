@@ -1,5 +1,13 @@
 # Archived implementation plans
 
+- [Plot navigation and Python authority](trajectory_plot_seek_skips_python_authority.md) — #314 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+- [Failed factory ownership](failed_factory_retains_owned_view.md) — #316 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+- [Rejected state preserves open work](direct_state_rejection_erases_scene.md) — #317 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+- [Independent cleanup after close errors](view_close_failure_blocks_cleanup.md) — #318 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+- [Plot pixel dimensions](trajectory_plot_pixel_dimensions.md) — #322 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+- [Empty Whole summaries](empty_whole_summary_queries_none.md) — #323 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+- [Standalone HTML View ownership](standalone_html_retains_owned_view.md) — #324 receives its delivered causal fix through the complete three-host source checkpoint; artifact and final acceptance stay separate.
+
 - [Hosted shape-click receiving](hosted_shape_click_selection_timeout.md) — #388 retains its original causal limit and closes after the unchanged single-click selection/marker sequence and repaired native picking pass the complete 63-entry source gate.
 
 - [Actual-Jupyter Movie seek](jupyter_movie_seek_pending.md) — #396 adopts corrected kernel transport and receives ten same-kernel edit/seeks plus all eight phases on current scientific source; shared-prefix and final artifact gates stay separate.

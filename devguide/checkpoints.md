@@ -941,6 +941,13 @@ passes ten edit/seeks and all eight phases. #388 closes after its unchanged
 single-click selection/marker sequence passes the complete current core gate;
 the original click event sequence remains unknown. #354, exact artifacts and
 postponed human exits remain separately tracked.
+Consolidation on 2026-11-16 receives #314/#316/#317/#318/#322/#323/#324
+against the original three-host JUnit ZIPs and complete plot entry; these
+delivered source fixes now close without changing the original counters.
+#321's earlier zero-reference-bounds observation and #325/#305 keep their
+separate dispositions. #354 diagnostic 937 is interrupted by global swap
+activity before its pre-save receipt, with all 26 owned processes retired;
+it earns no pass and is not relaunched under that pressure.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**
@@ -1666,7 +1673,7 @@ is post-1.0; core Movie does not gain an LLM dependency. The original 46-item
 audit percentage is unchanged and is not total release readiness. No Movie
 production code changes or publication authorization accompany this issue.
 
-[Viewer #314](pending_bugs/trajectory_plot_seek_skips_python_authority.md) has a
+[Viewer #314](archive/trajectory_plot_seek_skips_python_authority.md) has a
 delivered causal correction and isolated/actual-Jupyter passes. Its original
 core attempt failed at 43/44; the guard now waits for actual host receipt of
 the popup intent before draining the queued Python responses. One new complete

@@ -3,7 +3,7 @@ summary: Hosted shape click does not reach active selection after GPU and hover 
 issue: uibcdf/molsysviewer#388
 status: resolved
 opened: 2026-11-14
-closed: 2026-11-15
+closed: 2026-11-16
 severity: medium
 verification: measured
 area: [selection, picking, input, ci, qualification]

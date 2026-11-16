@@ -102,3 +102,19 @@ records both outcomes and actual kernel imports. This confirms the new
 diagnostics can receive real molecular work; it does not reconstruct the
 original cycle-nine order or extend the earlier thirty-cycle result to this
 source.
+
+## Current-source passive authority diagnostic — 2026-11-16
+
+`prolonged-current-authority-937` selects the exact `bc5a9297` scientific and
+receiver source with original ipykernel 7.4.0 in the generated kernelspec. It
+adds a bounded public `on_frame_change` observer and records Python state
+immediately before the unchanged pre-save assertion; the original owner
+browser, frame predicates, popups, recovery and deadlines remain unchanged.
+The supervisor stops it after 43.85 seconds when global swap-out reaches
+89,731,072 bytes in one sample. Available RAM is 14.16 GiB; this is a global
+activity trigger, not an observed out-of-memory error or attribution to another
+process. All 9,983 selected inputs remain unchanged and all 26 owned processes
+retire. There is no pre-save receipt or JUnit result. The supervisor child's
+zero exit is not a passing test, and no loaded-kernel or cycle acceptance is
+inferred. Keep the failed/interrupted private records and postpone this
+unchanged diagnostic while shared swap pressure is active.

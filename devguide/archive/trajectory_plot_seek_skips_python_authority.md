@@ -1,9 +1,9 @@
 ---
 summary: Trajectory plot navigation changes the canvas without updating Python structure state.
 issue: uibcdf/molsysviewer#314
-status: partial
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-16
 severity: high
 verification: reproduced
 area: [trajectory, api, embedding]
@@ -14,6 +14,30 @@ supersedes: []
 ---
 
 # Plot navigation and Python structure authority
+
+## Source resolution — consolidated receiving, 2026-11-16
+
+The repaired plot callback emits the normal authority intent; the real browser/Python bridge checks deliberate source and popup clicks, deduplicated public callbacks and physical molecular coordinates. Raw renderer projections remain silent.
+
+The complete source checkpoint
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+receives MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and
+MolSysMT `bc5a9297a762d451742734f9e11c7f54c6a832a0`. The durable guard
+is `molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts`.
+The complete `trajectory-plot` entry passes within all 63 uninterrupted
+Linux core entries. The [closing receipt](../molstar_closeout_three_blocks_20261115.json)
+checks original JUnit ZIP digests and native selected cases; the complete
+checkpoint also receives all 25 notebooks.
+
+This supplies the formerly pending consolidated **source** prerequisite.
+Earlier causal runs, interrupted/failed receiving and dated pending claims
+remain below with their original inputs. Installed artifacts, final producers,
+experimental native Qt and postponed human acceptance retain their own owners
+and gates under #315/#372; this closure does not declare them passed or
+advance the original 40/46 source or 1/46 final-acceptance counters.
+
+## Earlier investigation — original claims and scopes retained
+
 
 ## What
 

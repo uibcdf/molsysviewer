@@ -2304,5 +2304,274 @@
       },
       "prior_preparation": "935 could not access the systemd user bus inside sandbox; no tests executed. Preserved separately."
     }
+  },
+  "consolidated_source_defect_closures_20261116": {
+    "date": "2026-11-16",
+    "status": "source_defects_resolved_after_complete_hosted_receiving",
+    "run": 43748320908,
+    "producer": "3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb",
+    "scientific_source": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+    "original_junit_zip_receipts": [
+      {
+        "host": "Linux",
+        "id": 14175805762,
+        "sha256": "971fb15b3d9b124fecdf5067f430d05cf717085816ee4408c8c7702483378f97"
+      },
+      {
+        "host": "macOS arm64",
+        "id": 14175259674,
+        "sha256": "6dcd9f223fa5529eadc6ef5bb5a37cba2f0301ca881187aa3cec3c4cf75eb626"
+      },
+      {
+        "host": "Windows",
+        "id": 14175717082,
+        "sha256": "45c3c72cfae983550da3ba3745b8b7d8e209c59cb82a7c61c1092cf281ec9e53"
+      }
+    ],
+    "python_modules_by_host": {
+      "Linux": {
+        "316": {
+          "module": "tests.test_new_view",
+          "passed": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "317": {
+          "module": "tests.test_state_rejection",
+          "passed": 32,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "318": {
+          "module": "tests.test_view_close_failure",
+          "passed": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "322": {
+          "module": "tests.test_trajectory_plot",
+          "passed": 34,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "323": {
+          "module": "tests.test_empty_whole_summary",
+          "passed": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "324": {
+          "module": "tests.test_standalone_view_ownership",
+          "passed": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "macOS arm64": {
+        "316": {
+          "module": "tests.test_new_view",
+          "passed": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "317": {
+          "module": "tests.test_state_rejection",
+          "passed": 32,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "318": {
+          "module": "tests.test_view_close_failure",
+          "passed": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "322": {
+          "module": "tests.test_trajectory_plot",
+          "passed": 34,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "323": {
+          "module": "tests.test_empty_whole_summary",
+          "passed": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "324": {
+          "module": "tests.test_standalone_view_ownership",
+          "passed": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "Windows": {
+        "316": {
+          "module": "tests.test_new_view",
+          "passed": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "317": {
+          "module": "tests.test_state_rejection",
+          "passed": 32,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "318": {
+          "module": "tests.test_view_close_failure",
+          "passed": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "322": {
+          "module": "tests.test_trajectory_plot",
+          "passed": 34,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "323": {
+          "module": "tests.test_empty_whole_summary",
+          "passed": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "324": {
+          "module": "tests.test_standalone_view_ownership",
+          "passed": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      }
+    },
+    "browser_entries": [
+      "trajectory-plot"
+    ],
+    "browser_guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+    "issues": {
+      "314": {
+        "archive": "archive/trajectory_plot_seek_skips_python_authority.md",
+        "guard": "molsysviewer/js/tests/e2e/trajectory-plot.e2e.ts",
+        "behavior": "The repaired plot callback emits the normal authority intent; the real browser/Python bridge checks deliberate source and popup clicks, deduplicated public callbacks and physical molecular coordinates. Raw renderer projections remain silent."
+      },
+      "316": {
+        "archive": "archive/failed_factory_retains_owned_view.md",
+        "guard": "tests/test_new_view.py::test_failed_factory_releases_newly_owned_widgets",
+        "behavior": "Owned Views close after failed initialization, preserving the original exception and caller-owned widgets. The causal failure and repeated real load-mode/error controls remain below."
+      },
+      "317": {
+        "archive": "archive/direct_state_rejection_erases_scene.md",
+        "guard": "tests/test_state_rejection.py::test_rejected_state_preserves_live_scene_history_and_resources",
+        "behavior": "State candidates validate before publication. The guard checks rejected direct/file and clear/merge paths against the existing scene, history, handles, molecular data and independent resources."
+      },
+      "318": {
+        "archive": "archive/view_close_failure_blocks_cleanup.md",
+        "guard": "tests/test_view_close_failure.py",
+        "behavior": "Independent resources retire despite provider errors; errors remain observable and retries preserve only failed cleanup actions. Reentrant/interrupted close and ownership controls remain below."
+      },
+      "322": {
+        "archive": "archive/trajectory_plot_pixel_dimensions.md",
+        "guard": "tests/test_trajectory_plot.py",
+        "behavior": "Caller-specific digestion preserves positive integer pixels while rejecting invalid values before retained cards change. The public fixture still requests width 650, and CSS/physical-width domains retain their own tests."
+      },
+      "323": {
+        "archive": "archive/empty_whole_summary_queries_none.md",
+        "guard": "tests/test_empty_whole_summary.py",
+        "behavior": "Empty and shape-only Views retain eight zero counts without querying a nonexistent molecular system. Loaded-system and independent geometry controls remain; prior native Qt observations keep their separately recorded scope."
+      },
+      "324": {
+        "archive": "archive/standalone_html_retains_owned_view.md",
+        "guard": "tests/test_standalone_view_ownership.py",
+        "behavior": "HTML builders close internally owned Views on return or error and preserve borrowed Views. Windows guards compare native exceptions rather than assuming a Unix exception subtype; actual Windows JUnit now receives those corrected controls."
+      }
+    },
+    "scope": "Previously delivered causal fixes, now received by all three source Python hosts and applicable complete core entry. Not final artifact, installed, experimental native Qt, postponed human or publication acceptance.",
+    "original_counters": {
+      "source_delivered": 40,
+      "total": 46,
+      "final_accepted": 1
+    },
+    "separate_observations": [
+      321,
+      325,
+      354,
+      305
+    ],
+    "record_checks": {
+      "profile": "source-closeout-records-938",
+      "passed": 434,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "ruff": "passed",
+      "index_and_diff": "passed",
+      "selected_inputs_unchanged": 9983,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 1,
+        "ram_gib": 1
+      },
+      "custody": {
+        "state": "preserved_and_hash_verified",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/source-closeout-20261116",
+        "files": 25,
+        "bytes": 4274902,
+        "manifest_sha256": "9e470c53891e0ff7080e336b24daf362f9c8bdf23ec588fd9e2e7ff1de2d3d66",
+        "originals_retained": true
+      }
+    }
+  },
+  "current_prolonged_authority_diagnostic_937": {
+    "date": "2026-11-16",
+    "status": "resource_interrupted_not_credited",
+    "source_base": "054569e44d683f1ad87f4d3e9d25c39f69bd0676",
+    "scientific_source": "bc5a9297a762d451742734f9e11c7f54c6a832a0",
+    "isolated_kernel": "7.4.0 original bytes selected in generated kernelspec; pre-save stage not reached, so loaded-kernel observation not established by this attempt",
+    "seconds": 43.84701426606625,
+    "peak_owned_rss_mib": 2917.7,
+    "selected_inputs": 9983,
+    "inputs_unchanged": true,
+    "cleanup": {
+      "tracked": 26,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": "Shared resource margin requires releasing this execution",
+    "trigger_global_swap_out_bytes": 89731072,
+    "global_available_gib_at_stop": 14.16,
+    "native_exit": 0,
+    "limits": {
+      "logical_cpus": 8,
+      "ram_gib": 4,
+      "owned_swap_gib": 0,
+      "global_reserve_gib": 6.5
+    },
+    "scope": "Original owner browser and Python pre-save assertion; added bounded public frame callbacks and isolated provider. No pre-save receipt or JUnit result; native supervisor-child exit 0 is not a test pass. Do not relaunch under active shared swap pressure.",
+    "custody": {
+      "state": "preserved_and_hash_verified",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/source-closeout-20261116",
+      "files": 25,
+      "bytes": 4274902,
+      "manifest_sha256": "9e470c53891e0ff7080e336b24daf362f9c8bdf23ec588fd9e2e7ff1de2d3d66",
+      "originals_retained": true
+    }
   }
 }

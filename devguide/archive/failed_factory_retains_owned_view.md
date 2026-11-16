@@ -1,9 +1,9 @@
 ---
 summary: Failed new_view initialization retains its unreturned View and widgets.
 issue: uibcdf/molsysviewer#316
-status: partial
+status: resolved
 opened: 2026-11-06
-closed:
+closed: 2026-11-16
 severity: medium
 verification: reproduced
 area: [factory, lifecycle]
@@ -14,6 +14,30 @@ supersedes: []
 ---
 
 # Failed factory initialization retains owned resources
+
+## Source resolution — consolidated receiving, 2026-11-16
+
+Owned Views close after failed initialization, preserving the original exception and caller-owned widgets. The causal failure and repeated real load-mode/error controls remain below.
+
+The complete source checkpoint
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+receives MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and
+MolSysMT `bc5a9297a762d451742734f9e11c7f54c6a832a0`. The durable guard
+is `tests/test_new_view.py::test_failed_factory_releases_newly_owned_widgets`.
+Its containing module passes **19 cases on each of Linux, macOS arm64
+and Windows**, without failures, errors or skips. The [closing receipt](../molstar_closeout_three_blocks_20261115.json)
+checks original JUnit ZIP digests and native selected cases; the complete
+checkpoint also receives all 25 notebooks.
+
+This supplies the formerly pending consolidated **source** prerequisite.
+Earlier causal runs, interrupted/failed receiving and dated pending claims
+remain below with their original inputs. Installed artifacts, final producers,
+experimental native Qt and postponed human acceptance retain their own owners
+and gates under #315/#372; this closure does not declare them passed or
+advance the original 40/46 source or 1/46 final-acceptance counters.
+
+## Earlier investigation — original claims and scopes retained
+
 
 **A4 — delivered in `611c1574`; hosted receiving/closure pending; P2.** Viewer
 owns #316 under #315, for the covering artifact and accepted 1.0 scope. The next

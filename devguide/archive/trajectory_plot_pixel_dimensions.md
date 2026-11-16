@@ -1,9 +1,9 @@
 ---
 summary: Trajectory plot pixel dimensions are digested as CSS and fail in the public API.
 issue: uibcdf/molsysviewer#322
-status: partial
+status: resolved
 opened: 2026-11-07
-closed:
+closed: 2026-11-16
 severity: medium
 verification: reproduced
 area: [public-api, trajectory-plot, argdigest]
@@ -14,6 +14,30 @@ supersedes: []
 ---
 
 # Pixel dimensions of trajectory plot cards
+
+## Source resolution — consolidated receiving, 2026-11-16
+
+Caller-specific digestion preserves positive integer pixels while rejecting invalid values before retained cards change. The public fixture still requests width 650, and CSS/physical-width domains retain their own tests.
+
+The complete source checkpoint
+[43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+receives MolSysViewer `3aff1d48a5a38fb9854efe2c95a9a8f35cadbccb` and
+MolSysMT `bc5a9297a762d451742734f9e11c7f54c6a832a0`. The durable guard
+is `tests/test_trajectory_plot.py`.
+Its containing module passes **34 cases on each of Linux, macOS arm64
+and Windows**, without failures, errors or skips. The same complete browser entry also receives the public pixel dimensions. The [closing receipt](../molstar_closeout_three_blocks_20261115.json)
+checks original JUnit ZIP digests and native selected cases; the complete
+checkpoint also receives all 25 notebooks.
+
+This supplies the formerly pending consolidated **source** prerequisite.
+Earlier causal runs, interrupted/failed receiving and dated pending claims
+remain below with their original inputs. Installed artifacts, final producers,
+experimental native Qt and postponed human acceptance retain their own owners
+and gates under #315/#372; this closure does not declare them passed or
+advance the original 40/46 source or 1/46 final-acceptance counters.
+
+## Earlier investigation — original claims and scopes retained
+
 
 **Corrected, locally verified and delivered in `ebe3d46b`; consolidated
 acceptance pending.** The #321 precision
