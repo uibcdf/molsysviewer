@@ -224,12 +224,13 @@ jobs:
         run: |
           set -euo pipefail
           # The owner Jupyter receiver imports its checkout directly. Prepare
-          # that same source's native backend before auditing or consuming it.
+          # that same source's native backend before the ordinary installation.
+          # The final distribution must remain non-editable: the installed Rust
+          # validator and normal consumers retain their canonical origin checks.
           if [[ "$RECEIVING_SCOPE" == diagnostics ]]; then
             python -m pip install --no-deps --no-build-isolation --editable ./molsysmt-source
-          else
-            python -m pip install --no-deps --no-build-isolation ./molsysmt-source
           fi
+          python -m pip install --no-deps --no-build-isolation ./molsysmt-source
           python -m pip install --no-deps --no-build-isolation ./molsysviewer-source
           python -m pip check
 
@@ -401,6 +402,10 @@ jobs:
         working-directory: molsysviewer-source
         env:
           MOLSYSVIEWER_ROOT: ${{ github.workspace }}/molsysviewer-source
+          OPENMM_CPU_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          RAYON_NUM_THREADS: '1'
         run: |
           # Default pytest executes this one explicit case sequentially; this
           # environment intentionally does not require pytest-xdist.
@@ -426,6 +431,10 @@ jobs:
         working-directory: molsysviewer-source
         env:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
+          OPENMM_CPU_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          RAYON_NUM_THREADS: '1'
         run: python tests/_jupyter_live_capture.py
 
       - name: Preserve safe source-pair receiving diagnostic receipts

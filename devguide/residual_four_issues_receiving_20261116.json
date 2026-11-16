@@ -486,6 +486,50 @@
       "ruff": "passed",
       "diff": "passed",
       "classification": "Affected links rechecked after staging the new issue record; no broad gate repeated. Together with 954 this receives scoped offline checks, not a complete hosted or installed gate."
+    },
+    "four-issues-native-preparation-956": {
+      "native_exit": 0,
+      "seconds": 19.012855533044785,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 213.1,
+      "cleanup": {
+        "tracked": 35,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "c95839b196304ca49931347bd727c6b92acde47537a50bbcdc3a42188fc78d6b",
+      "passed": 112,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "dependency_auditor": "passed",
+      "ruff": "passed",
+      "diff": "passed",
+      "scope": "Affected source installation/audit tests after native-preparation correction; before explicit scientific-thread environment bounds."
+    },
+    "four-issues-thread-bounds-957": {
+      "native_exit": 0,
+      "seconds": 16.58042100025341,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 212.9,
+      "cleanup": {
+        "tracked": 36,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "86c74fad7e4af919259fc8c833d531ed6fe4b4521852b61e912913000875ad36",
+      "passed": 112,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "dependency_auditor": "passed",
+      "ruff": "passed",
+      "diff": "passed",
+      "scope": "Affected source preparation/audit tests with explicit one-thread scientific execution for both actual-Jupyter diagnostic consumers."
     }
   },
   "changes": {
@@ -534,7 +578,19 @@
       ]
     },
     "preparation_issue": "uibcdf/molsysviewer#399",
-    "scope": "Bounded source diagnostics; no installed/candidate/publication qualification."
+    "scope": "Bounded source diagnostics; no installed/candidate/publication qualification.",
+    "successor_43790196548": {
+      "run": 43790196548,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43790196548",
+      "viewer_source": "5f6fc2a5fe3d4466f5a2cd4f608afeaecb23a2f6",
+      "molsysmt_source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
+      "conclusion": "failure",
+      "audit": "passed",
+      "failure": "Unchanged installed Rust validator correctly rejects an editable MolSysMT distribution.",
+      "original_log_sha256": "63414426b48f72dcff3b9afc610fc8ea205b80e9bcb8686f888d55b700c89ec0",
+      "consumers": "Browser build, four browser suites and both Jupyter consumers skipped. New explicit prerequisite fences work; no runtime pass/failure inferred.",
+      "correction": "Prepare same-source in-place extension via editable build, then finish with the ordinary non-editable installation before the unchanged auditor/installed validator. No native validator bypass or owner change."
+    }
   },
   "provider_coordination": {
     "763_766": {
@@ -660,10 +716,10 @@
   },
   "diagnostic_preparation_followup": {
     "issue": "uibcdf/molsysviewer#399",
-    "state": "local_checks_received_hosted_successor_not_yet_dispatched",
+    "state": "initial_editable_then_noneditable_preparation_locally_received_successor_pending",
     "files_sha256": {
-      ".github/workflows/ci-python-314-source-pair.yaml": "2f9eba21a03e572a2ff7c6f58131241d0b8a4749d2ee4bb7aefb69433edfc02f",
-      "tests/test_source_workflow_coverage.py": "21596d6fe767c5989a2837206be97f88cea4c0b47b68cc8230a9c169aeb5dfdd",
+      ".github/workflows/ci-python-314-source-pair.yaml": "96d6ff9c775e90045c7dcf070254557e35da968dc91d8a63c8f3fc635e49e8be",
+      "tests/test_source_workflow_coverage.py": "21d0d5ad98ba2661d7a32d16ba3d89a25a8e2f00b8c49a91e0c34b52eceef4d5",
       "tests/_jupyter_moving_capture.mjs": "9996339b50614a7a87090e82dc36d0b9da582f9824a449a3802accc92a335147",
       "tests/_jupyter_live_capture.py": "9c67c2049ef939607cfaaec0564824450a1ecb7221a72d40525d38fc6ac9dc57",
       "tests/test_jupyter_live_capture.py": "189db5b58ecdeff3053484da8b0da12fda727798271c18f329cf7bc84972149b"
@@ -681,6 +737,14 @@
     "files": 2713,
     "bytes": 222627225,
     "manifest_sha256": "b28bfe6fcc805c2990a1d0cbaeef26f8706a64ed327f5231984974cb4f2af6f7",
+    "copied_files_verified": true,
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia"
+  },
+  "private_custody_followup": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/residual-four-followup-20261116",
+    "files": 1866,
+    "manifest_sha256": "44a8f6e55c5386b11df4ce2eca5aa85dda1ac5fd0eb2fa4fc87349a7e3e5fd59",
     "copied_files_verified": true,
     "originals_retained": true,
     "custodian": "Diego Prada Gracia"

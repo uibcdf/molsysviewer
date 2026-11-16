@@ -22,6 +22,17 @@ consumer also passes `-n0` without pytest-xdist: usage exit 4 executes no
 cases. The editable source installation now belongs before the audit, and
 the one explicit case uses pytest's default sequential execution.
 
+Successor `43790196548`, at `5f6fc2a5`, passes that audit but fails the
+unchanged installed Rust validator: `installed MolSysMT distribution is
+editable`. No browser/Jupyter consumer starts, which receives the new
+prerequisite fence. The source receiver needs an in-place native extension;
+ordinary consumers still require a non-editable installed distribution.
+Prepare the former through the same source's editable build, then finish the
+initial installation with the ordinary non-editable package before auditing.
+Keep the existing installed validator, export manifest, native smoke and
+prefix checks unchanged. This is source-build diagnostic preparation, not a
+Conda artifact or installed-pair qualification.
+
 The browser build and four focused suites were skipped. A later
 `!cancelled()` actual-Jupyter consumer nevertheless ran: six stopped
 capture/restore cases, including all four Studio cases, completed before a

@@ -68,3 +68,15 @@ click/locus injection, alternate point, timeout increase or marker weakening
 is added. Its actual receiving is pending in the bounded hosted checkpoint;
 the exact original cause remains unproved. See the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json).
+
+
+## Hosted preparation outcomes — 2026-11-16
+
+First diagnostic `43786553755` fails workflow preparation; the focused browser
+suites do not run and the prolonged pytest command executes zero cases.
+Successor `43790196548` passes the audit but the unchanged installed Rust
+validator rejects its editable distribution; the new prerequisite fence
+correctly skips all browser/Jupyter consumers. Neither receives this issue.
+[#399](focused_source_diagnostic_preparation.md) owns those corrections; the
+[four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
+both failures and the next bounded dispatch independently of product evidence.

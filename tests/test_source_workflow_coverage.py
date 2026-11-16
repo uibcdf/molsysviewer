@@ -66,6 +66,14 @@ def test_focused_diagnostics_keep_real_prolonged_receiving_and_native_source_pre
         step for step in steps if step.get("name") == "Audit dependency routes and the installed exact source provider"
     )
     assert "--editable ./molsysmt-source" in install["run"]
+    editable = "python -m pip install --no-deps --no-build-isolation --editable ./molsysmt-source"
+    ordinary = "python -m pip install --no-deps --no-build-isolation ./molsysmt-source"
+    assert install["run"].index(editable) < install["run"].index(ordinary)
+    assert f"fi\n{ordinary}" in install["run"], "every scope must finish with the canonical non-editable distribution"
+    native = next(step for step in steps if step.get("name") == "Check installed Rust and viewer resources")
+    assert steps.index(audit) < steps.index(native) < steps.index(owner)
+    assert "validate_installed_rust_extension.py" in native["run"]
+    assert "if" not in native and "continue-on-error" not in native
     assert steps.index(install) < steps.index(audit) < steps.index(owner)
     for name in ("Receive one prolonged Jupyter source cycle", "Receive live Jupyter diagnostics"):
         consumer = next(step for step in steps if step.get("name") == name)
@@ -76,6 +84,8 @@ def test_focused_diagnostics_keep_real_prolonged_receiving_and_native_source_pre
         # Successful prerequisites allow independent diagnosis after an unrelated
         # browser assertion fails; a skipped build must never start Jupyter.
         assert "!cancelled()" in consumer["if"]
+        for variable in ("OPENMM_CPU_THREADS", "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "RAYON_NUM_THREADS"):
+            assert consumer["env"][variable] == "1"
     assert "pip install" not in owner["run"], "a consumer must not change the dependency closure after its audit"
     assert "jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls" in owner["run"]
     assert "--receptor=ci" in owner["run"] and "--junitxml=prolonged-source.xml" in owner["run"]

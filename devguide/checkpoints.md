@@ -959,7 +959,10 @@ Jupyter consumer runs after its harness build was skipped. Its six stopped
 roundtrips pass before an unclassified error; the retained final Studio phase
 is stale. [#399](pending_bugs/focused_source_diagnostic_preparation.md) corrects
 prerequisites and preserves safe actionable preparation diagnostics before
-another dispatch. No focused browser or prolonged-cycle pass is inferred.
+another dispatch. Successor `43790196548` passes the audit, then the unchanged
+installed Rust validator rejects its editable distribution. Prepare the source
+extension first and finish with a non-editable installation before the audit;
+retain the native validator. No focused browser or prolonged-cycle pass is inferred.
 MolSysMT publishes #763/#766 in `b8c798474`: 114 independent scientific source
 guards pass, then two public complete-file Viewer loads preserve all 53,592
 3WU2 and 98,986 5XNL atoms, identities, coordinates and canonical bonds.
