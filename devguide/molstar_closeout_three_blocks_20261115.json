@@ -2585,7 +2585,25 @@
     }
   },
   "residual_four_followup": "residual_four_issues_receiving_20261116.json",
-  "residual_four_latest_checkpoint": {
+  "current_residual_ownership": {
+    "source_closed": [
+      305,
+      325,
+      321,
+      344,
+      399
+    ],
+    "active": [
+      400,
+      354
+    ],
+    "preparation_tracking": "399 source correction includes the covering workflow inventory/rerun follow-up; replacement hosted receiving remains pending",
+    "source_delivery_counter": "41/46",
+    "final_acceptance_counter": "1/46",
+    "receipt": "devguide/residual_four_issues_receiving_20261116.json",
+    "limit": "No new original leaf, no overall green CI, no final candidate/installed/human acceptance or publication."
+  },
+  "residual_four_scoped_checkpoint_43796373853": {
     "record": "residual_four_issues_receiving_20261116.json",
     "run": 43796373853,
     "overall": "failure",
@@ -2599,22 +2617,14 @@
     ],
     "scope": "Three complete browser entries and one owner source cycle pass; plot startup and independent default moving session capture fail. No final/installed acceptance."
   },
-  "current_residual_ownership": {
-    "source_closed": [
-      305,
-      325,
-      321,
-      344,
-      399
-    ],
-    "active": [
-      400,
-      354
-    ],
-    "preparation_tracking": "399 source-resolved",
-    "source_delivery_counter": "41/46",
-    "final_acceptance_counter": "1/46",
-    "receipt": "devguide/residual_four_issues_receiving_20261116.json",
-    "limit": "No new original leaf, no overall green CI, no final candidate/installed/human acceptance or publication."
+  "residual_four_latest_checkpoint": {
+    "record": "residual_four_issues_receiving_20261116.json",
+    "run": 43816742412,
+    "source": "b84615763867b6f3833c54a516615599503af51f",
+    "overall": "failure",
+    "failure_scope": "one identical whole-workflow pytest inventory assertion per Python3.14 host; browser and notebooks not reached",
+    "local_correction": "fifth hosted command now counted and receives executable rerun override; seven affected cases pass",
+    "current_prolonged_receiving": "30 complete owner cycles in one actual isolated7.4.0 kernel; original pre-save assertion and all native lifetime/molecular checks pass; historical cause unknown",
+    "limit": "Source composition only; no new original leaf, installed/final/human acceptance or publication."
   }
 }

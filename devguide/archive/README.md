@@ -597,3 +597,4 @@ Completed work, kept for the reasoning:
 
 - [Actual-Jupyter Movie export field](jupyter_movie_export_field_label.md) — #383 aligns the exact field selector and receives all eight actual-host authoring/export/session/cancellation cases.
 - [Additional Movie Studio export-field owner](movie_export_field_additional_owner.md) — #383 also aligns the native receiver, guards both owners and passes the complete Studio scenario with AV1 export/browser playback.
+- [Whole-workflow pytest inventory](source_workflow_pytest_inventory.md) — #399 includes the fifth hosted command and its executable rerun override while retaining all per-command guards.

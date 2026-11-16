@@ -434,7 +434,7 @@ jobs:
           # Default pytest executes this one explicit case sequentially; this
           # environment intentionally does not require pytest-xdist.
           export MOLSYSVIEWER_NODE="$(command -v node)"
-          python -m pytest --receptor=ci -c pyproject.toml --confcutdir=../molsysmt-source/tests/molsysviewer_molsysmt ../molsysmt-source/tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls --basetemp=.pytest_cache/prolonged-source --junitxml=prolonged-source.xml
+          python -m pytest -o "receptor_rerun_command=python -m pytest" --receptor=ci -c pyproject.toml --confcutdir=../molsysmt-source/tests/molsysviewer_molsysmt ../molsysmt-source/tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls --basetemp=.pytest_cache/prolonged-source --junitxml=prolonged-source.xml
 
       - name: Preserve bounded prolonged source receiving
         if: always() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'

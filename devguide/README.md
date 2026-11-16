@@ -114,7 +114,7 @@ Movie pytest in `916`, including ten edit/seeks. Recipes require >=7.4.0;
 [MolSysSuite #200](https://github.com/uibcdf/molsyssuite/issues/200) owns the
 unchanged legacy-prefix transition. Exact installed pair and
 postponed human exits remain distinct and open.
-The [single current full source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+The [earlier complete source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 receives `3aff1d48` / published MT `bc5a9297` on three Python 3.14 hosts,
 now successful on all hosts, with all 63 Linux core entries and 25 notebooks.
 Previous `43743095366` fails one stale environment-test expectation per host
@@ -153,6 +153,16 @@ passes 114 scientific controls and both complete public Viewer loads,
 preserving 53,592/98,986 atoms and their identities, coordinates and bonds.
 Large-system rendering and installed/candidate qualification remain separate;
 this is distinct from first-canvas startup.
+The [current four-issue follow-up](residual_four_issues_receiving_20261116.json)
+source-closes #305/#321/#325 and receives #344's primary capture correction.
+Actual current #354 receiving now passes thirty complete cycles in one kernel,
+with independently observed Python authority before every save; its original
+cause remains unknown and the issue stays partial. #400 owns independent HTML
+startup. Covering `43816742412` fails one shared pytest-workflow contract on
+all three hosts. #399's fifth-command inventory and executable rerun override
+are corrected locally; all 518 scoped checks pass, with replacement covering
+receiving still required. Original source delivery stays 41/46 and final
+acceptance 1/46; package/publication and postponed human exits remain separate.
 The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
 the complete native authoring/export entry and all 491 JS cases. Full M2

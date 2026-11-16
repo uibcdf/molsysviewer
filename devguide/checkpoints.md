@@ -982,7 +982,23 @@ checkpoint pins that receiver and independently receives all four browser
 owners; it is prepared, not passed. Original counters/publication stay unchanged.
 The dated receiving entries below retain their original inputs and outcomes.
 
-**Current residual checkpoint — 2026-11-16:** `43796373853` on `e3fefadc`
+**Current residual closeout — 2026-11-16:** source `b8461576` closes
+#305/#321/#325 and the received primary-capture race under #344. The original
+counter stays 41/46 delivered and 1/46 finally accepted. Current owner `4b0b1f8a`
+now passes thirty complete cycles in one kernel, with observed Python
+`4999 -> 0 -> 1` before each save, both popups, independent recovery, active
+playback and native retirement; #354 retains its unknown historical cause.
+The source composition uses isolated actual ipykernel 7.4.0; the unchanged
+legacy launcher metadata is not an environment upgrade. Original plain-Jupyter
+debugger-baseline page errors remain explicitly recorded. #400 owns the
+separate multi-canvas HTML startup. Covering source run `43816742412` fails
+one identical whole-workflow pytest inventory check per host. #399's missing
+fifth-command inventory/rerun override is corrected; all 518 scoped checks
+pass. Receive one replacement covering checkpoint.
+See the [exact receiving and custody record](residual_four_issues_receiving_20261116.json).
+No candidate, installed, human or publication acceptance is inferred.
+
+**Earlier residual checkpoint — 2026-11-16:** `43796373853` on `e3fefadc`
 and published MT `4b0b1f8a` is a failed overall diagnostic, with complete
 context-menu, controls and scientific-mirror entries successful. Their causal
 corrections source-close #305/#325; C4 advances the original source counter

@@ -1202,7 +1202,7 @@
     "325": "Native pending-read class corrected under389 and received on actual updated annotation/endpoint markers. Old tag natural caller correspondence inspected; original exact event order unknown.",
     "321": "Numerical correction and 15 independent Decimal controls received in complete source 43748320908 and unchanged full local entry960. Atomic current-SVG/retired-SVG receiving passes. Distinct native HTML startup remains active as #400; no overall/candidate pass or original-count gain.",
     "344": "Primary ready-frame/native-draw race class corrected using the existing clock; independent scientific queue remains runnable. Full local default/delayed Jupyter, hidden/Movie, native geometry and lifecycle guards pass. Prior exact event orders remain unproved.",
-    "399": "Preparation/provenance and safe actual failure diagnostics received; prior whole hosted failure remains preserved, residual HTML/history scopes stay distinct."
+    "399": "Original preparation/provenance/safe failure diagnostics remain received. Covering43816742412 exposes the fifth pytest command inventory and absent explicit executable rerun override; both corrected after the frozen thirty-cycle pass. Seven affected cases pass and are included in final518 passing workflow/protocol/archive/reference checks. Original failures and negative variants remain preserved; replacement hosted qualification stays separate."
   },
   "private_hosted_terminal_custody": {
     "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/four-issues-hosted-terminal-20261116",
@@ -1658,5 +1658,306 @@
     344,
     399,
     400
-  ]
+  ],
+  "post_capture_covering_followup": {
+    "source_commit": "b84615763867b6f3833c54a516615599503af51f",
+    "scientific_provider_commit": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "scope": "Automated source composition, actual isolated 7.4.0 kernel, real anywidget/Mol*/Chromium SwiftShader, retained support. Not a shared-prefix upgrade, clean installed pair, native Qt, human or final-candidate acceptance.",
+    "resource_policy": {
+      "execution_route": "Direct session-authorized execution; no Slurm command observed. Bounded systemd user scope, not a resource reservation.",
+      "operator_authority": "Session policy and accepted maximum of 8 logical CPU / 6 GiB; actual receiving uses 4 CPU / 4 GiB, MemorySwapMax=0, TasksMax=256, global available reserve 6.5 GiB and pressure/swap stop conditions.",
+      "loaded_member_policy": {
+        "owner": "uibcdf/molsyssuite",
+        "path": "devguide/resource_aware_execution.md",
+        "content_sha256": "185ab7b08583e4342dcb8f3450e03c01e41c9f36bb93cb2040372945add23939",
+        "owner_head_observed": "15bfab9b1847bad8adc8aaed2c2dc2d185ca9ae4",
+        "matches_observed_committed_blob": true
+      },
+      "estimate": "Representative whole-family one-cycle receiving986 completed in 99.77s with 2940 MiB summed process RSS. The 30-cycle receiver reuses one kernel and receives explicit per-cycle object retirement; duration bounded by the original 2400s browser allowance and resource supervisor. No reservation or universal memory bound inferred.",
+      "preserves_others": true
+    },
+    "single_cycle_986": {
+      "seconds": 99.76974257035181,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2940.0,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "native_exit": 0,
+      "cycles": 1,
+      "same_kernel": true,
+      "browser_seconds": 91.737,
+      "active_seconds_min": 10.627300000190735,
+      "distinct_native_frames_min": 7,
+      "pre_save_authority_sequence": [
+        4999,
+        0,
+        1
+      ],
+      "pre_save_index_one_in_every_cycle": true,
+      "result_sha256": "7ab8c9aff31fdc659322f90ccaabbdd4ab7f0d2dbb99a473e4d63e36a47690ed",
+      "baseline_page_errors": {
+        "classification": "plain_jupyter_debugger_session_baseline",
+        "plain_control_observations": 1,
+        "molecular_campaign_observations": 8,
+        "exact_owner_fingerprint_match": true,
+        "zero_page_error_claim": false
+      }
+    },
+    "thirty_cycles_987": {
+      "seconds": 2051.5941971889697,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3581.5,
+      "cleanup": {
+        "tracked": 27,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "native_exit": 0,
+      "cycles": 30,
+      "same_kernel": true,
+      "browser_seconds": 2039.586,
+      "active_seconds_min": 10.071800000190734,
+      "distinct_native_frames_min": 6,
+      "pre_save_authority_sequence": [
+        4999,
+        0,
+        1
+      ],
+      "pre_save_index_one_in_every_cycle": true,
+      "result_sha256": "cd1e62128b67dfcffd7a8a8a5c3e214d99b5514ba8896219f14768a81e4b7ac6",
+      "baseline_page_errors": {
+        "classification": "plain_jupyter_debugger_session_baseline",
+        "plain_control_observations": 1,
+        "molecular_campaign_observations": 182,
+        "exact_owner_fingerprint_match": true,
+        "zero_page_error_claim": false
+      }
+    },
+    "instrumentation": "Original owner browser/predicates/assertions and deadlines. Only isolated kernel selection, bounded public weak callbacks and pre-assert authority observation; no waiting for authority, seek repair, retry, held communication or timing delegate.",
+    "kernel_provenance": {
+      "launcher_metadata": "ipykernel 7.3.0 in the legacy prefix",
+      "actual_kernel": "original isolated ipykernel 7.4.0, independently verified in every pre-save trace",
+      "node_version": "22.23.4",
+      "physical_node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+    },
+    "driver_sha256": {
+      "test_prolonged_current_4b0_authority_20261116.py": "a4dad4237637693546fbb62dd438a55d038dfb51a3dfa615b60d7471be023686",
+      "test_prolonged_30_current_4b0_authority_20261116.py": "3309c76efa8c3e666da26d9e7d0b455bb6956b8803c06451ba54f5551bfef938",
+      "prolonged_current_4b0_740_node_20261116.py": "c8539b197430068f4ae6decfcfd0cdbeba7469a03164da2f19fbf94e9a675c49"
+    },
+    "historical_354_disposition": "Current thirty-cycle non-recurrence received; original pre-save zero cause remains unknown. Keep issue partial. No reconstruction or production repair claim.",
+    "covering_source_checkpoint": {
+      "run": 43816742412,
+      "conclusion": "failure",
+      "source_receiving": true,
+      "platforms": [
+        "ubuntu-latest",
+        "macos-15",
+        "windows-2025"
+      ],
+      "python": "3.14",
+      "issue": 399,
+      "failure_class": "whole_workflow_pytest_command_inventory_and_rerun_override",
+      "failed_test": "tests/test_python_ecosystem_contract.py::test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]",
+      "failed_steps": [
+        "Run MolSysViewer Python tests"
+      ],
+      "browser_and_notebook_scopes": "not reached",
+      "artifacts": [
+        {
+          "id": 14203805606,
+          "name": "movie-encoder-native-Windows",
+          "bytes": 14805,
+          "sha256": "74177bdfc8c1f23fbc64edba3600d21d6dbdb358864b4af069f3a71ec33ad6ea",
+          "github_digest_matches": true,
+          "junit": []
+        },
+        {
+          "id": 14203711065,
+          "name": "source-receiving-Windows-py3.14",
+          "bytes": 84605,
+          "sha256": "d0d19104e3ff9a2cbe276d0af199bd835526513f59818a945a8b4d4e01013db3",
+          "github_digest_matches": true,
+          "junit": [
+            {
+              "member": "source-receiving.xml",
+              "totals": {
+                "tests": 4781,
+                "failures": 1,
+                "errors": 0,
+                "skipped": 69
+              },
+              "failing_cases": [
+                {
+                  "class": "tests.test_python_ecosystem_contract",
+                  "name": "test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 14203701159,
+          "name": "movie-encoder-native-Linux",
+          "bytes": 14696,
+          "sha256": "3f42b996ef4d511c64b3e86dec2b00b3fc7c18209705be31d4856a4d8157ff61",
+          "github_digest_matches": true,
+          "junit": []
+        },
+        {
+          "id": 14203691074,
+          "name": "source-receiving-Linux-py3.14",
+          "bytes": 83285,
+          "sha256": "77b76b2df60ff43fcbfb5d899fa28212d2e13fca8289a6801c395c54b5196fcb",
+          "github_digest_matches": true,
+          "junit": [
+            {
+              "member": "source-receiving.xml",
+              "totals": {
+                "tests": 4781,
+                "failures": 1,
+                "errors": 0,
+                "skipped": 42
+              },
+              "failing_cases": [
+                {
+                  "class": "tests.test_python_ecosystem_contract",
+                  "name": "test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 14203686297,
+          "name": "source-receiving-macOS-py3.14",
+          "bytes": 86516,
+          "sha256": "a5e41d6ef0027bb1bf82f9180184d5b282134d52e4b7283dc0804e0ed047af08",
+          "github_digest_matches": true,
+          "junit": [
+            {
+              "member": "source-receiving.xml",
+              "totals": {
+                "tests": 4781,
+                "failures": 1,
+                "errors": 0,
+                "skipped": 73
+              },
+              "failing_cases": [
+                {
+                  "class": "tests.test_python_ecosystem_contract",
+                  "name": "test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun[ci-python-314-source-pair.yaml]"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 14203416983,
+          "name": "movie-encoder-native-macOS",
+          "bytes": 14717,
+          "sha256": "d7fda3ada907c8a2dcd3842cda19827838f5f7ada6f9d4855855935bbe7d9830",
+          "github_digest_matches": true,
+          "junit": []
+        }
+      ],
+      "replacement_dispatch": "pending reviewed corrected commit"
+    },
+    "workflow_guard_counterfactual": {
+      "scope": "Private real offline guard invocation on retained YAML/source variants. No product, scientific path, live receiver or repository input changed; not pytest-suite or candidate qualification.",
+      "earlier_driver_attempt": "The retained initial probe reached the expected ValueError but used an incorrect exact-message assertion for Python 3.14. No product failure or full positive was established there.",
+      "observations": [
+        {
+          "variant": "original",
+          "outcome": "expected_negative",
+          "exception_class": "AssertionError",
+          "test_sha256": "698286257fcb543293fe40827e383e97c776666b549354944712d3d5c2133e10",
+          "workflow_sha256": "490a4bb72eef543d7d6ddda56dfb2b7c9c1aae92883db1128c3bc6df7ffec0fb"
+        },
+        {
+          "variant": "inventory_only",
+          "outcome": "expected_negative",
+          "exception_class": "ValueError",
+          "test_sha256": "a9b17c40bd7937d05f2a61db038c910eeae90eb1ff58d52bc6d24f56b76a45c0",
+          "workflow_sha256": "490a4bb72eef543d7d6ddda56dfb2b7c9c1aae92883db1128c3bc6df7ffec0fb"
+        },
+        {
+          "variant": "both_corrections",
+          "outcome": "all_three_workflow_contracts_pass",
+          "test_sha256": "a9b17c40bd7937d05f2a61db038c910eeae90eb1ff58d52bc6d24f56b76a45c0",
+          "workflow_sha256": "edd2aeb66f85f50e667d81cda9d023f218eab244f82fb469cdecba73519633bb"
+        }
+      ]
+    },
+    "workflow_correction": "Count the fifth actual hosted pytest command and give that command the same executable rerun override; preserve every existing command assertion.",
+    "affected_module_988": {
+      "passed": 7,
+      "native_exit": 0,
+      "seconds": 7.5420124009251595,
+      "junit_sha256": "4afb74869c5a5331725c425f53b9ff8c5e8618d2329255c29b62801a3117ee2d"
+    },
+    "private_custody": {
+      "custodian": "Diego Prada Gracia",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/post-capture-covering-20261116",
+      "files": 153,
+      "bytes": 12958518,
+      "manifest_sha256": "1bb6a6c518f71e5e064e85523a67095691ad7856751f46970ee88b5c6c59f985",
+      "hashes_verified": true,
+      "originals_retained": true,
+      "permissions": {
+        "directories": "0700",
+        "files": "0600"
+      }
+    },
+    "original_plan_count_delta": 0,
+    "publication": "paused; no candidate coordinate, tags, packages or public promotion assigned",
+    "record_validation_989": {
+      "native_exit": 1,
+      "passed": 517,
+      "failed": 1,
+      "cause": "Clean-checkout link guard sees the newly indexed archive record as untracked; stage the new record before repeating the scoped record checks. No missing physical file or weakened guard."
+    },
+    "final_workflow_record_validation_990": {
+      "passed": 518,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "native_exit": 0,
+      "seconds": 7.733125022612512,
+      "selected_inputs": 9996,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "limit": "1 logical CPU / 1 GiB, no swap; seven affected cases are included, not additional disjoint passes",
+      "junit_sha256": "d6f29a53525d8fcf29246a112892f43a8ab3a7b4aaf6ca2db851ea690e2141b3",
+      "private_custody": {
+        "custodian": "Diego Prada Gracia",
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/workflow-rerun-guards-20261116",
+        "files": 18,
+        "bytes": 12402238,
+        "manifest_sha256": "31cc840e14357bf0442919b6d7ac90bb424c3b95eacac5ce4599de785a5f2a7b",
+        "hashes_verified": true,
+        "originals_retained": true,
+        "permissions": {
+          "directories": "0700",
+          "files": "0600"
+        }
+      }
+    },
+    "source_files_sha256": {
+      ".github/workflows/ci-python-314-source-pair.yaml": "edd2aeb66f85f50e667d81cda9d023f218eab244f82fb469cdecba73519633bb",
+      "tests/test_python_ecosystem_contract.py": "a9b17c40bd7937d05f2a61db038c910eeae90eb1ff58d52bc6d24f56b76a45c0"
+    }
+  }
 }

@@ -189,3 +189,38 @@ Python session capture in the other Jupyter entry. Those do not erase or extend
 this one-cycle receiving. The old cycle-nine ordering, full current thirty-cycle
 qualification and candidate/installed/human exits remain separate; do not mark
 the historical cause repaired merely because this case now passes.
+
+## Current thirty-cycle authority receiving — 2026-11-16
+
+Local `986` receives one original owner cycle on published MolSysMT `4b0b1f8a`
+and MolSysViewer `b8461576`, followed by `987`'s **30/30 complete cycles in one
+unchanged kernel**. The original browser, phase predicates, Python pre-save
+assertion and 2,400-second browser allowance remain intact. A private wrapper
+selects original ipykernel 7.4.0 and adds bounded weak public-frame callbacks
+and an observation immediately before that assertion; it does not wait for
+Python authority, repair-seek, retry, hold communication or change deadlines.
+Every cycle records Python `4999 -> 0 -> 1`, with index 1 before saving. Both
+popups, independent session recovery and the witness remain correct; each
+cycle receives at least ten seconds of actual playback and six distinct
+frames. Every created/recovered native object retires under the owner's
+existing lifetime assertions.
+
+The complete browser campaign takes 2,039.586 seconds; pytest passes its one
+case in 2,049.06 seconds. The 4-CPU/4-GiB, zero-swap scope has no resource stop,
+keeps all 9,997 selected inputs unchanged and retires all 27 owned processes.
+Summed process RSS peaks at 3,581.5 MiB; this is not a universal memory bound.
+Node 22.23.4 and its physical binary hash are recorded. The launcher metadata
+still describes ipykernel 7.3.0 in the legacy prefix; each actual kernel trace
+proves the isolated 7.4.0 import. This is source-composition receiving, not a
+shared-prefix upgrade or clean installed qualification.
+
+The owner retains 182 page-error observations with exactly the same message
+and first stack frame as its independent plain-Jupyter debugger baseline.
+Its existing exact-fingerprint assertion passes; do not call this zero-error
+browser receiving. Original observations and traces are preserved privately
+in the [consolidated receipt](../residual_four_issues_receiving_20261116.json).
+
+This establishes current prolonged non-recurrence beyond the original ninth
+cycle, not its lost packet order or a demonstrated production repair. Keep
+#354 partial and the historical cause unknown; final-candidate, installed,
+native Qt and postponed human acceptance remain distinct.

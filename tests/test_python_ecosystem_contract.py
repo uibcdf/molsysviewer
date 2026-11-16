@@ -59,7 +59,7 @@ def test_every_hosted_pytest_command_selects_ci_and_an_executable_rerun(filename
                 step for step in job["steps"] if step.get("name") == "Record published pytest tool versions"
             )
             assert f"assert version('pytest-receptor') == '{RECEPTOR_VERSION}'" in version_step["run"]
-    expected_counts = {"CI.yaml": 1, "CI_qt_experimental.yaml": 3, "ci-python-314-source-pair.yaml": 4}
+    expected_counts = {"CI.yaml": 1, "CI_qt_experimental.yaml": 3, "ci-python-314-source-pair.yaml": 5}
     assert len(commands) == expected_counts[filename]
     for tokens in commands:
         assert tokens[tokens.index("pytest") - 2 : tokens.index("pytest")] == ["python", "-m"]

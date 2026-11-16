@@ -1490,6 +1490,20 @@ narrow the diagnosis to the actual Jupyter/widget lifetime. The retaining path
 and the 30-cycle gate remain open. The workload definitions below
 remain the reproduction route, not a compatibility claim for future sources.
 
+**Current E2 follow-up — 2026-11-16:** the original owner browser now passes
+30/30 complete cycles on MolSysViewer `b8461576` / published MolSysMT `4b0b1f8a`
+in one actual isolated ipykernel 7.4.0. Passive callbacks and observations before
+the unchanged save assertion receive Python `4999 -> 0 -> 1` in every cycle.
+Both popups, independent recovery, ten active seconds per cycle and native
+retirement pass with fixed inputs under 4 CPU / 4 GiB. The
+[consolidated receipt](../residual_four_issues_receiving_20261116.json) preserves
+actual origins, plain-Jupyter baseline errors and private custody. This
+receives current prolonged non-recurrence; #354's historical cause and broader
+E2 candidate/installed/human exits remain separate. The original delivered
+counter remains 41/46. Covering `43816742412` fails only a shared workflow
+inventory guard per host; the fifth-command count/rerun override correction
+receives its actual module before a replacement covering checkpoint.
+
 | Measurement | Defined starting workload and existing entrypoint |
 | --- | --- |
 | Atom/structure axes | `devtools/benchmarks/representative_scale_gate.py --case small --structures 100 --repeats 3 --table-row`, plus small/medium/large with one structure: 2,882 / 26,214 / 104,856 atoms |
