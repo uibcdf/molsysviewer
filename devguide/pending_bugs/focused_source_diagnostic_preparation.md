@@ -55,3 +55,29 @@ retains the original terminal failure and exact artifact digest. Offline
 checks and one corrected bounded hosted dispatch are required before closure.
 This does not close #305/#321/#325/#354, qualify an installed pair, or authorize
 tags, packages or publication.
+
+Run `43791283994`, at `84da6b60`, receives the corrected installation/audit,
+unchanged installed Rust validation, 491 JS cases and TypeScript. The complete
+actual-Jupyter entry passes six stopped/restored and eight moving captures,
+with all 18 processes retired. Context-menu passes. Controls receiving opens
+the actual popup menu, then the newly added test waits for an FPS input that
+compact mode intentionally does not render. Observe its real controller's
+applied FPS instead. The following mirror/plot suites are not reached by the
+fail-fast runner; give the four independent diagnostic owners separate failing
+steps while retaining the full default core lane unchanged.
+
+The prolonged owner case separately fails before server/kernel startup on a
+fixed missing `/usr/bin/node`, reported to MolSysMT #767. Its CLI accepts an
+explicit Node choice but the pytest wrapper cannot forward one. That is not
+a recurrence of the historical pre-save frame assertion. Both original ZIPs
+are downloaded and verified against GitHub's digests; the failed overall run
+is retained alongside its successful Jupyter scope.
+
+MolSysMT publishes portable Node receiving in `4b0b1f8a`; independent consumer
+`961` passes 94 controls plus the actual selected Node-22 version probe. Local
+complete controls and scientific mirror now pass in `959`; the plot separately
+passes isolated `960`, retaining the earlier startup failure. The next bounded
+hosted checkpoint pins that published receiver, forwards the chosen Node,
+keeps the unchanged native validator and executes four independent failing
+browser steps. Its safe artifacts add only the owner's version/path record;
+raw notebook/server payloads remain excluded.

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { resolve } from "node:path";
 import type { Page } from "playwright";
 import { PythonFixtureBridge } from "./python-fixture-bridge";
-import { mountCanvasPopupFixture } from "./canvas-popup-fixture";
+import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas-popup-fixture";
 
 async function checkProportionalStudio(canvas: Page) {
     await canvas.waitForFunction(() => {
@@ -118,6 +118,7 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
     page.on("pageerror", error => errors.push(String(error)));
     try {
         releaseFixture = await mountCanvasPopupFixture(page, bridge);
+        await captureCanvasPopupControllers(page, false);
         const signature = (canvas: Page) => canvas.locator(".molsysviewer-controls").evaluate(element => {
             const style = getComputedStyle(element);
             return {
@@ -293,7 +294,12 @@ export async function checkNotebookCanvasPopup(page: Page, dir: string) {
         // the rendered molecular structure has not changed. Use the real
         // Python player and receive its projected FPS before reading the menu.
         await page.evaluate(() => (window as any).__popupWidgetModel.send({ mirror_fixture: "fps", fps: 17 }));
-        await popup.waitForFunction(() => document.querySelector<HTMLInputElement>('input[title="FPS"]')?.value === "17");
+        // Compact intentionally has no FPS editor. Read the real popup's
+        // applied projection, without changing its mode or synthetic input.
+        await popup.waitForFunction(() => {
+            const state = (window as any).__mirrorController?.trajectory.getTrajectoryState();
+            return state?.fps === 17 && state.currentFrame === 0;
+        });
         assert.equal(await menu.isVisible(), true, "unchanged-frame playback metadata must preserve the open context menu");
         await page.evaluate(() => (window as any).__popupWidgetModel.send({ mirror_fixture: "frame", index: 1 }));
         await popup.waitForFunction(() => document.querySelector('[data-molsysviewer-trajectory-label="true"]')?.textContent === "2 / 3");

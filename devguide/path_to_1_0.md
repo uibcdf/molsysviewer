@@ -90,8 +90,11 @@ The [#384 initial-canvas audit](archive/initial_jupyter_canvas_timeout_audit.md)
 now source-resolves the distinct #392 immutable-source lock defect, with causal
 guards and actual-kernel normal/contended receiving. Diego has now accepted D5.4's technical >=7.4.0 Jupyter resolution and MolSysMT
 #615 is closed; its exact historical cause remains unproven. Final-pair and
-shared-prefix adoption evidence remain separate. MolSysMT #763's owner-reported
-large-mmCIF converter defect must be fixed and received before final freeze.
+shared-prefix adoption evidence remain separate. MolSysMT #763/#766 are now
+corrected in `b8c798474`: [independent receiving](residual_four_issues_receiving_20261116.json)
+passes 114 scientific controls and complete public loads of 3WU2/5XNL with
+53,592/98,986 atoms. This receives the headless source/data boundary; large
+rendering, final source freeze and installed-pair qualification remain separate.
 
 The next Linux run [43686277372](https://github.com/uibcdf/molsysviewer/actions/runs/43686277372)
 on `b9f7dfb2` passes the complete mirror, DataCard, trajectory plot and first

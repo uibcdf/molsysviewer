@@ -146,3 +146,26 @@ correctly skips all browser/Jupyter consumers. Neither receives this issue.
 [#399](focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
+
+Run `43791283994` now reaches the owner's selected pytest case but exits before
+starting its server/kernel: the launcher uses absent `/usr/bin/node` instead
+of the available Conda Node. MolSysMT #767 owns portable executable selection;
+no cycle or Python pre-save observation is received. The independent full
+MolSysViewer Jupyter guard passes six stopped/restored and eight moving
+captures, which does not receive this distinct prolonged case.
+
+Exact comparison of original `cb326235` with current `84da6b60` finds identical
+bytes for `player.py`, the trajectory-intent and trajectory-sync modules, and
+Python's `trajectory_frame_changed` branch. The existing follower fast path
+was only factored into a shared predicate for contextual UI. These inspections
+do not establish the old packet order or justify claiming a new frame-authority
+repair. The separate owner receiver now observes actual control focus and
+viewer identity; receive it after the executable boundary is corrected.
+
+MolSysMT publishes that correction in `4b0b1f8a`. Independent consumer `961`
+passes all 94 CLI/runtime controls, with an actual explicitly selected Node
+22.23.4 version probe. Its frozen 3,722-file source matches Git; production,
+addon, dependencies and native inputs are unchanged from received `b8c798474`.
+This unblocks a new actual cycle; it does not receive one or reconstruct the
+old cycle-nine order. The next diagnostic exports the selected Conda Node and
+preserves its safe version/path record.

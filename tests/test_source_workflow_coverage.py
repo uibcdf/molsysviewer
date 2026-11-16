@@ -34,11 +34,15 @@ def test_focused_browser_diagnostics_retain_both_mirror_owners_and_click_boundar
         Loader=yaml.BaseLoader,
     )
     steps = workflow["jobs"]["source-pair"]["steps"]
-    diagnostic = next(step for step in steps if step.get("name") == "Run focused mirror receiving diagnostics")
-    assert diagnostic["if"] == "runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'"
-    assert diagnostic["run"] == (
-        "node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror,trajectory-plot"
-    )
+    for suite in ("context-menu", "controls-visibility", "canvas-popup-mirror", "trajectory-plot"):
+        diagnostic = next(step for step in steps if step.get("name") == f"Receive focused {suite} diagnostics")
+        assert "!cancelled()" in diagnostic["if"]
+        assert "runner.os == 'Linux'" in diagnostic["if"]
+        assert "inputs.receiving_scope == 'diagnostics'" in diagnostic["if"]
+        for prerequisite in ("source-audit", "source-browser-build", "source-browser"):
+            assert f"steps.{prerequisite}.outcome == 'success'" in diagnostic["if"]
+        assert diagnostic["run"] == f"node tests/e2e/e2e-runner.js --lane=core --suites={suite}"
+        assert "continue-on-error" not in diagnostic and "E2E_ALLOW_SKIP" not in diagnostic["run"]
     complete = next(
         step for step in steps if step.get("name") == "Run all core browser suites against the exact source pair"
     )
@@ -89,12 +93,14 @@ def test_focused_diagnostics_keep_real_prolonged_receiving_and_native_source_pre
     assert "pip install" not in owner["run"], "a consumer must not change the dependency closure after its audit"
     assert "jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls" in owner["run"]
     assert "--receptor=ci" in owner["run"] and "--junitxml=prolonged-source.xml" in owner["run"]
+    assert 'export MOLSYSVIEWER_NODE="$(command -v node)"' in owner["run"]
     assert " -n" not in owner["run"], "the no-xdist environment must use default sequential pytest"
     assert "continue-on-error" not in owner and "E2E_ALLOW_SKIP" not in owner["run"]
     artifact = next(step for step in steps if step.get("name") == "Preserve bounded prolonged source receiving")
     assert artifact["if"].startswith("always()")
     assert "full-result.json" in artifact["with"]["path"] and "full-failure.json" in artifact["with"]["path"]
     assert "kernel-molecular-imports*.json" in artifact["with"]["path"]
+    assert "**/environment.json" in artifact["with"]["path"]
 
 
 def test_source_recovery_matrix_keeps_complete_default_and_whitelisted_subsets():

@@ -530,6 +530,148 @@
       "ruff": "passed",
       "diff": "passed",
       "scope": "Affected source preparation/audit tests with explicit one-thread scientific execution for both actual-Jupyter diagnostic consumers."
+    },
+    "build-four-fps-probe-958": {
+      "native_exit": 0,
+      "seconds": 31.918317128904164,
+      "selected_inputs": 9831,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 573.5,
+      "cleanup": {
+        "tracked": 12,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "97406cc3e13891526cf46cb37ea042bffa4d44afd3841e977337cd10cd090288",
+      "passed": 84,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "e2e_build": "passed",
+      "typescript_no_emit": "passed",
+      "ruff": "passed",
+      "diff": "passed",
+      "scope": "Corrected compact FPS observer and four independent diagnostic steps; source test/build checks only."
+    },
+    "covering-four-owner-browser-959": {
+      "native_exit": 1,
+      "seconds": 517.6126526496373,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3226.0,
+      "cleanup": {
+        "tracked": 47,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "83ce8a924ce39d5c0996866692b5d9809ff0466350c86a3008c05bf379d1f401",
+      "browser_results": [
+        {
+          "suite": "controls-visibility",
+          "exit_code": 0,
+          "seconds": 115.6725610960275
+        },
+        {
+          "suite": "canvas-popup-mirror",
+          "exit_code": 0,
+          "seconds": 320.32144855195656
+        },
+        {
+          "suite": "trajectory-plot",
+          "exit_code": 1,
+          "seconds": 79.76817215327173
+        }
+      ],
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4
+      },
+      "scope": "Actual complete controls and scientific mirror pass. Plot fails exported HTML startup before numeric cases; failed overall driver retained, no universal cause assigned. Routine-environment browser receiving, not hosted Node22/candidate qualification."
+    },
+    "isolated-plot-capacity-960": {
+      "native_exit": 0,
+      "seconds": 136.895167324692,
+      "selected_inputs": 9833,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3537.1,
+      "cleanup": {
+        "tracked": 23,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "2148a6db48874072b8f5db4b2f0679736c1916c57417aa4ba04171d053e08847",
+      "precision_controls": 15,
+      "complete_trajectory_plot": "passed",
+      "retired_svg_control": {
+        "connected": false,
+        "width": 0,
+        "points": "40,120 319.52941176470586,74.82352941176471 634,24"
+      },
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4
+      },
+      "scope": "Fresh isolated actual plot entry with unchanged deadlines and Decimal/binary64 oracles. Both CPU ceiling and prior-owner isolation differ from 959; no single-cause attribution or erased failure. Not hosted Node22/installed/candidate qualification."
+    },
+    "provider-node-767-961": {
+      "native_exit": 0,
+      "seconds": 20.90408813301474,
+      "selected_inputs": 9996,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 186.2,
+      "cleanup": {
+        "tracked": 6,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "0661404d8e656ca45970bee558c62c3eb1559d9d5e679c04ab55c259114c1dce",
+      "passed": 94,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "actual_origin": {
+        "source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+        "launcher": "/home/diego/repos@uibcdf/molsysviewer/.pytest_cache/molstar-qualification-20261112/receiver-4b0-current/tests/molsysviewer_molsysmt/system_panel_jupyter.py",
+        "launcher_sha256": "8932a621a4dea719839873194d2a7dac4d1d937427773c92ce7f3f9d81bf88e1",
+        "selected_node": "/tmp/msv-node22-restored-20261115/node-v22.23.4-linux-x64/bin/node",
+        "node_version": "v22.23.4",
+        "node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+        "scope": "Independent CLI/runtime receiving controls and actual selected Node version. No kernel/browser/scientific cycle or installed qualification.",
+        "pytest_native_exit": 0
+      },
+      "owner_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "verified_git_files": 3722,
+      "archive_sha256": "43040be4cc810b531dff9391ac7f159edd5ae18dbbdaf4cdf783f88293ab18d3",
+      "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+      "native_rationale": "No production, addon, Rust/Cargo/setup/pyproject delta b8c..4b0. Reuse exact received native backend for a source-only Node receiving-tool change; not a new installed artifact/rebuild."
+    },
+    "four-issues-checkpoint-records-962": {
+      "native_exit": 0,
+      "seconds": 20.28298482717946,
+      "selected_inputs": 9996,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 239.6,
+      "cleanup": {
+        "tracked": 40,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "raw_receipt_sha256": "2a673962098a8c0168008e146a1bbde74144f432fcac375694c9ec3c5ccb581f",
+      "passed": 592,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "deselected": 3,
+      "dependency_auditor": "passed",
+      "ruff": "passed",
+      "index": "passed",
+      "diff": "passed",
+      "scope": "Affected source workflow, dependency, receiver privacy, issue/schema and link checks. Three opt-in GUI cases deselected; no missing GUI pass inferred."
     }
   },
   "changes": {
@@ -539,7 +681,7 @@
     "354": "Receive the existing owner one-cycle prolonged Jupyter guard on a dedicated hosted runner. Its original pre-save Python assertion, 5000 structures, both popups, recovery and active playback remain. Prepare exact-source native importability with an editable build as confirmed by the owner; retain actual kernel/module/hash records. Prior local 937 remains resource-interrupted."
   },
   "hosted": {
-    "state": "first_dispatch_failed_preparation_successor_pending",
+    "state": "mixed_receiving_retained_independent_four_suite_successor_prepared",
     "previous_preparation": {
       "status": "prepared_not_dispatched",
       "scope": "One Linux source_receiving=true / receiving_scope=diagnostics checkpoint; four affected browser owners, JS units/types and one actual owner prolonged cycle. Full default source gate is unchanged.",
@@ -590,6 +732,67 @@
       "original_log_sha256": "63414426b48f72dcff3b9afc610fc8ea205b80e9bcb8686f888d55b700c89ec0",
       "consumers": "Browser build, four browser suites and both Jupyter consumers skipped. New explicit prerequisite fences work; no runtime pass/failure inferred.",
       "correction": "Prepare same-source in-place extension via editable build, then finish with the ordinary non-editable installation before the unchanged auditor/installed validator. No native validator bypass or owner change."
+    },
+    "successor_43791283994": {
+      "run": 43791283994,
+      "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43791283994",
+      "viewer_source": "84da6b603422fa5f591f34210f3337319e17d71a",
+      "molsysmt_source": "b8c7984748f2ca87d19911f4cc3bf63b688d3641",
+      "conclusion": "failure",
+      "original_log_sha256": "a8fb61c18d0d2c751d433da311d85efe6dae7502a49a26e952f3b7fb6f8c6e4a",
+      "preparation": "Audit, unchanged installed Rust validator, native paths, integration, source runtime/harness and browser checks pass.",
+      "js_units": {
+        "passed": 491,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0
+      },
+      "typescript_no_emit": "passed",
+      "browser_receiving": {
+        "context-menu": "passed complete suite",
+        "controls-visibility": "Initial actual export/controls phase passes; menu opens in the popup. New test then times out waiting for FPS input, which compact intentionally does not render. This is a new receiving predicate defect, not the original hidden-menu failure.",
+        "canvas-popup-mirror": "not reached after prior suite failure",
+        "trajectory-plot": "not reached after prior suite failure"
+      },
+      "prolonged_receiving": {
+        "tests": 1,
+        "failed": 1,
+        "seconds": 0.254,
+        "case_seconds": 0.115,
+        "cause": "Launcher defaults to absent /usr/bin/node; selected Conda Node is on PATH. Failure occurs before server/kernel/cycle.",
+        "owner_issue": "uibcdf/molsysmt#767",
+        "artifact": {
+          "id": 14192767655,
+          "bytes": 2079,
+          "sha256": "d68c41fd14f7711b8a8bc309dd25664a04f4a3a58dda968ac88a75ee8e7350c7",
+          "original_download_matches_registry": true
+        }
+      },
+      "live_jupyter": {
+        "outcome": "passed",
+        "capture_restore_cases": 6,
+        "strong_restore_cases": 6,
+        "studio_cases": 4,
+        "moving_capture_cases": 8,
+        "seconds": 237.29646323800006,
+        "cleanup": {
+          "tracked": 18,
+          "survivors": [],
+          "errors": []
+        },
+        "artifact": {
+          "id": 14192598930,
+          "bytes": 594,
+          "sha256": "fef7f199f487b46642155b079c4cdc776717db7715560db5c43b8577d3a74cba",
+          "original_download_matches_registry": true
+        }
+      },
+      "corrections_in_progress": [
+        "Observe real popup trajectory state for compact FPS; retain metadata/menu and actual-frame dismissal assertions.",
+        "Execute focused suites as independent failing GitHub steps behind the same prerequisites; do not waive any failure.",
+        "Receive owner correction for Node portability before claiming a prolonged cycle."
+      ],
+      "scope": "Mixed scoped source evidence. Failed complete diagnostic, not full core/installed/native Qt/candidate or publication."
     }
   },
   "provider_coordination": {
@@ -716,13 +919,14 @@
   },
   "diagnostic_preparation_followup": {
     "issue": "uibcdf/molsysviewer#399",
-    "state": "initial_editable_then_noneditable_preparation_locally_received_successor_pending",
+    "state": "four_independent_steps_and_selected_node_prepared_for_published_owner_fix",
     "files_sha256": {
-      ".github/workflows/ci-python-314-source-pair.yaml": "96d6ff9c775e90045c7dcf070254557e35da968dc91d8a63c8f3fc635e49e8be",
-      "tests/test_source_workflow_coverage.py": "21d0d5ad98ba2661d7a32d16ba3d89a25a8e2f00b8c49a91e0c34b52eceef4d5",
+      ".github/workflows/ci-python-314-source-pair.yaml": "5a31ac9d8de1ddd45eb0a27ae3195bf135fd606e689e0e8ce3750acc8cdf22cf",
+      "tests/test_source_workflow_coverage.py": "85248b4a22443fc65d84e857944ea0b3677a82e4f7471393c68a8c719dda4d52",
       "tests/_jupyter_moving_capture.mjs": "9996339b50614a7a87090e82dc36d0b9da582f9824a449a3802accc92a335147",
       "tests/_jupyter_live_capture.py": "9c67c2049ef939607cfaaec0564824450a1ecb7221a72d40525d38fc6ac9dc57",
-      "tests/test_jupyter_live_capture.py": "189db5b58ecdeff3053484da8b0da12fda727798271c18f329cf7bc84972149b"
+      "tests/test_jupyter_live_capture.py": "189db5b58ecdeff3053484da8b0da12fda727798271c18f329cf7bc84972149b",
+      "molsysviewer/js/tests/e2e/canvas-popup-scenarios.ts": "59c437d5633a9631f806f876e015e8f801864168bff3bf22689dc0e9a600b621"
     },
     "changes": [
       "Editable scientific source/native installation occurs before audit, never in a consumer.",
@@ -745,6 +949,55 @@
     "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/residual-four-followup-20261116",
     "files": 1866,
     "manifest_sha256": "44a8f6e55c5386b11df4ce2eca5aa85dda1ac5fd0eb2fa4fc87349a7e3e5fd59",
+    "copied_files_verified": true,
+    "originals_retained": true,
+    "custodian": "Diego Prada Gracia"
+  },
+  "prolonged_authority_source_comparison": {
+    "original_source": "cb326235b3377185b18a17c7f59c71fd53cdab2a",
+    "current_source": "84da6b603422fa5f591f34210f3337319e17d71a",
+    "comparisons": {
+      "molsysviewer/player.py": {
+        "old_sha256": "56f75d04c42f57ba4f27d17b0717a81c93a9fb2f8f5f6f112fd9d86f8a1eacd6",
+        "current_sha256": "56f75d04c42f57ba4f27d17b0717a81c93a9fb2f8f5f6f112fd9d86f8a1eacd6",
+        "identical": true
+      },
+      "molsysviewer/js/src/messages/trajectory-intent.ts": {
+        "old_sha256": "1b0360dc5f651127cde983869d20c785c3975330a69863914dca2fac332af227",
+        "current_sha256": "1b0360dc5f651127cde983869d20c785c3975330a69863914dca2fac332af227",
+        "identical": true
+      },
+      "molsysviewer/js/src/managers/trajectory-sync.ts": {
+        "old_sha256": "aabdbff78b44b4af0ca4a8912c8bb32ac02800fe8b65f717bcd2d28b02e247af",
+        "current_sha256": "aabdbff78b44b4af0ca4a8912c8bb32ac02800fe8b65f717bcd2d28b02e247af",
+        "identical": true
+      },
+      "molsysviewer/viewer/core.py:trajectory_frame_changed": {
+        "old_sha256": "1f3654d00f2cf8bb187f1811949ad8224fcff3205d980d259ed10d338a4f983d",
+        "current_sha256": "1f3654d00f2cf8bb187f1811949ad8224fcff3205d980d259ed10d338a4f983d",
+        "identical": true
+      }
+    },
+    "scope": "Source correspondence only. No original packet order, authority or historical cause is inferred. These unchanged owners must not be presented as newly fixed for #354."
+  },
+  "provider_node_767": {
+    "issue": "uibcdf/molsysmt#767",
+    "state": "published_correction_received_independently_actual_prolonged_cycle_pending",
+    "source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "independent_controls": 94,
+    "actual_node": "22.23.4 explicit",
+    "production_delta_from_received_b8c": 0,
+    "scope": "Owner source CLI/runtime correction, not a new installed artifact/scientific rebuild."
+  },
+  "next_hosted_checkpoint": {
+    "state": "prepared_not_dispatched",
+    "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "scope": "One Linux source diagnostic with four independent browser entries and one owner prolonged cycle, canonical source-pair Node22 and existing full work-file receiving. Not candidate/version/tag assignment or installed qualification."
+  },
+  "private_custody_native_receiving": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/residual-four-native-receiving-20261116",
+    "files": 1198,
+    "manifest_sha256": "ce404151a661389a868e6891eedfbe727128fa5a9505dd9954df0550f7904c18",
     "copied_files_verified": true,
     "originals_retained": true,
     "custodian": "Diego Prada Gracia"

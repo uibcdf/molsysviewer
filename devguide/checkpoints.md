@@ -925,8 +925,9 @@ independently on ipykernel 7.3.0; original 7.4.0 bytes pass 30 native cycles
 and the complete actual Movie pytest with ten edit/seeks. Component notebook
 recipes now require >=7.4.0. MolSysSuite #200 owns legacy-prefix adoption;
 that shared prefix is unchanged. Exact installed pair,
-MolSysMT #763/#766 consumer receiving and applicable human exits remain separate and
-pending. Follow the [decision packet](molstar_closeout_decisions_20261115.md).
+large-system rendering and applicable human exits remain pending; #763/#766 now
+have bounded independent source/data receiving below. Follow the
+[decision packet](molstar_closeout_decisions_20261115.md).
 Kernel-only `919` and actual-TcTIM `923` demonstrate the controlled
 7.3.0 initial-execute stall; normal current-source `928` receives 3,983 atoms
 and a new draw in 10.79 seconds on original 7.4.0 without timing barriers.
@@ -968,6 +969,17 @@ guards pass, then two public complete-file Viewer loads preserve all 53,592
 3WU2 and 98,986 5XNL atoms, identities, coordinates and canonical bonds.
 Rendering, installed and candidate qualification remain separate. Local
 resource interruptions stay uncredited; no counter or publication decision changes.
+Bounded run `43791283994` now passes the corrected installation/native checks,
+491 JS cases, TypeScript, context-menu and actual-Jupyter six stopped/eight
+moving captures. Controls then fails a new receiving-only FPS selector absent
+in compact; its corrected complete local entry and the scientific mirror pass
+in `959`. Plot fails local exported-HTML startup at 4 CPU before numerics,
+then passes all 15 Decimal controls and retired/current SVG receiving in fresh
+8-CPU control `960`; both outcomes remain separate. MolSysMT #767 fixes the
+owner launcher's absent global Node path in `4b0b1f8a`; independent `961`
+passes 94 controls with an explicit real Node 22.23.4 probe. The next bounded
+checkpoint pins that receiver and independently receives all four browser
+owners; it is prepared, not passed. Original counters/publication stay unchanged.
 The dated receiving entries below retain their original inputs and outcomes.
 
 **Complete Linux recovery after #394 — 2026-11-14:**

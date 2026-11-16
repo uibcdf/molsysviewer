@@ -387,13 +387,37 @@ jobs:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
         run: npm run test:e2e:core
 
-      - name: Run focused mirror receiving diagnostics
-        if: runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics'
+      - name: Receive focused context-menu diagnostics
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
         shell: bash -l {0}
         working-directory: molsysviewer-source/molsysviewer/js
         env:
           PW_CHROMIUM_BIN: /usr/bin/google-chrome
-        run: node tests/e2e/e2e-runner.js --lane=core --suites=context-menu,controls-visibility,canvas-popup-mirror,trajectory-plot
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=context-menu
+
+      - name: Receive focused controls-visibility diagnostics
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=controls-visibility
+
+      - name: Receive focused canvas-popup-mirror diagnostics
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=canvas-popup-mirror
+
+      - name: Receive focused trajectory-plot diagnostics
+        if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
+        shell: bash -l {0}
+        working-directory: molsysviewer-source/molsysviewer/js
+        env:
+          PW_CHROMIUM_BIN: /usr/bin/google-chrome
+        run: node tests/e2e/e2e-runner.js --lane=core --suites=trajectory-plot
 
       - name: Receive one prolonged Jupyter source cycle
         if: ${{ !cancelled() && runner.os == 'Linux' && inputs.receiving_scope == 'diagnostics' && steps.source-audit.outcome == 'success' && steps.source-browser-build.outcome == 'success' && steps.source-browser.outcome == 'success' }}
@@ -409,6 +433,7 @@ jobs:
         run: |
           # Default pytest executes this one explicit case sequentially; this
           # environment intentionally does not require pytest-xdist.
+          export MOLSYSVIEWER_NODE="$(command -v node)"
           python -m pytest --receptor=ci -c pyproject.toml --confcutdir=../molsysmt-source/tests/molsysviewer_molsysmt ../molsysmt-source/tests/molsysviewer_molsysmt/jupyter_receiving_guard.py::test_actual_jupyter_prolonged_popup_controls --basetemp=.pytest_cache/prolonged-source --junitxml=prolonged-source.xml
 
       - name: Preserve bounded prolonged source receiving
@@ -421,6 +446,7 @@ jobs:
             molsysviewer-source/.pytest_cache/prolonged-source/**/full-result.json
             molsysviewer-source/.pytest_cache/prolonged-source/**/full-failure.json
             molsysviewer-source/.pytest_cache/prolonged-source/**/kernel-molecular-imports*.json
+            molsysviewer-source/.pytest_cache/prolonged-source/**/environment.json
             molsysviewer-source/.pytest_cache/prolonged-source/**/cycle-*-memory.json
           include-hidden-files: true
           if-no-files-found: warn

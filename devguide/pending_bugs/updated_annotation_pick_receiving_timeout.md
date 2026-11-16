@@ -80,3 +80,12 @@ correctly skips all browser/Jupyter consumers. Neither receives this issue.
 [#399](focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
+
+Local complete mirror entry `959` now passes in 320.32 s. The actual revised
+annotation remains `mirror-label`, object/instance/group `10/0/0`, before,
+during, after and on completion of its native pending GPU read; camera bytes
+are unchanged. Real revised-label clicks and selected markers at both
+endpoints pass, followed by layout, visibility, playback and structure-specific
+interactions. It is actual Mol*/Chromium source receiving, not a recreation of
+the original old-host ordering or installed/native-Qt acceptance. The next
+hosted diagnostic gives this owner an independent failing step.

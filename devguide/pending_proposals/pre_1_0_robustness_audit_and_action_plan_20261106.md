@@ -62,9 +62,10 @@ headless data/source integration, not large-browser rendering or an installed
 candidate. The expanded four-observation diagnostic selects this exact source;
 its first run fails workflow preparation, tracked separately in #399. No
 package floor, installed/candidate claim or original counter changes.
-The earlier finding and its freeze prerequisite remain below.
+The original finding remains below; its source/data prerequisite is now
+received, with rendering and artifact claims separate.
 
-**New provider finding to receive before the final source freeze:**
+**Original provider finding — source/data correction now received:**
 [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) reports valid
 public 3WU2/5XNL mmCIF conversion failures before rendering, caused by entity
 index reuse after revisiting an earlier entity. The reported converter is

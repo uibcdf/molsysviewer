@@ -142,9 +142,12 @@ in 10.79 seconds. The original event's exact cause remains unproven. D5.4 is
 source-delivered once: **40/46 (87.0%)**; final applicable acceptance remains
 **1/46**, with final artifacts, shared-prefix #200 and human exits separate.
 The independent [#392 bootstrap lock fix](archive/runtime_source_replies_require_scene_lock.md)
-retains its own causal scope. New [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763)
-requires owner correction/consumer receiving for large valid mmCIF imports
-before the final source freeze; it is distinct from first-canvas startup.
+retains its own causal scope. [MolSysMT #763/#766](https://github.com/uibcdf/molsysmt/issues/763)
+are corrected in `b8c798474`: [independent source receiving](residual_four_issues_receiving_20261116.json)
+passes 114 scientific controls and both complete public Viewer loads,
+preserving 53,592/98,986 atoms and their identities, coordinates and bonds.
+Large-system rendering and installed/candidate qualification remain separate;
+this is distinct from first-canvas startup.
 The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,
 the complete native authoring/export entry and all 491 JS cases. Full M2

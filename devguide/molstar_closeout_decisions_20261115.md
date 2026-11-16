@@ -147,14 +147,19 @@ is archived with its recipe-floor regression. The original event's exact
 cause remains unproven. Shared-prefix #200 and final candidate/installed
 receiving remain separate. There is no outstanding unknown-cause waiver.
 
-New [MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) concerns
+[MolSysMT #763](https://github.com/uibcdf/molsysmt/issues/763) concerns
 valid larger mmCIF inputs failing in conversion before rendering, with an
 entity-index allocator collision. The reported converter is unchanged from
 the qualified source. Receive the owner's exact fix and bounded consumer
 checks before final freeze; source CI success is not evidence about those
 previously untested inputs. Do not add a downstream input rewrite or compete
 with the owner's scientific correction. Its standalone consumer #368 is a
-separate feature proposal.
+separate feature proposal. MolSysMT has now published #763/#766 in `b8c798474`.
+[Independent consumer receiving](residual_four_issues_receiving_20261116.json)
+passes 114 scientific guards and both public complete-file Viewer loads,
+preserving all 53,592/98,986 atoms, source identities, coordinates and canonical
+bonds. This receives the source/data prerequisite, not large-system rendering,
+installed packages or the final candidate.
 
 Actual Jupyter and native Wayland/Qt/NVIDIA source receiving retain exact
 input identities. Recheck changed boundaries: the current runtime changes

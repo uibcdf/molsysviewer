@@ -179,3 +179,21 @@ correctly skips all browser/Jupyter consumers. Neither receives this issue.
 [#399](focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
+
+Local `959` at 4 CPU / 4 GiB fails before the numerical controls, in exported
+HTML startup: the first controller appears after 37.23 s and its initial
+molecular observation has not arrived inside the unchanged 30-second guard.
+All source inputs stay unchanged, there is no resource stop and all 47 owned
+processes retire. No precision failure or return of #391's particular old
+mechanism is established by this different boundary.
+
+Isolated capacity control `960`, with no prior browser owners and 8 CPU /
+4 GiB, passes the complete unchanged entry in 136.90 s. All 15 Decimal/binary64
+controls, raw values, frames, state files, ordinary popup and literal card
+titles pass. The intentionally retired SVG is disconnected with native width
+zero but retained points; the atomically resolved current SVG passes the
+original oracle. The two capacity/isolation inputs differ: do not assign the
+earlier startup cause solely to CPU or combine the two outcomes into one pass.
+All 9,833 selected inputs remain unchanged; peak summed owned RSS is 3,537.1
+MiB, no resource stop occurs, and all 23 processes retire. Exact hosted
+Node-22 receiving remains separate from these routine-environment controls.

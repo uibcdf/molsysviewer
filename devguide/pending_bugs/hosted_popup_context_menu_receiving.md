@@ -144,3 +144,13 @@ correctly skips all browser/Jupyter consumers. Neither receives this issue.
 [#399](focused_source_diagnostic_preparation.md) owns those corrections; the
 [four-issue receipt](../residual_four_issues_receiving_20261116.json) preserves
 both failures and the next bounded dispatch independently of product evidence.
+
+In `43791283994` the actual popup menu opens successfully; the new receiving
+then waits for an FPS editor absent by design in compact mode. Corrected local
+complete entry `959` observes the real popup controller's applied FPS 17 and
+frame zero, requires the menu to remain visible, then requires a genuine frame
+change to dismiss it. It passes the complete controls/parity entry in 115.67 s.
+The exact-source negative metadata control `948` remains paired evidence;
+the original hosted event ordering is still unrecorded. The next hosted
+diagnostic receives this corrected predicate without changing product input,
+mode, deadline or invalidation semantics.
