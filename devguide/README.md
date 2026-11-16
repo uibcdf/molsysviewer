@@ -160,8 +160,8 @@ with independently observed Python authority before every save; its original
 cause remains unknown and the issue stays partial. #400 owns independent HTML
 startup. Covering `43816742412` fails one shared pytest-workflow contract on
 all three hosts. #399's fifth-command inventory and executable rerun override
-are corrected locally; all 518 scoped checks pass, with replacement covering
-receiving still required. Original source delivery stays 41/46 and final
+are corrected locally; all 518 scoped checks pass, with replacement full
+checkpoint `43823224361` in progress. Original source delivery stays 41/46 and final
 acceptance 1/46; package/publication and postponed human exits remain separate.
 The [Movie keyboard receipt](movie_authoring_keyboard_receiving_20261114.json)
 source-resolves #393 with causal tab-stop receiving, all three endpoint paths,

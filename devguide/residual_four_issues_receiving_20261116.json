@@ -1868,7 +1868,15 @@
           "junit": []
         }
       ],
-      "replacement_dispatch": "pending reviewed corrected commit"
+      "replacement_dispatch": {
+        "run": 43823224361,
+        "source": "303c9152c968a92732589d026798b6b0ae73f550",
+        "provider": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+        "platforms": "all three Python3.14 source hosts",
+        "scope": "full source receiving; no candidate tags, installed artifacts or publication",
+        "observed_status": "in_progress",
+        "conclusion": null
+      }
     },
     "workflow_guard_counterfactual": {
       "scope": "Private real offline guard invocation on retained YAML/source variants. No product, scientific path, live receiver or repository input changed; not pytest-suite or candidate qualification.",
@@ -1958,6 +1966,150 @@
     "source_files_sha256": {
       ".github/workflows/ci-python-314-source-pair.yaml": "edd2aeb66f85f50e667d81cda9d023f218eab244f82fb469cdecba73519633bb",
       "tests/test_python_ecosystem_contract.py": "a9b17c40bd7937d05f2a61db038c910eeae90eb1ff58d52bc6d24f56b76a45c0"
+    },
+    "provider_acknowledgment": {
+      "owner": "uibcdf/molsysmt",
+      "commit": "8e1c6403d04cb5e207366f7b3ecc85c36b6784ce",
+      "record": "devtools/data/viewer_source_delivery_review_334_20261116.json",
+      "scope": "Owner acknowledges b846 source closure and pending original checkpoint; later303/30cycle/replacement update delivered to the authorized session. No provider rebuild or publication requested."
+    },
+    "latest_provider_acknowledgment": {
+      "owner": "uibcdf/molsysmt",
+      "commit": "9154a6ba379e5e73fa52065352152f6eaa858e12",
+      "record": "devtools/data/viewer_prolonged_source_review_334_20261116.json",
+      "scope": "Owner authenticates303 workflow/test/doc-only delivery and records reported30cycle result and exact Jupyter baseline. Privates not replayed; final pair/candidate/installed/publication gates remain pending."
+    }
+  },
+  "html_peer_observation_991": {
+    "native_exit": 1,
+    "seconds": 80.5455488646403,
+    "selected_inputs": 9998,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 3029.5,
+    "cleanup": {
+      "tracked": 18,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "source": "303c9152c968a92732589d026798b6b0ae73f550",
+    "runtime_unchanged_from": "b84615763867b6f3833c54a516615599503af51f",
+    "scope": "Instrumented delegated existing native peer ticks/draw/GL methods. No extra tick, stop/restart, held input, changed deadline or quality. Not canonical qualification.",
+    "first_controller_seconds": 32.308,
+    "unchanged_initialization_deadline_seconds": 30,
+    "peer_observations": [
+      {
+        "started": 40796.59999990463,
+        "draws": 1,
+        "counts": {
+          "getDrawingBufferSize": 31,
+          "tick": 31
+        },
+        "durations_ms": {
+          "getDrawingBufferSize": 0,
+          "tick": 3.499998092651367
+        },
+        "max_ms": {
+          "getDrawingBufferSize": 0,
+          "tick": 0.2999997138977051
+        },
+        "playing": false,
+        "seconds": 32.79840000009537,
+        "playing_after": false
+      },
+      {
+        "started": 25668.799999713898,
+        "draws": 35,
+        "counts": {
+          "getDrawingBufferSize": 34,
+          "flush": 34,
+          "tick": 34
+        },
+        "durations_ms": {
+          "getDrawingBufferSize": 0.19999980926513672,
+          "flush": 0.10000038146972656,
+          "tick": 56.200000286102295
+        },
+        "max_ms": {
+          "getDrawingBufferSize": 0.09999990463256836,
+          "flush": 0.10000038146972656,
+          "tick": 6.699999809265137
+        },
+        "playing": false,
+        "seconds": 32.8025,
+        "playing_after": false
+      },
+      {
+        "started": 15772.300000190735,
+        "draws": 55,
+        "counts": {
+          "getDrawingBufferSize": 54,
+          "flush": 54,
+          "tick": 54
+        },
+        "durations_ms": {
+          "getDrawingBufferSize": 0.19999980926513672,
+          "flush": 2.8000006675720215,
+          "tick": 78.69999980926514
+        },
+        "max_ms": {
+          "getDrawingBufferSize": 0.09999990463256836,
+          "flush": 1.700000286102295,
+          "tick": 5.699999809265137
+        },
+        "playing": false,
+        "seconds": 32.8032999997139,
+        "playing_after": false
+      }
+    ],
+    "initial_didDraw_replay_per_peer": 1,
+    "new_peer_draws": [
+      0,
+      34,
+      54
+    ],
+    "native_subscription": "molstar5.13.1 Canvas3D didDraw is a BehaviorSubject, so the raw counts include the initial replay",
+    "interpretation": "Repeated paired-source/popup drawing with stopped trajectory playback is observed. Trigger and asynchronous GPU cost remain unproved. Dimension method JS durations do not justify a cache or throttling.",
+    "next_question": "Discriminate actual draw requests, camera transitions and accepted peer messages without pausing another view.",
+    "private_custody": {
+      "custodian": "Diego Prada Gracia",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/html-peer-observation-20261116",
+      "files": 12,
+      "bytes": 4172535,
+      "manifest_sha256": "67301d728a4c635820acaf5e1357ea90bf240872e47038c17217808fba107583",
+      "hashes_verified": true,
+      "originals_retained": true,
+      "permissions": {
+        "directories": "0700",
+        "files": "0600"
+      }
+    }
+  },
+  "supplementary_ledger_reference_checks_992": {
+    "passed": 4,
+    "native_exit": 0,
+    "seconds": 4.078918459825218,
+    "selected_inputs": 9996,
+    "inputs_unchanged": true,
+    "cleanup": {
+      "tracked": 1,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "scope": "Documentation-only links after recording991 and the pending replacement CI; earlier518 code/reporting checks remain applicable.",
+    "private_custody": {
+      "custodian": "Diego Prada Gracia",
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/receiving-ledger-links-20261116",
+      "files": 6,
+      "bytes": 4073027,
+      "manifest_sha256": "8da60b54e96971e2d092565a9799da124e24459f86c1a886353d4f739941eae4",
+      "hashes_verified": true,
+      "originals_retained": true,
+      "permissions": {
+        "directories": "0700",
+        "files": "0600"
+      }
     }
   }
 }

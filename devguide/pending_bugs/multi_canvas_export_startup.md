@@ -53,3 +53,30 @@ Duplicate review uses four complete pages, 371 issue/PR records and 345 issues,
 including closed records. #47 is deferred editorial export review, #391 has
 a different resolved mechanism, and #399 owns receiving preparation.
 No release, native-GPU throughput or installed qualification is claimed.
+
+## Passive peer observation — 2026-11-16
+
+Diagnostic `991`, on source `303c9152` with the same runtime as `b8461576`,
+delegates existing native ticks and GL methods while counting their calls;
+it adds no tick, stop/restart, delay, changed input or quality setting. The
+30-second guard again fails; the first controller is observed at 32.308 s.
+All 9,998 selected inputs remain unchanged, the 4-CPU/4-GiB scope has no
+resource stop and all 18 owned processes retire. This is an instrumented
+negative diagnostic, not canonical qualification or a product correction.
+
+During the approximately 32.8-second observation, the three peers receive
+31/34/54 native ticks and report stopped trajectory playback throughout.
+The toy page completes no new draw; the live source and its popup complete
+34/54 draws. Raw draw counters are 1/35/55 because Mol*'s `didDraw`
+BehaviorSubject replays its existing value once when subscribed. The
+source/popup continue rendering while nominally
+stopped; that alone neither identifies their trigger nor proves that all
+draws are unnecessary.
+
+Delegated JavaScript time in dimension reads is below one millisecond per
+peer; asynchronous GPU work is not measured by those method timings. Do not
+introduce a dimension cache, idle throttle or global pause on this evidence.
+Next discriminate real draw requests, camera transitions and accepted peer
+messages before choosing a fix. Preserve the original numerical/scientific
+entry and its deadline. The [consolidated receipt](../residual_four_issues_receiving_20261116.json)
+owns the exact counters, manifests and private custody.

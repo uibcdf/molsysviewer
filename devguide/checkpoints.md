@@ -994,7 +994,7 @@ debugger-baseline page errors remain explicitly recorded. #400 owns the
 separate multi-canvas HTML startup. Covering source run `43816742412` fails
 one identical whole-workflow pytest inventory check per host. #399's missing
 fifth-command inventory/rerun override is corrected; all 518 scoped checks
-pass. Receive one replacement covering checkpoint.
+pass. Replacement full source checkpoint `43823224361` is in progress.
 See the [exact receiving and custody record](residual_four_issues_receiving_20261116.json).
 No candidate, installed, human or publication acceptance is inferred.
 

@@ -2626,5 +2626,14 @@
     "local_correction": "fifth hosted command now counted and receives executable rerun override; seven affected cases pass",
     "current_prolonged_receiving": "30 complete owner cycles in one actual isolated7.4.0 kernel; original pre-save assertion and all native lifetime/molecular checks pass; historical cause unknown",
     "limit": "Source composition only; no new original leaf, installed/final/human acceptance or publication."
+  },
+  "replacement_source_checkpoint": {
+    "run": 43823224361,
+    "source": "303c9152c968a92732589d026798b6b0ae73f550",
+    "provider": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "observed_status": "in_progress",
+    "conclusion": null,
+    "scope": "Full three-host source receiving after workflow-only correction; not installed, candidate or publication acceptance.",
+    "record": "residual_four_issues_receiving_20261116.json"
   }
 }
