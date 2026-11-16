@@ -116,6 +116,10 @@ function projectedFrameFixture(indices = [1]) {
 
 test("repeated complete follower frames do not rebuild unchanged molecular and derived geometry", async () => {
     const f = projectedFrameFixture();
+    assert.equal(f.handler.isNoOpFrameProjection(f.projection), true);
+    assert.equal(f.handler.isNoOpFrameProjection(1), false, "explicit seeks retain context invalidation");
+    assert.equal(f.handler.isNoOpFrameProjection({ op: "set_trajectory_frame", index: 1 }), false);
+    assert.equal(f.handler.isNoOpFrameProjection({ ...f.projection, index: 2 }), false);
     assert.equal(await f.handler.setTrajectoryFrame(f.projection), true);
     assert.equal(await f.handler.setTrajectoryFrame(f.projection), true);
     assert.equal(f.applications(), 0, "an unchanged owner frame must not enter the native model task");
@@ -168,6 +172,8 @@ test("same-index follower optimization never drops a return while a different fr
     f.gates.push(new Promise<void>(resolve => { finishFirst = resolve; }),
         new Promise<void>(resolve => { finishReturn = resolve; }));
     const first = f.handler.setTrajectoryFrame({ ...f.projection, index: 2 });
+    assert.equal(f.handler.isNoOpFrameProjection(f.projection), false,
+        "a pending model change prevents retaining the old context on a return projection");
     const returning = f.handler.setTrajectoryFrame(f.projection);
     assert.equal(f.applications(), 2, "the return must apply even while its index still appears current");
     finishFirst(); await first;

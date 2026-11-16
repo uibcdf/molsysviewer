@@ -203,7 +203,22 @@ export class TrajectoryHandlers {
         return !this.disposed;
     }
 
+    /** A settled mirror can receive playback metadata without replacing its model. */
+    isNoOpFrameProjection(msg: SetTrajectoryFrameMessage | number): boolean {
+        if (this.disposed || !this.follower || typeof msg === "number"
+            || !msg.playback_projection || this.pendingFrames.size !== 0) return false;
+        const count = this.getFrameCount(), ref = this.getTrajectoryRef();
+        if (count < 1 || !ref) return false;
+        const index = Math.max(0, Math.min(count - 1, Math.floor(msg.index ?? 0)));
+        const models = this.getTrajectoryModels(ref);
+        return models.length > 0
+            && models.every(model => (model.transform.params as { modelIndex?: number })?.modelIndex === index);
+    }
+
     private async applyTrajectoryFrame(msg: SetTrajectoryFrameMessage | number, direction?: "forward" | "backward") {
+        // Use the same predicate as contextual-UI invalidation. A harmless
+        // mirrored metadata projection must not dismiss the user's open menu.
+        if (this.isNoOpFrameProjection(msg)) return;
         const index = typeof msg === 'number' ? msg : (msg.index ?? 0);
         const frameCount = this.getFrameCount();
         if (frameCount < 1) return;
@@ -212,13 +227,6 @@ export class TrajectoryHandlers {
         if (!trajRef) return;
         const models = this.getTrajectoryModels(trajRef);
         if (!models.length) return;
-        // A resolved owner projection also carries cell/playback metadata. Its
-        // unchanged molecular index is not another model/shape refresh. Keep
-        // explicit seeks and returns behind in-flight updates on their normal
-        // path, and require every model to agree before skipping native work.
-        if (this.follower && typeof msg !== "number" && msg.playback_projection
-            && this.pendingFrames.size === 0
-            && models.every(model => (model.transform.params as { modelIndex?: number })?.modelIndex === clamped)) return;
         const update = this.plugin.state.data.build();
         for (const m of models) {
             update.to(m).update({ modelIndex: clamped });

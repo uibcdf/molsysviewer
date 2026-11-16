@@ -2557,8 +2557,9 @@ export class MolSysViewerController {
             console.warn("[MolSysViewer] message missing 'op'", msg);
             return;
         }
+        const changesFrameContext = msg.op === "set_trajectory_frame" && !this.trajectory.isNoOpFrameProjection(msg);
         if ((typeof msg.op === "string" && msg.op.startsWith("load_")) || msg.op === "clear_all"
-            || msg.op === "set_trajectory_frame" || msg.op === "partial_coordinates_update") {
+            || changesFrameContext || msg.op === "partial_coordinates_update") {
             this.contextMenu.close();
             this.groupPanel.clearContextInspection();
         }

@@ -122,3 +122,13 @@ and preserves that original Node assertion failure. Preparation failure `946`
 lacked two manifests and never ran the browser; `947` supplies those exact
 committed inputs. This establishes the corrected metadata dismissal class,
 while the historical hosted event ordering remains unrecorded.
+
+Before dispatch, source review also aligns context invalidation with the
+existing settled-follower no-op optimization: a same-frame metadata envelope
+may arrive through the mirror even though the molecular model is unchanged.
+The handler now exposes that same predicate to the dispatcher; this does not
+add a new projection-skipping rule. Explicit seeks, disagreeing models and
+in-flight returns retain invalidation/application. Build `951` receives the
+runtime, harness, all browser-entry compilation, 491 JavaScript unit cases
+without skips/failures and TypeScript. The actual popup metadata/frame guard
+remains the hosted prerequisite.

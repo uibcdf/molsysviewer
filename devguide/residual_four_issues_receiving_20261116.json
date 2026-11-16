@@ -361,7 +361,7 @@
     }
   },
   "changes": {
-    "305": "Preserve contextual menu/inspection on playback-option publications at the same frame. Explicit seeks, loads, clears and coordinate updates retain invalidation; real structure changes still invalidate. Extend actual popup guard with real Python FPS and frame operations.",
+    "305": "Preserve contextual menu/inspection on playback-option publications at the same frame. Explicit seeks, loads, clears and coordinate updates retain invalidation; real structure changes still invalidate. Extend actual popup guard with real Python FPS and frame operations. A settled same-frame follower envelope now uses the existing no-op projection predicate for context invalidation as well; explicit seeks, disagreements and in-flight returns retain invalidation and native application.",
     "321": "Read the current connected SVG and its native bounds within one browser task, rather than keeping a locator-selected element across a possible public replacement. Add a real public-update retired-SVG counterexample without changing the Decimal oracle or tolerances.",
     "325": "Retain actual revised-label GPU query, real click and both selected markers; add synchronous/before/during/after native pending-read identities for that revised annotation, preserving/restoring the native animation loop. Mol* v5.4.1 tag 74ff283e contains the same dirty-only read gate as the independently repaired current 5.13.1 mechanism; source inspection is not reconstruction of the original hosted ordering.",
     "354": "Receive the existing owner one-cycle prolonged Jupyter guard on a dedicated hosted runner. Its original pre-save Python assertion, 5000 structures, both popups, recovery and active playback remain. Prepare exact-source native importability with an editable build as confirmed by the owner; retain actual kernel/module/hash records. Prior local 937 remains resource-interrupted."
@@ -439,13 +439,15 @@
   },
   "publication": "paused",
   "source_files_sha256": {
-    "molsysviewer/js/src/managers/viewer-controller.ts": "26c5ca7c21ee21cd8ec1be98bee5953faddc178cc30f4024be8c220c0308b064",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "a23538e4c0a4856458559c3acf22b983cc1d6908a4107ea3763004c2bafab7fe",
     "molsysviewer/js/tests/e2e/canvas-popup-scenarios.ts": "8575c4951f3a3445b65d33ffe37cc93997fbc8bc72bbd3d85254bc4216b0051e",
     "molsysviewer/js/tests/e2e/canvas-popup-mirror-scenarios.ts": "78f345107c1c3c08379b5f6486a7dd949c6543fdc8198648ad5667353945864f",
     "molsysviewer/js/tests/e2e/trajectory-plot-authority-scenarios.ts": "abcdf5a29ed3f95099b9eb87bdf8e507751c32f4fd8e0f8ef0b621faa777fe44",
     ".github/workflows/ci-python-314-source-pair.yaml": "6a98eadc5e3cd56cc654968c5799edde37f488fee8ffdf3af8bfc68658815276",
     "tests/test_source_workflow_coverage.py": "f93797ed29a48e9652acc208b1f5a448c7a42c255940db7f2d797fe8f4006e96",
-    "tests/test_reporting_protocol.py": "f43f500e63657472460517d0445e0950a81e46508e8cbcaf36de1a62db9cef60"
+    "tests/test_reporting_protocol.py": "f43f500e63657472460517d0445e0950a81e46508e8cbcaf36de1a62db9cef60",
+    "molsysviewer/js/src/managers/handlers/trajectory-handlers.ts": "222e305b3be3b8458fabc2a78b3781591e5c3cef683b0d5132284d1bf3ebb83f",
+    "molsysviewer/js/tests/unit/trajectory-handler.test.ts": "7f9de652681a3d8d48b8b9f3322b9eea53c1dd01b6f1d63fd16d6f5768e6460a"
   },
   "record_checks": {
     "profile": "four-issues-records-950",
@@ -462,5 +464,32 @@
       "logical_cpus": 1,
       "ram_gib": 1
     }
+  },
+  "build_unit_type_receiving_951": {
+    "seconds": 42.52113099396229,
+    "selected_inputs": 9831,
+    "inputs_unchanged": true,
+    "peak_owned_rss_mib": 565.0,
+    "cleanup": {
+      "tracked": 24,
+      "survivors": [],
+      "errors": []
+    },
+    "resource_stop": null,
+    "runtime": "built from TypeScript",
+    "harness": "passed",
+    "e2e_build": "passed",
+    "js_units": {
+      "passed": 491,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "typescript_no_emit": "passed",
+    "limits": {
+      "logical_cpus": 2,
+      "ram_gib": 3
+    },
+    "scope": "Source build/unit/type receiving, not actual affected popup/browser or installed acceptance."
   }
 }

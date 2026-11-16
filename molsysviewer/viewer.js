@@ -170227,7 +170227,17 @@ var TrajectoryHandlers = class {
     }
     return !this.disposed;
   }
+  /** A settled mirror can receive playback metadata without replacing its model. */
+  isNoOpFrameProjection(msg) {
+    if (this.disposed || !this.follower || typeof msg === "number" || !msg.playback_projection || this.pendingFrames.size !== 0) return false;
+    const count4 = this.getFrameCount(), ref = this.getTrajectoryRef();
+    if (count4 < 1 || !ref) return false;
+    const index = Math.max(0, Math.min(count4 - 1, Math.floor(msg.index ?? 0)));
+    const models = this.getTrajectoryModels(ref);
+    return models.length > 0 && models.every((model) => model.transform.params?.modelIndex === index);
+  }
   async applyTrajectoryFrame(msg, direction) {
+    if (this.isNoOpFrameProjection(msg)) return;
     const index = typeof msg === "number" ? msg : msg.index ?? 0;
     const frameCount = this.getFrameCount();
     if (frameCount < 1) return;
@@ -170236,7 +170246,6 @@ var TrajectoryHandlers = class {
     if (!trajRef) return;
     const models = this.getTrajectoryModels(trajRef);
     if (!models.length) return;
-    if (this.follower && typeof msg !== "number" && msg.playback_projection && this.pendingFrames.size === 0 && models.every((model) => model.transform.params?.modelIndex === clamped)) return;
     const update10 = this.plugin.state.data.build();
     for (const m of models) {
       update10.to(m).update({ modelIndex: clamped });
@@ -191581,7 +191590,8 @@ var MolSysViewerController = class _MolSysViewerController {
       console.warn("[MolSysViewer] message missing 'op'", msg);
       return;
     }
-    if (typeof msg.op === "string" && msg.op.startsWith("load_") || msg.op === "clear_all" || msg.op === "set_trajectory_frame" || msg.op === "partial_coordinates_update") {
+    const changesFrameContext = msg.op === "set_trajectory_frame" && !this.trajectory.isNoOpFrameProjection(msg);
+    if (typeof msg.op === "string" && msg.op.startsWith("load_") || msg.op === "clear_all" || changesFrameContext || msg.op === "partial_coordinates_update") {
       this.contextMenu.close();
       this.groupPanel.clearContextInspection();
     }
