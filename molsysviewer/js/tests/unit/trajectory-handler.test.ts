@@ -26,29 +26,36 @@ test("trajectory handler exposes expected frame count before structure is ready"
 
 // Native coordinate editing is guarded against real Mol* in coordinate-edits.e2e.ts.
 
-test("trajectory handler emits throttled frame changes while playback is active", () => {
-    const trajRef = "traj-ref";
-    const plugin: any = makeTrajectoryPluginMock();
-    plugin.state.data.cells = {
-        get(ref: any) {
-            if (ref === trajRef) return { obj: { data: { frameCount: 5 } } };
-            return null;
-        },
-    };
-    plugin.state.data.selectQ = () => [{ transform: { parent: trajRef, params: { modelIndex: 3 } } }];
-
+test("playback feedback suppresses only identical receipts within a playback episode", async () => {
+    const { handler, projection } = projectedFrameFixture();
     const notifications: any[] = [];
-    const handler = new TrajectoryHandlers(plugin, {
-        getLoadedStructure: () => ({ trajectory: trajRef as any, structure: "struct-ref" as any }),
-        notifyTrajectoryState: () => {},
-        notify: (msg) => notifications.push(msg),
-    });
+    let box = { definition_revision: 2, structure_index: 1 };
+    const context = Reflect.get(handler, "context");
+    context.notify = (msg: unknown) => notifications.push(msg);
+    context.getBoxProjection = () => ({ ...box });
 
-    (handler as any).notifyPlaybackFrameChanged(true);
+    const report = () => (handler as any).notifyPlaybackFrameChanged(true);
+    report();
+    report();
+    box = { definition_revision: 3, structure_index: 2 };
+    report();
+    await handler.setTrajectoryFrame(projection);
+    report();
+    await handler.setTrajectoryFrame({ ...projection, index: 2 });
+    report();
+    await handler.stopTrajectoryPlayback(false);
+    report();
+    handler.dispose();
 
-    assert.deepStrictEqual(notifications, [
-        { event: "trajectory_frame_changed", frame: 3, is_playing: true },
+    assert.deepStrictEqual(notifications.map(({ frame, navigation_revision, box_display }) =>
+        [frame, navigation_revision, box_display.definition_revision, box_display.structure_index]), [
+        [1, undefined, 2, 1],
+        [1, undefined, 3, 2],
+        [1, 8, 3, 2],
+        [2, 8, 3, 2],
+        [2, 8, 3, 2],
     ]);
+    assert.ok(notifications.every(msg => msg.event === "trajectory_frame_changed" && msg.is_playing));
 });
 
 test("a follower consumes complete owner playback metadata without acquiring a timer", () => {

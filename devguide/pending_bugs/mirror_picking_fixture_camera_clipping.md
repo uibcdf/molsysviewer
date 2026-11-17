@@ -109,9 +109,14 @@ deadlines remain unchanged. Production/runtime bytes match `c08d4990`.
 
 Published `0ea58be0` delivers the fixture corrections. Its single
 [full Linux source recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
-is in progress, not accepted; keep the issue partial until that gate is
-received. #344, installed/native-host,
-human and final-candidate acceptance remain separate.
+finishes failed after 4,747 Python cases, all 25 notebooks and the first eight
+core entries pass, including this complete mirror. The following moving-capture
+entry saves successfully but fails its adversarial hold precondition under
+#344; it does not invalidate this mirror's native assertions. The
+[follow-up receipt](../moving_capture_followup_receiving_20261117.json)
+preserves the original terminal evidence and its scope. Keep global recovery,
+latest shared-fixture receiving, installed/native-host, human and final-candidate
+acceptance separate; the issue remains partial.
 
 The scoped reporting/build-route checks pass 552 cases with zero skips, and
 the generated indexes are current. Selected original failures, input manifests,

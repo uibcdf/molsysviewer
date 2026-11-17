@@ -907,6 +907,30 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current #344 working follow-up — 2026-11-17:** the
+[receipt](moving_capture_followup_receiving_20261117.json) preserves source
+run `44118070148` as failed (4,747 Python cases, 25 notebooks and eight core
+entries pass). The revised adversarial setup receives genuinely held science
+before Save; complete earlier native `1035` passes. The apparent missing popup
+draw in three expanded diagnostics is caused by the observer corrupting the
+classic harness's embedded bootstrap; the matched startup probe receives the
+module-script filter, and the maintained owner now checks inspector availability.
+Ordinary `1039` nevertheless reproduces the 30-second moving-popup opening
+timeout. Passive `1040` instead reaches a healthy five-second capture deadline;
+the causes remain unestablished. Native `1041` measures 23 redundant playback
+receipts; working coalescing preserves all changing fields and stop/restart.
+`1042` passes 495 JS cases, types and normal builds. It and focused `1043` /
+`1044` are interrupted by global swap with all owned processes retired.
+The smaller native `1046` scope then passes with 35 feedback receipts and
+zero duplicates. Ordinary actual-Jupyter `1047` passes the complete workflow,
+including both moving popup saves. Native `1048` passes box and moving-state
+capture, then reaches the lifecycle suite deadline. Isolated `1050` passes
+that complete entry at 8 CPU / 4 GiB with its 240-second limit unchanged.
+Remaining work is covering source CI and review of the intermittent legacy
+timeouts. Bundle `d4c479e9…` is local source evidence. Private custody preserves the earlier 188 files under
+manifest `edb2754e…`, with the resumed outcomes recorded separately. Counters
+and the publication pause remain unchanged.
+
 **Current capture-source follow-up — 2026-11-17:** published source `c08d4990`
 has one [full Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44031725024)
 that failed against MolSysMT `4b0b1f8a`: 4,743 Python cases and all 25 notebooks
@@ -917,7 +941,11 @@ and physical-pixel corrections now pass the complete canonical mirror;
 the [receipt](mirror_camera_clipping_receiving_20261117.json) retains both
 causal controls and original failures. The reviewed batch is published in
 `0ea58be0`; its single [full Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
-is in progress, not accepted. The
+finishes failed: 4,747 Python cases, all 25 notebooks and eight core entries,
+including that mirror, pass. Entry nine saves successfully but fails its
+adversarial hold precondition. #344 now receives a genuinely pending query
+before Save; focused primary control `1033` passes. Complete receiving is
+still required. The
 [receipt](live_capture_preparation_receiving_20261117.json) records the two
 guarded production fixes. Every loader disables the native preset's hidden unit-cell
 allocation while retaining the managed box and cell data. Capture preparation
@@ -929,9 +957,14 @@ resource scopes; the latter passes all eight moving cases at 4 CPU / 4 GiB.
 Movie passes separately. #344 stays open: `1017` times out opening the moving
 popup at 30 seconds, without retained original popup state. The maintained
 receiver now captures that state before cleanup; the next pass does not
-explain the timeout. The scoped offline checks pass 570 cases with three
+explain the timeout. Diagnostics `1029`/`1034`/`1036` later cannot record a
+popup draw because the expanded observation hook corrupts the classic harness
+script. The causal `1037`/`1038` startup pair receives the module-script filter;
+the current ordinary actual-Jupyter guard is being received again. Complete
+native `1035` passes all seven saves and annotation presentation before the
+final shared helper/hook refinement. The scoped offline checks pass 570 cases with three
 unselected opt-in host tests; their actual-host evidence stays separate.
-Retain the corrected complete mirror and inspect that recovery; retain
+Retain the corrected complete mirror and the failed recovery; retain
 existing native scientific hosts separately. Later evidence-only commits do not
 change the run's tested SHA. No
 candidate/publication or original 46-outcome counter advances.

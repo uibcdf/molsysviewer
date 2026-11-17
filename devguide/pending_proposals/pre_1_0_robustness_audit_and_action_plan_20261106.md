@@ -588,6 +588,18 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current #344 working correction — 2026-11-17:** the
+[follow-up receipt](../moving_capture_followup_receiving_20261117.json) owns
+the corrected adversarial pending-query setup, guarded diagnostic script loading
+and a native negative with 23 redundant playback receipts. The working feedback
+coalescing passes all 495 JS cases, types, normal builds and focused native
+receiving with zero consecutive duplicate receipts. The complete current
+Jupyter guard passes, including moving-popup startup and both popup saves.
+The earlier intermittent failures retain their causal limits. The scoped
+native box, moving-state and lifecycle checks pass in their recorded resource
+profiles. Covering source checks are pending. The previous source/final counters
+remain **41/46 and 1/46**; these supplemental controls add no original outcome.
+
 **Current capture-source receiving — 2026-11-17:** the
 [new receipt](../live_capture_preparation_receiving_20261117.json) delivers
 native-regression-protected removal of the implicit hidden cell and preservation
@@ -602,7 +614,15 @@ tracked in [#402](../pending_bugs/mirror_picking_fixture_camera_clipping.md);
 Both fixture corrections receive the complete local canonical mirror in
 [the #402 receipt](../mirror_camera_clipping_receiving_20261117.json);
 the single [covering Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
-on published `0ea58be0` is in progress, not accepted.
+on published `0ea58be0` finishes failed: 4,747 Python cases, 25 notebooks and
+eight core entries, including the mirror, pass. The next entry saves correctly
+but fails its adversarial hold precondition. #344's focused pending-query
+setup and complete native entry pass; latest shared-helper/hook receiving
+remains outstanding. Actual-Jupyter diagnostic `1029` opens both popups but
+later loses its native inspector through an overbroad script-rewriting hook.
+The causal startup pair receives the module-script filter; the ordinary
+actual-Jupyter guard is being received again. The earlier bootstrap timeout
+still has no established cause.
 Live-Jupyter diagnostics are outside that full-source profile. Failure observations are now retained
 before closing that window. Keep original negatives and resource scopes;
 **41/46 source-delivered and 1/46 final accepted** remain unchanged.

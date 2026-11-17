@@ -1,19 +1,24 @@
 import type { Locator, Page } from "playwright";
 
-/** Stall genuine scientific replies only on the actual Save click. */
-export async function armMovingDependencyHold(save: Locator) {
-    await save.evaluate(button => {
-        button.addEventListener("click", () => {
-            let host: any = window;
-            for (let depth = 0; depth < 3 && host && !host.__popupWidgetModel; depth++) host = host.opener;
-            if (!host?.__popupWidgetModel) throw new Error("Save has no real widget authority");
-            const monitor = host.__movingCapture;
-            if (monitor.activeCapture) monitor.activeCapture.holdArmedAt = host.performance.now();
-            void host.__popupWidgetModel.send({ moving_fixture: "hold" }).catch((error: any) => {
-                monitor.holdError = String(error);
-                if (monitor.activeCapture) monitor.activeCapture.holdError = String(error);
-            });
-        }, { capture: true, once: true });
+/** Establish real pending science before Save, without invalidating a good frame. */
+export async function holdMovingDependency(canvas: Page, save?: Locator) {
+    // UI actionability precedes the deliberate stall. A coherent capture need
+    // not generate a query, so holding only at click time is insufficient.
+    if (save) await save.click({ trial: true });
+    await canvas.evaluate(async () => {
+        let host: any = window;
+        for (let depth = 0; depth < 3 && host && !host.__popupWidgetModel; depth++) host = host.opener;
+        if (!host?.__popupWidgetModel) throw new Error("Save has no real widget authority");
+        const monitor = host.__movingCapture;
+        monitor.heldSource = null;
+        if (monitor.activeCapture) monitor.activeCapture.holdArmedAt = host.performance.now();
+        await host.__popupWidgetModel.send({ moving_fixture: "hold" });
+    });
+    await canvas.waitForFunction(() => {
+        const w = window as any, c = w.__mirrorController;
+        const authority = w.__popupWidgetModel ? w : window.opener;
+        return authority.__movingCapture.heldSource?.count > 0
+            && c.dynamicRegionEvaluationInFlight !== null;
     });
 }
 

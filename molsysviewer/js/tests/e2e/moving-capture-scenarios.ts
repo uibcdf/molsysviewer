@@ -7,7 +7,7 @@ import { captureCanvasPopupControllers, mountCanvasPopupFixture } from "./canvas
 import { fixtureEnvironment, withFixtureWorkspace } from "./fixture-workspace";
 import { checkAnnotationPresentation } from "./annotation-presentation-scenarios";
 import { observeMovingCaptureCanvas, observeMovingPopupBootstrap, releaseMovingCaptureObserver } from "./moving-canvas-observer";
-import { armMovingDependencyHold, movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
+import { holdMovingDependency, movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
 import { checkCaptureLifetimes, checkDynamicFreeze } from "./moving-capture-lifecycle-scenarios";
 
 /** Receive the negotiated production v2 receiver against a genuinely moving authority. */
@@ -40,7 +40,9 @@ export async function checkMovingCapture(page: Page, dir: string,
             await page.evaluate(() => {
                 const w = window as any, c = w.__mirrorController, model = w.__popupWidgetModel;
                 const monitor: any = w.__movingCapture = { inbound: [], commands: [], intents: [], outbound: [], captures: [], draws: [], frames: [], gates: {},
-                    captureErrors: [], annotationOffsets: [], readiness: [], timing: [], bootstraps: [], activeCapture: null as any, heldSource: null as any };
+                    captureErrors: [], annotationOffsets: [], readiness: [], timing: [], bootstraps: [], dynamicQueryCount: 0,
+                    playbackFeedback: [], duplicatePlaybackFeedback: 0, lastPlaybackFeedback: undefined,
+                    activeCapture: null as any, heldSource: null as any };
                 const releaseHeldWhenObserved = () => {
                     const active = monitor.activeCapture;
                     if (!active?.requestSeen || !monitor.heldSource || active.released
@@ -58,6 +60,16 @@ export async function checkMovingCapture(page: Page, dir: string,
                 const send = model.send.bind(model);
                 model.send = (message: any) => {
                     const payload = message.payload ?? message;
+                    if (payload.event === "request_dynamic_region_evaluation") monitor.dynamicQueryCount++;
+                    if (payload.event === "trajectory_frame_changed") {
+                        const feedback = { frame: payload.frame, is_playing: payload.is_playing ?? false,
+                            navigation_revision: payload.navigation_revision, box_display: payload.box_display };
+                        const key = JSON.stringify(feedback);
+                        if (key === monitor.lastPlaybackFeedback) monitor.duplicatePlaybackFeedback++;
+                        monitor.lastPlaybackFeedback = key;
+                        monitor.playbackFeedback.push(feedback);
+                        if (monitor.playbackFeedback.length > 128) monitor.playbackFeedback.shift();
+                    }
                     if (payload.action === "save_work_file") {
                         monitor.intents.push(structuredClone(payload));
                         if (monitor.activeCapture) monitor.activeCapture.intentAt = performance.now();
@@ -262,17 +274,26 @@ export async function checkMovingCapture(page: Page, dir: string,
                 if (work) {
                     await work.getByLabel("Work file format", { exact: true }).selectOption(kind);
                     await work.getByLabel("Path in Python session", { exact: true }).fill(path);
+                    await work.getByRole("button", { name: "Save file", exact: true }).click({ trial: true });
                 }
+                if (!playing) await canvas.waitForFunction(() => !!(window as any).__mirrorController.readMovingVisualState());
                 const start = await page.evaluate(() => ({ inbound: (window as any).__movingCapture.inbound.length,
-                    outbound: (window as any).__movingCapture.outbound.length, frames: (window as any).__movingCapture.frames.length }));
+                    outbound: (window as any).__movingCapture.outbound.length, frames: (window as any).__movingCapture.frames.length,
+                    dynamicQueries: (window as any).__movingCapture.dynamicQueryCount }));
                 await page.evaluate(({ playing, outbound, endpointId }) => {
                     const monitor = (window as any).__movingCapture;
                     monitor.heldSource = null;
                     monitor.activeCapture = { playing, outboundStart: outbound, requestSeen: false, frameChanges: 0, endpointId };
                 }, { playing, outbound: start.outbound, endpointId });
+                if (playing) {
+                    // Establish a genuine outstanding dependency before capture.
+                    // A coherent frame no longer needs an extra query merely
+                    // because Save was requested. Observe the next real frame's
+                    // scientific request; never invalidate good membership here.
+                    await holdMovingDependency(canvas);
+                }
                 let result: any, completion: any;
                 if (role === "primary") {
-                    await command("hold");
                     await command("save", { path, kind });
                     console.log(`[E2E moving capture] ${sample}: source command acknowledged`);
                     result = await awaitJob(path);
@@ -280,10 +301,6 @@ export async function checkMovingCapture(page: Page, dir: string,
                 } else {
                     assert.ok(work);
                     const save = work.getByRole("button", { name: "Save file", exact: true });
-                    // Arm the deliberate comm stall on the actual click. CDP
-                    // actionability can take several draws on a busy canvas;
-                    // that delay must not starve queries before Save happens.
-                    await armMovingDependencyHold(save);
                     await save.click();
                     await page.waitForFunction(start => (window as any).__movingCapture.inbound.slice(start)
                         .some((message: any) => message.op === "studio_action_result" && message.action === "save_work_file"), start.inbound);
@@ -321,14 +338,20 @@ export async function checkMovingCapture(page: Page, dir: string,
                 }
                 assert.equal(completion.ok, true, JSON.stringify(completion));
                 assert.ok(diagnostic.activeCapture.requestSeen, "the real version-2 request must reach the receiver");
-                assert.ok(diagnostic.activeCapture.released?.heldSource.count > 0, "Python must actually hold the dependent request");
-                if (playing) assert.ok(diagnostic.activeCapture.released.frameChanges >= 2,
-                    "two native frame changes must occur after the real capture request, while dependent geometry is held");
-                assert.equal(diagnostic.activeCapture.released.repliesBeforeRelease, 0, "capture cannot precede dependent geometry");
+                if (playing) {
+                    assert.ok(diagnostic.activeCapture.released?.heldSource.count > 0, "Python must actually hold the dependent request");
+                    assert.ok(diagnostic.activeCapture.released.frameChanges >= 2,
+                        "two native frame changes must occur after the real capture request, while dependent geometry is held");
+                    assert.equal(diagnostic.activeCapture.released.repliesBeforeRelease, 0, "capture cannot precede dependent geometry");
+                    const sourceRelease = result.timeline.findLast((entry: any) => entry.name === "release");
+                    assert.equal(sourceRelease.pending_saves, 1, "source save must still be pending when genuine replies are released");
+                } else {
+                    assert.equal(diagnostic.activeCapture.released, undefined);
+                    assert.equal(await page.evaluate(() => (window as any).__movingCapture.dynamicQueryCount), start.dynamicQueries,
+                        "saving a coherent evaluated-empty frame must not create another scientific query");
+                }
                 assert.equal(diagnostic.activeCapture.releaseError, undefined);
                 assert.equal(diagnostic.activeCapture.holdError, undefined);
-                const sourceRelease = result.timeline.findLast((entry: any) => entry.name === "release");
-                assert.equal(sourceRelease.pending_saves, 1, "source save must still be pending when genuine replies are released");
                 assert.equal(result.same_molsys, true);
                 assert.equal(result.coordinates_unchanged, true);
                 assert.equal(result.authority_state.view.playback.playing, playing);
@@ -383,6 +406,13 @@ export async function checkMovingCapture(page: Page, dir: string,
                 assert.deepEqual(endpointErrors, []);
                 console.log(`[E2E moving capture] ${sample}: native frame ${frame}, ${saved.view.playback.direction}, all scene dependencies coherent; playing=${playing}`);
             }
+            const feedback = await page.evaluate(() => {
+                const monitor = (window as any).__movingCapture;
+                return { events: monitor.playbackFeedback, duplicates: monitor.duplicatePlaybackFeedback };
+            });
+            await writeFile(resolve(process.env.E2E_MOVING_CAPTURE_ARTIFACT_DIR ?? workspace, "trajectory-feedback.json"),
+                JSON.stringify(feedback, null, 2));
+            assert.equal(feedback.duplicates, 0, "unchanged playback feedback must not repeatedly recompute Python projections");
             await closePeers();
             if (phase === "all" || phase === "presentation") {
                 await command("presentation");

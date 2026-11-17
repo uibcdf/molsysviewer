@@ -65,6 +65,8 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
  });
  async function observe(target){
   if(target!==page)await target.addScriptTag({content:harness});
+  assert.equal(await target.evaluate(()=>typeof window.Harness?.inspectMovingCaptureDraw),'function',
+   'The independent native-draw inspector must load before observing captures.');
   await target.evaluate(()=>{
    const c=window.__captureControllers[0],p=window.__jupMoving={draws:[],frames:[],active:null,readiness:[],captureStarts:[]};
    const prepare=c.prepareMovingVisualCapture;
@@ -188,6 +190,7 @@ export async function receiveJupyterMoving({page,kernel,config,report,openWork,o
   report.moving_failure.authority=await kernel(json("_moving['status']()")).catch(failure=>({diagnostic_error:failure.name}));
   if(popup)report.moving_failure.popup=await popup.evaluate(()=>({
    active:window.__jupMoving?.active,frames:window.__jupMoving?.frames,readiness:window.__jupMoving?.readiness,
+   draws:window.__jupMoving?.draws,
    captureStarts:window.__jupMoving?.captureStarts,playback:window.__captureControllers[0].trajectory.getTrajectoryState(),
    capture_target_matches:window.opener.__jupMovingWire.target===window,
   })).catch(failure=>({diagnostic_error:failure.name}));

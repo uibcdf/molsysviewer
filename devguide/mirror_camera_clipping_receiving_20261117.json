@@ -236,15 +236,14 @@
   "covering_source_checkpoint": {
     "id": 44118070148,
     "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/44118070148",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "head_sha": "0ea58be0089397cd2a023a8574d0d2fc7cea41e7",
     "path": ".github/workflows/ci-python-314-source-pair.yaml",
     "event": "workflow_dispatch",
     "run_attempt": 1,
     "created_at": "2026-11-17T15:45:59Z",
-    "updated_at": "2026-11-17T15:46:04Z",
-    "observed_utc": "2026-11-17T15:46:51.203891+00:00",
+    "updated_at": "2026-11-17T16:29:17Z",
     "dispatch_inputs": {
       "source_receiving": true,
       "receiving_scope": "full",
@@ -255,7 +254,57 @@
       "molsysmt_version": "0.23.0",
       "viewer_version": "0.24.1"
     },
-    "acceptance": "Pending. Exact 0ea58be0 code; evidence-only later commits do not change its tested SHA. No candidate tags, installed artifact pair or publication."
+    "acceptance": "Complete scientific mirror passes in core entry four. Full source recovery fails entry nine after a successful save: no held scientific dependency had been established. Not full-core, candidate or installed qualification.",
+    "terminal_evidence": {
+      "run": 44118070148,
+      "producer": "0ea58be0089397cd2a023a8574d0d2fc7cea41e7",
+      "conclusion": "failure",
+      "artifacts": [
+        {
+          "id": 14343964886,
+          "name": "movie-encoder-native-Linux",
+          "size_in_bytes": 14696,
+          "digest": "sha256:ddd57b6e253170b1d8ba240917447cd17d8ed3c71ffa099b9c0f2d87ec4252f0",
+          "sha256_verified": true
+        },
+        {
+          "id": 14343809809,
+          "name": "source-receiving-Linux-py3.14",
+          "size_in_bytes": 83689,
+          "digest": "sha256:6d9ac22551acc94245d1d7715738aed04329e64103559f4512c11d8f714ab504",
+          "sha256_verified": true,
+          "junit": [
+            {
+              "name": "pytest",
+              "errors": "0",
+              "failures": "0",
+              "skipped": "42",
+              "tests": "4789",
+              "time": "700.477",
+              "timestamp": "2026-11-17T15:50:06.226221+00:00",
+              "hostname": "runnervmccnms"
+            }
+          ]
+        }
+      ],
+      "job_id": 134161538678,
+      "log_sha256": "8f1093bb16e792b0393f10b14d60a3be9fe3c2c95ec00ffb28b35a1311068512"
+    },
+    "executed_scope": {
+      "python_passed": 4747,
+      "python_skipped": 42,
+      "python_deselected": 17,
+      "python_failed": 0,
+      "python_errors": 0,
+      "notebooks_passed": 25,
+      "core_completed_entries": 8,
+      "core_total_entries": 63,
+      "failed_entry": "moving-state-capture",
+      "failure": "Python must actually hold the dependent request",
+      "save_completed_before_failed_assertion": true,
+      "actual_jupyter_selected": false,
+      "installed_pair": false
+    }
   },
   "counter": {
     "source_delivered": 41,

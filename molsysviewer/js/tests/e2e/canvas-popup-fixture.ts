@@ -139,7 +139,9 @@ export async function captureCanvasPopupControllers(page: Page, waitForControlle
             const win:any=open(...args);
             const append=win.Node.prototype.appendChild;
             win.Node.prototype.appendChild=function(node:any) {
-                if(node.tagName==='SCRIPT' && node.textContent.includes('await boot(module)')) {
+                // Classic harness bundles contain the popup template as data.
+                // Observe only the real module bootstrap, never its copies.
+                if(node.tagName==='SCRIPT' && node.type==='module' && node.textContent.includes('await boot(module)')) {
                     node.textContent=node.textContent.replace('await boot(module)', `${prelude}; const create=module.MolSysViewerController.create;
                         module.MolSysViewerController.create=async function(...args) {
                             const ctrl=await create.apply(this,args); window.__mirrorController=ctrl; return ctrl;

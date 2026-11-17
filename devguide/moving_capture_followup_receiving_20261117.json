@@ -1,0 +1,560 @@
+{
+  "schema": "molsysviewer.moving_capture_receiving@1",
+  "issue": "uibcdf/molsysviewer#344",
+  "status": "active",
+  "date": "2026-11-17",
+  "source_identity": {
+    "base_commit": "434df326313acf9414aec81d2cc5b0dbb008208f",
+    "working_source_changes": true,
+    "code_sha256": {
+      "molsysviewer/js/src/managers/handlers/trajectory-handlers.ts": "8f4ae06e4729fc7e513489d1dd42d20ff4be971d8650039301314d415fb6e9c0",
+      "molsysviewer/js/tests/e2e/canvas-popup-fixture.ts": "0c369e1c983afb6c95a829a548bac2e320b0bdab24199259dfd79e59476e1344",
+      "molsysviewer/js/tests/e2e/moving-capture-lifecycle-scenarios.ts": "24fbd05fc4ce3d791fa566e32e6dd1bae84e1ef953e25a35c16e17440b7e665b",
+      "molsysviewer/js/tests/e2e/moving-capture-scenarios.ts": "36076c58f6b9efb434a81badb8a208d6dac25900b7ef5d2b0417744fbc29881d",
+      "molsysviewer/js/tests/e2e/moving-work-file-ui.ts": "cea6b8bc436f2483120ac22db717d478cc9005205412492aa850b5e237dd60c9",
+      "tests/_jupyter_live_capture.mjs": "527544f100c1c0c43dfe5c86ff105c106cb223fdd2dc5e312a76ea7b1cae42a2",
+      "tests/_jupyter_moving_capture.mjs": "1963c9cf9a1e54cf30de98d26b6b51496447bd0784bab1bd78896c651fbd097d",
+      "molsysviewer/js/tests/unit/trajectory-handler.test.ts": "e2eea3ed69d07bc26cd5f95f640f01c86e03e76a5e784ade5e036f773c2baffc"
+    },
+    "runtime_before_sha256": "56c1cdcdccd7ede62abe1c4ba0acd2c001dbe0a7598c77b237be67a4f377ff2c",
+    "runtime_working_sha256": "d4c479e981b71613d3e9b251df168270d2f158daae36e8616f79c72bcd7ab14e",
+    "runtime_built_by": "npm run build:runtime; no manual artifact editing or package metadata sync"
+  },
+  "providers": {
+    "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "molsysmt_native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "molstar_installed": "5.13.1",
+    "node": "22.23.4",
+    "actual_jupyter_ipykernel": "Isolated verified original 7.4.0 capsule; routine shared prefix remains unchanged",
+    "scope": "Controlled source/cached-provider receiving. Not installed artifacts, visible Qt/native GPU, human or final-candidate acceptance."
+  },
+  "findings": {
+    "stale_capture_test_precondition": "Observe genuine pending scientific requests before Save/owner loss. A coherent evaluated-empty frame must not be requeried. Latest shared helper still needs full receiving.",
+    "diagnostic_script_rewrite": "Match the real module bootstrap only. Classic harness contains an embedded copy and must remain untouched; inspector availability is checked before observing draws.",
+    "unchanged_playback_feedback": "Native old-runtime negative retains 23 identical consecutive receipts. Working runtime coalesces identical frame/playback/navigation/box receipts and resets at stop. Effect on complete deadline receiving remains unqualified.",
+    "current_jupyter_failure": "1039 reproduces 30-second popup opening timeout; controller/system present and loader absent at subsequent observation. 1040 reaches a healthy default capture deadline before that opening. Causes not unified or attributed to MolSysMT."
+  },
+  "latest_completed_checks": {
+    "profile": 1042,
+    "js_cases_passed": 495,
+    "js_failures": 0,
+    "js_skipped": 0,
+    "typescript": "passed",
+    "runtime_harness_e2e_builds": "passed",
+    "overall_invocation": "interrupted by global swap before native regression completion"
+  },
+  "attempts": [
+    {
+      "profile": 1029,
+      "scope": "Instrumented full Jupyter; inspector corrupted by diagnostic script rewrite, not evidence of a native draw defect.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 288.3,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 4180.0,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "f0675d6ad22a188c7b06ad56ab377738315570a6b99f197dbe9f4dd568519a88"
+    },
+    {
+      "profile": 1030,
+      "scope": "Preparation fails at sandbox user-bus boundary; fixture not reached.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 1.895,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 1.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "7343b987be73ca1fd7333abb16a1fd980408cbed5b623a228683acca23ad102c"
+    },
+    {
+      "profile": 1031,
+      "scope": "Preparation fails at incorrect relative helper path; fixture not reached.",
+      "native_exit": 2,
+      "invocation_outcome": "failed",
+      "seconds": 1.683,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 7.1,
+      "cleanup": {
+        "tracked": 1,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "7343b987be73ca1fd7333abb16a1fd980408cbed5b623a228683acca23ad102c"
+    },
+    {
+      "profile": 1032,
+      "scope": "Resource interruption before fixture readiness.",
+      "native_exit": 0,
+      "invocation_outcome": "interrupted",
+      "seconds": 17.099,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "peak_summed_process_rss_mib": 2207.5,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "7343b987be73ca1fd7333abb16a1fd980408cbed5b623a228683acca23ad102c"
+    },
+    {
+      "profile": 1033,
+      "scope": "Focused primary native pending-query/state/restore control passes before later hook/helper refinements.",
+      "native_exit": 0,
+      "invocation_outcome": "completed",
+      "seconds": 32.154,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 2356.4,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "7343b987be73ca1fd7333abb16a1fd980408cbed5b623a228683acca23ad102c"
+    },
+    {
+      "profile": 1034,
+      "scope": "Instrumented Jupyter disproves late history eviction; inspector startup is invalid, as established by 1037.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 272.014,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 4211.9,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "da4439b93152a68fef5eb68be2dfd5b8fc131ac7a7d7ced8bf6b2e483c8f72e7"
+    },
+    {
+      "profile": 1035,
+      "scope": "Types/build and complete native moving-capture/annotation-presentation entry pass before final helper/hook and feedback changes.",
+      "native_exit": 0,
+      "invocation_outcome": "completed",
+      "seconds": 300.322,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 4030.1,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "dc2ca991d2cf68bbbff3315f1b547d180eaba43eb866ea83d431a6308a76c6c3"
+    },
+    {
+      "profile": 1036,
+      "scope": "Delegated coherent native reads distinguish inspector failure from capture; instrumented diagnostic remains invalid as qualification.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 299.548,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 4217.7,
+      "cleanup": {
+        "tracked": 22,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "ef203af99993b5c745e42d3dc6a327f367b62326a33d1cb9cd89c9a94e2f2d32"
+    },
+    {
+      "profile": 1037,
+      "scope": "First actual-Jupyter popup startup probe; original expanded observer corrupts classic inspector. Intentional diagnostic stop.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 76.478,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 3071.4,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "aef9c52735f8f8948229ecd9a0bf1ff6d6e589e73c692a16550183bafe060d0d",
+      "inspector_startup": {
+        "type": "undefined",
+        "script_error_count": 1,
+        "intentional_stop_preserved_as_exit_1": true
+      }
+    },
+    {
+      "profile": 1038,
+      "scope": "Matched startup probe with module-script filter: inspector loads without errors. Intentional diagnostic stop, not full guard.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 79.99,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 3060.8,
+      "cleanup": {
+        "tracked": 19,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "f74219966d97128be7b487584147c45bfb8da5ee15f361209cc3f06892f71229",
+      "inspector_startup": {
+        "type": "function",
+        "script_error_count": 0,
+        "intentional_stop_preserved_as_exit_1": true
+      }
+    },
+    {
+      "profile": 1039,
+      "scope": "Ordinary pytest actual-Jupyter guard fails the unchanged 30-second moving-popup opening wait after all six primary captures.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 243.443,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 4242.0,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "1e31a0d8766709bb5ab02d9824f851e87e874f81e431f0677788e1c3df9ed49b"
+    },
+    {
+      "profile": 1040,
+      "scope": "Passive corrected bootstrap/loader diagnostic fails second healthy five-second default capture before moving-popup receiving.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 155.235,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 3091.0,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "9c55dcfd3a6aec1bd91568d364d50ede3ebbc1941c0598d067aed080c505353b"
+    },
+    {
+      "profile": 1041,
+      "scope": "Causal native negative: state/geometry/restore pass; 23 identical consecutive playback receipts fail no-duplicate regression.",
+      "native_exit": 1,
+      "invocation_outcome": "failed",
+      "seconds": 32.425,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_summed_process_rss_mib": 2371.6,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "18eaa3fd84587445968edb4ccd274a5efdd7ca70c1e058d3bea3ba891e4b5020"
+    },
+    {
+      "profile": 1042,
+      "scope": "495 JS cases/types/normal builds pass; resource interruption before native feedback receiving completes.",
+      "native_exit": 0,
+      "invocation_outcome": "interrupted",
+      "seconds": 31.848,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "peak_summed_process_rss_mib": 572.3,
+      "cleanup": {
+        "tracked": 29,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "1f71637e06755092e48500c3baaf8273290f728ed219f37019fcffb401fe605d"
+    },
+    {
+      "profile": 1043,
+      "scope": "Latest focused native feedback control interrupted at fixture startup by global swap activity; not a product failure or passing guard.",
+      "native_exit": 0,
+      "invocation_outcome": "interrupted",
+      "seconds": 11.91,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": "Shared resource margin requires releasing this execution",
+      "peak_summed_process_rss_mib": 1711.3,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": 0,
+        "errors": 0
+      },
+      "input_manifest_sha256": "360071f79f2ba7b509df2dd6ef6835651827ac177fe83ee8675715327697380e"
+    }
+  ],
+  "source_ci": {
+    "run": 44118070148,
+    "producer": "0ea58be0089397cd2a023a8574d0d2fc7cea41e7",
+    "conclusion": "failure",
+    "artifacts": [
+      {
+        "id": 14343964886,
+        "name": "movie-encoder-native-Linux",
+        "size_in_bytes": 14696,
+        "digest": "sha256:ddd57b6e253170b1d8ba240917447cd17d8ed3c71ffa099b9c0f2d87ec4252f0",
+        "sha256_verified": true
+      },
+      {
+        "id": 14343809809,
+        "name": "source-receiving-Linux-py3.14",
+        "size_in_bytes": 83689,
+        "digest": "sha256:6d9ac22551acc94245d1d7715738aed04329e64103559f4512c11d8f714ab504",
+        "sha256_verified": true,
+        "junit": [
+          {
+            "name": "pytest",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "42",
+            "tests": "4789",
+            "time": "700.477",
+            "timestamp": "2026-11-17T15:50:06.226221+00:00",
+            "hostname": "runnervmccnms"
+          }
+        ]
+      }
+    ],
+    "job_id": 134161538678,
+    "log_sha256": "8f1093bb16e792b0393f10b14d60a3be9fe3c2c95ec00ffb28b35a1311068512"
+  },
+  "pending": [
+    "Covering Linux source checkpoint on the reviewed batch.",
+    "Review historical moving-popup opening and default capture timeouts against current evidence. Their exact causes are not established."
+  ],
+  "resource_scope": {
+    "cpus": 4,
+    "memory_gib": 4,
+    "swap_gib": 0,
+    "global_available_reserve_gib": 6.5,
+    "monitoring": "Pressure/swap and owned-process family; systemd scope is containment, not a reservation. Two latest global-swap stops defer expensive runs; no other processes are touched.",
+    "max_session_authorized": "8 logical CPUs / 6 GiB; not automatically selected"
+  },
+  "private_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-capture-followup-20261117",
+    "custodian": "Diego Prada Gracia",
+    "files": 188,
+    "bytes": 79435430,
+    "manifest_sha256": "edb2754e587474c3dd466679284c4c8b2686027a4dc6b68acbbfe160264e23bf",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
+  },
+  "counter": {
+    "source_delivered": 41,
+    "original_total": 46,
+    "final_accepted": 1,
+    "extra_controls_increment_original_counter": false
+  },
+  "publication": "No tag, package, promotion, release, candidate or 1.0 publication.",
+  "lightweight_closeout_checks": {
+    "scope": "Index, JavaScript syntax, whitespace and receipt/source hash checks only; no pytest, native/browser or full governance claim.",
+    "results": [
+      {
+        "command": [
+          "/home/diego/Myopt/miniconda3/envs/molsyssuite@uibcdf_3.14/bin/python",
+          "devtools/devguide_index.py",
+          "--check"
+        ],
+        "exit": 0,
+        "stdout": "generated indexes are up to date",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/tmp/msv-node22-restored-20261115/node-v22.23.4-linux-x64/bin/node",
+          "--check",
+          "tests/_jupyter_live_capture.mjs"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/tmp/msv-node22-restored-20261115/node-v22.23.4-linux-x64/bin/node",
+          "--check",
+          "tests/_jupyter_moving_capture.mjs"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "source_and_opaque_runtime_hashes_match": true,
+    "remaining_pytest_governance": "deferred with the remaining controlled validation"
+  },
+  "resumption": {
+    "unit": {
+      "profile": 1045,
+      "passed": 495,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Canonical unit bundle executed directly on Node 22.23.4. The sandbox test wrapper reports one file; the direct process reports native subtest counts.",
+      "trajectory_handler_test_sha256": "e2eea3ed69d07bc26cd5f95f640f01c86e03e76a5e784ade5e036f773c2baffc"
+    },
+    "private_custody": {
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-capture-resumption-1050",
+      "custodian": "Diego Prada Gracia",
+      "files": 68,
+      "bytes": 30534154,
+      "manifest_sha256": "f586fc7b6cd6b1182816cffe660901a76bfe42fef93ea323cb3614dd5dea8fe4",
+      "hashes_verified": true,
+      "originals_retained": true
+    },
+    "attempts": {
+      "1044": {
+        "native_exit": 0,
+        "seconds": 7.541,
+        "inputs": 9997,
+        "input_manifest_sha256": "360071f79f2ba7b509df2dd6ef6835651827ac177fe83ee8675715327697380e",
+        "unchanged_inputs": true,
+        "resource_stop": "Shared resource margin requires releasing this execution",
+        "peak_cgroup_memory_bytes": 299487232,
+        "owned_processes_retired": 16,
+        "min_available_memory_gib": 18.11,
+        "outcome": "interrupted",
+        "last_interval_swap_bytes": 28344320
+      },
+      "1046": {
+        "native_exit": 0,
+        "seconds": 54.322,
+        "inputs": 9997,
+        "input_manifest_sha256": "ac40f3733e9fbc63fde355f3b138e8bdc365e54e6690ae0b71da01fbcf2ed35b",
+        "unchanged_inputs": true,
+        "resource_stop": null,
+        "peak_cgroup_memory_bytes": 1470214144,
+        "owned_processes_retired": 15,
+        "min_available_memory_gib": 17.05,
+        "outcome": "passed",
+        "scope": "Focused native moving primary state and independent restore",
+        "receipts": 35,
+        "duplicate_receipts": 0,
+        "frames": [
+          0,
+          1,
+          2
+        ],
+        "cpu_limit": 2,
+        "ram_gib": 3
+      },
+      "1047": {
+        "native_exit": 0,
+        "seconds": 354.433,
+        "inputs": 9997,
+        "input_manifest_sha256": "1aa4ab3b9513283745d43dba951b53f28d129965202c54cea25216a3dc1fb83a",
+        "unchanged_inputs": true,
+        "resource_stop": null,
+        "peak_cgroup_memory_bytes": 3064586240,
+        "owned_processes_retired": 20,
+        "min_available_memory_gib": 15.55,
+        "outcome": "passed",
+        "scope": "Canonical selected Jupyter work-files pytest guard",
+        "browser_outcome": "passed",
+        "stopped_roundtrips": 6,
+        "strong_restores": 6,
+        "studio_cases": 4,
+        "moving_cases": 8,
+        "moving_popup_cases": 2,
+        "no_late_write_after_cancel": true,
+        "no_late_write_after_timeout": true,
+        "cpu_limit": 4,
+        "ram_gib": 4
+      },
+      "1048": {
+        "native_exit": 1,
+        "seconds": 622.295,
+        "inputs": 9997,
+        "input_manifest_sha256": "b9bd5a97b3857f304cbd7d8379164b916e18014e0f3ade894b88e01b302c1428",
+        "unchanged_inputs": true,
+        "resource_stop": null,
+        "peak_cgroup_memory_bytes": 2779267072,
+        "owned_processes_retired": 38,
+        "min_available_memory_gib": 15.84,
+        "outcome": "failed",
+        "scope": "Native box-trajectory, moving-state-capture and moving-capture-lifecycle under one canonical core runner",
+        "cpu_limit": 4,
+        "ram_gib": 4,
+        "passed_entries": [
+          "box-trajectory",
+          "moving-state-capture"
+        ],
+        "failed_entry": "moving-capture-lifecycle",
+        "suite_limit_seconds": 240
+      },
+      "1049": {
+        "native_exit": 0,
+        "seconds": 9.237,
+        "inputs": 9997,
+        "input_manifest_sha256": "7b2e5681aab150118bcec6bb36b63e200787481958a7b7ccf39e764712142951",
+        "unchanged_inputs": true,
+        "resource_stop": null,
+        "peak_cgroup_memory_bytes": 162799616,
+        "owned_processes_retired": 4,
+        "min_available_memory_gib": 18.34,
+        "outcome": "passed",
+        "scope": "Offline governance, API and Jupyter contract checks",
+        "passed": 574,
+        "skipped_opt_in_host_tests": 3,
+        "cpu_limit": 2,
+        "ram_gib": 2
+      },
+      "1050": {
+        "native_exit": 0,
+        "seconds": 173.432,
+        "inputs": 9996,
+        "input_manifest_sha256": "2a4f82f2a9fc7f6ada1d5eaac9a2969c6df3a82a7323ac866b84fe2fbd846db2",
+        "unchanged_inputs": true,
+        "resource_stop": null,
+        "peak_cgroup_memory_bytes": 2242121728,
+        "owned_processes_retired": 18,
+        "min_available_memory_gib": 16.41,
+        "outcome": "passed",
+        "scope": "Canonical isolated moving-capture-lifecycle",
+        "cpu_limit": 8,
+        "ram_gib": 4,
+        "suite_limit_seconds": 240
+      }
+    }
+  }
+}

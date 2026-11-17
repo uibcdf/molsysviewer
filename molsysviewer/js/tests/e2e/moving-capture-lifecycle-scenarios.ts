@@ -3,7 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { Page } from "playwright";
 import type { PythonFixtureBridge } from "./python-fixture-bridge";
-import { armMovingDependencyHold, movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
+import { holdMovingDependency, movingEndpointIdentity, openMovingWorkFile } from "./moving-work-file-ui";
 
 type Context = { page: Page; dir: string; workspace: string; oracle: any; bridge: PythonFixtureBridge;
     command: (name: string, details?: Record<string, unknown>) => Promise<any>; inspect: () => Promise<any> };
@@ -106,7 +106,7 @@ export async function checkCaptureLifetimes(context: Context) {
             await work.getByLabel("Work file format", { exact: true }).selectOption("state");
             await work.getByLabel("Path in Python session", { exact: true }).fill(path);
             const save = work.getByRole("button", { name: "Save file", exact: true });
-            await armMovingDependencyHold(save); await save.click();
+            await holdMovingDependency(popup, save); await save.click();
             await until(inspect, value => value.held > 0 && value.pending_studio_saves === 1 && value.pending_captures === 1,
                 "genuine pending scientific capture");
             console.log(`[E2E capture lifecycle] closing ${close} owner ${endpoint}`);
@@ -127,7 +127,7 @@ export async function checkCaptureLifetimes(context: Context) {
         // async loop remains alive; no inspect/poll drives its deadline meanwhile.
         const path = resolve(workspace, "transport-lost.json");
         const sentinel = Buffer.from("original destination after transport loss"); await writeFile(path, sentinel);
-        await command("hold"); await command("save", { path, kind: "state", timeout: 5 });
+        await holdMovingDependency(page); await command("save", { path, kind: "state", timeout: 5 });
         await until(inspect, value => value.held > 0 && value.pending_captures === 1, "pending transport-loss capture");
         await page.close();
         await new Promise(resolve => setTimeout(resolve, 5300));

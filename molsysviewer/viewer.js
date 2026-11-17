@@ -170344,6 +170344,7 @@ var TrajectoryHandlers = class {
     this.frameDrawRelease?.();
     this.frameDrawRelease = void 0;
     this.firstDrawPending = false;
+    this.lastPlaybackFeedback = void 0;
     this.framePacingFrame = void 0;
     this.plugin.managers.animation.stop();
     if (this.playbackTimer) {
@@ -170421,13 +170422,17 @@ var TrajectoryHandlers = class {
   notifyPlaybackFrameChanged(isPlaying) {
     if (this.disposed) return;
     const box4 = this.context.getBoxProjection?.();
-    this.context.notify?.({
+    const message = {
       event: "trajectory_frame_changed",
       frame: this.getCurrentFrameIndex(),
       is_playing: isPlaying,
       ...this.navigationRevision === void 0 ? {} : { navigation_revision: this.navigationRevision },
       ...box4 ? { box_display: box4 } : {}
-    });
+    };
+    const signature2 = JSON.stringify(message);
+    if (signature2 === this.lastPlaybackFeedback) return;
+    this.lastPlaybackFeedback = signature2;
+    this.context.notify?.(message);
   }
   updateTrajectoryState() {
     if (this.disposed) return;

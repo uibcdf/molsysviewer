@@ -72,7 +72,10 @@ function observePopupChildren(){
    window.__capturePopups.push(popup);
    const append=popup.Node.prototype.appendChild;
    popup.Node.prototype.appendChild=function(node){
-    if(node.tagName==='SCRIPT'&&node.textContent.includes('await boot(module)'))node.textContent=node.textContent.replace('await boot(module)',`const create=module.MolSysViewerController.create;module.MolSysViewerController.create=async function(...args){const c=await create.apply(this,args);window.__captureControllers=[...(window.__captureControllers||[]),c];return c;};await boot(module)`);
+    // Only the actual module bootstrap is an observation seam. A classic
+    // test bundle also contains this text inside its embedded popup template;
+    // rewriting that literal corrupts the inspector before it can run.
+    if(node.tagName==='SCRIPT'&&node.type==='module'&&node.textContent.includes('await boot(module)'))node.textContent=node.textContent.replace('await boot(module)',`const create=module.MolSysViewerController.create;module.MolSysViewerController.create=async function(...args){const c=await create.apply(this,args);window.__captureControllers=[...(window.__captureControllers||[]),c];return c;};await boot(module)`);
     return append.call(this,node);
    };
    return popup;

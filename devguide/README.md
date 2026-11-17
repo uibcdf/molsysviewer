@@ -47,18 +47,34 @@ documents, and historical audits.
 
 ## Current status and planning
 
+The [current #344 follow-up](moving_capture_followup_receiving_20261117.json)
+receives a stale adversarial capture precondition and the diagnostic observer's
+classic-script corruption. A native negative also measures 23 unchanged
+playback receipts that repeatedly regenerate Python summaries. Coalescing
+passes 495 JS cases, types, normal builds and the focused native regression,
+which observes zero duplicate receipts. The complete ordinary Jupyter guard
+passes all eight moving saves and both popup cases. Native box and capture
+pass in the shared runner; the lifecycle entry passes separately under its
+original deadline. #344 remains active for covering source qualification and
+review of the historical intermittent timeouts.
+
 The [current capture-preparation receipt](live_capture_preparation_receiving_20261117.json)
 delivers two guarded corrections: capture retains already applied dynamic
 membership, and loaders omit Mol*'s unnecessary hidden unit-cell geometry.
 Native causal controls, 495 JS cases, full box/lifecycle and actual Jupyter
 work-file receiving pass; Movie passes separately. #344 remains open for
-one unexplained moving-popup initialization timeout and covering source
-qualification. The Linux recovery passes Python and all notebooks but stops
-at the scientific mirror's clipped sphere fixture, now tracked in
-[#402](pending_bugs/mirror_picking_fixture_camera_clipping.md). Its camera-depth
-and physical-pixel corrections pass the complete mirror in the
-[new receipt](mirror_camera_clipping_receiving_20261117.json); covering CI
-remains pending. Original
+one unexplained moving-popup initialization timeout and current actual-host /
+covering source qualification. The latest instrumented native-draw mismatch
+is diagnosed as the popup observer corrupting its own classic test bundle;
+the causal startup control receives the corrected module-script filter.
+The later Linux
+recovery passes 4,747 Python cases, all 25 notebooks and eight core entries,
+including the corrected scientific mirror under
+[#402](pending_bugs/mirror_picking_fixture_camera_clipping.md), then fails the
+moving test's hold precondition after a successful save. Its corrected focused
+primary setup passes; complete receiving remains pending. The
+[mirror receipt](mirror_camera_clipping_receiving_20261117.json) retains
+the native camera-depth/physical-pixel controls and failed covering run. Original
 counters and final-candidate boundaries remain unchanged.
 
 The [2026-11-17 camera/IPC receipt](camera_peer_and_ipc_receiving_20261117.json)

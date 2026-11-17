@@ -107,6 +107,7 @@ export class TrajectoryHandlers {
     private framePacingSince = 0;
     private firstDrawPending = false;
     private frameDrawRelease?: () => void;
+    private lastPlaybackFeedback?: string;
 
     get feedbackRevision(): number | undefined { return this.navigationRevision; }
 
@@ -335,6 +336,7 @@ export class TrajectoryHandlers {
         this.followerPlaying = false;
         this.frameDrawRelease?.(); this.frameDrawRelease = undefined;
         this.firstDrawPending = false;
+        this.lastPlaybackFeedback = undefined;
         this.framePacingFrame = undefined;
         this.plugin.managers.animation.stop();
         if (this.playbackTimer) {
@@ -417,13 +419,21 @@ export class TrajectoryHandlers {
     private notifyPlaybackFrameChanged(isPlaying: boolean) {
         if (this.disposed) return;
         const box = this.context.getBoxProjection?.();
-        this.context.notify?.({
+        const message = {
             event: "trajectory_frame_changed",
             frame: this.getCurrentFrameIndex(),
             is_playing: isPlaying,
             ...(this.navigationRevision === undefined ? {} : { navigation_revision: this.navigationRevision }),
             ...(box ? { box_display: box } : {}),
-        });
+        };
+        // The poll samples playback state, not a heartbeat. Repeating an
+        // unchanged receipt makes Python recompute measurement summaries and
+        // compete with frame-dependent queries and popup initialization.
+        // Navigation and resolved-box changes still produce distinct receipts.
+        const signature = JSON.stringify(message);
+        if (signature === this.lastPlaybackFeedback) return;
+        this.lastPlaybackFeedback = signature;
+        this.context.notify?.(message);
     }
 
     private updateTrajectoryState() {
