@@ -926,10 +926,12 @@ zero duplicates. Ordinary actual-Jupyter `1047` passes the complete workflow,
 including both moving popup saves. Native `1048` passes box and moving-state
 capture, then reaches the lifecycle suite deadline. Isolated `1050` passes
 that complete entry at 8 CPU / 4 GiB with its 240-second limit unchanged.
-Remaining work is covering source CI and review of the intermittent legacy
-timeouts. Bundle `d4c479e9…` is local source evidence. Private custody preserves the earlier 188 files under
-manifest `edb2754e…`, with the resumed outcomes recorded separately. Counters
-and the publication pause remain unchanged.
+The reviewed changes are on main in `d8c10784`, with the single
+[covering Linux source check](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
+in progress. Review the historical intermittent timeouts separately.
+Private custody preserves the earlier 188 files under manifest `edb2754e…`;
+the resumed outcomes add 68 files under `f586fc7b…`. Counters and the
+publication pause remain unchanged.
 
 **Current capture-source follow-up — 2026-11-17:** published source `c08d4990`
 has one [full Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44031725024)

@@ -371,8 +371,10 @@ The same lifecycle entry passes in isolation in `1050` with 8 CPU / 4 GiB
 in 173.43 seconds, including both fixtures and their cleanup. The 240-second
 suite limit and every operation deadline stay fixed. All 18 owned processes
 retire with unchanged inputs. The latest code passes the scoped local
-browser checks across these explicit profiles. Covering source CI remains
-outstanding.
+browser checks across these explicit profiles. Offline checks pass 574 cases
+and skip three opt-in host cases. The reviewed source is integrated in
+`d8c10784`. The single [covering Linux source run](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
+on that exact commit is in progress.
 
 ## MolSysMT coordination checkpoint
 
