@@ -627,5 +627,56 @@
       "directories": "0700",
       "files": "0600"
     }
+  },
+  "popup_diagnostic_followup": {
+    "profile": 1008,
+    "viewer_source": "4f2d8fa2e1479cbdf1003b3cca7c04b1db0a0dc5",
+    "instrumented": true,
+    "native_exit": 1,
+    "seconds": 323.0302766310051,
+    "selected_inputs": 9997,
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 19,
+      "survivors": [],
+      "errors": []
+    },
+    "invocation_sha256": "8cbebc25da40c15a0667c7a4c218cc59abda72135ee07e9932253d7856415793",
+    "outcome": "Same eighth moving Studio-popup session fails at the unchanged deadline; seven prior cases pass. Instrumentation is diagnostic, not canonical qualification.",
+    "popup_visible_and_focused_on_observed_draws": true,
+    "observed_cancel_after_browser_request_ms": 10384,
+    "native_success_after_cancel_ms": 5,
+    "session_profile": {
+      "seconds": 33.765954,
+      "buffer_bridge_sample_attribution_seconds": 8.196272,
+      "scope": "Exclusive CPU-profiler sample attribution in bufferData/bufferSubData bridge calls; can include waiting. Not GPU timing, buffer-size evidence or geometry-owner attribution."
+    },
+    "queue_observation": {
+      "operation": "interaction_frame_complete",
+      "elapsed_seconds": 7.3404,
+      "scope": "Includes awaited presentation fence; not exclusive JavaScript execution."
+    },
+    "other_observation": "Repeated catalogue and Studio DOM construction appears in the profile. Causal contribution to the deadline is unproved.",
+    "next": "Identify actual native buffer owners/byte ranges and meaningful versus unchanged updates before selecting a correction. Preserve quality, other views and all original deadlines/assertions.",
+    "private_custody": {
+      "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/popup-timing-20261117",
+      "custodian": "Diego Prada Gracia",
+      "files": 17,
+      "bytes": 7715807,
+      "manifest_sha256": "a485c7178ce23f314e28a17aa13c9ef204dd8916630802a252f69fa8c9e896d3",
+      "hashes_verified": true,
+      "originals_retained": true,
+      "permissions": {
+        "directories": "0700",
+        "files": "0600"
+      }
+    },
+    "record_validation": {
+      "profile": 1009,
+      "relative_link_cases_passed": 4,
+      "generated_indexes": "up to date",
+      "source_tests_repeated": false
+    }
   }
 }

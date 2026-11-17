@@ -52,3 +52,30 @@ file equivalence, independent restore, cancellation, expiry and source
 preservation. Do not increase the product deadline, repair-seek, suppress
 scientific dependencies or combine seven passing cases with a different
 invocation to declare the full guard passed.
+
+## Passive popup timing — 2026-11-17
+
+Instrumented `1008` retains the original full owner, all scientific assertions
+and five-/ten-second deadlines on committed source `4f2d8fa2`. It again
+passes seven moving cases and fails the final Studio-popup session. Its
+browser observes cancellation 10.384 seconds after request receipt; the
+successful native reply is sent another five milliseconds later. Native
+draw observations retain a visible, focused popup. This is a reproduced
+current boundary with diagnostic overhead, not canonical qualification.
+
+The session CPU-sampling interval spans 33.766 seconds around form setup,
+kernel status and capture. Its sample attribution contains 8.196 seconds in
+native `bufferSubData`/`bufferData` bridge calls. This can include waiting;
+it is not a GPU timer, buffer-size measurement or proof of a particular
+geometry owner. Native draws are several seconds apart. One queued
+`interaction_frame_complete` spans 7.340 seconds, including the awaited
+presentation fence; do not treat that as exclusive JavaScript execution.
+The profile also records repeated catalogue/Studio DOM construction.
+
+All 9,997 selected inputs remain fixed, no resource/OOM stop occurs and all
+19 owned processes retire under the same 4-CPU / 4-GiB envelope. The raw
+CPU profiles, delegated timing observations and original failure are privately
+preserved. Next attribute the slow buffer operations to actual native
+objects/byte ranges and compare their updates with the scene's real changes.
+Receive any correction against the original complete uninstrumented owner;
+do not reduce render quality, pause another view or extend the deadline.

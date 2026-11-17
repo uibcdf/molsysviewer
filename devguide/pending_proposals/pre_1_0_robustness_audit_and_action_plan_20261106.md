@@ -588,6 +588,19 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current source exits — 2026-11-17:** `4f2d8fa2` closes the identified idle
+peer-camera loop (#400), focused DataCard receiving (#394) and Linux notebook
+IPC route (#401), with 495 JS cases, full plot/scientific mirror, 25 original
+notebooks and 523 workflow/reporting/link guards. Actual-Jupyter Movie passes;
+the full work-file guard fails its eighth moving capture from Studio in the
+canvas popup. #344 is active again for that late reply and its unresolved
+queue/native-draw/transport timing. Resolve it before the next covering
+checkpoint. The [receipt](../camera_peer_and_ipc_receiving_20261117.json)
+keeps the failed source run and all current scopes separate. Original counters
+remain **41/46 source-delivered and 1/46 finally accepted**. #354's historical
+cause, exact artifacts and postponed human acceptance stay separate; #294
+follow-up remains postponed. No candidate freeze or publication is authorized.
+
 **Current residual ownership — 2026-11-16:** #305/#325 and numerical #321
 are source-resolved. #344's primary-presentation correction also receives
 the full default/delayed Jupyter, native geometry, hidden/Movie and lifecycle
