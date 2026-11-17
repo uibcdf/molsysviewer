@@ -76,7 +76,27 @@ The [receipt](../moving_capture_followup_receiving_20261117.json) retains the
 original failure, local inputs and log digests. Complete hosted receiving of
 the changed source is pending.
 
-Current complete source checkpoint:
+On `6cced30f`, local receiving `1058` passes all nine selected core suites
+in one Chrome process with the runner's default limits. This covers Studio
+saved lists and the next eight entries in the hosted order, including
+annotations, native arrays, source indices, coordinate edits, composite
+loading and popup lifecycle. The runtime digest matches the reviewed
+`d8c10784` runtime. The same [receipt](../moving_capture_followup_receiving_20261117.json)
+keeps the current local pass and the earlier hosted timeout on their
+respective inputs.
+
+Further local checks on `6cced30f` receive DataCard lifecycle and the full
+trajectory-plot entry, including the independent static page. The supervisor
+retires that browser group during Movie when shared full-memory pressure
+crosses the safety threshold. After pressure subsides, the isolated Movie
+story passes in 319 seconds at 4 CPU / 3 GiB under the default suite limit.
+It checks the real producer and restored import origins against the frozen
+files, retains exact scientific signatures, compares decoded PNG/MP4/WebM
+pixels and completes offline playback. These twelve local suite passes
+support the next complete hosted source checkpoint. The receipt keeps the
+earlier resource interruption and all three local invocations.
+
+Last complete passing source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
 >=7.4.0 notebook profile. Linux retains all 63 core entries and 25 notebooks.
@@ -89,7 +109,7 @@ version/tag or installed acceptance is assigned.
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | **Received in source:** [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. Earlier failed campaigns and causal limits remain preserved. The #244/#391/#395/#397 receiving records are now archived with their guards; source success does not close installed/manual exits or establish unobserved historical causes. |
+| Complete integrated source receiving | **Current full run pending.** The earlier [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. The #244/#391/#395/#397 receiving records retain their guards and historical causal limits. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 
