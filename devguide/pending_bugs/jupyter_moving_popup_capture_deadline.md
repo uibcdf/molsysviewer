@@ -373,8 +373,15 @@ suite limit and every operation deadline stay fixed. All 18 owned processes
 retire with unchanged inputs. The latest code passes the scoped local
 browser checks across these explicit profiles. Offline checks pass 574 cases
 and skip three opt-in host cases. The reviewed source is integrated in
-`d8c10784`. The single [covering Linux source run](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
-on that exact commit is in progress.
+`d8c10784`. The [covering Linux source run](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
+on that exact commit passes moving-state capture, moving-capture lifecycle
+and popup-scene bootstrap, as well as 4,747 Python cases and all 25 notebooks.
+It fails at core entry 12, `studio-list-workflows`, on that suite's
+180-second outer limit. Eleven earlier entries pass. The log identifies
+the suite but does not identify a failing action within it. The
+[terminal receipt](../moving_capture_followup_receiving_20261117.json)
+retains the result and private log digest. Broader core receiving and
+disposition of the historical actual-Jupyter failures remain open.
 
 ## Popup startup timing on the reviewed source
 

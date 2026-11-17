@@ -907,6 +907,16 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Pre-1.0 pair preparation — 2026-11-17:** the
+[MolSysMT handoff](molsysmt_pre_1_0_handoff_20261110.md#pre-10-pair-preparation--2026-11-17)
+records 239 passing scientific consumer controls on MolSysMT `63c22117`
+and 87 passing release-tool controls. The local strict
+gate now verifies both installed SHA-256 values per attempt-qualified matrix
+cell. MolSysMT corrected the `.tar.bz2` rejection in its promotion checker at
+`7eb24c4f` and received the source manifest digest. Exact source, installed
+artifacts and human exits retain their own evidence. Candidate selection,
+new hosted matrices and publication remain paused.
+
 **Current #344 working follow-up — 2026-11-17:** the
 [receipt](moving_capture_followup_receiving_20261117.json) preserves source
 run `44118070148` as failed (4,747 Python cases, 25 notebooks and eight core
@@ -928,8 +938,10 @@ capture, then reaches the lifecycle suite deadline. Isolated `1050` passes
 that complete entry at 8 CPU / 4 GiB with its 240-second limit unchanged.
 The reviewed changes are on main in `d8c10784`, with the single
 [covering Linux source check](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
-in progress. Its verified Python JUnit reports 4,747 passes and 42 skips,
-with no failures or errors. Two instrumented Jupyter executions pass all
+now terminal. Python passes 4,747 cases with 42 skips and no failures or
+errors. All 25 notebooks pass. Eleven core entries pass, including moving
+capture, lifecycle and popup bootstrap. Entry 12, `studio-list-workflows`,
+reaches its 180-second suite limit. Two instrumented Jupyter executions pass all
 eight moving captures. The moving popup takes 20.80 and 16.16 seconds from
 the driver's readiness wait. The first run shows two costly native frame
 updates before reveal; the second shows that one update can take 10.06

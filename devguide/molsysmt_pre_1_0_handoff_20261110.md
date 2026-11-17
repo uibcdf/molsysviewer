@@ -256,3 +256,39 @@ pending seek remains tracked in [#396](archive/jupyter_movie_seek_pending.md),
 with later complete uninstrumented receiving kept separate from causality.
 Neither those passes nor #397's source test correction explains historical
 #615. Return any accepted principal-maintainer disposition to its owner.
+
+## Pre-1.0 pair preparation — 2026-11-17
+
+Local receiving `1054` uses MolSysViewer `eeb6808c59afbd1deb3d70dc105e06e79a3f2aa3`
+with the release-evidence changes in this checkpoint and an isolated Git
+export of MolSysMT `63c221176fe19e19e081e09f12702ee2d14d9e98`. The Rust
+tree, toolchain and build metadata match the previous `4b0b1f8a` source
+control. The reused Rust binary has SHA-256
+`4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345`.
+The unstamped export correctly reports `0+unknown`. PyUnitWizard was
+`0.29.4+2.g9bb4f5f`, pandas 2.3.3 and Python 3.14.7.
+
+All **326** cases passed, with zero failures, errors or skips. The ten
+scientific consumer modules account for 239 cases across Interactions,
+H5MSM 0.5/1.0/default sessions, attachment and remapping, composite loading,
+source records and box assignment. The provider's writer defaults to 1.0.
+The release-evidence and gate modules account for the other 87 cases. This
+run used 2 logical CPU and 2 GiB, with 17.98 GiB minimum observed machine
+availability and unchanged recorded input hashes. The earlier `1053`
+pytest run also passed 239 cases. Its outer verifier detected that two
+unselected release-evidence files changed during the run; use the unchanged
+`1054` manifest as the accepted local result. The two runs' original
+records and final helper are preserved in the approved private custody,
+manifest SHA-256 `b29c64315c45cddda9713dbd03ee6d901fadd6ece7fdafe20ad14cce5a0c4aa5`.
+
+The [strict local gate](release_gate_evidence.md#acquisition-and-integrity)
+now checks MolSysMT #775's attempt-qualified artifacts. It requires the
+installed SHA-256 of both packages in each of the 16 cells for each channel.
+We reproduced the promotion checker's rejection of MolSysViewer's
+`.tar.bz2` filename at `63c22117`. MolSysMT corrected its checker at
+[`7eb24c4f`](https://github.com/uibcdf/molsysmt/commit/7eb24c4ff403911939f96899dd6fee76ff4c8ef5)
+and reports 43 local checks, including the Bash path with `.tar.bz2`.
+We verified the corrected pattern and unchanged scientific package,
+add-on and Rust/build inputs between the two commits, and returned the
+local receiving manifest digest to MolSysMT. Candidate selection and the
+installed matrix still need their separate evidence.

@@ -346,7 +346,7 @@
     "log_sha256": "8f1093bb16e792b0393f10b14d60a3be9fe3c2c95ec00ffb28b35a1311068512"
   },
   "pending": [
-    "Inspect terminal evidence for covering Linux run 44176403184 on d8c10784.",
+    "Diagnose the 180-second Studio saved-list suite timeout and complete the required core browser lane.",
     "Review historical moving-popup opening and default capture timeouts against current evidence. Their exact causes are not established."
   ],
   "resource_scope": {
@@ -578,6 +578,26 @@
         "workflowName": "Python 3.14 source pair"
       },
       "scope": "Complete Linux source checkpoint; terminal result pending.",
+      "terminal": {
+        "status": "completed",
+        "conclusion": "failure",
+        "attempt": 1,
+        "job_id": 134368806430,
+        "python": {"passed": 4747, "skipped": 42, "failed": 0, "errors": 0},
+        "notebooks": {"passed": 25, "failed": 0},
+        "core": {
+          "passed": 11,
+          "registered": 63,
+          "moving_state_capture": "passed",
+          "moving_capture_lifecycle": "passed",
+          "popup_scene_bootstrap": "passed",
+          "failed_suite": "studio-list-workflows",
+          "failure": "suite exceeded the 180000 ms runner deadline; individual failing operation unknown",
+          "unreached": 51
+        },
+        "log_sha256": "4602fa6b0c69dc1cfd533f421a65c7d7f673f6df081642a1d5b32c44a1964d4a",
+        "private_manifest_sha256": "5b9cb401a64dcde3d175c9240ae3992c3756b5a5c2b1176203adcfca82fbac1c"
+      },
       "early_verified_artifacts": [
         {
           "id": 14370868499,

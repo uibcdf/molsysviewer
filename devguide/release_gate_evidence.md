@@ -27,8 +27,8 @@ Ordinary unfiltered pytest still runs both scopes.
 
 | Step | Required evidence | What it establishes |
 | --- | --- | --- |
-| `conda` | Exact staging pair run and all installed environment artifacts | The declared pair installs from staging on four platforms and Python 3.11–3.14. |
-| `public_conda` | A separate public pair run, its environments, public label and repodata | Those exact files are public, solver-visible and installed together. |
+| `conda` | Exact staging pair run, explicit environments and installed SHA-256 receipts | The declared archives install from staging on four platforms and Python 3.11–3.14. |
+| `public_conda` | A separate public pair run, its environments and SHA-256 receipts, public label and repodata | Those exact files are public, solver-visible and installed together. |
 | `hosted_e2e` | Successful hosted core E2E at the Viewer candidate commit | The hosted core browser lane ran successfully for that commit. |
 
 The gate retains the local Python, JS, TypeScript, runtime, performance,
@@ -95,13 +95,18 @@ conditional `Check skipped-commit backlog` control job. A duplicate control,
 failed control, unknown skipped job or omitted core-test step fails. This rule
 does not relax the installed scientific matrices.
 
-Each installed environment comes from the exact named artifact, with its
-GitHub SHA-256 checked against the downloaded ZIP. The archive is bounded,
-contains only the expected environment text, belongs to the selected run/commit
-and was created during or after that attempt. The explicit package URLs must
-identify the expected files and channel. Their MD5 fragments are bound to the
-declared SHA-256 through consistent registry and repodata records. A matching
-filename with a different digest is a failure.
+For `uibcdf/molsysmt#775`, the producer emits one
+`conda-<source>-<platform>-py<python>-attempt-<attempt>` artifact per cell.
+The gate verifies the original ZIP against GitHub's SHA-256, run, commit and
+attempt. The bounded archive contains the explicit environment and
+`installed-pair.json` (`molsysmt.installed-conda-pair@1`). The receipt identifies
+the workflow commit, run, attempt and Python version. For both packages, the
+installed-record URL, filename, channel and SHA-256 must agree with the
+candidate declaration in every cell. The explicit environment's package
+hashes are independently checked against the registry and repodata record.
+Only the explicit Viewer 0.x assessment accepts historical environment-only
+artifacts with legacy names. A current artifact with missing or inconsistent
+contents fails validation.
 
 Promotion and independent public verification CI call the common immutable
 MolSysSuite action (`uibcdf/molsyssuite#48`, local adoption #133), retaining its
@@ -184,7 +189,9 @@ that lacks the other required pre-public checks.
 `tests/test_release_evidence.py` checks positive staging/public/hosted cases and
 rejection of candidate drift, incomplete matrices, skipped core/scientific
 steps, wrong environment URLs/digests, stale archives, missing evidence and
-misapplied exceptions. `tests/test_release_gate.py` protects local step selection,
+misapplied exceptions. The strict gate rejects a differing installed SHA-256
+for either package even if the matrix and explicit environment otherwise agree.
+`tests/test_release_gate.py` protects local step selection,
 nonzero blocked results and the original runtime-version checks.
 
 The reader was also exercised with public historical run `36129993869`,

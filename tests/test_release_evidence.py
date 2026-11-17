@@ -166,10 +166,33 @@ def environment_snapshot(plan, platform, source):
     return "\n".join(lines)
 
 
-def archive_snapshot(text, run, platform, python):
+def installed_pair_snapshot(plan, run, platform, python, source):
+    channel = "uibcdf/label/staging" if source == "staging" else "uibcdf"
+    packages = {}
+    for name, subdir in (("molsysviewer", "noarch"), ("molsysmt", platform)):
+        file = next(item for item in plan[name]["files"] if item["subdir"] == subdir)
+        packages[name] = {
+            "channel": channel,
+            "url": f"https://conda.anaconda.org/{channel}/{subdir}/{file['filename']}",
+            "fn": file["filename"],
+            "sha256": file["sha256"],
+        }
+    return {
+        "schema": "molsysmt.installed-conda-pair@1",
+        "candidate_sha": run["head_sha"],
+        "run_id": run["id"],
+        "run_attempt": run["run_attempt"],
+        "python": python,
+        "packages": packages,
+    }
+
+
+def archive_snapshot(text, run, platform, python, receipt=None):
     buffer = io.BytesIO()
     with ZipFile(buffer, "w") as archive:
         archive.writestr(f"conda-{platform}-py{python}.txt", text)
+        if receipt is not None:
+            archive.writestr("installed-pair.json", json.dumps(receipt))
     payload = buffer.getvalue()
     artifact = {
         "id": 1000,
@@ -181,7 +204,7 @@ def archive_snapshot(text, run, platform, python):
     return payload, artifact
 
 
-def recorded_pair(plan, source):
+def recorded_pair(plan, source, *, legacy=False):
     """Preload the live reader's cache with bounded offline evidence fixtures."""
     reader = LiveEvidence()
     run, jobs = pair_snapshot(plan, source)
@@ -201,8 +224,14 @@ def recorded_pair(plan, source):
     artifacts = []
     for platform in PLATFORMS:
         for python in PYTHONS:
-            payload, artifact = archive_snapshot(environment_snapshot(plan, platform, source), run, platform, python)
-            artifact.update(id=1000 + len(artifacts), name=f"conda-{source}-{platform}-py{python}")
+            receipt = None if legacy else installed_pair_snapshot(plan, run, platform, python, source)
+            payload, artifact = archive_snapshot(
+                environment_snapshot(plan, platform, source), run, platform, python, receipt
+            )
+            name = f"conda-{source}-{platform}-py{python}"
+            if not legacy:
+                name += f"-attempt-{run['run_attempt']}"
+            artifact.update(id=1000 + len(artifacts), name=name)
             artifacts.append(artifact)
             reader.cache[f"repos/uibcdf/molsysmt/actions/artifacts/{artifact['id']}/zip"] = payload
     reader.cache[base + "/artifacts?per_page=100"] = json.dumps(
@@ -235,6 +264,65 @@ def test_pair_checks_all_environment_artifacts_and_registry_bindings(candidate, 
     url = "https://api.anaconda.org/release/uibcdf/molsysviewer/1.0.0"
     reader.cache[url]["distributions"][0]["sha256"] = "f" * 64
     assert context.evaluate(step)[0] == "FAIL"
+
+
+@pytest.mark.parametrize(
+    "field,expected",
+    [
+        ("missing", "unexpected files"),
+        ("run_attempt", "another run"),
+        ("candidate_sha", "another run"),
+        ("python", "another run"),
+        ("molsysviewer", "molsysviewer SHA-256 differs"),
+        ("molsysmt", "molsysmt SHA-256 differs"),
+        ("channel", "coordinate/channel differs"),
+    ],
+)
+def test_strict_pair_requires_each_installed_receipt_to_match(candidate, field, expected):
+    checkout, plan, path = candidate
+    path.write_text(json.dumps(plan))
+    reader = recorded_pair(plan, "staging")
+    run, _ = pair_snapshot(plan, "staging")
+    platform, python = PLATFORMS[-1], PYTHONS[-1]
+    receipt = installed_pair_snapshot(plan, run, platform, python, "staging")
+    if field == "missing":
+        receipt = None
+    elif field in ("molsysviewer", "molsysmt"):
+        receipt["packages"][field]["sha256"] = "f" * 64
+    elif field == "channel":
+        receipt["packages"]["molsysviewer"]["url"] = receipt["packages"]["molsysviewer"]["url"].replace(
+            "/label/staging", ""
+        )
+    else:
+        receipt[field] = "other"
+    payload, replacement = archive_snapshot(
+        environment_snapshot(plan, platform, "staging"), run, platform, python, receipt
+    )
+    base = f"repos/uibcdf/molsysmt/actions/runs/{run['id']}/artifacts?per_page=100"
+    inventory = json.loads(reader.cache[base])
+    artifact = inventory["artifacts"][-1]
+    artifact["digest"] = replacement["digest"]
+    reader.cache[base] = json.dumps(inventory).encode()
+    reader.cache[f"repos/uibcdf/molsysmt/actions/artifacts/{artifact['id']}/zip"] = payload
+
+    status, detail = CandidateEvidence(path, checkout, reader=reader).evaluate("conda")
+    assert status == "FAIL"
+    assert expected in detail
+
+
+def test_legacy_pair_receipt_is_only_available_for_pre_1_0(candidate):
+    checkout, plan, path = candidate
+    path.write_text(json.dumps(plan))
+    reader = recorded_pair(plan, "staging", legacy=True)
+    status, detail = CandidateEvidence(path, checkout, reader=reader).evaluate("conda")
+    assert status == "BLOCKED"
+    assert "attempt-1" in detail
+
+    plan["molsysviewer"]["version"] = "0.24.1"
+    plan["molsysviewer"]["files"][0]["filename"] = "molsysviewer-0.24.1-py_2.tar.bz2"
+    path.write_text(json.dumps(plan))
+    reader = recorded_pair(plan, "staging", legacy=True)
+    assert CandidateEvidence(path, checkout, pre_release=True, reader=reader).evaluate("conda")[0] == "PASS"
 
 
 @pytest.mark.parametrize(
@@ -314,7 +402,7 @@ def test_environment_archive_is_bound_to_the_github_artifact(candidate, change):
     else:
         payload, artifact = archive_snapshot("unexpected", run, "win-64", "3.14")
     with pytest.raises(InvalidEvidence):
-        read_environment_archive(payload, artifact, run, PLATFORMS[0], PYTHONS[0])
+        read_environment_archive(payload, artifact, run, PLATFORMS[0], PYTHONS[0], legacy=True)
 
 
 def test_registry_binds_md5_and_sha256_not_only_the_filename(candidate):

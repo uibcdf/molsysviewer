@@ -237,13 +237,18 @@ def check_registry(release, index, package, version, file, label):
     return md5
 
 
+def pair_files(plan, platform):
+    """Select the native and noarch archive declared for a matrix cell."""
+    return {
+        package: next(item for item in plan[package]["files"] if item["subdir"] == subdir)
+        for package, subdir in (("molsysviewer", "noarch"), ("molsysmt", platform))
+    }
+
+
 def check_environment(text, plan, platform, label, md5s):
     lines = text.splitlines()
     require("@EXPLICIT" in lines, "environment record is not an explicit installed inventory")
-    for name in ("molsysviewer", "molsysmt"):
-        file = next(
-            item for item in plan[name]["files"] if item["subdir"] == ("noarch" if name == "molsysviewer" else platform)
-        )
+    for name, file in pair_files(plan, platform).items():
         entries = [
             line for line in lines if not line.startswith("#") and Path(urlsplit(line).path).name.startswith(name + "-")
         ]
@@ -260,7 +265,36 @@ def check_environment(text, plan, platform, label, md5s):
         require(parsed.fragment in (file["sha256"], md5s[(name, file["subdir"])]), f"installed {name} digest differs")
 
 
-def read_environment_archive(payload, artifact, run, platform, python):
+def check_installed_pair(receipt, plan, run, platform, python, label):
+    """Bind the SHA-256 reported by each installed record to the candidate."""
+    require(receipt.get("schema") == "molsysmt.installed-conda-pair@1", "unknown installed-pair receipt schema")
+    require(
+        type(receipt.get("run_id")) is int
+        and receipt["run_id"] == run["id"]
+        and type(receipt.get("run_attempt")) is int
+        and receipt["run_attempt"] == run["run_attempt"]
+        and receipt.get("candidate_sha") == run["head_sha"]
+        and receipt.get("python") == python,
+        "installed-pair receipt belongs to another run, attempt, commit or Python",
+    )
+    packages = receipt.get("packages")
+    files = pair_files(plan, platform)
+    require(isinstance(packages, dict) and packages.keys() == files.keys(), "installed-pair receipt lacks the exact pair")
+    channel = "uibcdf/label/staging" if label == "staging" else "uibcdf"
+    channel_url = f"https://conda.anaconda.org/{channel}"
+    for name, file in files.items():
+        record = packages[name]
+        subdir = file["subdir"]
+        require(
+            record.get("channel") in (channel, channel_url, f"{channel}/{subdir}", f"{channel_url}/{subdir}")
+            and record.get("url") == f"{channel_url}/{subdir}/{file['filename']}"
+            and record.get("fn") == file["filename"],
+            f"installed-pair {name} coordinate/channel differs",
+        )
+        require(record.get("sha256") == file["sha256"], f"installed-pair {name} SHA-256 differs")
+
+
+def read_environment_archive(payload, artifact, run, platform, python, *, legacy=False):
     require(len(payload) <= LIMIT, "environment artifact exceeds size limit")
     require(
         artifact.get("digest") == "sha256:" + hashlib.sha256(payload).hexdigest(),
@@ -276,10 +310,16 @@ def read_environment_archive(payload, artifact, run, platform, python):
         "artifact predates the selected run attempt",
     )
     with ZipFile(io.BytesIO(payload)) as archive:
-        expected = f"conda-{platform}-py{python}.txt"
-        require(archive.namelist() == [expected], "environment artifact contains unexpected files")
-        require(archive.getinfo(expected).file_size <= LIMIT, "expanded environment artifact exceeds size limit")
-        return archive.read(expected).decode("utf-8")
+        environment = f"conda-{platform}-py{python}.txt"
+        expected = [environment] if legacy else [environment, "installed-pair.json"]
+        require(sorted(archive.namelist()) == sorted(expected), "environment artifact contains unexpected files")
+        require(
+            sum(archive.getinfo(name).file_size for name in expected) <= LIMIT,
+            "expanded environment artifact exceeds size limit",
+        )
+        text = archive.read(environment).decode("utf-8")
+        receipt = None if legacy else json.loads(archive.read("installed-pair.json"))
+        return text, receipt
 
 
 class LiveEvidence:
@@ -389,8 +429,12 @@ class CandidateEvidence:
         require(inventory.get("total_count") == len(artifacts), "incomplete artifact inventory")
         for platform in PLATFORMS:
             for python in PYTHONS:
-                name = f"conda-{source}-{platform}-py{python}"
+                prefix = f"conda-{source}-{platform}-py{python}"
+                name = f"{prefix}-attempt-{run['run_attempt']}"
                 matches = [item for item in artifacts if item.get("name") == name]
+                legacy = not matches and self.pre_release
+                if legacy:
+                    matches = [item for item in artifacts if item.get("name") == prefix]
                 if not matches:
                     raise MissingEvidence(f"missing environment artifact {name}")
                 require(len(matches) == 1, f"ambiguous environment artifact {name}")
@@ -401,5 +445,7 @@ class CandidateEvidence:
                 payload = self.reader.github(
                     f"repos/uibcdf/molsysmt/actions/artifacts/{artifact['id']}/zip", binary=True
                 )
-                text = read_environment_archive(payload, artifact, run, platform, python)
+                text, receipt = read_environment_archive(payload, artifact, run, platform, python, legacy=legacy)
                 check_environment(text, plan, platform, label, md5s)
+                if not legacy:
+                    check_installed_pair(receipt, plan, run, platform, python, label)
