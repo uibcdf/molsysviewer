@@ -235,13 +235,14 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/viewer/movie.py",
         provenance=PYTHON,
         docs="docs/content/user/movie/export.md",
-        unit=("test_movie.py", "test_movie_timeline.py"),
-        e2e=("movie-playback", "movie-seek"),
+        unit=("test_movie.py", "test_movie_timeline.py", "test_movie_export.py", "test_movie_story.py"),
+        e2e=("movie-playback", "movie-seek", "movie-studio", "movie-story"),
         status="experimental",
-        note="Version-1 playback observed drawing since 2026-09-05: the camera passes through "
-        "intermediate positions, lands on the last keyframe, and stops short when "
-        "interrupted. Version-2 tracks have Python and JavaScript evaluation, an acknowledged preview "
-        "with play, pause and seek, and session persistence. Media export remains on version 1 and outside CI.",
+        note="Version 1 covers the published legacy timeline. The development version-2 "
+        "timeline evaluates independent tracks in Python and JavaScript, supports live Studio "
+        "authoring and preview, and saves with the molecular session. The core Movie story "
+        "exercises PNG ZIP, MP4, WebM, independent session recovery and offline HTML playback. "
+        "Version-2 authoring and export are experimental development features.",
     ),
     Capability(
         name="Camera",
@@ -259,7 +260,7 @@ CAPABILITIES: tuple[Capability, ...] = (
     ),
     Capability(
         name="save_state / load_state",
-        api=("view.save_state", "view.load_state", "view.export_state", "view.import_state"),
+        api=("view.save_state", "view.save_state_async", "view.load_state", "view.export_state", "view.import_state"),
         anchor="molsysviewer/viewer/state.py",
         provenance=PYTHON,
         docs="docs/content/user/export/state.md",
@@ -270,30 +271,27 @@ CAPABILITIES: tuple[Capability, ...] = (
             "test_state_structure_identity.py",
             "test_state_view_state.py",
             "test_state_focus_overlays.py",
+            "test_live_state_capture.py",
         ),
-        stable_without_drawing="Nothing about it is rendered: it writes a JSON document and "
-        "reads one back. Its contract is version 2 refusing version 1, "
-        "and the re-resolution onto a different structure -- both "
-        "checked by contract tests, neither visible on a screen.",
-        note="The scene and the vantage point it was saved from: no molecular system and no "
-        "history. Records the structure it was written from, and re-resolves onto a "
-        "different one rather than replaying indices that mean other atoms. Version 2 "
-        "refuses version 1 rather than migrating it.",
+        e2e=("moving-state-capture", "moving-capture-lifecycle"),
+        note="The stable version-2 JSON format stores the scene and its vantage point, "
+        "and can resolve saved atom references against another compatible structure. "
+        "The growing async save API captures a coherent live frame and view. Native "
+        "browser tests verify the captured presentation and its independent restoration.",
     ),
     Capability(
         name="save_session / load_session",
-        api=("view.save_session", "molsysviewer.load_session"),
+        api=("view.save_session", "view.save_session_async", "molsysviewer.load_session"),
         anchor="molsysviewer/session.py",
         provenance=PYTHON,
         docs="docs/content/user/export/session.md",
-        unit=("test_session_bundle.py",),
-        # Declared experimental on purpose rather than inheriting the default. It is
-        # unreleased, nothing has watched it draw, and its size policy is an open
-        # question -- which is exactly the inheritance uibcdf/molsysviewer#65 is about.
+        unit=("test_session_bundle.py", "test_session_h5msm_migration.py"),
+        e2e=("moving-state-capture", "moving-capture-lifecycle", "movie-story"),
         status="experimental",
-        note="A `.msv` bundle carrying the molecular system alongside the state, so it "
-        "reopens with nothing loaded first. No size budget: a session is as large as "
-        "its trajectory.",
+        note="The experimental `.msv` container stores the scene and H5MSM molecular "
+        "data for independent reopening. Tests exercise schema 0.5 and 1.0, named "
+        "analyses, live capture, recovery and a saved Movie recipe. Size depends on "
+        "the molecular system and trajectory included in the session.",
     ),
     Capability(
         name="HTML export and replay",
@@ -365,18 +363,19 @@ CAPABILITIES: tuple[Capability, ...] = (
         anchor="molsysviewer/standalone_qt/__init__.py",
         provenance=PYTHON,
         docs="docs/content/developer/standalone_surfaces.md",
-        unit=("test_standalone.py", "test_qt_transport_contract.py"),
+        unit=("test_standalone.py", "test_qt_transport_contract.py", "test_qt_live_capture.py"),
         e2e=("qt-live-reload",),
         status="experimental",
         benchmark="performance/qt_transport_baseline_2026_07.md",
         human_observed="2026-07-04 — rendering, transport, the persistent view, context "
         "menus and camera interaction. The session also found the live "
         "reload defect (#35), which is what a person watching is for.",
-        note="Transport is pinned by contract. Since 2026-09-02 the `qt-pipeline` CI job "
-        "asserts under Xvfb that the pipeline completes -- bridge ready, payload "
-        "served, structure loaded through software WebGL. That is not the render "
-        "being correct: nothing reads the framebuffer, and #64 is the standing proof "
-        "the two differ. A real GPU and a visible window remain unobserved.",
+        note="The Chromium reload suite covers the transport contract. The separate "
+        "Qt workflow exercises the experimental host with software WebGL, and actual "
+        "local Qt/WebEngine/NVIDIA receiving covers moving capture and resource "
+        "ownership. See core_qt_qualification.md and "
+        "qt_native_moving_identity_receiving_20261108.json. Native host qualification "
+        "remains experimental for 1.0.",
     ),
     Capability(
         name="Add-ons",
@@ -484,7 +483,10 @@ def _api_evidence(capability: Capability, inventory: dict[str, Any]) -> tuple[in
     matching = [
         item
         for item in inventory["callables"]
-        if any(item["path"] == prefix or item["path"].startswith(prefix) for prefix in capability.api)
+        if any(
+            item["path"].startswith(entry) if entry.endswith(".") else item["path"] == entry
+            for entry in capability.api
+        )
     ]
     return len(matching), sum(1 for item in matching if item["digested"])
 
@@ -677,20 +679,20 @@ def _experimental_sentence(audit: dict[str, Any], unobserved: list[str]) -> str:
     by_name = {row["capability"]: row["status"] for row in audit["rows"]}
     experimental = [name for name in unobserved if by_name.get(name) == "experimental"]
     stable = [name for name in unobserved if by_name.get(name) == "stable"]
-    words = {0: "None", 1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five"}
-    head = f"{words.get(len(experimental), str(len(experimental)))} of them "
-    head += "is" if len(experimental) == 1 else "are"
-    head += " already `experimental` and say so."
+    sentences = []
+    if experimental:
+        count = len(experimental)
+        verb = "is" if count == 1 else "are"
+        sentences.append(f"{count} of these capabilities {verb} `experimental`.")
     if not stable:
-        return head
+        return " ".join(sentences)
     quoted = [f"`{name}`" for name in stable]
     named = quoted[0] if len(quoted) == 1 else ", ".join(quoted[:-1]) + f" and {quoted[-1]}"
-    return (
-        f"{head} {named} {'is' if len(stable) == 1 else 'are'} `stable`, which is "
-        f"defensible — {'it does not draw' if len(stable) == 1 else 'none of them draws'} "
-        "anything — but it is the kind of claim that "
-        "should be made on purpose rather than inherited."
+    sentences.append(
+        f"{named} {'is' if len(stable) == 1 else 'are'} `stable`. "
+        "The rationale for this classification follows."
     )
+    return " ".join(sentences)
 
 
 def _relative(path: str) -> str:

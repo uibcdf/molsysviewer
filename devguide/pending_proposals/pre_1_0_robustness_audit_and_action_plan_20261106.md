@@ -1688,6 +1688,14 @@ control modes, source-versus-published addon availability, experimental limits
 and provider documentation links. Viewer owns addon management/creation/catalogue;
 each component owns its addon use and scientific documentation.
 
+The [capability audit](../capability_audit.md) now records the native Movie v2
+export and offline playback suites, live state capture and session recovery,
+and the experimental Qt host's observed scope. Its public-callable counts use
+exact matching for named methods and prefix matching for namespaces. The
+MolSysMT integration row therefore counts its five declared callables.
+Regeneration, the report checks and public API documentation passed all
+219 scoped tests. Broader public documentation reconciliation remains pending.
+
 **F3 — source-delivered; current handoff consolidated:** this dashboard owns
 the current counter and action order. Roadmap, checkpoints and release plan link
 here instead of maintaining independent current numerators. Dated source notes

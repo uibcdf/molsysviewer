@@ -28,15 +28,15 @@ behaviour, delegates it, or merely hosts it.
 | Trajectory plot | `view.trajectory_plot.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/overlays/trajectory_plot.md) | contract-tested, browser-observed | experimental | 0.19.0 |
 | Movie | `view.movie.` | 31 | 31 | MolSysViewer (Python authority) | [page](../docs/content/user/movie/export.md) | contract-tested, browser-observed | experimental | 0.18.0 |
 | Camera | `view.camera.`, `view.get_camera_snapshot`, `view.set_camera_snapshot`, `view.zoom` | 11 | 11 | Frontend (mirrored to Python) | [page](../docs/content/user/viewer/camera_and_controls.ipynb) | contract-tested, browser-observed | stable | 0.18.0 |
-| save_state / load_state | `view.save_state`, `view.load_state`, `view.export_state`, `view.import_state` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | contract-tested | stable | 0.19.0 |
-| save_session / load_session | `view.save_session`, `molsysviewer.load_session` | 3 | 3 | MolSysViewer (Python authority) | [page](../docs/content/user/export/session.md) | contract-tested | experimental | 0.22.0 |
+| save_state / load_state | `view.save_state`, `view.save_state_async`, `view.load_state`, `view.export_state`, `view.import_state` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/state.md) | contract-tested, browser-observed | stable | 0.19.0 |
+| save_session / load_session | `view.save_session`, `view.save_session_async`, `molsysviewer.load_session` | 3 | 3 | MolSysViewer (Python authority) | [page](../docs/content/user/export/session.md) | contract-tested, browser-observed | experimental | 0.22.0 |
 | HTML export and replay | `view.export.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/user/export/index.md) | contract-tested, browser-observed | stable | 0.9.0 |
 | Popup | `view.build_popup_scene_snapshot` | 1 | 1 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked | stable | 0.20.1 |
 | Remote sessions | `molsysviewer.remote.` | 38 | 38 | MolSysViewer (Python authority) | [page](../docs/content/user/remote/index.md) | contract-tested, browser-observed | experimental | 0.23.0 |
 | Standalone (Qt host) | `molsysviewer.launch_standalone_qt0`, `molsysviewer.create_standalone_qt0_window` | 2 | 2 | MolSysViewer (Python authority) | [page](../docs/content/developer/standalone_surfaces.md) | contract-tested, browser-observed, benchmarked, human-observed | experimental | 0.19.0 |
 | Add-ons | `molsysviewer.addons.`, `view.addons.` | 63 | 63 | Add-on (external owner) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | stable | 0.10.0 |
 | Managed system edits | `view.addons.manager.system_edits.` | 5 | 5 | MolSysViewer (Python authority) | [page](../docs/content/developer/addons.md) | contract-tested, browser-observed | experimental | unreleased |
-| MolSysMT integration | `view.extract`, `view.whole.get`, `view.whole.convert`, `view.regions[…].get`, `view.regions[…].convert` | 7 | 7 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | contract-tested, browser-observed | stable | 0.19.0 |
+| MolSysMT integration | `view.extract`, `view.whole.get`, `view.whole.convert`, `view.regions[…].get`, `view.regions[…].convert` | 5 | 5 | MolSysMT (scientific authority) | [page](../docs/content/user/introduction/molsysmt.md) | contract-tested, browser-observed | stable | 0.19.0 |
 | Units | `molsysviewer.config.set_default_standard_units` | 1 | 1 | PyUnitWizard (unit authority) | [page](../docs/content/user/introduction/units.md) | contract-tested | stable | 0.5.0 |
 
 ## What a row cannot hold
@@ -46,12 +46,12 @@ behaviour, delegates it, or merely hosts it.
 - **Representations, styles and presets** — Type names map 1:1 to Mol* built-ins. `label`, `orientation` and `plane` are deliberately not types; see the types page.
 - **Interactions** — Named scientific analyses, tagged visual sets and native Studio workflows are published in Viewer 0.24.0 with MolSysMT 0.23.0, including bounded inspection pages, named H5MSM save and observation selection/focus. The exact public pair passes 16 installed cells; scientific, browser and measured residency evidence is recorded in interactions_qualification.md. The API remains experimental before the final 1.0 compatibility decision and exact-candidate recertification in path_to_1_0.md; native-GPU throughput and arbitrary large-system limits are not certified.
 - **Trajectory plot** — Observed drawing since 2026-09-05: the card, one polyline per series with a point per frame, and the labels the caller asked for.
-- **Movie** — Version-1 playback observed drawing since 2026-09-05: the camera passes through intermediate positions, lands on the last keyframe, and stops short when interrupted. Version-2 tracks have Python and JavaScript evaluation, an acknowledged preview with play, pause and seek, and session persistence. Media export remains on version 1 and outside CI.
+- **Movie** — Version 1 covers the published legacy timeline. The development version-2 timeline evaluates independent tracks in Python and JavaScript, supports live Studio authoring and preview, and saves with the molecular session. The core Movie story exercises PNG ZIP, MP4, WebM, independent session recovery and offline HTML playback. Version-2 authoring and export are experimental development features.
 - **Camera** — The snapshot is the frontend's state mirrored back, and is None on a view that never rendered. Contract S9 holds camera authority.
-- **save_state / load_state** — The scene and the vantage point it was saved from: no molecular system and no history. Records the structure it was written from, and re-resolves onto a different one rather than replaying indices that mean other atoms. Version 2 refuses version 1 rather than migrating it.
-- **save_session / load_session** — A `.msv` bundle carrying the molecular system alongside the state, so it reopens with nothing loaded first. No size budget: a session is as large as its trajectory.
+- **save_state / load_state** — The stable version-2 JSON format stores the scene and its vantage point, and can resolve saved atom references against another compatible structure. The growing async save API captures a coherent live frame and view. Native browser tests verify the captured presentation and its independent restoration.
+- **save_session / load_session** — The experimental `.msv` container stores the scene and H5MSM molecular data for independent reopening. Tests exercise schema 0.5 and 1.0, named analyses, live capture, recovery and a saved Movie recipe. Size depends on the molecular system and trajectory included in the session.
 - **Remote sessions** — The count is four because the walk inventories instances rather than classes, and the eleven classes in `__all__` are constructed by the host rather than held by a user. The surface a user actually types is the `molsysviewer-server` console script declared in `pyproject.toml`, and its page is the row's documentation. Client-side rendering is exercised by `remote-client-rendering.e2e.ts`. Server-side rendering was first certified on spika on 2026-09-05 by `remote-session.e2e.ts`, using WebGL2 with `ANGLE (NVIDIA Corporation, NVIDIA GeForce GTX 1080/PCIe/SSE2, OpenGL ES 3.2)` (uibcdf/molsysviewer#84). This is evidence for that host, not a claim that every deployment has a working GPU path. All four callables are digested and their five argument names declared, which is what closed uibcdf/molsysviewer#83 and returned the inventory baseline to zero. The packet a validator judges is passed through untouched on purpose: a digester that raised on a hostile packet would take away the structured rejection the validator exists to produce. Experimental is the page's own word: the Python API, command-line options, transport protocol and deployment configuration may change.
-- **Standalone (Qt host)** — Transport is pinned by contract. Since 2026-09-02 the `qt-pipeline` CI job asserts under Xvfb that the pipeline completes -- bridge ready, payload served, structure loaded through software WebGL. That is not the render being correct: nothing reads the framebuffer, and #64 is the standing proof the two differ. A real GPU and a visible window remain unobserved.
+- **Standalone (Qt host)** — The Chromium reload suite covers the transport contract. The separate Qt workflow exercises the experimental host with software WebGL, and actual local Qt/WebEngine/NVIDIA receiving covers moving capture and resource ownership. See core_qt_qualification.md and qt_native_moving_identity_receiving_20261108.json. Native host qualification remains experimental for 1.0.
 - **Add-ons** — MolSysViewer owns the host contract; each toolkit owns and ships its integration. Maturity is declared per add-on. The managed-edit source receiver is experimental and is classified separately below.
 - **Managed system edits** — Source receiving for provider-owned retained-axis edits, map composition, pending-state gates and projection retry. This does not qualify every provider writer or a published package pair; molecular Undo and raw external write observation are outside the contract. Capability rows can overlap: the Add-ons navigation prefix also reaches these five controls.
 - **MolSysMT integration** — Digestion is MolSysMT's; only the caller named in an error is ours. `contains` and `is_composed_of` were removed -- `get` answers both (`get(n_waters=True) > 0`, and the set of `molecule_type`) and `msm.*` still has them. See uibcdf/molsysviewer#71.
@@ -63,11 +63,9 @@ No E2E suite opens these in a browser and asserts what appeared. For a viewer
 that is the sharpest gap there is, and it is why `browser-observed` exists as
 a label rather than as a number in a column:
 
-- save_state / load_state
-- save_session / load_session
 - Units
 
-One of them is already `experimental` and say so. `save_state / load_state` and `Units` are `stable`, which is defensible — none of them draws anything — but it is the kind of claim that should be made on purpose rather than inherited.
+`Units` is `stable`. The rationale for this classification follows.
 
 ## Declared `stable` without drawing anything
 
@@ -76,7 +74,6 @@ one they can never earn, and the ladder reading of these labels is what makes
 that look like a gap. Each says why the level is deserved anyway, so the claim
 is made on purpose rather than inherited:
 
-- **save_state / load_state** — Nothing about it is rendered: it writes a JSON document and reads one back. Its contract is version 2 refusing version 1, and the re-resolution onto a different structure -- both checked by contract tests, neither visible on a screen.
 - **Units** — A policy about argument values, enforced before anything reaches the frontend. There is no pixel it could be watched producing.
 
 ## Two columns, two questions

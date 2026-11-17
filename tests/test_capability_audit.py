@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -23,6 +24,7 @@ sys.path.insert(0, str(ROOT / "devtools"))
 from capability_audit import (  # noqa: E402
     CAPABILITIES,
     DOCUMENT,
+    _api_evidence,
     _first_release_containing,
     _markdown,
     build_audit,
@@ -82,13 +84,18 @@ def audit():
 
 
 @pytest.fixture(scope="module")
-def inventory_paths():
+def public_inventory():
     """Module-scoped because `build_inventory` costs ~3.9 s and ~557 MiB per call.
 
     The parametrised guard below runs once per capability; calling it inside the test
     would pay that twenty times over, in each of twelve xdist workers at once.
     """
-    return {item["path"] for item in build_inventory()["callables"]}
+    return build_inventory()
+
+
+@pytest.fixture(scope="module")
+def inventory_paths(public_inventory):
+    return {item["path"] for item in public_inventory["callables"]}
 
 
 def test_every_required_capability_has_a_row():
@@ -121,6 +128,16 @@ def test_every_row_names_a_public_api_that_exists(capability, audit):
     row = next(item for item in audit["rows"] if item["capability"] == capability.name)
 
     assert row["public_callables"] > 0, f"{capability.name} declares {capability.api} and no public callable matches"
+
+
+def test_named_callable_does_not_count_a_longer_sibling(public_inventory):
+    capability = next(row for row in CAPABILITIES if "view.save_state" in row.api)
+    paths = ("view.save_state", "view.save_state_async")
+    entries = {"callables": [item for item in public_inventory["callables"] if item["path"] in paths]}
+    assert {item["path"] for item in entries["callables"]} == set(paths)
+
+    assert _api_evidence(replace(capability, api=(paths[0],)), entries) == (1, 1)
+    assert _api_evidence(replace(capability, api=("view.",)), entries) == (2, 2)
 
 
 @pytest.mark.parametrize("capability", CAPABILITIES, ids=lambda c: c.name)
