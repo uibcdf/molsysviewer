@@ -79,3 +79,101 @@ preserved. Next attribute the slow buffer operations to actual native
 objects/byte ranges and compare their updates with the scene's real changes.
 Receive any correction against the original complete uninstrumented owner;
 do not reduce render quality, pause another view or extend the deadline.
+
+## Native buffer attribution and implicit cell
+
+Diagnostic `1010` fails setup on an escaped diagnostic string before loading
+the widget; its original is retained. Corrected `1011` delegates actual buffer
+calls and associates array identities with native representation attributes.
+Its browser passes all eight moving cases, cancellation, expiry and independent
+recovery. The added raw trace exceeds the ordinary safe-summary size limit;
+that summary remains unavailable rather than relaxing the limit. This is an
+instrumented browser positive, not the canonical pytest qualification or proof
+that the intermittent timeout disappeared.
+
+The slow native calls include Distance lines (`aStart`, 207,936 bytes) and
+the hidden Unit Cell mesh's index buffer (97,920 bytes). Their longest observed
+calls take 3.232 and 3.018 seconds respectively. These are delegated-call wall
+times, which can include queued graphics work. The deliberately displaced
+atom in the original fixture is 100 nm farther along each axis in one frame;
+its long dashed distance retains sizeable native arrays in later frames.
+Buffer ownership and changing versions alone do not prove unchanged bytes.
+
+The installed Mol* 5.13.1 default hierarchy preset creates a hidden unit-cell
+representation unless `showUnitcell: false` is explicit. MolSysViewer already
+owns its separate twelve-edge box. Regression `1012` confirms that the old
+loader allocates one hidden native render object beside it. All four loader
+routes now use the existing native opt-out; molecular cell data, the managed
+box, image quality and deadlines are unchanged. No Mol* source is patched.
+
+Receiving `1013` passes all 495 JS cases, types, normal builds and the complete
+native box entry, including the new absence assertion and existing static,
+widget/popup, navigation, explicit-cell, replacement, editing, hide and clear
+controls. The original failure guards this actual native allocation. This
+delivers one concrete reduction of unnecessary work; the original complete
+uninstrumented Jupyter guard and relevant covering source checkpoint are still
+required before closing the broader moving-capture report.
+
+The auxiliary Mol* clone is clean `master` at
+`dabbf29f952880a034a9637e28c9844e3ae73d9f`; its newer graphics package exposes
+an object transform for transient placement that explicitly excludes CPU
+instance readers. It is not a direct replacement for coherent callout loci,
+picking and persistence. Ordinary builds continue to consume installed 5.13.1;
+the existing native `showUnitcell` option solves this loader allocation without
+adopting the development architecture.
+
+## Capture preparation invalidates a valid prefix
+
+Uninstrumented `1014`, with only the implicit-cell correction, still fails:
+the second healthy/default Python capture times out at five seconds. The
+current frame's native trajectory, box, shapes and annotations are ready, but
+interaction and dynamic-region replies lag. The separate Movie case passes.
+Removing the hidden cell is an independently guarded reduction of work, not
+a complete explanation or repair of the capture timeout.
+
+Native regression `1015` then observes a concrete preparation defect on the
+real stopped, evaluated-empty frame. Before preparation there are zero dynamic
+requests and the scene is coherent. Calling `prepareMovingVisualCapture`
+creates one new request and makes the same frame unready. The new evaluation
+is unnecessary: the applicable membership was already applied. In playback
+that self-invalidation reopens frame advancement and can starve the requested
+coherent draw. This identifies a race class; it does not reconstruct every
+earlier event order or attribute scientific-provider failure.
+
+Preparation now preserves the current applied membership only when no dynamic
+query is pending or in flight. Missing/pending science follows the existing
+path. Molecular and region edits retain their stamp invalidation, and capture
+still requires a fresh native draw and the frozen-recipe checks. `1016` passes
+495 JS cases, types/builds and the complete native lifecycle entry, including
+the new preparation assertion on primary and popup plus original hidden,
+detached, closed-owner, transport-loss and static-freeze controls. This run
+uses 8 CPU / 4 GiB after the 4-CPU negative's near-240-second aggregate; its
+existing operation and suite deadlines remain unchanged. The different
+resource scopes remain explicit.
+
+## Current uninstrumented receiving and remaining bootstrap observation
+
+`1017`, with both runtime corrections at 4 CPU / 4 GiB, passes all six primary
+moving cases, including both five-second defaults. It then fails the unchanged
+30-second popup opening wait: `#molsysviewer-loading` remains visible. No
+popup capture has been attempted. Its exact popup state was not retained before
+cleanup, so neither a failed retry card, a stalled loader nor the original
+#336 snapshot-expiry mechanism is established. The separate Movie case passes.
+
+The maintained receiver now preserves bounded loader/controller/native state
+before losing a failed `openCanvas` return, and rethrows the original error.
+It introduces no retry or changed readiness predicate. On that receiver,
+`1018` passes the complete ordinary pytest work-file guard in 309.45 seconds
+under the same 4-CPU / 4-GiB envelope: six stopped roundtrips/strong restores,
+four Studio controls, all eight moving captures, independent file recovery,
+source preservation and cancellation/expiry without late writes. The new
+failure observer is not exercised by this positive. Actual Movie receiving
+remains the separately passed case in `1017`, not another result in `1018`.
+
+The [current receipt](../live_capture_preparation_receiving_20261117.json)
+retains both causal regressions, all original attempts, exact scopes and
+private custody. This delivers the preparation and hidden-geometry fixes.
+The report remains open for the intermittent popup initialization observation
+and covering source qualification; a later complete pass does not explain
+the earlier bootstrap timeout. Installed, native Qt/GPU, human and final
+candidate acceptance remain separate.

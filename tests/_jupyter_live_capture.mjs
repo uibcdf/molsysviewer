@@ -128,8 +128,24 @@ async function openCanvas(){
  await source.getByRole('button',{name:'Show canvas controls',exact:true}).focus();await page.keyboard.press('Enter');
  const opened=page.waitForEvent('popup');await source.getByTitle('Open popup',{exact:true}).click();const popup=await opened;
  popup.on('pageerror',error=>report.page_errors.push({stage,message:error.message,stack:error.stack}));
- await popup.locator('#molsysviewer-loading').waitFor({state:'hidden'});
- await popup.waitForFunction(()=>window.__captureControllers?.[0]?.getStructureData()?.elementCount===62);
+ try{
+  await popup.locator('#molsysviewer-loading').waitFor({state:'hidden'});
+  await popup.waitForFunction(()=>window.__captureControllers?.[0]?.getStructureData()?.elementCount===62);
+ }catch(error){
+  // Keep this window's bounded state before its caller loses the failed result.
+  // The original timeout stays authoritative; observation cannot repair it.
+  report.popup_bootstrap_failure=await popup.evaluate(()=>{
+   const c=window.__captureControllers?.[0],loading=document.getElementById('molsysviewer-loading');
+   return {controller:!!c,closed:window.closed,hidden:document.hidden,focused:document.hasFocus(),
+    loading_text:loading?.textContent?.slice(0,2048),loading_display:loading&&getComputedStyle(loading).display,
+    panel_only:c?.isPanelOnly,disposed:c?.disposed,atoms:c?.getStructureData()?.elementCount,
+    frame:c?.trajectory.getTrajectoryState().currentFrame,sync:c?.systemSyncState,
+    native_updating:c?.plugin.state.data.behaviors.isUpdating.value,
+    cells:c?.plugin.state.data.cells.size,
+    canvases:[...document.querySelectorAll('canvas')].slice(0,4).map(canvas=>({width:canvas.width,height:canvas.height,connected:canvas.isConnected}))};
+  }).catch(failure=>({observation_error:failure.name}));
+  throw error;
+ }
  return popup;
 }
 

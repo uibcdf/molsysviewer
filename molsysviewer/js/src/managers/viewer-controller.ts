@@ -5117,7 +5117,14 @@ export class MolSysViewerController {
 
     prepareMovingVisualCapture(): void {
         this.assertLiveCaptureCanvas();
-        this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
+        const frame = this.trajectory.getTrajectoryState().currentFrame;
+        // A read must not invalidate membership already applied to this frame.
+        // Molecular/region edits reset these stamps; missing or pending science
+        // still follows the ordinary query path and remains a draw prerequisite.
+        if (this.dynamicRegionEvaluationAppliedFrame !== frame
+            || this.dynamicRegionEvaluationInFlight !== null || this.dynamicRegionEvaluationPendingFrame !== null) {
+            this.requestDynamicRegionEvaluationForFrame(frame);
+        }
     }
 
     retainMovingCapturePresentation(capture: Promise<unknown>): () => void {

@@ -1,0 +1,396 @@
+{
+  "recorded_utc": "2026-11-17",
+  "issue": "uibcdf/molsysviewer#344",
+  "scope": "Two guarded source corrections, native lifecycle and actual-Jupyter receiving. Intermittent popup initialization and covering CI remain open; no installed, native-GPU, Qt, human or final-candidate qualification.",
+  "source_base": "537f088a80c6ecc7933bce4afba6dad5f210dca3",
+  "working_inputs_sha256": {
+    "molsysviewer/js/src/plugin/structure.ts": "d49a4944cf78880b567791d3f96a5f6f72567c1298958942364bae5c16141ca6",
+    "molsysviewer/js/src/managers/viewer-controller.ts": "ba2c80b2a8671519e99c0db0b5099e1159bd828f7697c288bb7328bfc93d107b",
+    "molsysviewer/js/tests/e2e/box-trajectory-scenarios.ts": "cc93bac3334544cea35bbd01c847e1c7c43f63a09f3d9f6303fd5202be29b2e7",
+    "molsysviewer/js/tests/e2e/moving-capture-lifecycle-scenarios.ts": "76c63f641949d12a452aec6817a578854133a54524b0af39e30494b4b89a619f",
+    "tests/_jupyter_live_capture.mjs": "afc97cef9c71973343b9481d79c6e370568b479f74d1ac9420b4a0f740040dde",
+    "molsysviewer/viewer.js": "56c1cdcdccd7ede62abe1c4ba0acd2c001dbe0a7598c77b237be67a4f377ff2c"
+  },
+  "scientific_provider": {
+    "molsysmt_commit": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "molstar": "5.13.1",
+    "node": "22.23.4",
+    "actual_notebook_ipykernel": "7.4.0",
+    "kernel_selection": "Original isolated capsule; routine shared prefix still reports 7.3.0. Actual nested import origin is checked.",
+    "support_scope": "Retained source/cached support composition; not clean-solver or current published dependency qualification."
+  },
+  "previous_evidence_record": "devguide/camera_peer_and_ipc_receiving_20261117.json",
+  "buffer_diagnostic": {
+    "profile": 1011,
+    "instrumented_browser": "passed all eight moving cases and original final controls",
+    "canonical_pytest_qualification": false,
+    "safe_projection": "Unavailable because the additional trace exceeds its size bound; limit not relaxed.",
+    "observed_slow_calls": [
+      {
+        "owner": "Distance",
+        "attribute": "aStart",
+        "bytes": 207936,
+        "longest_wall_ms": 3231.5
+      },
+      {
+        "owner": "Unit Cell",
+        "attribute": "elements",
+        "bytes": 97920,
+        "longest_wall_ms": 3017.7
+      }
+    ],
+    "scope": "Delegated call durations include waiting; native array identity/owner association does not prove unchanged byte content. Owner trace is bounded and drops 90 later entries.",
+    "fixture": "Original one-frame atom displacement of [100,100,100] nm and all native assertions retained."
+  },
+  "implicit_cell_correction": {
+    "native_provider": "Mol* 5.13.1 default hierarchy preset",
+    "change": "Explicit showUnitcell:false on all four load routes. Molecular cell data and managed twelve-edge box are unchanged; hidden native geometry is never allocated.",
+    "causal_red": {
+      "profile": 1012,
+      "hidden_objects": 1,
+      "expected": 0
+    },
+    "receiving": {
+      "profile": 1013,
+      "js_cases": 495,
+      "failures": 0,
+      "skips": 0,
+      "types_and_builds": "passed",
+      "complete_native_box_entry": "passed static export, primary/popup navigation, explicit cells, rebootstrap, replacement, cell edits, hide and clear"
+    },
+    "guard": "molsysviewer/js/tests/e2e/box-trajectory.e2e.ts"
+  },
+  "coherent_prefix_correction": {
+    "change": "Do not request a new dynamic evaluation for an already applied current frame with no pending/in-flight query. Preserve invalidation on edits and ordinary missing-science query path. Fresh native draw remains mandatory.",
+    "causal_red": {
+      "profile": 1015,
+      "real_stopped_evaluated_empty_frame": true,
+      "requests_before": 0,
+      "requests_after": 1,
+      "ready_after": false
+    },
+    "native_green": {
+      "profile": 1016,
+      "js_cases": 495,
+      "types_and_builds": "passed",
+      "complete_lifecycle": "passed both-window preparation plus hidden/detached/recovered canvases, closed owners, autonomous transport-loss deadline, static freeze and pending View close",
+      "requests_before": 0,
+      "requests_after": 0,
+      "ready_after": true,
+      "resource_scope": "8 CPU /4 GiB; negative used4 CPU /4 GiB. Existing suite/operation deadlines unchanged."
+    },
+    "guards": [
+      "molsysviewer/js/tests/e2e/moving-capture-lifecycle.e2e.ts",
+      "tests/test_jupyter_live_capture.py::test_live_jupyter_work_files"
+    ]
+  },
+  "actual_jupyter": {
+    "1014": {
+      "junit": {
+        "sha256": "fc109e659c157047a233f59ca6f25a35b25ab765f55b57c831608ddd7315f4de",
+        "cases": [
+          {
+            "name": "test_live_jupyter_work_files",
+            "seconds": 153.615,
+            "outcome": "failed"
+          },
+          {
+            "name": "test_live_jupyter_movie_authoring",
+            "seconds": 128.636,
+            "outcome": "passed"
+          }
+        ]
+      },
+      "scope": "Only implicit-cell fix. One moving default state passes; default Python session times out at5s with dynamic/interaction projections pending. Separate Movie passes."
+    },
+    "1017": {
+      "junit": {
+        "sha256": "0c4c167e282713289aa0c1088df73ab72bf2b53095c4b455079c04e2e45377db",
+        "cases": [
+          {
+            "name": "test_live_jupyter_work_files",
+            "seconds": 219.693,
+            "outcome": "failed"
+          },
+          {
+            "name": "test_live_jupyter_movie_authoring",
+            "seconds": 133.694,
+            "outcome": "passed"
+          }
+        ]
+      },
+      "scope": "Both runtime fixes. Six primary moving cases, including both public defaults, pass; opening the moving popup times out at30s while loading remains visible. No popup capture is attempted. Original popup state unavailable before cleanup; no causal attribution. Separate Movie passes."
+    },
+    "1018": {
+      "junit": {
+        "sha256": "8499b97d57b8705be072e3821e8ddd59f4879a27029179610ec65526bb89e436",
+        "cases": [
+          {
+            "name": "test_live_jupyter_work_files",
+            "seconds": 309.345,
+            "outcome": "passed"
+          }
+        ]
+      },
+      "scope": "Maintained canonical work-file guard with bounded failure observations added to popup opening. Normal execution path, original assertions, data, five-/ten-second operations and30s popup readiness unchanged. Complete uninstrumented source receiving at4 CPU /4 GiB.",
+      "stopped_roundtrips": 6,
+      "strong_restores": 6,
+      "studio_cases": 4,
+      "moving_cases_passed": 8,
+      "moving_cases_required": 8,
+      "independent_restore_and_source_preservation": true,
+      "cancellation_and_expiry_without_late_writes": true,
+      "popup_failure_observer_exercised": false
+    }
+  },
+  "residual": {
+    "issue_still_open": true,
+    "boundary": "Intermittent actual-Jupyter moving popup initialization in1017; a later pass does not establish cause or repair.",
+    "receiver_change": "Keep bounded popup controller/loader/native state before retiring a failed opening; rethrow its original error.",
+    "covering_source_ci": "Required on the reviewed committed batch; old43823224361 stays failed.",
+    "new_molsysmt_defect_established": false
+  },
+  "upstream_comparison": {
+    "clone_branch": "master",
+    "clone_commit": "dabbf29f952880a034a9637e28c9844e3ae73d9f",
+    "clone_clean": true,
+    "finding": "Development transient-object transform explicitly excludes CPU instance readers; not a drop-in callout/loci substitute.",
+    "actual_build": "Installed declared5.13.1 only; no checkout override or upstream patch."
+  },
+  "setup_negative": {
+    "1010": "Observer string escaping fails before widget creation; original retained. Corrected receiver validates derived ES module syntax before starting the server."
+  },
+  "profiles": [
+    {
+      "id": "popup-buffer-observation-1010",
+      "native_exit": 1,
+      "seconds": 5.948786518070847,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 207.0,
+      "cleanup": {
+        "tracked": 5,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "76fdccfd4df73a294b04b2325685599696e23c58009d4f9f2dddd454ec8728bb"
+    },
+    {
+      "id": "popup-buffer-attribution-1011",
+      "native_exit": 0,
+      "seconds": 367.08390731271356,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 4575.7,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "a5063f6846e0288c6fd135e8db492d0ede3091b7a199efe070df5362cbfcb913"
+    },
+    {
+      "id": "build-implicit-unitcell-red-1012",
+      "native_exit": 1,
+      "seconds": 12.212648306041956,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 1584.2,
+      "cleanup": {
+        "tracked": 21,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "42bc8880b52cd4e4cf55d2cfae6519ad806ad9e24a8c1d1bd2a2e4ab08188ce5"
+    },
+    {
+      "id": "build-implicit-unitcell-green-1013",
+      "native_exit": 0,
+      "seconds": 143.00820681173354,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 2215.4,
+      "cleanup": {
+        "tracked": 40,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "4bc83998d0b29e823f416967068a677f88a98274e49cd584d83c98bd8d3fdba9"
+    },
+    {
+      "id": "covering-native-loader-1014",
+      "native_exit": 1,
+      "seconds": 288.81943581905216,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 3246.5,
+      "cleanup": {
+        "tracked": 36,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "a4a07e3b8f4008ecad2e4a8e2963a2cca26899d5dbe1f91e1e84eb208c41321d"
+    },
+    {
+      "id": "build-coherent-capture-red-1015",
+      "native_exit": 1,
+      "seconds": 243.1878476566635,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 3604.5,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "cf42cad97d5bdafd97ebb606de20dbc87aeead23da23b9c97b7011bee074db51"
+    },
+    {
+      "id": "build-coherent-capture-green-1016",
+      "native_exit": 0,
+      "seconds": 186.2792451712303,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 3570.2,
+      "cleanup": {
+        "tracked": 42,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 8,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "328a48dc96ff84216212cf7f26e5368ed4dd1b7ddbb38400c8518b8daeb23aae"
+    },
+    {
+      "id": "covering-coherent-capture-1017",
+      "native_exit": 1,
+      "seconds": 357.05211515771225,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 4014.3,
+      "cleanup": {
+        "tracked": 37,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "8051781d6a53ed8d8f060669cd8a7d78c150f9d1b729f253a849ea11c1b8f4b7"
+    },
+    {
+      "id": "current-popup-bootstrap-receiving-1018",
+      "native_exit": 0,
+      "seconds": 312.4556267107837,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "resource_stop": null,
+      "peak_owned_rss_mib": 4558.1,
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "c5d769042914e3caebd5cba15e088ae6e42b8b499769da2faacd3d67ac31bd69"
+    }
+  ],
+  "private_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/capture-prefix-and-unitcell-20261117",
+    "custodian": "Diego Prada Gracia",
+    "files": 102,
+    "bytes": 55549693,
+    "manifest_sha256": "93bec52f553f92dcfb8f7d6e56b111b6f7a2fd79126ad6304c210133b4f137d2",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
+  },
+  "counter": {
+    "source_delivered": 41,
+    "original_total": 46,
+    "final_accepted": 1,
+    "extra_receiving_closures_increment_original_counter": false
+  },
+  "publication": "No tag, package, promotion, release or1.0 publication; reciprocal final floors remain an unapplied candidate-preparation agreement.",
+  "offline_validation": {
+    "profile": 1019,
+    "passed": 570,
+    "skipped": 3,
+    "skipped_scope": "Unselected opt-in actual-host tests; actual work-file and Movie outcomes retain their separately executed receipts.",
+    "junit_sha256": "006fb7cfab59494b7d10c04e1cafa9b54448370acd4ad18bbe4f227c024d6398",
+    "generated_indexes": "up to date",
+    "maintained_browser_owner_syntax": "passed Node22 check"
+  },
+  "source_dispatch_preflight": {
+    "queued": {
+      "pages": 1,
+      "runs": 0,
+      "raw_inventory_sha256": "f2aa3f2f9ea19c33f16347ee49859287a9b12cde87a89f7d6927ecb020c6b673"
+    },
+    "in_progress": {
+      "pages": 1,
+      "runs": 0,
+      "raw_inventory_sha256": "f2aa3f2f9ea19c33f16347ee49859287a9b12cde87a89f7d6927ecb020c6b673"
+    }
+  }
+}

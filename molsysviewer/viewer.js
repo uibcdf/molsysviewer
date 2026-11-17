@@ -162067,7 +162067,7 @@ async function loadStructureFromString(plugin, data, format = "pdb", label2, opt
     label: label2 ?? "Structure from string"
   });
   const trajectory = await plugin.builders.structure.parseTrajectory(raw2, format);
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default", { showUnitcell: false });
   return {
     data: raw2.ref,
     trajectory: trajectory.ref,
@@ -162085,7 +162085,7 @@ async function loadStructureFromUrl(plugin, url, format, label2, options) {
     dataNode,
     guessedFormat
   );
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default", { showUnitcell: false });
   return {
     data: dataNode.ref,
     trajectory: trajectory.ref,
@@ -162149,7 +162149,7 @@ async function loadStructureFromMolSysPayload(plugin, payload, label2, options) 
     tree: builder,
     options: { doNotLogTiming: true }
   });
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default", { showUnitcell: false });
   return {
     boxVectors: copyJsonBoxVectors(payload.structures),
     trajectory: trajectoryNode.ref,
@@ -162223,7 +162223,7 @@ async function loadStructureFromArrayNativeMolSys(plugin, payload, label2, optio
     tree: builder,
     options: { doNotLogTiming: true }
   });
-  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+  const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default", { showUnitcell: false });
   return {
     // The incoming view can share a much larger coordinate transport blob.
     boxVectors: payload.box?.slice(),
@@ -194016,7 +194016,10 @@ var MolSysViewerController = class _MolSysViewerController {
   }
   prepareMovingVisualCapture() {
     this.assertLiveCaptureCanvas();
-    this.requestDynamicRegionEvaluationForFrame(this.trajectory.getTrajectoryState().currentFrame);
+    const frame2 = this.trajectory.getTrajectoryState().currentFrame;
+    if (this.dynamicRegionEvaluationAppliedFrame !== frame2 || this.dynamicRegionEvaluationInFlight !== null || this.dynamicRegionEvaluationPendingFrame !== null) {
+      this.requestDynamicRegionEvaluationForFrame(frame2);
+    }
   }
   retainMovingCapturePresentation(capture) {
     if (this.disposed) return () => {

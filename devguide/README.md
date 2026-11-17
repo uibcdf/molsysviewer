@@ -47,6 +47,14 @@ documents, and historical audits.
 
 ## Current status and planning
 
+The [current capture-preparation receipt](live_capture_preparation_receiving_20261117.json)
+delivers two guarded corrections: capture retains already applied dynamic
+membership, and loaders omit Mol*'s unnecessary hidden unit-cell geometry.
+Native causal controls, 495 JS cases, full box/lifecycle and actual Jupyter
+work-file receiving pass; Movie passes separately. #344 remains open for
+one unexplained moving-popup initialization timeout and the covering source
+checkpoint. Original counters and final-candidate boundaries remain unchanged.
+
 The [2026-11-17 camera/IPC receipt](camera_peer_and_ipc_receiving_20261117.json)
 receives #400's idle camera-relay correction, #394's focused native keyboard
 receiving and #401's complete 25-notebook IPC route. All 495 JS cases and

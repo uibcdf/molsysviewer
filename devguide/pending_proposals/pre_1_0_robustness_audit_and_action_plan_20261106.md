@@ -588,6 +588,17 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
+**Current capture-source receiving — 2026-11-17:** the
+[new receipt](../live_capture_preparation_receiving_20261117.json) delivers
+native-regression-protected removal of the implicit hidden cell and preservation
+of already evaluated dynamic membership during capture preparation. The full
+actual-Jupyter guard passes all eight moving cases at 4 CPU / 4 GiB; 495 JS
+cases, complete native box/lifecycle and separate Movie also pass. #344 remains
+active for an intermittent 30-second moving-popup initialization timeout and
+the next covering source checkpoint. Failure observations are now retained
+before closing that window. Keep original negatives and resource scopes;
+**41/46 source-delivered and 1/46 final accepted** remain unchanged.
+
 **Current source exits — 2026-11-17:** `4f2d8fa2` closes the identified idle
 peer-camera loop (#400), focused DataCard receiving (#394) and Linux notebook
 IPC route (#401), with 495 JS cases, full plot/scientific mirror, 25 original

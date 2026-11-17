@@ -162,6 +162,17 @@ export async function checkDynamicFreeze(context: Context) {
             const entry = c.state.regionIndex.get("moving-near");
             return c.trajectory.getTrajectoryState().currentFrame === 1 && entry?.atomIndices.length === 0;
         });
+        for (const canvas of [page, popup]) {
+            await canvas.waitForFunction(() => !!(window as any).__mirrorController.readMovingVisualState());
+            const prepared = await canvas.evaluate(() => {
+                const c = (window as any).__mirrorController;
+                const before = c.dynamicRegionRequests.size;
+                c.prepareMovingVisualCapture();
+                return { before, after: c.dynamicRegionRequests.size, ready: !!c.readMovingVisualState() };
+            });
+            assert.deepEqual(prepared, { before: 0, after: 0, ready: true },
+                "Capture preparation must retain an already evaluated coherent frame, including empty membership");
+        }
         await command("freeze_dynamic");
         const native: any[] = [];
         for (const canvas of [page, popup]) {

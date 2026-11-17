@@ -907,6 +907,22 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current capture-source follow-up — 2026-11-17:** the
+[receipt](live_capture_preparation_receiving_20261117.json) records the next
+two guarded fixes. Every loader disables the native preset's hidden unit-cell
+allocation while retaining the managed box and cell data. Capture preparation
+preserves an already evaluated current dynamic region; missing/pending science,
+edit invalidation and fresh native draws remain mandatory. Both defects have
+native failing controls. All 495 JS cases, types/builds, complete box/lifecycle
+entries and the full actual-Jupyter work-file guard pass in their explicit
+resource scopes; the latter passes all eight moving cases at 4 CPU / 4 GiB.
+Movie passes separately. #344 stays open: `1017` times out opening the moving
+popup at 30 seconds, without retained original popup state. The maintained
+receiver now captures that state before cleanup; the next pass does not
+explain the timeout. Integrate the reviewed batch and run one full Linux
+source recovery; retain existing native scientific hosts separately. No
+candidate/publication or original 46-outcome counter advances.
+
 **Current camera/IPC follow-up — 2026-11-17:** the
 [receipt](camera_peer_and_ipc_receiving_20261117.json) owns this new batch.
 Source run `43823224361` on `303c9152` / MolSysMT `4b0b1f8a` is terminal

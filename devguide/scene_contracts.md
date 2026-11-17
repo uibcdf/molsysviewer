@@ -1858,6 +1858,12 @@ remaps the selected structure by the same first-retained-occurrence rule as the
 playhead. Import rejects invalid style or an unavailable/out-of-range cell
 before changing the destination. Legacy documents without the key retain the
 normal replace/merge behavior; clearing box shapes clears their display recipe.
+All native loading routes explicitly disable the hierarchy preset's implicit
+hidden unit-cell representation. Cell data remain on the molecular system;
+only the managed `box_display` creates displayed cell geometry. Hidden native
+helpers must not allocate a second cage or refresh its GPU buffers behind
+the explicit box lifecycle.
+
 Bare `show_box` widths remain in angstrom, and explicit scalar length quantities
 convert to angstrom before rendering. Widths must be positive and finite.
 The real-system state/session, rejection, history and unit guards live in
@@ -2116,6 +2122,13 @@ preferences still participate, as does every new authority revision. Full
 native snapshots retain their bounds for capture and persistence. This
 deduplication neither changes those snapshots nor acknowledges an undrawn
 authority intent.
+
+Preparing a capture preserves dynamic membership already applied to the current
+structure, including evaluated-empty membership. It must not invalidate that
+coherent prefix by requesting the same evaluation again. Missing or pending
+scientific projections still follow their normal query path; molecular and
+region edits invalidate the existing stamps. This reuse never replaces the
+required fresh completed draw or validation of the frozen recipe.
 
 An acknowledged live capture reads its camera and applied frame synchronously
 inside the completed-draw notification. A Promise continuation after that

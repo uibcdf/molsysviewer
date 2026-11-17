@@ -19,6 +19,13 @@ export async function checkBoxTrajectory(page: Page, dir: string) {
         await page.goto(pathToFileURL(fixture.page).href);
         await page.waitForFunction(() => !!(window as any).__molsysviewerDocsController?.plugin.canvas3d);
         await page.waitForFunction(() => (window as any).__molsysviewerDocsController.trajectory.getTrajectoryState().frameCount === 3);
+        assert.deepEqual(await page.evaluate(() => {
+            const c = (window as any).__molsysviewerDocsController;
+            return [...c.plugin.state.data.cells.values()]
+                .filter((cell: any) => cell.transform.transformer.id === "ms-plugin.model-unitcell-3d")
+                .map((cell: any) => ({ hidden: cell.state.isHidden,
+                    renderObjects: cell.obj?.data?.repr?.renderObjects.length ?? 0 }));
+        }), [], "Loading must not allocate an unmanaged hidden unit cell beside the explicit box");
         await page.evaluate(() => {
             const w = window as any, c = w.__molsysviewerDocsController;
             let replay = true;
@@ -131,6 +138,11 @@ async function checkWidgetBoxTrajectory(page: Page, dir: string) {
                         && c.boxDisplay.isFrameReady(frame)
                         && (cell === null ? refs.size === 0 : c.boxDisplay.structureIndex === cell && refs.size === 1);
                 }, { frame, cell });
+                assert.equal(await endpoint.evaluate(() => {
+                    const c = (window as any).__mirrorController;
+                    return [...c.plugin.state.data.cells.values()].filter((entry: any) =>
+                        entry.transform.transformer.id === "ms-plugin.model-unitcell-3d").length;
+                }), 0, "Primary and popup loaders must leave box rendering to the managed scene");
                 const actual = await endpoint.evaluate(() => new Promise<any[]>((resolve, reject) => {
                     const c = (window as any).__mirrorController, canvas = c.plugin.canvas3d;
                     let replay = true;

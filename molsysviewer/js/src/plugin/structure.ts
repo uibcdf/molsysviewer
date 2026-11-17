@@ -143,8 +143,9 @@ export async function loadStructureFromString(
     // parseTrajectory needs the format name: "pdb", "mmcif", etc.
     const trajectory = await plugin.builders.structure.parseTrajectory(raw, format as any);
 
-    // Apply the default preset (standard "pretty" representation).
-    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+    // The managed box owns cell visibility. Mol*'s implicit hidden unit cell
+    // would still allocate geometry and update its GPU buffers every frame.
+    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default", { showUnitcell: false });
 
     return {
         data: raw.ref,
@@ -178,7 +179,7 @@ export async function loadStructureFromUrl(
         guessedFormat as any
     );
 
-    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default");
+    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectory, "default", { showUnitcell: false });
 
     return {
         data: dataNode.ref,
@@ -258,7 +259,7 @@ export async function loadStructureFromMolSysPayload(
         options: { doNotLogTiming: true },
     });
 
-    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default", { showUnitcell: false });
 
     return {
         boxVectors: copyJsonBoxVectors(payload.structures),
@@ -350,7 +351,7 @@ export async function loadStructureFromArrayNativeMolSys(
         tree: builder,
         options: { doNotLogTiming: true },
     });
-    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default");
+    const preset = await plugin.builders.structure.hierarchy.applyPreset(trajectoryNode.ref, "default", { showUnitcell: false });
     return {
         // The incoming view can share a much larger coordinate transport blob.
         boxVectors: payload.box?.slice(),
