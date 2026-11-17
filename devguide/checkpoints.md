@@ -907,7 +907,9 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
-**Current capture-source follow-up — 2026-11-17:** the
+**Current capture-source follow-up — 2026-11-17:** published source `c08d4990`
+has one [full Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44031725024)
+in progress against MolSysMT `4b0b1f8a`. It has not passed. The
 [receipt](live_capture_preparation_receiving_20261117.json) records the next
 two guarded fixes. Every loader disables the native preset's hidden unit-cell
 allocation while retaining the managed box and cell data. Capture preparation
@@ -919,8 +921,10 @@ resource scopes; the latter passes all eight moving cases at 4 CPU / 4 GiB.
 Movie passes separately. #344 stays open: `1017` times out opening the moving
 popup at 30 seconds, without retained original popup state. The maintained
 receiver now captures that state before cleanup; the next pass does not
-explain the timeout. Integrate the reviewed batch and run one full Linux
-source recovery; retain existing native scientific hosts separately. No
+explain the timeout. The scoped offline checks pass 570 cases with three
+unselected opt-in host tests; their actual-host evidence stays separate.
+Inspect this single recovery and retain existing native scientific hosts
+separately. Later evidence-only commits do not change the run's tested SHA. No
 candidate/publication or original 46-outcome counter advances.
 
 **Current camera/IPC follow-up — 2026-11-17:** the

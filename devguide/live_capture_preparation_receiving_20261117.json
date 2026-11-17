@@ -392,5 +392,64 @@
       "runs": 0,
       "raw_inventory_sha256": "f2aa3f2f9ea19c33f16347ee49859287a9b12cde87a89f7d6927ecb020c6b673"
     }
+  },
+  "covering_source_run": {
+    "id": 44031725024,
+    "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/44031725024",
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "c08d4990245bb6cad81160ea742e0bb544556738",
+    "path": ".github/workflows/ci-python-314-source-pair.yaml",
+    "event": "workflow_dispatch",
+    "run_attempt": 1,
+    "created_at": "2026-11-17T06:30:33Z",
+    "updated_at": "2026-11-17T06:30:38Z",
+    "observed_utc": "2026-11-17T06:39:35.363648+00:00",
+    "dispatch_inputs": {
+      "source_receiving": true,
+      "receiving_scope": "full",
+      "encoder_diagnostics": false,
+      "platform": "ubuntu-latest",
+      "molsysmt_sha": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas_version": "3.1.0",
+      "molsysmt_version": "0.23.0",
+      "viewer_version": "0.24.1"
+    },
+    "scope": "One full Linux source recovery. Source-receiving mode assigns no candidate version or tag; version inputs are inactive in this mode. This run covers the exact c08d4990 code, not later evidence-only commits.",
+    "acceptance": "Pending; no terminal conclusion. Original 43823224361 remains failed; earlier Windows/macOS scientific evidence retains its exact inputs."
+  },
+  "private_handoff_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/capture-prefix-ci-handoff-20261117",
+    "custodian": "Diego Prada Gracia",
+    "files": 24,
+    "bytes": 8271810,
+    "manifest_sha256": "23ada6b37b7136f0ef3b89dab718fc3fc96f746fa4edbc00426bcec17a0aaa54",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
+  },
+  "handoff_validation": {
+    "profile": 1020,
+    "native_exit": 0,
+    "passed": 4,
+    "skipped": 0,
+    "generated_indexes": "up to date",
+    "seconds": 4.214789294172078,
+    "limits": {
+      "logical_cpus": 2,
+      "ram_gib": 2,
+      "swap_gib": 0
+    },
+    "inputs_unchanged": true,
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 2,
+      "survivors": [],
+      "errors": []
+    },
+    "junit_sha256": "2ea9abf70c368bf1bb1d6d4ba1c644dfe5155d8bdbd73137b2e22ecc1080486f"
   }
 }
