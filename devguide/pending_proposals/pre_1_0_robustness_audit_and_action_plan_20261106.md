@@ -601,7 +601,8 @@ tracked in [#402](../pending_bugs/mirror_picking_fixture_camera_clipping.md);
 4,743 Python cases, all 25 notebooks and the first three core entries pass.
 Both fixture corrections receive the complete local canonical mirror in
 [the #402 receipt](../mirror_camera_clipping_receiving_20261117.json);
-one covering Linux recovery remains pending.
+the single [covering Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
+on published `0ea58be0` is in progress, not accepted.
 Live-Jupyter diagnostics are outside that full-source profile. Failure observations are now retained
 before closing that window. Keep original negatives and resource scopes;
 **41/46 source-delivered and 1/46 final accepted** remain unchanged.

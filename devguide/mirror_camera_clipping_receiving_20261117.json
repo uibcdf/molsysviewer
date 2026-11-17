@@ -13,7 +13,7 @@
   },
   "scientific_inputs": {
     "configured_molsysmt": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
-    "scope": "Frozen direct-fixture source/support routes in the private invocation/input manifests. No new actual-Jupyter kernel-origin certificate; prior1018 retains its separate inner-process proof. Not clean-solver or canonical artifact qualification."
+    "scope": "Frozen direct-fixture source/support routes in the private invocation/input manifests. No new actual-Jupyter kernel-origin certificate; prior 1018 retains its separate inner-process proof. Not clean-solver or canonical artifact qualification."
   },
   "failed_source_checkpoint": {
     "run": 44031725024,
@@ -233,14 +233,37 @@
   ],
   "resource_scope": "Bounded systemd scopes and pressure/swap monitoring; not resource reservations. Summed process RSS includes shared pages and is not exclusive RAM.",
   "guard": "molsysviewer/js/tests/e2e/canvas-popup-mirror.e2e.ts",
-  "covering_source_checkpoint": "Pending on the reviewed published correction; no new dispatch yet.",
+  "covering_source_checkpoint": {
+    "id": 44118070148,
+    "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/44118070148",
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "0ea58be0089397cd2a023a8574d0d2fc7cea41e7",
+    "path": ".github/workflows/ci-python-314-source-pair.yaml",
+    "event": "workflow_dispatch",
+    "run_attempt": 1,
+    "created_at": "2026-11-17T15:45:59Z",
+    "updated_at": "2026-11-17T15:46:04Z",
+    "observed_utc": "2026-11-17T15:46:51.203891+00:00",
+    "dispatch_inputs": {
+      "source_receiving": true,
+      "receiving_scope": "full",
+      "encoder_diagnostics": false,
+      "platform": "ubuntu-latest",
+      "molsysmt_sha": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas_version": "3.1.0",
+      "molsysmt_version": "0.23.0",
+      "viewer_version": "0.24.1"
+    },
+    "acceptance": "Pending. Exact 0ea58be0 code; evidence-only later commits do not change its tested SHA. No candidate tags, installed artifact pair or publication."
+  },
   "counter": {
     "source_delivered": 41,
     "original_total": 46,
     "final_accepted": 1,
     "extra_receiving_controls_increment_original_counter": false
   },
-  "publication": "No tag, package, promotion, release or1.0 publication.",
+  "publication": "No tag, package, promotion, release or 1.0 publication.",
   "private_custody": {
     "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/mirror-camera-clipping-20261117",
     "custodian": "Diego Prada Gracia",
@@ -276,5 +299,18 @@
     },
     "junit_sha256": "a9e6cbe271bf8fffaf278e3a79efeb56a48549b0620d59b1bce889d8be029364",
     "generated_indexes": "up to date"
+  },
+  "private_ci_handoff_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/mirror-source-ci-handoff-20261117",
+    "custodian": "Diego Prada Gracia",
+    "files": 6,
+    "bytes": 13353,
+    "manifest_sha256": "2fa1c31e62333791251e77734980f87270402626a8cf6f8614f821f61940e2c3",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
   }
 }

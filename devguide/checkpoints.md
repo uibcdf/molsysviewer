@@ -915,9 +915,11 @@ pass, but core entry four's first sphere pick is clipped by its fixture camera.
 reproduced receiving defect; three core entries complete. Its camera-depth
 and physical-pixel corrections now pass the complete canonical mirror;
 the [receipt](mirror_camera_clipping_receiving_20261117.json) retains both
-causal controls and original failures. The
-[receipt](live_capture_preparation_receiving_20261117.json) records the next
-two guarded fixes. Every loader disables the native preset's hidden unit-cell
+causal controls and original failures. The reviewed batch is published in
+`0ea58be0`; its single [full Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
+is in progress, not accepted. The
+[receipt](live_capture_preparation_receiving_20261117.json) records the two
+guarded production fixes. Every loader disables the native preset's hidden unit-cell
 allocation while retaining the managed box and cell data. Capture preparation
 preserves an already evaluated current dynamic region; missing/pending science,
 edit invalidation and fresh native draws remain mandatory. Both defects have
@@ -929,7 +931,7 @@ popup at 30 seconds, without retained original popup state. The maintained
 receiver now captures that state before cleanup; the next pass does not
 explain the timeout. The scoped offline checks pass 570 cases with three
 unselected opt-in host tests; their actual-host evidence stays separate.
-Receive the corrected complete mirror and its applicable covering gate; retain
+Retain the corrected complete mirror and inspect that recovery; retain
 existing native scientific hosts separately. Later evidence-only commits do not
 change the run's tested SHA. No
 candidate/publication or original 46-outcome counter advances.

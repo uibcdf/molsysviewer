@@ -416,7 +416,7 @@
       "viewer_version": "0.24.1"
     },
     "scope": "One full Linux source recovery. Source-receiving mode assigns no candidate version or tag; version inputs are inactive in this mode. This run covers the exact c08d4990 code, not later evidence-only commits.",
-    "acceptance": "Failed at native GPU identification of mirror-sphere after popup bootstrap and bidirectional camera controls passed. Python passes4743/skips42;25 notebooks execute successfully. Only3/63 core entries complete; actual-Jupyter/prolonged diagnostic steps are unselected by the full-source profile. Not a complete source, installed or final gate.",
+    "acceptance": "Failed at native GPU identification of mirror-sphere after popup bootstrap and bidirectional camera controls passed. Python passes 4,743 cases with 42 skips; all 25 notebooks execute successfully. Only 3/63 core entries complete; actual-Jupyter/prolonged diagnostics are unselected by the full-source profile. Not a complete source, installed or final gate.",
     "terminal_originals": {
       "run": 44031725024,
       "producer": "c08d4990245bb6cad81160ea742e0bb544556738",

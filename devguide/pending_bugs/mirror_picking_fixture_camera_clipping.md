@@ -107,8 +107,10 @@ retains all 9,995 selected inputs and retires all 25 owned processes without
 a resource stop. The original 480-second suite allowance and all operation
 deadlines remain unchanged. Production/runtime bytes match `c08d4990`.
 
-This delivers the fixture corrections; keep the issue partial until the
-applicable covering source recovery is received. #344, installed/native-host,
+Published `0ea58be0` delivers the fixture corrections. Its single
+[full Linux source recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
+is in progress, not accepted; keep the issue partial until that gate is
+received. #344, installed/native-host,
 human and final-candidate acceptance remain separate.
 
 The scoped reporting/build-route checks pass 552 cases with zero skips, and
