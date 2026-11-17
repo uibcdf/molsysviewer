@@ -15,16 +15,16 @@ supersedes: []
 
 # Moving popup capture deadline
 
-Current source `c08d4990` contains the two guarded corrections below. The
+Source `c08d4990` introduced the two guarded corrections below. The
 complete actual-Jupyter work-file guard passes in `1018`, and Movie passes
 separately. The later [full Linux source recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44118070148)
 on `0ea58be0` passes Python, all 25 notebooks and eight core entries, including
 the separately corrected scientific mirror under
 [#402](mirror_picking_fixture_camera_clipping.md). It then fails a moving-capture
 test precondition, described below. Actual-Jupyter diagnostics are not selected
-by that full-source profile. This report remains open for the unexplained
-popup initialization failure in `1017`, the latest actual-Jupyter observation
-and covering source qualification.
+by that full-source profile. This report retains the intermittent popup
+initialization failures. See [Validation after resumption](#validation-after-resumption)
+for the current local results and covering source run.
 
 Initial receiving `1004`, based on MolSysViewer `f2d83103` plus the peer-camera
 correction and focused DataCard receiving, passes the complete native mirror
@@ -375,6 +375,35 @@ browser checks across these explicit profiles. Offline checks pass 574 cases
 and skip three opt-in host cases. The reviewed source is integrated in
 `d8c10784`. The single [covering Linux source run](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
 on that exact commit is in progress.
+
+## Popup startup timing on the reviewed source
+
+The original `1039` wire trace receives the canonical snapshot 5.53 seconds
+after its request. It shows that the molecular transfer and snapshot reached
+the notebook. Since that attempt did not retain popup-local timing, the
+subsequent delay cannot be assigned to a particular native operation.
+
+Passive diagnostic `1051` on bundle `d4c479e9…` passes all eight moving
+captures and the cancellation and expiry controls. The stopped popup is
+ready 5.05 seconds after the driver's readiness wait begins. The moving
+popup is ready at 20.80 seconds. Its snapshot arrives at 6.08 seconds, the
+loader starts fading at 18.96 seconds and is removed at 19.91 seconds.
+Before fading, the popup applies the snapshot's frame 2 and then the host's
+current frame 0. Those two native operations take 5.92 and 5.43 seconds.
+The first loader observation predates the driver's moving-popup wait by
+8.57 seconds. These are stage timings, not click-to-ready latency.
+
+Experimental `1052` delegates all native work except a hypothetical
+superseded, plain snapshot frame. Its branch requires a different host frame,
+the same navigation revision and active playback. Both projections in the
+observed moving popup select frame 1, so the branch never runs. The first
+native projection alone takes 10.06 seconds. The driver sees the popup ready
+at 16.16 seconds and all eight moving captures pass. The difference between
+these runs provides no evidence of a speedup from omitting a frame. Preserve
+the current product code and the documented deadlines. Both diagnostics use
+4 CPU / 4 GiB, preserve all 9,997 selected inputs and retire all 20 owned
+processes per invocation without a resource stop. Their original timing
+evidence is in the private supplement identified in the follow-up receipt.
 
 ## MolSysMT coordination checkpoint
 

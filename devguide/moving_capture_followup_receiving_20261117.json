@@ -577,7 +577,158 @@
         "url": "https://github.com/uibcdf/molsysviewer/actions/runs/44176403184",
         "workflowName": "Python 3.14 source pair"
       },
-      "scope": "Complete Linux source checkpoint; terminal result pending."
+      "scope": "Complete Linux source checkpoint; terminal result pending.",
+      "early_verified_artifacts": [
+        {
+          "id": 14370868499,
+          "name": "movie-encoder-native-Linux",
+          "size_in_bytes": 14696,
+          "digest": "sha256:f0ee6946ab9bfa3284eaa7946bffeca8e52b342163cdf8ebd99c8470aece86b6"
+        },
+        {
+          "id": 14370673813,
+          "name": "source-receiving-Linux-py3.14",
+          "size_in_bytes": 83164,
+          "digest": "sha256:ddc56ad77d83790d317fc6bd9f9f73c4ecd5756038b623067cd3d28a5b0edfdb",
+          "junit": {
+            "tests": 4789,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 42,
+            "passed": 4747
+          }
+        }
+      ],
+      "early_artifact_custody": {
+        "directory": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-capture-ci-44176403184-python",
+        "sha256": "0e26d2c028dc30f98715d37da0ef2848d305f962733a56195396a9fda990d631",
+        "files": 4,
+        "hashes_verified": true,
+        "originals_retained": true
+      }
+    },
+    "startup_diagnostics": {
+      "profiles": {
+        "1051": {
+          "seconds": 323.928,
+          "moving_captures": 8,
+          "stopped_roundtrips": 6,
+          "strong_restores": 6,
+          "studio_cases": 4,
+          "popup_timing": {
+            "canvas popup": {
+              "driver_ready_milliseconds": 5046,
+              "first_loader_observation_relative_ms": 789,
+              "snapshot_arrival_relative_ms": 2787.4,
+              "loader_fading_relative_ms": 3295.8,
+              "loader_removed_relative_ms": 4459.7,
+              "native_frame_updates_before_reveal": [
+                {
+                  "from": 0,
+                  "to": 2,
+                  "milliseconds": 73.4
+                },
+                {
+                  "from": 2,
+                  "to": 2,
+                  "milliseconds": 2.9
+                }
+              ]
+            },
+            "moving popup": {
+              "driver_ready_milliseconds": 20803,
+              "first_loader_observation_relative_ms": -8573.8,
+              "snapshot_arrival_relative_ms": 6075.0,
+              "loader_fading_relative_ms": 18959,
+              "loader_removed_relative_ms": 19914.5,
+              "native_frame_updates_before_reveal": [
+                {
+                  "from": 0,
+                  "to": 2,
+                  "milliseconds": 5922.6
+                },
+                {
+                  "from": 2,
+                  "to": 0,
+                  "milliseconds": 5433.0
+                }
+              ]
+            }
+          },
+          "scope": "Passive opening timing",
+          "cpus": 4,
+          "memory_gib": 4,
+          "inputs": 9997,
+          "owned_processes_retired": 20,
+          "input_manifest_sha256": "e5599f48f10fa59fff69275623e64cf5c5ef2d9193f661b621a2498c6e250e5d"
+        },
+        "1052": {
+          "seconds": 318.937,
+          "moving_captures": 8,
+          "stopped_roundtrips": 6,
+          "strong_restores": 6,
+          "studio_cases": 4,
+          "popup_timing": {
+            "canvas popup": {
+              "driver_ready_milliseconds": 5517,
+              "first_loader_observation_relative_ms": 752,
+              "snapshot_arrival_relative_ms": 2898.3,
+              "loader_fading_relative_ms": 4718.2,
+              "loader_removed_relative_ms": 5018.6,
+              "native_frame_updates_before_reveal": [
+                {
+                  "from": 0,
+                  "to": 2,
+                  "milliseconds": 1390.1
+                },
+                {
+                  "from": 2,
+                  "to": 2,
+                  "milliseconds": 0.6
+                }
+              ],
+              "experimental_branch_executed": false
+            },
+            "moving popup": {
+              "driver_ready_milliseconds": 16155,
+              "first_loader_observation_relative_ms": -9727.1,
+              "snapshot_arrival_relative_ms": 2910.1,
+              "loader_fading_relative_ms": 14399.4,
+              "loader_removed_relative_ms": 15040.8,
+              "native_frame_updates_before_reveal": [
+                {
+                  "from": 0,
+                  "to": 1,
+                  "milliseconds": 10057.5
+                },
+                {
+                  "from": 1,
+                  "to": 1,
+                  "milliseconds": 6.8
+                }
+              ],
+              "experimental_branch_executed": false
+            }
+          },
+          "scope": "Experimental conditional omission, branch not exercised",
+          "cpus": 4,
+          "memory_gib": 4,
+          "inputs": 9997,
+          "owned_processes_retired": 20,
+          "input_manifest_sha256": "0ee8d00a5899844d86ee90b95d7bda6536bcbd61b5767db3faaa1d17c167b63d"
+        }
+      },
+      "runtime_sha256": "d4c479e981b71613d3e9b251df168270d2f158daae36e8616f79c72bcd7ab14e",
+      "verdict": "Native frame application can dominate the moving popup startup. The conditional omission did not execute in 1052; no optimization or timing claim is qualified.",
+      "custody": {
+        "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/moving-capture-resumption-1052",
+        "custodian": "Diego Prada Gracia",
+        "files": 25,
+        "bytes": 9192136,
+        "manifest_sha256": "05d67f0d563b45293f34c9f8c785c465ff5ed26236824bb2822370d7217af03a",
+        "hashes_verified": true,
+        "originals_retained": true
+      }
     }
   }
 }

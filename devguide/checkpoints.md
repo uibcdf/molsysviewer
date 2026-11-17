@@ -928,7 +928,14 @@ capture, then reaches the lifecycle suite deadline. Isolated `1050` passes
 that complete entry at 8 CPU / 4 GiB with its 240-second limit unchanged.
 The reviewed changes are on main in `d8c10784`, with the single
 [covering Linux source check](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
-in progress. Review the historical intermittent timeouts separately.
+in progress. Its verified Python JUnit reports 4,747 passes and 42 skips,
+with no failures or errors. Two instrumented Jupyter executions pass all
+eight moving captures. The moving popup takes 20.80 and 16.16 seconds from
+the driver's readiness wait. The first run shows two costly native frame
+updates before reveal; the second shows that one update can take 10.06
+seconds. The proposed omission branch does not execute in the second
+run, so no optimization is adopted. Review the historical timeouts
+separately. See the [startup timings](pending_bugs/jupyter_moving_popup_capture_deadline.md#popup-startup-timing-on-the-reviewed-source).
 Private custody preserves the earlier 188 files under manifest `edb2754e…`;
 the resumed outcomes add 68 files under `f586fc7b…`. Counters and the
 publication pause remain unchanged.
