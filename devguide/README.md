@@ -52,8 +52,14 @@ delivers two guarded corrections: capture retains already applied dynamic
 membership, and loaders omit Mol*'s unnecessary hidden unit-cell geometry.
 Native causal controls, 495 JS cases, full box/lifecycle and actual Jupyter
 work-file receiving pass; Movie passes separately. #344 remains open for
-one unexplained moving-popup initialization timeout and the covering source
-checkpoint. Original counters and final-candidate boundaries remain unchanged.
+one unexplained moving-popup initialization timeout and covering source
+qualification. The Linux recovery passes Python and all notebooks but stops
+at the scientific mirror's clipped sphere fixture, now tracked in
+[#402](pending_bugs/mirror_picking_fixture_camera_clipping.md). Its camera-depth
+and physical-pixel corrections pass the complete mirror in the
+[new receipt](mirror_camera_clipping_receiving_20261117.json); covering CI
+remains pending. Original
+counters and final-candidate boundaries remain unchanged.
 
 The [2026-11-17 camera/IPC receipt](camera_peer_and_ipc_receiving_20261117.json)
 receives #400's idle camera-relay correction, #394's focused native keyboard

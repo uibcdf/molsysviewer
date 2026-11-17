@@ -23,8 +23,9 @@ list.
 
 - [`jupyter_moving_popup_capture_deadline.md`](jupyter_moving_popup_capture_deadline.md) — [#344](https://github.com/uibcdf/molsysviewer/issues/344) — Diagnose a late moving-session capture from the actual Jupyter canvas popup. *(medium, measured)*
 
-### Partially done (2)
+### Partially done (3)
 
+- [`mirror_picking_fixture_camera_clipping.md`](mirror_picking_fixture_camera_clipping.md) — [#402](https://github.com/uibcdf/molsysviewer/issues/402) — Keep scientific mirror picking geometry inside the native camera depth interval. *(medium, reproduced)*
 - [`qt_file_dialog_absolute_path_typing.md`](qt_file_dialog_absolute_path_typing.md) — [#287](https://github.com/uibcdf/molsysviewer/issues/287) — Native Qt file-dialog guard types while its modal window is inactive. *(medium, reproduced)*
 - [`recovered_canvas_initial_structure_observation.md`](recovered_canvas_initial_structure_observation.md) — [#354](https://github.com/uibcdf/molsysviewer/issues/354) — Diagnose the pre-save Python frame assertion in prolonged Jupyter receiving. *(medium, measured)*
 

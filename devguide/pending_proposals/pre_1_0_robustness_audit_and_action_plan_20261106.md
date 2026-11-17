@@ -596,7 +596,13 @@ actual-Jupyter guard passes all eight moving cases at 4 CPU / 4 GiB; 495 JS
 cases, complete native box/lifecycle and separate Movie also pass. #344 remains
 active for an intermittent 30-second moving-popup initialization timeout and
 covering source qualification. The single [full Linux recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44031725024)
-on published `c08d4990` is in progress, not accepted. Failure observations are now retained
+on published `c08d4990` fails at core entry four's clipped sphere fixture,
+tracked in [#402](../pending_bugs/mirror_picking_fixture_camera_clipping.md);
+4,743 Python cases, all 25 notebooks and the first three core entries pass.
+Both fixture corrections receive the complete local canonical mirror in
+[the #402 receipt](../mirror_camera_clipping_receiving_20261117.json);
+one covering Linux recovery remains pending.
+Live-Jupyter diagnostics are outside that full-source profile. Failure observations are now retained
 before closing that window. Keep original negatives and resource scopes;
 **41/46 source-delivered and 1/46 final accepted** remain unchanged.
 

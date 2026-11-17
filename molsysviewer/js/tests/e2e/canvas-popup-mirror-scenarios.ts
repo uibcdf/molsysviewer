@@ -128,9 +128,35 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
         // Isolate a visible shape and label for real GPU picking. The snapshot
         // comes through Python and is shared; no synthetic loci are supplied.
         const snapshot = await page.evaluate(() => (window as any).__mirrorController.getCameraSnapshot());
-        await fixture("camera", { snapshot: { ...snapshot, position: [0, 0, 120], target: [0, 0, 0], up: [0, 1, 0], radius: 50, radiusMax: 100 } });
+        const beforePickingCamera = await Promise.all([page, peer].map(endpoint =>
+            endpoint.evaluate(() => (window as any).__mirrorController.plugin.canvas3d.didDraw.value)));
+        // Mol* clamps radius to its local scene bound. Centre the depth interval
+        // between the z=0 label and z=30 sphere instead of relying on an
+        // unrelated hidden unit cell to enlarge that bound (#402).
+        await fixture("camera", { snapshot: { ...snapshot, position: [0, 0, 135], target: [0, 0, 15], up: [0, 1, 0], radius: 50, radiusMax: 100 } });
         await cameraEqual();
         for (const canvas of [page, peer]) await canvas.addScriptTag({ path: resolve(dir, "harness.bundle.js") });
+        for (const [index, endpoint] of [page, peer].entries()) {
+            await endpoint.waitForFunction(before =>
+                (window as any).__mirrorController.plugin.canvas3d.didDraw.value > before, beforePickingCamera[index]);
+            const clipping = await endpoint.evaluate(() => {
+                const c = (window as any).__mirrorController, camera = c.plugin.canvas3d.camera;
+                return [["shape", "mirror-sphere"], ["annotation", "mirror-label"]].map(([kind, tag]) => {
+                    const objects = (window as any).Harness.inspectTaggedRefs(c, kind, tag).flatMap((entry: any) =>
+                        c.plugin.state.data.cells.get(entry.ref)?.obj?.data?.repr?.renderObjects ?? []);
+                    const bounds = objects.filter((object: any) => object.values.drawCount.ref.value > 0
+                        && object.values.boundingSphere.ref.value.radius > 0).map((object: any) => {
+                        const { center, radius } = object.values.boundingSphere.ref.value, m = camera.view;
+                        const depth = -(m[2] * center[0] + m[6] * center[1] + m[10] * center[2] + m[14]);
+                        return { front: depth - radius, back: depth + radius };
+                    });
+                    return { kind, tag, near: camera.near, far: camera.far, bounds };
+                });
+            });
+            assert.ok(clipping.every(item => item.bounds.length > 0 && item.bounds.every((bound: any) =>
+                bound.front > item.near && bound.back < item.far)),
+            `Native picking fixture must leave complete object bounds inside its clipping planes: ${JSON.stringify(clipping)}`);
+        }
         const nativePick = async (canvas: Page, kind: string, tag: string, position: number[]) => {
             await canvas.bringToFront();
             // Updating a label commits a new representation before the next
@@ -155,7 +181,9 @@ export async function checkCanvasPopupMirror(page: Page, dir: string) {
                 };
                 (window as any).__nativePickObservation = observation;
                 for (const dx of [0, 4, 8, 12, 20, 30, -4, -8]) for (const dy of [0, 3, -3, 6, -6]) {
-                    const x = center.x + dx, y = center.y + dy;
+                    // MouseEvent delivers integer screen coordinates here.
+                    // Probe that same pixel, including at a label's edge.
+                    const x = Math.floor(center.x + dx), y = Math.floor(center.y + dy);
                     const hit = gpu.identify([x - rect.left, y - rect.top]);
                     if (!hit) continue;
                     const loci = gpu.getLoci(hit.id).loci;

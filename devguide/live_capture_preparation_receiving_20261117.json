@@ -396,15 +396,15 @@
   "covering_source_run": {
     "id": 44031725024,
     "html_url": "https://github.com/uibcdf/molsysviewer/actions/runs/44031725024",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "head_sha": "c08d4990245bb6cad81160ea742e0bb544556738",
     "path": ".github/workflows/ci-python-314-source-pair.yaml",
     "event": "workflow_dispatch",
     "run_attempt": 1,
     "created_at": "2026-11-17T06:30:33Z",
-    "updated_at": "2026-11-17T06:30:38Z",
-    "observed_utc": "2026-11-17T06:39:35.363648+00:00",
+    "updated_at": "2026-11-17T06:54:56Z",
+    "observed_utc": "2026-11-17T15:18:15.857484+00:00",
     "dispatch_inputs": {
       "source_receiving": true,
       "receiving_scope": "full",
@@ -416,7 +416,52 @@
       "viewer_version": "0.24.1"
     },
     "scope": "One full Linux source recovery. Source-receiving mode assigns no candidate version or tag; version inputs are inactive in this mode. This run covers the exact c08d4990 code, not later evidence-only commits.",
-    "acceptance": "Pending; no terminal conclusion. Original 43823224361 remains failed; earlier Windows/macOS scientific evidence retains its exact inputs."
+    "acceptance": "Failed at native GPU identification of mirror-sphere after popup bootstrap and bidirectional camera controls passed. Python passes4743/skips42;25 notebooks execute successfully. Only3/63 core entries complete; actual-Jupyter/prolonged diagnostic steps are unselected by the full-source profile. Not a complete source, installed or final gate.",
+    "terminal_originals": {
+      "run": 44031725024,
+      "producer": "c08d4990245bb6cad81160ea742e0bb544556738",
+      "conclusion": "failure",
+      "artifacts": [
+        {
+          "id": 14306710490,
+          "name": "movie-encoder-native-Linux",
+          "size_in_bytes": 14696,
+          "digest": "sha256:cea1bfa8a9945e161aadcb4e725c564acca450211e69e7e1f674f6b6c8e55346",
+          "sha256_verified": true
+        },
+        {
+          "id": 14306650698,
+          "name": "source-receiving-Linux-py3.14",
+          "size_in_bytes": 83063,
+          "digest": "sha256:04af3007680ae3d9f19ab380c018cbadf7f30f9bd5da063e8023b7da14f08680",
+          "sha256_verified": true
+        }
+      ],
+      "raw_log_sha256": "3480045a150c9ce6a76ab9a1afef4a966698612cfd02de4ea43a51b0706509b9",
+      "scope": "Original source artifacts; not an installed artifact pair or complete green gate."
+    },
+    "terminal_receiving": {
+      "python": {
+        "passed": 4743,
+        "skipped": 42,
+        "deselected": 17,
+        "failures": 0,
+        "errors": 0
+      },
+      "notebooks": {
+        "required": 25,
+        "executed": 25,
+        "failed": 0
+      },
+      "core": {
+        "required": 63,
+        "completed": 3,
+        "failed_entry": "canvas-popup-mirror",
+        "failure": "Native GPU identification of a fixture sphere cut by the native camera near plane.",
+        "owner": "uibcdf/molsysviewer#402"
+      },
+      "live_jupyter_hosted": "Not selected by this full-source profile. Local1018 and Movie retain their separately executed scopes."
+    }
   },
   "private_handoff_custody": {
     "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/capture-prefix-ci-handoff-20261117",

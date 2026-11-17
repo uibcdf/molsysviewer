@@ -1,0 +1,280 @@
+{
+  "recorded_utc": "2026-11-17T15:40:52.761898+00:00",
+  "issue": "uibcdf/molsysviewer#402",
+  "source_base": "e44ab7d9f71943a7a04c2bfdce9d78615b4f940c",
+  "scope": "Two causal scientific-mirror fixture corrections. Production/runtime and scientific algorithms unchanged. Complete local canonical mirror received; covering source, installed/native-host/human and final-candidate acceptance remain separate.",
+  "working_test_sha256": "49acec8c36b2aae328317ba94d2640e0fdbb587ecdee4b744803dffc01074f19",
+  "runtime": {
+    "code_commit": "c08d4990245bb6cad81160ea742e0bb544556738",
+    "sha256": "56c1cdcdccd7ede62abe1c4ba0acd2c001dbe0a7598c77b237be67a4f377ff2c",
+    "unchanged": true,
+    "molstar": "5.13.1",
+    "node": "22.23.4"
+  },
+  "scientific_inputs": {
+    "configured_molsysmt": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "scope": "Frozen direct-fixture source/support routes in the private invocation/input manifests. No new actual-Jupyter kernel-origin certificate; prior1018 retains its separate inner-process proof. Not clean-solver or canonical artifact qualification."
+  },
+  "failed_source_checkpoint": {
+    "run": 44031725024,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/44031725024",
+    "producer": "c08d4990245bb6cad81160ea742e0bb544556738",
+    "conclusion": "failure",
+    "python_passed": 4743,
+    "python_skipped": 42,
+    "python_deselected": 17,
+    "notebooks_passed": 25,
+    "notebooks_required": 25,
+    "core_entries_completed": 3,
+    "core_entries_required": 63,
+    "failed_entry": "canvas-popup-mirror",
+    "original_artifact_receipt": "devguide/live_capture_preparation_receiving_20261117.json",
+    "actual_jupyter_diagnostics": "Not selected by that full-source profile."
+  },
+  "depth_control": {
+    "coordinate_unit": "angstrom",
+    "original_position": [
+      0,
+      0,
+      120
+    ],
+    "original_target": [
+      0,
+      0,
+      0
+    ],
+    "native_near": 89.47769077342575,
+    "native_sphere_front": 86.98458027107691,
+    "corrected_position": [
+      0,
+      0,
+      135
+    ],
+    "corrected_target": [
+      0,
+      0,
+      15
+    ],
+    "change": "Centre the depth interval on both objects; receive actual native object bounds inside near/far after the applied draw. Native radius/clipping semantics remain unchanged."
+  },
+  "single_click_control": {
+    "coordinate_unit": "CSS pixels",
+    "fractional_screen_point": [
+      441,
+      147.05242917512697
+    ],
+    "actual_mouse_point": [
+      441,
+      147
+    ],
+    "matched_native_fractional_probe": "mirror-label",
+    "matched_native_actual_mouse_probe": null,
+    "received_integer_candidate": [
+      441,
+      150
+    ],
+    "change": "Probe integer screen coordinates before choosing the original single physical click. Keep original search offsets, GPU owner and selected-marker predicates. No injected loci/selection, repeated click, delayed input or native patch."
+  },
+  "profiles": [
+    {
+      "id": "mirror-camera-clipping-observation-1021",
+      "meaning": "Diagnostic setup failure after reproducing clipping; fresh-draw wait was placed after the idle pose.",
+      "native_exit": 1,
+      "seconds": 81.14278501877561,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2596.5,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "b00fc7ed9bbe29d76fa4ce2072a11e27961c033f838590b5d4989e931a1ce25f"
+    },
+    {
+      "id": "mirror-camera-clipping-control-1022",
+      "meaning": "Minimal native clipping discrimination passed in both endpoints; complete navigation omitted.",
+      "native_exit": 0,
+      "seconds": 51.277994335163385,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2619.1,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "93a85fece150f3561773eea3ff1ce7a71a298755057d6cadad911d7fe131b680"
+    },
+    {
+      "id": "build-mirror-camera-red-1023",
+      "meaning": "Expected complete-mirror causal negative: new native depth precondition rejects original camera.",
+      "native_exit": 1,
+      "seconds": 292.66056178929284,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2851.4,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "6cbf922a1e379f7474b4a04cb884a440b7cf9d0b42548a3e4b65fcace7264414"
+    },
+    {
+      "id": "build-mirror-camera-green-1024",
+      "meaning": "Complete mirror fails initial annotation selection after successful clipping precondition and sphere click; not green despite profile name.",
+      "native_exit": 1,
+      "seconds": 307.96499291202053,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2814.0,
+      "cleanup": {
+        "tracked": 24,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "6cf99c8b8cf0d2e5abcc02823680a76e2486585b9bbe8ec1a44c91fd4f87d9d0"
+    },
+    {
+      "id": "mirror-native-click-observation-1025",
+      "meaning": "Minimal real single-click diagnostic fails annotation selection; actual native input arrives with empty loci.",
+      "native_exit": 1,
+      "seconds": 92.70285912184045,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2680.2,
+      "cleanup": {
+        "tracked": 16,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "b458e92c222f8400af500f2445ef3cfd6013147293679396d0f2193f668701d6"
+    },
+    {
+      "id": "mirror-physical-pixel-control-1026",
+      "meaning": "Matched fractional/physical native probes discriminate adjacent pixels; integer candidates receive one real click per object and both endpoint selections.",
+      "native_exit": 0,
+      "seconds": 50.631283279974014,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2576.1,
+      "cleanup": {
+        "tracked": 15,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "c56232d186d8d282d414ad01bb9462d22b46490f3181968fd81ed032a88e5768"
+    },
+    {
+      "id": "build-mirror-physical-camera-green-1027",
+      "meaning": "Complete canonical mirror passes types, canonical build and every original native camera, selection, edited-label, occurrence, layout and playback assertion.",
+      "native_exit": 0,
+      "seconds": 358.86343278409913,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2914.9,
+      "cleanup": {
+        "tracked": 25,
+        "survivors": [],
+        "errors": []
+      },
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "input_manifest_sha256": "b32562e8a50b22ebeab90a9c208b4c77f9c5806fbf8458cbd7bd96b3bf4196b4"
+    }
+  ],
+  "resource_scope": "Bounded systemd scopes and pressure/swap monitoring; not resource reservations. Summed process RSS includes shared pages and is not exclusive RAM.",
+  "guard": "molsysviewer/js/tests/e2e/canvas-popup-mirror.e2e.ts",
+  "covering_source_checkpoint": "Pending on the reviewed published correction; no new dispatch yet.",
+  "counter": {
+    "source_delivered": 41,
+    "original_total": 46,
+    "final_accepted": 1,
+    "extra_receiving_controls_increment_original_counter": false
+  },
+  "publication": "No tag, package, promotion, release or1.0 publication.",
+  "private_custody": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/mirror-camera-clipping-20261117",
+    "custodian": "Diego Prada Gracia",
+    "files": 99,
+    "bytes": 36147333,
+    "manifest_sha256": "84f5297dfab9fb6f215b9959e13bfdb5ba738130ade95f946c75fcff94e412f8",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
+  },
+  "offline_validation": {
+    "profile": 1028,
+    "passed": 552,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "native_exit": 0,
+    "seconds": 22.902688834350556,
+    "inputs_unchanged": true,
+    "limits": {
+      "logical_cpus": 2,
+      "ram_gib": 2,
+      "swap_gib": 0
+    },
+    "resource_stop": null,
+    "cleanup": {
+      "tracked": 40,
+      "survivors": [],
+      "errors": []
+    },
+    "junit_sha256": "a9e6cbe271bf8fffaf278e3a79efeb56a48549b0620d59b1bce889d8be029364",
+    "generated_indexes": "up to date"
+  }
+}

@@ -18,7 +18,9 @@ supersedes: []
 Current source `c08d4990` contains the two guarded corrections below. The
 complete actual-Jupyter work-file guard passes in `1018`, and Movie passes
 separately. The single [full Linux source recovery](https://github.com/uibcdf/molsysviewer/actions/runs/44031725024)
-is in progress, not accepted. This report remains open for the intermittent
+fails at the scientific mirror's clipped sphere fixture, tracked separately in
+[#402](mirror_picking_fixture_camera_clipping.md). Actual-Jupyter diagnostics
+are not selected by that full-source profile. This report remains open for the intermittent
 popup initialization failure in `1017`, whose cause is not established.
 
 Initial receiving `1004`, based on MolSysViewer `f2d83103` plus the peer-camera

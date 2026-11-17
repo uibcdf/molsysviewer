@@ -349,6 +349,9 @@ suite allowance and unchanged operation deadlines. Browser/WebGL failure fails.
 
 Its persistent real pentalanine/Python authority and two native canvases retain
 camera, exact selection, molecular geometry, named-analysis and playback checks.
+The native picking fixture first receives its applied camera draw and verifies
+that both objects' native bounds fit inside its actual near/far planes.
+GPU probes and real mouse clicks use the same integer screen pixel.
 Revised annotation receiving requires an actual native GPU hit, real click and
 selected markers in both endpoints. Its pending-read control requires the same
 revised annotation identity before/during/after a native asynchronous GPU read,
