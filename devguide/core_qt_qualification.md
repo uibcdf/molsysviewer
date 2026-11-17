@@ -62,11 +62,11 @@ still requests a full run of the affected lane.
 Current source outcomes and later installed candidate qualification are distinct.
 Keep dated logs, exact run/job identities and native diagnoses in the owning
 receipt. Update current handoff state after terminal CI inspection; preserve
-historical failures. Qt repairs and certification stay under #35/#109/#113;
-this contract owns validation scope only. Broad docs precede the eventual
-0.25.0 producer freeze. Build/qualify its exact
-files before the final installed first-contact review; both 1.0 publications
-remain paused.
+historical failures. Qt repairs and certification stay under #35/#109/#113.
+The [paired release handoff](molsysmt_pre_1_0_handoff_20261110.md#versions-for-installed-qualification)
+records the coordinated MolSysViewer and MolSysMT 1.0.0 plan. The installed
+first-contact review uses the exact qualified files of that pair. Both 1.0
+publications remain paused.
 
 ## Receiving checkpoint — 2026-10-13
 

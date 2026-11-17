@@ -2,11 +2,15 @@
 # Movie
 
 `view.movie` lets you define a keyframe timeline, preview it in the browser,
-and export it to a video file — all from a Python notebook.
+and export it from a Python notebook.
 
-A movie is always about the content of a specific view: its camera, regions,
-layers, and structures.  The timeline is pure data: you can save it to JSON
-and replay it on any compatible view.
+A movie uses a specific view's camera, regions, layers and structures. Save its
+timeline as a JSON recipe to replay it on a compatible view.
+
+MolSysViewer 0.24.0 provides version-1 keyframes and synchronous video and GIF
+export. The development version adds experimental version-2 independent
+tracks, Studio authoring, and MP4, WebM, lossless PNG ZIP and offline HTML
+export. See {doc}`export` for the requirements of each workflow.
 
 ## When to use `view.movie`
 
@@ -17,22 +21,22 @@ Use `view.movie` when you need to:
 - show or hide tagged shapes at specific moments,
 - produce a reproducible `.mp4` or `.gif` for a paper or presentation.
 
-If you just want a static image, use `view.export.image()` instead. And if all you want
-is to *step through a trajectory*, that is `view.player`, not a movie — see
-{doc}`playback`.
+Use `view.export.image()` to save a static image. Use `view.player` to step
+through a trajectory. See {doc}`playback`.
 
 ## Overview
 
 | Task | Method |
 |---|---|
-| Add a keyframe | `view.movie.add_keyframe(time_ms, ...)` |
-| Camera orbit | `view.movie.add_camera_orbit(duration_ms, ...)` |
-| Trajectory sweep | `view.movie.add_structure_sweep(...)` |
-| Visibility step | `view.movie.add_visibility_transition(tag, visible, at_time_ms)` |
+| Add a version-1 keyframe | `view.movie.add_keyframe(time_ms, ...)` |
+| Build a version-1 camera orbit | `view.movie.add_camera_orbit(duration_ms, ...)` |
+| Build a version-1 trajectory sweep | `view.movie.add_structure_sweep(...)` |
+| Change visibility in version 1 | `view.movie.add_visibility_transition(tag, visible, at_time_ms)` |
 | Inspect timeline | `view.movie.info()` |
-| Preview in browser | `view.movie.play()` / `view.movie.stop()` |
-| Export to file | `view.movie.export("out.mp4", fps=25)` |
-| Export independent tracks (experimental development API) | `await view.movie.export_async("out.mp4", fps=25)` |
+| Preview version 1 | `view.movie.play()` / `view.movie.stop()` |
+| Preview version 2 | `await view.movie.play_async()` / `await view.movie.pause_async()` |
+| Export version 1 | `view.movie.export("out.mp4", fps=25)` |
+| Export version 2 | `await view.movie.export_async("out.mp4", fps=25)` |
 | Save/load recipe | `view.movie.save("orbit.json")` / `view.movie.load(...)` |
 
 The [experimental independent tracks](timeline.md#independent-tracks-experimental)
@@ -42,9 +46,8 @@ arbitrary times. These recipes can travel with a saved session.
 ## Authoring in Studio (experimental development feature)
 
 In a connected development view, open **Studio → Movie**. Its three tabs use
-the same `view.movie` plan as Python; changing a form alone does not change
-the accepted Movie or molecular system. This editor is not available in the
-public 0.24.0 package or a standalone HTML export.
+the same `view.movie` plan as Python. Apply changes in the form to update the
+accepted Movie.
 
 1. Prepare the regions, labels and interaction representations that the movie
    will use. In **Timeline**, set the duration in seconds and choose
@@ -78,9 +81,7 @@ native Qt and human acceptance remain separate. The first
 [offline HTML playback profile](export.md) supports static regions and live
 plot/legend overlays. Development media exports can also include expanded
 in-canvas plots and legends, with their supplied scientific context. The
-export contract describes the layout restrictions and explicit exclusions;
-these features are not in the public 0.24.0 package. Richer portable profiles
-remain in development.
+export contract describes the layout and supported overlays.
 
 Python and Studio share the running Movie: either can pause a preview started
 by the other. Studio also shows when a capture or export was started from

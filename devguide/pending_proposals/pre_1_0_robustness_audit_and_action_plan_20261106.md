@@ -1696,6 +1696,12 @@ MolSysMT integration row therefore counts its five declared callables.
 Regeneration, the report checks and public API documentation passed all
 219 scoped tests. Broader public documentation reconciliation remains pending.
 
+The [Movie overview](../../docs/content/user/movie/index.md) now gives the
+preview and export calls for each recipe version. The Qt qualification guide
+links the coordinated 1.0.0 artifact plan. An isolated serial Sphinx HTML
+build with warnings treated as errors and both API-documentation checks
+passed for these edits.
+
 **F3 — source-delivered; current handoff consolidated:** this dashboard owns
 the current counter and action order. Roadmap, checkpoints and release plan link
 here instead of maintaining independent current numerators. Dated source notes

@@ -96,6 +96,11 @@ pixels and completes offline playback. These twelve local suite passes
 support the next complete hosted source checkpoint. The receipt keeps the
 earlier resource interruption and all three local invocations.
 
+The maintainer-authorized [Linux source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/44196971862)
+is in progress on `43c1c3de`. It uses the same provider `4b0b1f8a` and
+pandas 3.1.0 as the earlier hosted failure. The dispatch inventory contains
+exactly one matching run. Terminal evidence is required for this checkpoint.
+
 Last complete passing source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
