@@ -77,6 +77,7 @@ async function run() {
         assert.ok(restoredAnnotations.some((item: any) => item.exists), "Undo must restore actual annotation state cells");
         await search.fill("");
         assert.equal(await section("shapes").locator('[data-molsysviewer-shape-tag="alpha-one"]').evaluate(element => element.style.opacity), "1");
+        console.info("[E2E Studio saved lists] Shape creation, filtering, batch hide and undo passed");
 
         // An unfocused secondary draft survives reply, tab and structure updates.
         await open("selection");
@@ -155,6 +156,7 @@ async function run() {
             const unnamed = await section(key).locator('input:not([aria-label]):not([aria-labelledby]), select:not([aria-label]):not([aria-labelledby])').evaluateAll(fields => fields.filter(field => !field.closest("label")).length);
             assert.equal(unnamed, 0, `${key} fields must have accessible names`);
         }
+        console.info("[E2E Studio saved lists] Editor retention, confirmed set deletion and saved-object search passed");
         for (const [key, attribute] of [["layers", "layer-create-input"], ["measures", "measurement-name-input"]]) {
             await open(key); const disclosure = creation(key);
             await disclosure.locator(":scope > summary").click();
@@ -225,6 +227,7 @@ async function run() {
         assert.equal(await section("layers").locator('[data-molsysviewer-layer-card="review-layer"]').count(), 0);
         await reply({ event: "scene_history_redo" });
         assert.equal(await section("layers").locator('[data-molsysviewer-layer-card="review-layer"]').count(), 1);
+        console.info("[E2E Studio saved lists] Region, measurement and layer drafts and history passed");
 
         // Missing coordinate fields stay invalid through a background repaint;
         // explicit zero is valid and keeps the text until actual creation succeeds.
@@ -298,6 +301,7 @@ async function run() {
         await apply([{ op: "set_workspace", workspace: "core" }]);
         assert.equal(await module.inputValue(), ""); assert.ok(!await module.isVisible());
         await page.evaluate(() => (window as any).__controller.setPanelMode("navigate", true));
+        console.info("[E2E Studio saved lists] Annotation and selection creation and addon registration passed");
 
         // Scientific deletion requires an explicit named confirmation, cancellation
         // sends no request, filtering does not retarget it, and success clears history.

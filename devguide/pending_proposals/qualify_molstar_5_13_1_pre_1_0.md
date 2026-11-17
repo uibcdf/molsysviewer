@@ -64,6 +64,18 @@ published native replacement or a separately reviewed dependency update.
 The technical assessment and source corrections are delivered in their declared
 scopes. Closing this qualification still requires these three exits:
 
+**Changed-source follow-up — 2026-11-17.** Run
+[44176403184](https://github.com/uibcdf/molsysviewer/actions/runs/44176403184)
+passes Python, 25 notebooks and the first eleven core entries, including
+moving capture, lifecycle and popup bootstrap. The 180-second limit of
+`studio-list-workflows` stops entry 12. A local action trace reproduces that
+limit while assertions continue to pass. At the same resource ceiling the
+unchanged suite passes in 291 seconds with a 360-second aggregate allowance.
+Only that entry receives the measured allowance and progress markers.
+The [receipt](../moving_capture_followup_receiving_20261117.json) retains the
+original failure, local inputs and log digests. Complete hosted receiving of
+the changed source is pending.
+
 Current complete source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the

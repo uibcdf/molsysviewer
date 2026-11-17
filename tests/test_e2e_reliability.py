@@ -153,6 +153,7 @@ def test_studio_core_scopes_preserve_the_complete_direct_guard():
     assert 'name === "studio-usability" ? ["--layout-only"] : []' in runner
     assert '"studio-live-capture": 600_000' in runner
     assert '"studio-image-export": 240_000' in runner
+    assert '"studio-list-workflows": 360_000' in runner
     assert 'from "./studio-live-capture-scenarios"' in live
     assert "await checkStudioLiveCapture(page, dir, workspace)" in live
     assert "await browser.close()" in live

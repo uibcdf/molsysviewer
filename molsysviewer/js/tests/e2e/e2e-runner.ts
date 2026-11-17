@@ -113,6 +113,9 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
         // take 172s at 8 CPU/4 GiB. Bound the complete workflow separately;
         // each individual PNG still has its original operation deadline.
         "studio-image-export": 240_000,
+        // The complete saved-list workflow takes 291s at 4 CPU/4 GiB.
+        // Its 180s budget retired a progressing run after annotation creation.
+        "studio-list-workflows": 360_000,
         // The complete 5.13.1 entry takes 198s at 4 CPU/4 GiB: six moving
         // captures, the stopped empty frame and two native camera/image/pick
         // projections. The old 180s cap retires a progressing fifth/sixth

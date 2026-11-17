@@ -346,7 +346,7 @@
     "log_sha256": "8f1093bb16e792b0393f10b14d60a3be9fe3c2c95ec00ffb28b35a1311068512"
   },
   "pending": [
-    "Diagnose the 180-second Studio saved-list suite timeout and complete the required core browser lane.",
+    "Receive the scoped Studio saved-list suite budget in the required complete core browser lane.",
     "Review historical moving-popup opening and default capture timeouts against current evidence. Their exact causes are not established."
   ],
   "resource_scope": {
@@ -626,6 +626,30 @@
         "hashes_verified": true,
         "originals_retained": true
       }
+    },
+    "studio_list_diagnostics": {
+      "scope": "Isolated native Chromium saved-list suite using MolSysMT 4b0b1f8a and local pandas 2.3.3, with Playwright action timing. No hosted recurrence cause inferred.",
+      "limits": {"logical_cpus": 4, "ram_gib": 4, "swap_gib": 0},
+      "profiles": {
+        "1055": {
+          "suite_budget_ms": 180000,
+          "outcome": "outer timeout after successful annotation creation during an advancing workflow",
+          "stability_waits_completed": 39,
+          "stability_wait_seconds": 77.8,
+          "log_sha256": "ebdda7b812f52b40549f5d0d93143ca363c1c440e61b4f95fa9518c3272830b5"
+        },
+        "1056": {
+          "suite_budget_ms": 360000,
+          "outcome": "one complete native suite passed with unchanged assertions and operation deadlines",
+          "invocation_seconds": 290.97,
+          "peak_owned_rss_mib": 2916.5,
+          "log_sha256": "7b30a9a43f9443241a3a63cc4f0335ee56ae7c73c9c06f4e2b076ac373913329"
+        }
+      },
+      "inputs_unchanged": true,
+      "survivors": 0,
+      "private_manifest_sha256": "93307e071d1cb0c18df65fed818d001e781f3439a8fc93098b2708464725d339",
+      "change": "Apply the 360000 ms ceiling to studio-list-workflows only and print completed milestones. Exact hosted receiving is pending."
     },
     "startup_diagnostics": {
       "profiles": {
