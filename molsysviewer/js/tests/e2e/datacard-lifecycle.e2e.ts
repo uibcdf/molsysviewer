@@ -52,8 +52,16 @@ async function receiveCardKey(target: Page | Frame, slider: Locator, key: "End" 
         }) : undefined;
         receipt.stop = () => { stop(); if (native) native.unsubscribe(); };
     }, { frame, concurrentLayout });
+    let phase = "focus";
     try {
-        await slider.focus(); await slider.press(key);
+        await slider.page().bringToFront();
+        await slider.focus();
+        await target.waitForFunction(() => {
+            const input = document.querySelector('[data-molsysviewer-datacard="literal-card"] input[type="range"]');
+            return document.hasFocus() && document.activeElement === input;
+        });
+        phase = "publication";
+        await slider.press(key);
         // The native model index can change before annotations and subscriber
         // projections finish. One bounded wait receives all three outcomes.
         await target.waitForFunction(frame => {
@@ -66,6 +74,24 @@ async function receiveCardKey(target: Page | Frame, slider: Locator, key: "End" 
         assert.equal(await target.evaluate(() => (window as any).__controller.trajectory.getTrajectoryState().currentFrame), frame);
         assert.equal(await slider.inputValue(), String(frame));
         if (concurrentLayout) assert.equal(await target.evaluate(() => (window as any).__cardKeyReceiving.layoutReceived), true);
+    } catch (error) {
+        let observation: unknown = { available: false };
+        try {
+            observation = await target.evaluate(() => {
+                const w = window as any, c = w.__controller, receipt = w.__cardKeyReceiving;
+                const input = document.querySelector<HTMLInputElement>('[data-molsysviewer-datacard="literal-card"] input[type="range"]');
+                const entry = c?.trajectoryPlotOverlay.entries.get("literal-card");
+                return { available: true, documentFocused: document.hasFocus(), inputFocused: document.activeElement === input,
+                    inputConnected: input?.isConnected ?? false, inputValue: input?.value ?? null,
+                    inputIsCurrent: entry?.frameInput === input, published: receipt?.published ?? null,
+                    layoutReceived: receipt?.layoutReceived ?? false,
+                    nativeFrame: c?.trajectory.getTrajectoryState().currentFrame ?? null,
+                    pendingFrames: c?.trajectory.pendingFrames.size ?? null,
+                    nativeUpdating: c?.plugin.behaviors.state.isUpdating.value ?? null };
+            });
+        } catch { /* Preserve the original assertion when its target has already retired. */ }
+        console.error("[E2E DataCard keyboard observation]", JSON.stringify({ phase, key, frame, concurrentLayout, observation }));
+        throw error;
     } finally {
         await target.evaluate(() => {
             const w = window as any; w.__cardKeyReceiving.stop(); delete w.__cardKeyReceiving;

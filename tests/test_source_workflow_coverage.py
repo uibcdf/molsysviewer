@@ -21,7 +21,19 @@ def test_notebook_failure_artifacts_require_the_actual_executor_to_fail():
     )
     steps = workflow["jobs"]["source-pair"]["steps"]
     execute = next(step for step in steps if step.get("id") == "source-notebooks")
-    assert execute["run"] == "python docs/execute_notebooks.py -q -n 4 -r -f docs/content"
+    script = execute["run"]
+    assert script.splitlines()[-1] == "python docs/execute_notebooks.py -q -n 4 -r -f docs/content"
+    assert "runner.os == 'Linux'" in execute["if"]
+    assert "mktemp -d /tmp/msv-notebooks.XXXXXXXX" in script
+    assert 'export JUPYTER_CONFIG_DIR="$msv_notebook_runtime"' in script
+    assert 'export MOLSYSVIEWER_NOTEBOOK_IPC_ROOT="$msv_notebook_runtime"' in script
+    assert 'c.KernelManager.transport = "ipc"' in script
+    assert (
+        'c.KernelManager.ip = os.path.join(os.environ["MOLSYSVIEWER_NOTEBOOK_IPC_ROOT"], "kernel-" + uuid.uuid4().hex)'
+        in script
+    )
+    assert "trap 'rm -rf \"$msv_notebook_runtime\"' EXIT" in script
+    assert "retry" not in script and "|| true" not in script
     assert "steps.notebook-kernel.outcome == 'success'" in execute["if"]
     upload = next(step for step in steps if step.get("name") == "Preserve source-pair notebook failure logs")
     assert "failure()" in upload["if"]
@@ -265,7 +277,7 @@ def test_exact_source_pair_executes_all_notebooks_and_core_browser_suites():
     assert browser["env"]["PW_CHROMIUM_BIN"] == "/usr/bin/google-chrome"
     assert browser["working-directory"] == "molsysviewer-source/molsysviewer/js"
     assert notebooks["working-directory"] == "molsysviewer-source"
-    assert notebooks["run"] == "python docs/execute_notebooks.py -q -n 4 -r -f docs/content"
+    assert notebooks["run"].splitlines()[-1] == "python docs/execute_notebooks.py -q -n 4 -r -f docs/content"
     assert "always()" in notebooks["if"] and "steps.notebook-kernel.outcome == 'success'" in notebooks["if"]
     assert "E2E_ALLOW_SKIP" not in str(steps)
     logs = next(step for step in steps if step.get("name") == "Preserve source-pair notebook failure logs")

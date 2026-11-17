@@ -1,5 +1,9 @@
 # Archived implementation plans
 
+- [#400: Idle peer-camera echo](multi_canvas_export_startup.md) — Endpoint-local native bounds no longer turn unchanged viewpoints into repeated resets; full plot and bidirectional mirror receiving preserve draw and snapshot semantics.
+- [#394: Focused DataCard receiving](datacard_keyboard_focus_receiving.md) — Real document/input focus and bounded failure observations protect native keys through actual sandbox and Trusted Types popup refusal.
+- [#401: Documentation kernel transport](documentation_kernel_tcp_port_collision.md) — Task-local absolute IPC endpoints preserve four-worker execution and pass all 25 unchanged notebooks after a native TCP bind collision.
+
 - [#344: Primary capture presentation](jupyter_moving_capture_current_projection_timeout.md) — The primary's existing clock retains a coherent frame until its native draw; full moving/hidden/Movie/lifecycle receiving preserves deadlines and runnable science.
 - [#399: Source diagnostic preparation](focused_source_diagnostic_preparation.md) — Canonical prerequisites, portable explicit Node selection and private, typed failure/readiness diagnostics receive actual owner/kernel boundaries.
 

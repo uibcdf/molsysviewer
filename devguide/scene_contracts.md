@@ -2107,6 +2107,16 @@ static HTML export is the deliberate exception: Python requests and captures the
 current camera while the host still exists, then embeds it after the canonical
 scene projection because the exported artifact has no host to query later.
 
+Peer-camera relay compares the transferable viewpoint and its authority
+revision. Mol* derives `radiusMax` from each endpoint's native scene during
+reset; that bound is excluded from relay identity. Distinct local bounds
+must not make unchanged viewpoints echo through repeated resets/draws.
+Position, target, up, field of view, projection, radius, fog and clipping
+preferences still participate, as does every new authority revision. Full
+native snapshots retain their bounds for capture and persistence. This
+deduplication neither changes those snapshots nor acknowledges an undrawn
+authority intent.
+
 An acknowledged live capture reads its camera and applied frame synchronously
 inside the completed-draw notification. A Promise continuation after that
 notification can observe later state and is not the same boundary. Return

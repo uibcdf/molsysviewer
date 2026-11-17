@@ -18,7 +18,7 @@ supersedes: []
 **Resolved in source.** The correction in `ebe3d46b` and fifteen independent
 Decimal controls pass the complete source gate `43748320908`; the revised
 DOM-lifetime receiving also passes unchanged full local entry `960`.
-The independent slow HTML initialization is tracked by [#400](../pending_bugs/multi_canvas_export_startup.md).
+The independent slow HTML initialization is tracked by [#400](multi_canvas_export_startup.md).
 Consolidated/installed acceptance remains separate. Viewer owns formatting and axis
 arithmetic. This is a core visualization defect, not evidence of incorrect
 MolSysMT calculations. [#321](https://github.com/uibcdf/molsysviewer/issues/321)

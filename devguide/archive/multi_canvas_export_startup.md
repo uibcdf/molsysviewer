@@ -1,9 +1,9 @@
 ---
 summary: Independent exported HTML starts slowly while other molecular canvases draw.
 issue: uibcdf/molsysviewer#400
-status: active
+status: resolved
 opened: 2026-11-16
-closed:
+closed: 2026-11-17
 severity: medium
 verification: measured
 area: [export, rendering, performance]
@@ -14,6 +14,12 @@ supersedes: []
 ---
 
 # Independent HTML initialization with other live canvases
+
+**Resolved in source:** peer-camera identity excludes Mol*'s endpoint-local
+scene bound, eliminating repeated unchanged-viewpoint resets. Full native
+snapshots and authority/draw semantics remain intact. The complete canonical
+plot entry and bidirectional scientific mirror pass; the separate current
+moving-session deadline under #344 remains open.
 
 **Pre-1.0 under #315.** The numerical plot correction belongs to #321;
 this report owns the separate initialization boundary reached before its
@@ -80,3 +86,36 @@ Next discriminate real draw requests, camera transitions and accepted peer
 messages before choosing a fix. Preserve the original numerical/scientific
 entry and its deadline. The [consolidated receipt](../residual_four_issues_receiving_20261116.json)
 owns the exact counters, manifests and private custody.
+
+## Resolution — 2026-11-17
+
+Delegated diagnostic `994` observes 31 incoming camera snapshots and native
+resets per source/popup, despite unchanged viewpoints and stopped playback.
+Only `radiusMax` differs: 18.00454099 versus 18.07642711. The installed Mol*
+5.13.1 `Canvas3D.resolveCameraReset` derives that value again from its local
+scene. Treating it as a peer viewpoint change makes the two endpoints echo
+forever. This is Viewer's relay identity defect, not an upstream claim.
+That private observer also reads an unavailable native controls field;
+its original errors are retained and it is not clean canonical receiving.
+
+The production fingerprint excludes only that local bound. Every other
+snapshot field and new authority revision still participates; full native
+snapshots are unmodified for capture and persistence. A native-Camera unit
+control guards those distinctions and nonmutation. All 495 JS cases, normal
+types and builds pass in `996`. Corrected passive observer `999` receives
+zero relayed resets while the two local bounds still differ. Its static
+controller observation takes 4.806 seconds; it also passes every original
+plot assertion. Observer/setup failures `993`/`997` remain separate.
+
+Uninstrumented canonical `998` passes the complete trajectory-plot entry in
+132.87 seconds with the original 30-second startup deadline, all fifteen
+Decimal controls, raw values, authority callbacks, molecular coordinates,
+popup and independent HTML/hidden iframe. Complete native mirror receiving
+in `1004` additionally passes rotation, zoom, Focus All and Reset View in
+both directions, single motion/playback clocks, native picks, scene geometry
+and frame-specific interactions. No other canvas is paused or throttled.
+
+The [current receipt](../camera_peer_and_ipc_receiving_20261117.json) preserves
+exact inputs, original negative diagnostics and private custody. This closes
+the identified source relay defect; covering CI, actual moving Jupyter,
+installed, native-host and final-candidate acceptance retain their own scope.

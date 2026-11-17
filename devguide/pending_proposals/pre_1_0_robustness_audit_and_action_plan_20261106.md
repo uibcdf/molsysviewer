@@ -592,7 +592,7 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 are source-resolved. #344's primary-presentation correction also receives
 the full default/delayed Jupyter, native geometry, hidden/Movie and lifecycle
 guards; #399's preparation/provenance correction is source-resolved.
-[#400](../pending_bugs/multi_canvas_export_startup.md) owns independent HTML
+[#400](../archive/multi_canvas_export_startup.md) owns independent HTML
 initialization, and #354 remains the unrelated historical pre-save assertion.
 Original failures and old event-order uncertainty remain preserved. These
 source/receiving closures add no original leaf: **41/46 source deliveries and
@@ -1503,6 +1503,28 @@ E2 candidate/installed/human exits remain separate. The original delivered
 counter remains 41/46. Covering `43816742412` fails only a shared workflow
 inventory guard per host; the fifth-command count/rerun override correction
 receives its actual module before a replacement covering checkpoint.
+
+**Candidate dependency agreement — 2026-11-17:** the final MolSysViewer 1.0
+candidate will require MolSysMT >=1.0; MolSysMT's optional MolSysViewer
+integration will require MolSysViewer >=1.0. The owner's published record
+`4a793e58623ecfc69cd9dc2b28311370e7e74bb7` records the reciprocal floors,
+not applied manifests or installed qualification. Current untagged source
+receiving still identifies MolSysMT `4b0b1f8a` as
+`0.23.0+1020.g4b0b1f8a1`. Apply coherent candidate identities, manifests,
+recipes, environments and guards together before the final freeze. Preserve
+the existing source pin/version until then; do not invent an installed 1.0
+identity or weaken the strict source dependency auditor.
+
+**Current source follow-up — 2026-11-17:** the
+[camera/IPC receipt](../camera_peer_and_ipc_receiving_20261117.json) receives
+the #400 idle relay repair, #394 focused keyboard input and #401 complete
+notebook IPC execution. Source `43823224361` stays failed; original Python
+successes on all hosts are retained. Current full actual-Jupyter work-file
+receiving fails the eighth moving Studio-popup session, separately from its
+passing Movie case and complete native mirror/plot. #344 is active again for
+the measured late reply; no larger deadline, substituted science or combined
+prefix pass is accepted. Resolve that boundary before another full checkpoint.
+No original 46-outcome counter or installed/final acceptance advances.
 
 | Measurement | Defined starting workload and existing entrypoint |
 | --- | --- |

@@ -16,6 +16,18 @@ function revision(value: unknown): value is number {
     return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
+/** Compare transferable viewpoints while leaving native scene bounds local. */
+export function cameraSyncFingerprint(snapshot: any, cameraRevision?: number): string {
+    const value = cameraRevision === undefined ? snapshot : { snapshot, camera_revision: cameraRevision };
+    return JSON.stringify(value, (key, number) => {
+        // Canvas3D.resolveCameraReset always derives radiusMax from its own
+        // scene. Relaying that bound as a viewpoint change makes otherwise
+        // identical source/popup cameras continually reset one another.
+        if (key === "radiusMax") return undefined;
+        return typeof number === "number" ? Math.round(number * 1e8) / 1e8 : number;
+    });
+}
+
 /** Receipt-time state exists before a renderer or its scene queue is ready. */
 export class CameraSyncState {
     revision?: number;
@@ -147,8 +159,7 @@ export class CameraSync {
     }
 
     private fingerprint(snapshot: any, cameraRevision?: number): string {
-        const value = cameraRevision === undefined ? snapshot : { snapshot, camera_revision: cameraRevision };
-        return JSON.stringify(value, (_key, number) => typeof number === "number" ? Math.round(number * 1e8) / 1e8 : number);
+        return cameraSyncFingerprint(snapshot, cameraRevision);
     }
 
     private reached(snapshot: any, target: any): boolean {

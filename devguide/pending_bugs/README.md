@@ -21,7 +21,7 @@ list.
 
 ### Being worked on (1)
 
-- [`multi_canvas_export_startup.md`](multi_canvas_export_startup.md) — [#400](https://github.com/uibcdf/molsysviewer/issues/400) — Independent exported HTML starts slowly while other molecular canvases draw. *(medium, measured)*
+- [`jupyter_moving_popup_capture_deadline.md`](jupyter_moving_popup_capture_deadline.md) — [#344](https://github.com/uibcdf/molsysviewer/issues/344) — Diagnose a late moving-session capture from the actual Jupyter canvas popup. *(medium, measured)*
 
 ### Partially done (2)
 

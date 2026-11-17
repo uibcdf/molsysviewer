@@ -47,6 +47,15 @@ documents, and historical audits.
 
 ## Current status and planning
 
+The [2026-11-17 camera/IPC receipt](camera_peer_and_ipc_receiving_20261117.json)
+receives #400's idle camera-relay correction, #394's focused native keyboard
+receiving and #401's complete 25-notebook IPC route. All 495 JS cases and
+the complete scientific mirror/plot pass. The separate actual-Jupyter Movie
+case passes, but the full work-file case fails its eighth moving capture;
+[#344](pending_bugs/jupyter_moving_popup_capture_deadline.md) is active again.
+Source CI `43823224361` remains failed despite all three Python hosts passing;
+no replacement checkpoint or installed/final qualification is inferred.
+
 The [2026-11-06 robustness audit](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md)
 under #315 owns the detailed work IDs, evidence boundaries and closure criteria.
 Follow the [agreed closure route](path_to_1_0.md#closure-route) toward a

@@ -479,7 +479,21 @@ jobs:
         if: always() && runner.os == 'Linux' && steps.notebook-kernel.outcome == 'success' && inputs.receiving_scope != 'diagnostics'
         shell: bash -l {0}
         working-directory: molsysviewer-source
-        run: python docs/execute_notebooks.py -q -n 4 -r -f docs/content
+        run: |
+          set -euo pipefail
+          msv_notebook_runtime="$(mktemp -d /tmp/msv-notebooks.XXXXXXXX)"
+          trap 'rm -rf "$msv_notebook_runtime"' EXIT
+          export JUPYTER_CONFIG_DIR="$msv_notebook_runtime"
+          export MOLSYSVIEWER_NOTEBOOK_IPC_ROOT="$msv_notebook_runtime"
+          cat > "$msv_notebook_runtime/jupyter_nbconvert_config.py" <<'PY'
+          import os
+          import uuid
+
+          c = get_config()
+          c.KernelManager.transport = "ipc"
+          c.KernelManager.ip = os.path.join(os.environ["MOLSYSVIEWER_NOTEBOOK_IPC_ROOT"], "kernel-" + uuid.uuid4().hex)
+          PY
+          python docs/execute_notebooks.py -q -n 4 -r -f docs/content
 
       - name: Preserve source-pair notebook failure logs
         if: failure() && runner.os == 'Linux' && inputs.receiving_scope != 'diagnostics' && steps.source-notebooks.outcome == 'failure'

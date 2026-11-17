@@ -1,0 +1,631 @@
+{
+  "recorded_utc": "2026-11-17",
+  "scope": "Source receiving with separately identified positive, negative, instrumented and covering-hosted results. No installed, native-GPU, Qt, human or release qualification.",
+  "viewer_base": "f2d831037a1bc1996c76e3011518d23d1a2dc6a3",
+  "working_inputs_sha256": {
+    ".github/workflows/ci-python-314-source-pair.yaml": "4e022dd1bfbce4075612153edbc591500c6b699717423296a07a9a4f3f1e7dfe",
+    "molsysviewer/js/src/managers/camera-sync.ts": "afc956a60a71cc7199a9965450662593b39c6e2ce88b72fe45c42d6a766f3144",
+    "molsysviewer/js/tests/unit/camera-sync.test.ts": "4b2c8845ef7412023498a08b709d8d166f72e72d359cb67668ad1f0c17e5903e",
+    "molsysviewer/js/tests/e2e/datacard-lifecycle.e2e.ts": "bad1f338d018d325e19d0ba93708b337a1e71f85ad9797d7378eadabd76305b6",
+    "tests/test_source_workflow_coverage.py": "11a7f239e45c069694748981e034d92f250af95ad1c87434720fee3cbd07b1d2",
+    "molsysviewer/viewer.js": "b1d9e768602ef5177a4773666b34db814c12398a28957fa944bc37b4e1ae63b8"
+  },
+  "scientific_provider": {
+    "molsysmt_commit": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+    "molstar": "5.13.1",
+    "node": "22.23.4",
+    "actual_notebook_ipykernel": "7.4.0",
+    "kernel_selection": "Original isolated capsule; routine shared prefix still reports 7.3.0. Actual nested import origin is checked.",
+    "support_scope": "Retained source/cached support composition; not clean-solver or current published dependency qualification."
+  },
+  "source_ci": {
+    "run": 43823224361,
+    "url": "https://github.com/uibcdf/molsysviewer/actions/runs/43823224361",
+    "viewer": "303c9152c968a92732589d026798b6b0ae73f550",
+    "molsysmt": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+    "conclusion": "failure",
+    "python": {
+      "Linux": {
+        "passed": 4740,
+        "skipped": 42,
+        "failures": 0,
+        "errors": 0
+      },
+      "Windows": {
+        "passed": 4713,
+        "skipped": 69,
+        "failures": 0,
+        "errors": 0
+      },
+      "macOS": {
+        "passed": 4709,
+        "skipped": 73,
+        "failures": 0,
+        "errors": 0
+      }
+    },
+    "linux_core": {
+      "completed_entries": 34,
+      "failed_entry": 35,
+      "total_entries": 63,
+      "failure_boundary": "Actual Trusted Types DataCard keyboard completion; original focus/native/input values not retained."
+    },
+    "notebooks": {
+      "passed": 24,
+      "failed": 1,
+      "total": 25,
+      "failure_boundary": "channels notebook shell TCP bind occupied before any science cell; acquiring process unknown."
+    },
+    "original_artifacts": [
+      {
+        "id": 14208161082,
+        "name": "source-pair-notebook-failure-logs",
+        "bytes": 13930,
+        "sha256": "38e3af15fcee05233bc14a8efac87d4366656af9cc959874b7e9d12f64ed8a64",
+        "github_digest_matches": true,
+        "junit": []
+      },
+      {
+        "id": 14206422000,
+        "name": "source-receiving-macOS-py3.14",
+        "bytes": 86469,
+        "sha256": "ec375355753d1853e1dda75bdfa3f63dd85415a6189c49ff0e53d2aff7dbb38d",
+        "github_digest_matches": true,
+        "junit": [
+          {
+            "member": "source-receiving.xml",
+            "totals": {
+              "tests": 4782,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 73
+            }
+          }
+        ]
+      },
+      {
+        "id": 14206042069,
+        "name": "movie-encoder-native-macOS",
+        "bytes": 14717,
+        "sha256": "b185be497dfa8805c52588832c05be3491fa55a41b9a0e000751716a5e0483d0",
+        "github_digest_matches": true,
+        "junit": []
+      },
+      {
+        "id": 14205971882,
+        "name": "movie-encoder-native-Linux",
+        "bytes": 14696,
+        "sha256": "4ddcfcaa710c45832f47a64a077305d7ecbd0f6de68ede57b677bf9bfbc3c4ad",
+        "github_digest_matches": true,
+        "junit": []
+      },
+      {
+        "id": 14205753684,
+        "name": "source-receiving-Windows-py3.14",
+        "bytes": 83825,
+        "sha256": "9a96f7aab1bfaacb442312653d1e836506f1278b7b2bd6b8f644364e29de6bcb",
+        "github_digest_matches": true,
+        "junit": [
+          {
+            "member": "source-receiving.xml",
+            "totals": {
+              "tests": 4782,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 69
+            }
+          }
+        ]
+      },
+      {
+        "id": 14205613187,
+        "name": "source-receiving-Linux-py3.14",
+        "bytes": 82504,
+        "sha256": "306d7392132041e2c57d4683ebcf484ede85b10a8516b987d36477a64f62ea50",
+        "github_digest_matches": true,
+        "junit": [
+          {
+            "member": "source-receiving.xml",
+            "totals": {
+              "tests": 4782,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 42
+            }
+          }
+        ]
+      },
+      {
+        "id": 14205564596,
+        "name": "movie-encoder-native-Windows",
+        "bytes": 14805,
+        "sha256": "7223787f489da411e653b0110e9a0a1ed0ffc9c318d55b68353fe2135b90a01a",
+        "github_digest_matches": true,
+        "junit": []
+      }
+    ]
+  },
+  "camera_relay": {
+    "issue": 400,
+    "state": "source-resolved",
+    "cause": "Peer fingerprint treated endpoint-local native scene radiusMax as a changed viewpoint, repeatedly resetting an unchanged camera. Mol* derives the bound on each reset.",
+    "correction": "Exclude only radiusMax from relay identity; retain all other snapshot fields and authority revisions, and preserve complete capture/persistence snapshots.",
+    "diagnostic_before": {
+      "profile": 994,
+      "same_viewpoint_resets_per_peer": 31,
+      "local_radius_max": [
+        18.00454099,
+        18.07642711
+      ],
+      "observed_static_ready_seconds": 32.777,
+      "observer_limit": "Unavailable controls.isAnimating read throws in the private didDraw observer; no zero-error or canonical claim."
+    },
+    "diagnostic_after": {
+      "profile": 999,
+      "same_viewpoint_resets_per_peer": 0,
+      "local_radius_max": [
+        18.00454099,
+        18.07642711
+      ],
+      "observed_static_ready_seconds": 4.8058,
+      "observer_limit": "Native controls animation flag not publicly observable; no assertion of animation-off from missing data."
+    },
+    "canonical": {
+      "profile": 998,
+      "outcome": "passed",
+      "complete_trajectory_plot_entry": true,
+      "startup_deadline_seconds": 30,
+      "decimal_controls": 15,
+      "independent_html_and_hidden_iframe": true,
+      "real_coordinates_and_authority": true
+    },
+    "covering_native_mirror": {
+      "profile": 1004,
+      "outcome": "passed",
+      "bidirectional_drag_wheel_focus_reset": true,
+      "single_motion_and_playback_clocks": true,
+      "native_shape_and_revised_annotation_picks": true,
+      "frame_specific_hbonds": true
+    },
+    "units_and_builds": {
+      "profile": 996,
+      "js_cases": 495,
+      "failures": 0,
+      "skips": 0,
+      "types": "passed",
+      "runtime_harness_e2e_builds": "passed"
+    }
+  },
+  "datacard": {
+    "issue": 394,
+    "state": "source-resolved",
+    "correction": "Bring actual document forward; require document and slider focus before one real key. Preserve publication/native/input completion and bounded failure observations.",
+    "original_host_event_order": "unknown",
+    "private_995": "Whole instrumented entry passes; non-reproduction, not a causal product-frame diagnosis.",
+    "maintained_1004": "Complete entry passes lifecycle, real sandbox/Trusted Types refusal, retry/dismiss, keyboard and concurrent layout.",
+    "deadline_or_scientific_assertion_relaxed": false
+  },
+  "documentation_ipc": {
+    "issue": 401,
+    "state": "source-resolved",
+    "route": "Linux-only task-local standard Jupyter IPC with short absolute UUID endpoints and cleanup; unchanged four-worker executor/all science cells.",
+    "controls": {
+      "1000": "Relative IPC endpoints fail to connect across different working directories; no science ran.",
+      "1001": "Absolute IPC runs code but actual 7.3 kernel origin is rejected.",
+      "1002": "Four distinct actual 7.4 kernels/endpoints pass with a unique private spec.",
+      "1003": "All 25 original notebooks pass; source/executed code fingerprints and completion markers agree.",
+      "1005": "Second literal executor expectation fails; original retained.",
+      "1006": "Both full source-workflow/ecosystem modules pass, 81 cases, plus Ruff check/format."
+    },
+    "corpus_executor_seconds": 79.675,
+    "public_user_default_transport_changed": false,
+    "general_upstream_tcp_allocator_repaired": false
+  },
+  "actual_jupyter": {
+    "profile": 1004,
+    "junit_sha256": "a092e80cbab280aec0cd4d5c1b4c4411ba76b1680627cbe836c74d6ba8389141",
+    "cases": [
+      {
+        "name": "test_live_jupyter_work_files",
+        "seconds": 324.778,
+        "outcome": "failed"
+      },
+      {
+        "name": "test_live_jupyter_movie_authoring",
+        "seconds": 127.681,
+        "outcome": "passed"
+      }
+    ],
+    "work_file_details": {
+      "stopped_roundtrips": 6,
+      "strong_restores": 6,
+      "studio_cases": 4,
+      "moving_cases_passed": 7,
+      "moving_cases_required": 8,
+      "failed_case": "Moving Studio popup session",
+      "failure_reason": "request_timeout",
+      "held_queries_released_after_ms": 1235.3,
+      "native_success_sent_after_browser_request_ms": 9906.9,
+      "cancel_verdict_after_native_send_ms": 47.5,
+      "deadline_seconds": 10,
+      "cause": "Precise popup queue/native-draw/transport split pending; does not establish primary-race recurrence or new scientific-provider defect."
+    },
+    "follow_up": "uibcdf/molsysviewer#344 reopened; unchanged complete work-file guard must pass independently. Prior full source receiving remains exact-input historical evidence."
+  },
+  "setup_observer_failures": {
+    "993": "Private builder syntax failure before browser launch.",
+    "994": "Native unavailable-field observer exceptions; negative startup retained with explicit scope.",
+    "997": "Product startup/controls progress, but private observer exceptions fail the whole instrumented entry. Corrected observer 999 passes separately."
+  },
+  "profiles": [
+    {
+      "id": "build-camera-peer-bound-996",
+      "native_exit": 0,
+      "seconds": 37.476166541688144,
+      "selected_inputs": 9995,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 537.6,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 26,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "d518b5916290e3e694dc6c0bc8eb7fb7d4fa3770e30667f6da8348c742fcdd11",
+      "invocation_sha256": "5ae5b6771521a3edf55c6cb6f5c116bcfcfc349437091a7498346268a651706b"
+    },
+    {
+      "id": "camera-ipc-guards-1005",
+      "native_exit": 1,
+      "seconds": 6.590208359993994,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 183.3,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 2,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "6df7a3fa96b7d83baa0f4f2680d633eacf36be8c2aa8083561d8e78414b3c6a0",
+      "invocation_sha256": "2463c358d7e958f70ee05826dda52c204927c953d81093cbc52780b4b39fd0c6"
+    },
+    {
+      "id": "camera-ipc-guards-1006",
+      "native_exit": 0,
+      "seconds": 6.477853557094932,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 182.0,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "fc768f93e8999f8b943097136e464a0ab072521d71ef563263331810164282a9",
+      "invocation_sha256": "048e8f6384ff808f6aa1ad2aa00b68c9e86b3ef4eb065082c947ca616b53980b"
+    },
+    {
+      "id": "camera-peer-bound-observation-997",
+      "native_exit": 1,
+      "seconds": 54.232069075107574,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3416.0,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 19,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "5be5e3b30044ed2abe4f4fba7cd60211c794eae752ac0842f11e4bbc34bf7084",
+      "invocation_sha256": "7e5bc6c3a5eae3a495dd0566dfda0dd3dca113f4248e82b7c48d960827b01619"
+    },
+    {
+      "id": "camera-peer-canonical-998",
+      "native_exit": 0,
+      "seconds": 132.87222087802365,
+      "selected_inputs": 9996,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3465.1,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 22,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "82099ff511502e82b503cad4879929d12a8a47f112a974d34e53b6a65e7b5a1a",
+      "invocation_sha256": "db312c4eb97a9f6e74065842dd590ee82096737aee04415448db49aaea8462dc"
+    },
+    {
+      "id": "camera-peer-proof-999",
+      "native_exit": 0,
+      "seconds": 120.38800173113123,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3412.6,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 23,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "18dc6927806719c9b306a30f5e72fe128497344233bc84b0735baa95b97cac0e",
+      "invocation_sha256": "4e32b81a47b37a7f53a3f2b0a87ee908a4e887129fdcdfe364710f562c30678d"
+    },
+    {
+      "id": "cold-plot-draw-triggers-993",
+      "native_exit": 1,
+      "seconds": 2.512620080728084,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 137.3,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 3,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "bbfb8d48ef3b5b6ca7ac34e04e4a3183a2df5da992c6f09377beac9ce005a13c",
+      "invocation_sha256": "21bae5fb33bb47f03e4287cd23bd15219556c979095468419fee10796c363761"
+    },
+    {
+      "id": "cold-plot-draw-triggers-994",
+      "native_exit": 1,
+      "seconds": 83.51158244116232,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 3039.1,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 17,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "d855655b5449321a4627747f3997e4fc78752b296f73ec5524405387d35db111",
+      "invocation_sha256": "35fb741f2b63de5bbf7c3ce105a0c587fa356ce5c0ae5105a3161d55247b9ba7"
+    },
+    {
+      "id": "covering-peer-camera-1004",
+      "native_exit": 1,
+      "seconds": 834.2010321463458,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 4364.3,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 68,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "9a8dc66cee6006be8f84e5d9230609cb096e33250e3618a55b2956465b4196b2",
+      "invocation_sha256": "0852f8949eea29f51ce349b8a4e5126e48da2acb7fcd1a3a89c70fed5bfbe5ed"
+    },
+    {
+      "id": "datacard-key-observation-995",
+      "native_exit": 0,
+      "seconds": 40.2670236621052,
+      "selected_inputs": 9998,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 1562.9,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 20,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "10ac73ffd57225c8ae00b32977decfe4eff571d57aeec78fb85230dfcc82df65",
+      "invocation_sha256": "32d7b9a4b0359c8fafeae64482db3c7713ba0365b012965274aa8bf832da09ea"
+    },
+    {
+      "id": "notebook-ipc-absolute-1001",
+      "native_exit": 1,
+      "seconds": 11.55760552501306,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 697.9,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "274bc3c096a54b658305dab9d67734d74158583538623ecd3a3965c1d864f26c",
+      "invocation_sha256": "393e9b0b870bebec27cac0b8071228ba93472d406c0246236f0494e998874039"
+    },
+    {
+      "id": "notebook-ipc-corpus-1003",
+      "native_exit": 0,
+      "seconds": 81.8546978412196,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 2155.1,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 4,
+        "ram_gib": 4,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 54,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "eb2662f7ac3640ac1babb232571499f1547ba85e9c5327ca4e442df2c097113f",
+      "invocation_sha256": "ab4153e54da5a797eb37d8f644eab5ad95c7cf2ba83d9f3cb669cc63faeff237"
+    },
+    {
+      "id": "notebook-ipc-named-1002",
+      "native_exit": 0,
+      "seconds": 12.598951708059758,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 691.8,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "d9714b719194194fdd94bf7de9906209b49da85955c5185e764b68bca02a1fe0",
+      "invocation_sha256": "8a21e505ddfe4562cc88084ce638445fdd0bf336622c18df80f256910d25e88d"
+    },
+    {
+      "id": "notebook-ipc-probe-1000",
+      "native_exit": 1,
+      "seconds": 75.42319666687399,
+      "selected_inputs": 9997,
+      "inputs_unchanged": true,
+      "peak_owned_rss_mib": 689.4,
+      "resource_stop": null,
+      "limits": {
+        "logical_cpus": 2,
+        "ram_gib": 2,
+        "swap_gib": 0,
+        "minimum_globally_available_gib": 6.5
+      },
+      "cleanup": {
+        "tracked": 10,
+        "survivors": [],
+        "errors": []
+      },
+      "input_manifest_sha256": "36fbcde8a687446cde540b7497cfcb2dd3d75a4cd99c4b93d6b1e8495f91a87f",
+      "invocation_sha256": "40527bbde567a11fc840d1edb0ceaf5217b22fa0e307f4d72214f87a51ede416"
+    }
+  ],
+  "private_custody": {
+    "custodian": "Diego Prada Gracia",
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/camera-peer-and-ipc-20261117",
+    "files": 134,
+    "bytes": 61682318,
+    "manifest_sha256": "247ca26e24202b3d2e6b9fc7a1312674ead83fbf369c22bc3b7a99c6d6c9c1de",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
+  },
+  "counter": {
+    "source_delivered": 41,
+    "original_total": 46,
+    "final_accepted": 1,
+    "extra_receiving_closures_increment_original_counter": false
+  },
+  "candidate_floors": {
+    "agreed": {
+      "molsysviewer_1_requires_molsysmt": ">=1.0",
+      "molsysmt_optional_viewer_integration_requires_molsysviewer": ">=1.0"
+    },
+    "owner_record": "4a793e58623ecfc69cd9dc2b28311370e7e74bb7",
+    "applied": false,
+    "installed_qualified": false,
+    "current_source_version": "0.23.0+1020.g4b0b1f8a1",
+    "next": "Align final identities/manifests/recipes/environments/guards as one coherent batch before freeze; preserve strict source auditing."
+  },
+  "next": [
+    "Diagnose and receive #344 popup moving-session delivery at the unchanged deadline.",
+    "Run one applicable covering source checkpoint after the known failure is addressed; retain already-received native hosts in their actual scope.",
+    "Complete final candidate/installed and adopted acceptance exits; #294 follow-up remains explicitly postponed."
+  ],
+  "publication": "Paused; no new tag, candidate artifact, release, promotion or 1.0 authorization.",
+  "reporting_guards": {
+    "profile": 1007,
+    "passed": 523,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 8.364873288199306,
+    "inputs_unchanged": true,
+    "junit_sha256": "57bd33ba28beda903b1f7e755b845ed766999c7e5dad5bed110204b2d1b3e394",
+    "generated_indexes": "up to date"
+  },
+  "private_custody_supplement": {
+    "destination": "/home/diego/.local/state/molsysviewer/evidence/robustness-20261106/camera-ipc-reporting-20261117",
+    "custodian": "Diego Prada Gracia",
+    "files": 21,
+    "bytes": 4188104,
+    "manifest_sha256": "8b96c0ca5f7c30ad67bf4872d00d493c9985918525707d58fc0dba57045d6ae0",
+    "hashes_verified": true,
+    "originals_retained": true,
+    "permissions": {
+      "directories": "0700",
+      "files": "0600"
+    }
+  }
+}

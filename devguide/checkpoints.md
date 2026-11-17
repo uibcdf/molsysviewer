@@ -907,6 +907,31 @@ previous qualification records retain their original candidate and environment.
 
 ## Resume in one page
 
+**Current camera/IPC follow-up — 2026-11-17:** the
+[receipt](camera_peer_and_ipc_receiving_20261117.json) owns this new batch.
+Source run `43823224361` on `303c9152` / MolSysMT `4b0b1f8a` is terminal
+failed: all three Python hosts pass, Linux core stops at DataCard entry 35,
+and one of 25 notebooks fails before any cell at a native occupied TCP bind.
+Seven original ZIPs are independently hash-verified. #400 now fixes the
+unchanged-viewpoint camera reset echo, preserving endpoint-local bounds and
+full snapshots. All 495 JS cases/types/builds, complete canonical plot and
+bidirectional scientific mirror pass. #394 qualifies actual keyboard focus;
+#401 selects temporary absolute IPC endpoints and passes all 25 unchanged
+notebooks plus 81 source-workflow/ecosystem guards. These are source closures,
+not a replacement full gate.
+
+Actual-Jupyter Movie also passes, but the complete work-file guard in `1004`
+fails the final moving Studio-popup session at its original ten-second
+deadline. [#344](pending_bugs/jupyter_moving_popup_capture_deadline.md) retains
+the late successful native response and pending queue/draw/transport diagnosis.
+Next resolve that bounded boundary, then run one applicable covering source
+checkpoint. Do not repeat already-received native Windows/macOS scientific
+jobs without a changed boundary. #354's historical cause, installed/final
+qualification and postponed human review remain separate; #294 follow-up
+remains postponed. Final reciprocal >=1.0 floors are agreed with MolSysMT but
+await one coherent candidate-identity/manifests/recipe/guard batch before
+freezing. Counters stay **41/46 source-delivered, 1/46 final accepted**.
+
 **Current Mol* closeout — 2026-11-15:** source checkpoint
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 receives `3aff1d48` / published MT `bc5a9297` on all three Python 3.14

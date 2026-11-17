@@ -7,7 +7,29 @@ import { PluginCommandManager } from "molstar/lib/mol-plugin/command";
 import { Reset, SetSnapshot } from "molstar/lib/mol-plugin/behavior/static/camera";
 import { ButtonsType, ModifiersKeys } from "molstar/lib/mol-util/input/input-observer";
 import { MolSysViewerController } from "../../src/managers/viewer-controller";
-import { CameraSync, CameraSyncState } from "../../src/managers/camera-sync";
+import { CameraSync, CameraSyncState, cameraSyncFingerprint } from "../../src/managers/camera-sync";
+
+test("camera peer identity retains viewpoint and authority, excluding only the native scene bound", () => {
+    const snapshot = new Camera().getSnapshot();
+    const original = structuredClone(snapshot);
+    const peer = { ...snapshot, radiusMax: snapshot.radiusMax + 1 };
+    const peerOriginal = structuredClone(peer);
+    const key = cameraSyncFingerprint(snapshot, 4);
+    assert.equal(cameraSyncFingerprint(peer, 4), key);
+    assert.equal(cameraSyncFingerprint(peer), cameraSyncFingerprint(snapshot));
+    assert.notEqual(cameraSyncFingerprint(peer, 5), key, "a newer authority still requires its own native draw");
+    const changes = {
+        mode: "orthographic", fov: snapshot.fov + 0.1, position: [1, 2, 3],
+        up: [1, 0, 0], target: [1, 2, 3], radius: snapshot.radius + 1,
+        fog: snapshot.fog + 1, clipFar: !snapshot.clipFar,
+        minNear: snapshot.minNear + 1, minFar: snapshot.minFar + 1,
+    };
+    for (const [field, value] of Object.entries(changes)) {
+        assert.notEqual(cameraSyncFingerprint({ ...peer, [field]: value }, 4), key, `${field} remains transferable`);
+    }
+    assert.deepEqual(snapshot, original, "full native capture/persistence snapshots are untouched");
+    assert.deepEqual(peer, peerOriginal);
+});
 import { SceneHandlers } from "../../src/managers/handlers/scene-handlers";
 import { StateHandlers } from "../../src/managers/handlers/state-handlers";
 

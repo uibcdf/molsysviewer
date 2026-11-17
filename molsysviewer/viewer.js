@@ -195075,6 +195075,13 @@ var ArrayNativeStreamReceiver = class {
 function revision(value) {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
+function cameraSyncFingerprint(snapshot, cameraRevision) {
+  const value = cameraRevision === void 0 ? snapshot : { snapshot, camera_revision: cameraRevision };
+  return JSON.stringify(value, (key3, number) => {
+    if (key3 === "radiusMax") return void 0;
+    return typeof number === "number" ? Math.round(number * 1e8) / 1e8 : number;
+  });
+}
 var CameraSyncState = class {
   constructor() {
     this.completedRevision = 0;
@@ -195193,8 +195200,7 @@ var CameraSync = class {
     return this.state.completedRevision;
   }
   fingerprint(snapshot, cameraRevision) {
-    const value = cameraRevision === void 0 ? snapshot : { snapshot, camera_revision: cameraRevision };
-    return JSON.stringify(value, (_key, number) => typeof number === "number" ? Math.round(number * 1e8) / 1e8 : number);
+    return cameraSyncFingerprint(snapshot, cameraRevision);
   }
   reached(snapshot, target) {
     const near = (a9, b17) => Number.isFinite(a9) && Number.isFinite(b17) && Math.abs(a9 - b17) <= 1e-6 * Math.max(1, Math.abs(a9), Math.abs(b17));
