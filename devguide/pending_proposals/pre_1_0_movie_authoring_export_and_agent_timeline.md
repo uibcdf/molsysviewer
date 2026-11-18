@@ -236,6 +236,9 @@ scientific context, frame-specific indicators and guarded atomic publication.
 Expanded in-canvas cards and fixed layout/style are required for media, with
 explicit exclusions available. This bounded source profile does not complete
 M2 host/accessibility or installed/hosted/human qualification. The
+[current source checkpoint](qualify_molstar_5_13_1_pre_1_0.md#current-closeout-checklist--2026-11-15)
+tracks the aggregate deadline in the complete Movie composition guard and its
+follow-up against the sixteen 720p captures. The
 [integrated story receipt](../movie_story_receiving_20261112.json) now receives
 M5's first source profile: actual Studio caption editing and preview over a
 Python-authored pocket/ligand/interactions/labels story, three encoded media

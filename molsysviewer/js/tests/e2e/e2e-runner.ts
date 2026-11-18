@@ -132,6 +132,10 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
         // 236s at 8 CPU/4 GiB; the prior 5.4.1 control already took 179s.
         // This bounds the integrated suite, without changing any operation TTL.
         "interactions-geometry": 360_000,
+        // Composition makes 16 native 720p captures across ZIP, MP4 and
+        // layout-refusal controls. The 15s allowance for each capture alone
+        // totals 240s. Leave room for startup, encoding and decoded pixels.
+        "movie-composition": 300_000,
         // Three real encoders, independent recovery and complete offline seeks.
         "movie-story": 360_000,
     };

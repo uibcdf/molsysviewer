@@ -801,6 +801,102 @@
       "private_manifest_sha256": "88726a00754f0a44992e4f3004f00bfd6bcd84817b1d20376f2e268185498b64",
       "scope": "The measured sample could include warm-up GPU work, because trajectory state updates alone do not establish a completed draw. The maintained test now waits for each warm-up frame and retains zero measured uploads and its coordinate assertions. Local browser evidence for the test correction. Full hosted core receiving remains pending."
     },
+    "hosted_source_recovery_44233166206": {
+      "run": 44233166206,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "molsysviewer_commit": "6c82a672bb8b49f69a11f9cec898e24e03772b43",
+      "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas": "3.1.0",
+      "platform": "ubuntu-latest",
+      "scope": "Full Linux Python, all 63 core browser suites and the 25 documentation notebooks.",
+      "matching_dispatches_before": 0,
+      "matching_dispatches_after": 1,
+      "competing_active_or_queued_before": 0,
+      "terminal": {
+        "job": 134562878660,
+        "chrome": "157.0.8103.50",
+        "notebooks_passed": 25,
+        "core_passed": 61,
+        "core_required": 63,
+        "font_atlas_passed": true,
+        "font_atlas_measured_uploads": 0,
+        "interaction_calculation_cases_passed": 17,
+        "last_core_entry_started": "movie-composition",
+        "first_required_failure": "movie-composition exceeded 180000 ms",
+        "movie_story_reached": false,
+        "job_log_sha256": "f1ebc4e084232dfa7b16a4c441d0023de5a4c8167e46f32eb97bfc2183de9064",
+        "private_manifest_sha256": "2d1497387111740b9b2ec0942d95d9d2404555eefbdfc36b3c01c03fbe091f03"
+      },
+      "initial_python_receiving": {
+        "job": 134562878660,
+        "passed": 4756,
+        "skipped": 42,
+        "failed": 0,
+        "errors": 0,
+        "artifacts": [
+          {"id": 14395978146, "name": "source-receiving-Linux-py3.14", "sha256": "72bebb0e81f173eef93f052f4b277e40e00ba1599d7db69939e703430ca9fa76"},
+          {"id": 14395918152, "name": "movie-encoder-native-Linux", "sha256": "6aa1e3a98f3a1276cd1f24f369729641b84600712d1ca521825c2edb8ae74240"}
+        ],
+        "private_manifest_sha256": "8b16b1c05a5d62fbabded3d5a1f4be42716602434c1a28a805d66aa6bb7f7aca"
+      },
+      "local_browser_receiving": {
+        "profile": 1070,
+        "status": "interrupted_by_shared_memory_pressure",
+        "completed_suites": ["measures-subpanel", "interactions-subpanel", "interactions-geometry"],
+        "original_and_restored_geometry_cases_passed": 10,
+        "interrupted_suite": "interactions-calculation",
+        "calculation_cases_passed_before_stop": 14,
+        "limits": {"logical_cpus": 8, "ram_gib": 4, "swap_gib": 0},
+        "global_full_memory_pressure_avg10": 4.16,
+        "global_available_gib": 17.65,
+        "global_swap_activity_bytes": 0,
+        "own_cgroup_peak_bytes": 2514477056,
+        "own_cgroup_oom": 0,
+        "owned_processes_retired": 36,
+        "owned_survivors": 0,
+        "selected_inputs": 9997,
+        "inputs_unchanged": true,
+        "log_sha256": "d4fb71af1630d11b55fd20bac81a009b63d684f8812b624f8e9e1e0461dac8f8",
+        "private_manifest_sha256": "fbae799c81adcc95d1c93120f0445496e666d9abd7f2c3b1975b0396a1adeef6",
+        "scope": "Three headless Chromium core suites and a partial fourth. The preflight import and native hash confirm the configured source path; this invocation did not record each scientific fixture's inner import origin. The outer supervisor retires its own processes after global pressure crosses its threshold, with no evidence that its own cgroup caused that pressure. The child wrapper's exit zero is insufficient for suite acceptance."
+      },
+      "movie_composition_followup": {
+        "hosted_failure_scope": "The outer runner killed the entry at 180 seconds. Its original log does not identify the capture or phase it reached.",
+        "launcher_failures_before_browser": {"1071": "Sandbox denied access to the user unit bus", "1072": "Relative helper path resolved under the frozen provider"},
+        "local_1073": {
+          "limits": {"logical_cpus": 4, "ram_gib": 3, "swap_gib": 0},
+          "result": "The export returned request_timeout during the first ZIP; the first failing assertion expected a successful export. The owner retired and the resource supervisor did not intervene.",
+          "suite_timeout_override_ms": 360000,
+          "log_sha256": "0714ec67aee04ceb51612d3c89555db3fdeeb24f081c8efdda3528dae8b21827"
+        },
+        "local_1074": {
+          "limits": {"logical_cpus": 8, "ram_gib": 4, "swap_gib": 0},
+          "suite_timeout_override_ms": 360000,
+          "native_suite_passed": true,
+          "browser_elapsed_seconds": 155.026,
+          "screenshots_720p": 16,
+          "slowest_screenshot_ms": 9762,
+          "log_sha256": "27d05af569a087f70efcbb2f72372a558cd14ffa8ed06e7106f5ec64d62043d7"
+        },
+        "maintained_guard": {
+          "profile": 1075,
+          "limits": {"logical_cpus": 8, "ram_gib": 4, "swap_gib": 0},
+          "suite_timeout_override_ms": null,
+          "suite_timeout_ms": 300000,
+          "capture_timeout_ms": 15000,
+          "browser_elapsed_seconds": 154.85,
+          "native_suite_passed": true,
+          "runner_source_sha256": "30ed4e2b0cdb73433d2eabe18a58abeec2ccd9c308bd86fab5050364c02fa4bb",
+          "test_source_sha256": "041afc0749abf596cdbd72d544f08606e3a8eed58a0eaaab0cc994bac2ecd188",
+          "log_sha256": "1b6cdb89c9b32e0637f40b13cbd4566888601fe2ff3f7ee90f85b00bb90a76b0"
+        },
+        "producer_provenance": "For each executed local case, the actual inner producer import paths, four module bytes and native digest match the frozen manifests. The imported MolSysMT initializer matches the declared 4b0b1f8a Git source. Local Python 3.14, pandas 2.3.3 and Chrome 157.0.8103.38.",
+        "private_manifest_sha256": "26837a849cd816fc46ad35ec91abd5e2d540b1d1d2fa3da4a8191629e4695381",
+        "scope": "Only the suite's aggregate budget and progress logging change. The aggregate accommodates sixteen 15-second captures plus bounded setup, encode and inspection work; scientific assertions and individual operation deadlines stay in force. Local passing runs do not identify the hosted failure's phase or complete hosted qualification."
+      }
+    },
     "startup_diagnostics": {
       "profiles": {
         "1051": {

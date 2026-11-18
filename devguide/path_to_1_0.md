@@ -137,7 +137,7 @@ MolSysSuite #200 owns the still-paused legacy-prefix adoption. The source-host s
 in 933; full source CI passes. Installed qualification, package/tag and public
 publication remain separate.
 
-The single current [three-platform source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
+The earlier complete [three-platform source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 receives `3aff1d48` with owner-published MT `bc5a9297` (Git package/native
 sources unchanged from `96988b6e`), pandas 3.1.0 and ipykernel >=7.4.0.
 Its three Python 3.14 jobs now pass. Previous `43743095366` fails
@@ -147,6 +147,11 @@ scoped checks. Linux receives all 63 core entries and 25 notebooks; all six
 original ZIPs match GitHub hashes. This completes the declared source exit
 without assigning candidate versions/tags, and qualifies neither an installed
 pair nor the postponed human exits.
+
+The [Mol* qualification checklist](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md#current-closeout-checklist--2026-11-15)
+records the subsequent Linux follow-up on the changed sources, including the
+atlas warm-up correction and the Movie composition deadline that still blocks
+the complete browser pass.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

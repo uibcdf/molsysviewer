@@ -67,6 +67,7 @@ async function run() {
             { env: fixtureEnvironment(workspace) });
         const browser = await chromium.launch(); let release: (() => Promise<void>) | undefined;
         try {
+            console.info("[E2E Movie composition] Mounting the molecular fixture");
             const page = await browser.newPage({ viewport: { width: 1000, height: 800 } });
             const errors: string[] = []; page.on("pageerror", error => errors.push(String(error)));
             release = await mountCanvasPopupFixture(page, bridge); await captureCanvasPopupControllers(page);
@@ -77,9 +78,11 @@ async function run() {
             });
             const evidence = process.env.MOLSYSVIEWER_MOVIE_EVIDENCE_DIR;
             for (const suffix of [".zip", ".mp4"]) {
+                console.info(`[E2E Movie composition] Exporting ${suffix} with overlays`);
                 const path = resolve(workspace, "included" + suffix);
                 await command(page, { movie_export: { path, width: 1280, height: 720 } });
                 const result = await finished(page); assert.equal(result.ok, true, JSON.stringify(result));
+                console.info(`[E2E Movie composition] Checking decoded ${suffix} frames and scientific context`);
                 const inspection = await command(page, { movie_composition_inspect: suffix });
                 const composition = inspection.manifest.composition;
                 assert.equal(composition.dom_overlays, "svg-composited@1");
@@ -104,22 +107,34 @@ async function run() {
             const sentinel = resolve(workspace, "preserve.zip"); await writeFile(sentinel, "original");
             // Change the real card after frame zero was captured, before delivery.
             for (const mutation of ["position", "opacity"]) {
-            await page.evaluate(mode => { const model = (window as any).__popupWidgetModel, send = model.send.bind(model); let changed = false;
-                model.send = (value: any) => { const content = value.payload ?? value;
-                    if (!changed && content.movie_frame?.frame_index === 0) { changed = true;
-                        const card = document.querySelector('[data-molsysviewer-datacard="control"]') as HTMLElement;
-                        if (mode === "position") card.style.left = `${parseFloat(card.style.left) + 20}px`;
-                        else (card.querySelector('[aria-label="Toggle opacity"]') as HTMLButtonElement).click(); }
-                    return send(value);
-                }; }, mutation);
-            await command(page, { movie_export: { path: sentinel, overwrite: true, width: 1280, height: 720 } });
-            const moved = await finished(page); assert.equal(moved.ok, false); assert.match(moved.error, /layout/);
-            assert.equal(await readFile(sentinel, "utf8"), "original");
+                console.info(`[E2E Movie composition] Checking refusal after a DataCard ${mutation} change`);
+                await page.evaluate(mode => {
+                    const model = (window as any).__popupWidgetModel;
+                    const send = model.send.bind(model);
+                    let changed = false;
+                    model.send = (value: any) => {
+                        const content = value.payload ?? value;
+                        if (!changed && content.movie_frame?.frame_index === 0) {
+                            changed = true;
+                            const card = document.querySelector('[data-molsysviewer-datacard="control"]') as HTMLElement;
+                            if (mode === "position") card.style.left = `${parseFloat(card.style.left) + 20}px`;
+                            else (card.querySelector('[aria-label="Toggle opacity"]') as HTMLButtonElement).click();
+                        }
+                        return send(value);
+                    };
+                }, mutation);
+                await command(page, { movie_export: { path: sentinel, overwrite: true, width: 1280, height: 720 } });
+                const moved = await finished(page);
+                assert.equal(moved.ok, false);
+                assert.match(moved.error, /layout/);
+                assert.equal(await readFile(sentinel, "utf8"), "original");
             }
+            console.info("[E2E Movie composition] Checking refusal for a minimized DataCard");
             await page.locator('[data-molsysviewer-datacard="control"]').getByRole("button", { name: "Minimize", exact: true }).click();
             await command(page, { movie_export: { path: sentinel, overwrite: true, width: 1280, height: 720 } });
             const minimized = await finished(page); assert.equal(minimized.ok, false); assert.match(minimized.error, /expand/i);
             assert.equal(await readFile(sentinel, "utf8"), "original");
+            console.info("[E2E Movie composition] Exporting ZIP with explicit overlay exclusion");
             await command(page, { movie_export: { path: resolve(workspace, "excluded.zip"), include_overlays: false, width: 1280, height: 720 } });
             const excluded = await finished(page); assert.equal(excluded.ok, true, JSON.stringify(excluded));
             assert.equal(excluded.export.manifest.composition.excluded_dom_overlays.length, 2);
