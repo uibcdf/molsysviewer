@@ -23,9 +23,19 @@ async function run() {
                 try {
                     for (const message of fixture.messages) await controller.handleMessage(message);
                     const canvas = controller.plugin.canvas3d, gl = canvas.webgl.gl;
-                    // Receive every label first: newly encountered numeric
-                    // glyphs are legitimate uploads, not the regression.
-                    for (const frame of [1, 2, 0]) await controller.trajectory.setTrajectoryFrame(frame);
+                    const drawFrame = async (frame: number) => {
+                        await controller.trajectory.setTrajectoryFrame(frame);
+                        await new Promise<void>(resolve => {
+                            let replay = true;
+                            const subscription = canvas.didDraw.subscribe(() => {
+                                if (replay) return;
+                                subscription.unsubscribe(); resolve();
+                            }); replay = false; canvas.requestDraw();
+                        });
+                    };
+                    // A state-tree update can finish before Mol* creates or
+                    // uploads the GPU textures for the new measurement labels.
+                    for (const frame of [1, 2, 0]) await drawFrame(frame);
                     let uploads = 0; const upload = gl.texImage2D;
                     const images = new Set();
                     for (const cell of controller.plugin.state.data.cells.values()) {
@@ -35,21 +45,18 @@ async function run() {
                     }
                     gl.texImage2D = function (...args: any[]) { if (images.has(args[8])) uploads++; return upload.apply(this, args); };
                     const frames = [];
-                    for (const frame of [1, 2, 0, 1]) {
-                        await controller.trajectory.setTrajectoryFrame(frame);
-                        await new Promise<void>(resolve => {
-                            let replay = true;
-                            const subscription = canvas.didDraw.subscribe(() => {
-                                if (replay) return;
-                                subscription.unsubscribe(); resolve();
-                            }); replay = false; canvas.requestDraw();
-                        });
-                        frames.push({ frame, distance: (window as any).Harness.inspectMeasurementGeometry(controller, "font-distance") });
+                    try {
+                        for (const frame of [1, 2, 0, 1]) {
+                            await drawFrame(frame);
+                            frames.push({ frame, distance: (window as any).Harness.inspectMeasurementGeometry(controller, "font-distance") });
+                        }
+                    } finally {
+                        gl.texImage2D = upload;
                     }
-                    gl.texImage2D = upload;
-                    return { uploads, frames };
+                    return { uploads, frames, atlasCount: images.size };
                 } finally { controller.dispose(); }
             }, fixture);
+            assert.ok(observed.atlasCount > 0, "The measured frames must contain measurement font atlases.");
             assert.equal(observed.uploads, 0, "Native coordinate updates with already mapped glyphs must not reupload the atlas.");
             assert.equal(observed.frames.length, 4);
             assert.ok(observed.frames.every((frame: any) => frame.distance.geometry.some((item: any) => item.kind === "text")));

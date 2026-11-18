@@ -730,8 +730,8 @@
     "hosted_source_recovery_44196971862": {
       "run": 44196971862,
       "attempt": 1,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "molsysviewer_commit": "43c1c3de55354a9136aa7b3c8def7b4bb93a2afe",
       "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
       "pandas": "3.1.0",
@@ -739,7 +739,67 @@
       "scope": "Full Linux Python, all 63 core browser suites and the 25 documentation notebooks.",
       "matching_dispatches_before": 0,
       "matching_dispatches_after": 1,
-      "competing_active_or_queued_before": 0
+      "competing_active_or_queued_before": 0,
+      "terminal": {
+        "job": 134440865564,
+        "notebooks_passed": 25,
+        "core_passed": 33,
+        "core_required": 63,
+        "studio_saved_lists_passed": true,
+        "font_atlas_lifecycle_cases_passed": 8,
+        "font_atlas_coordinate_uploads": 3,
+        "font_atlas_expected_coordinate_uploads": 0,
+        "last_core_entry_started": "font-atlas-uploads",
+        "job_log_sha256": "edc5810db3474919d1d495d44c51740201624093d050628a205ac0e806039c1e",
+        "private_manifest_sha256": "efecc78b393e39c708dc1eb8898ae875929ce8e6a3c86a9e5f033f989f714056"
+      },
+      "initial_python_receiving": {
+        "job": 134440865564,
+        "passed": 4756,
+        "skipped": 42,
+        "failed": 0,
+        "errors": 0,
+        "artifacts": [
+          {"id": 14379723987, "name": "source-receiving-Linux-py3.14", "sha256": "35441a92ac04caf8b033e0c1faf56ffaf936fc25ca5061608d56c235f6eca819"},
+          {"id": 14379264736, "name": "movie-encoder-native-Linux", "sha256": "c71a771f1c08cacd0742943e5e75e2cb8fa996d39e9ff01ffc2b4e5a7d4c4736"}
+        ],
+        "private_manifest_sha256": "613a2ed9eccd31c6b690c3a47e73b2f4eed24d2a647ef4d7ce49448d4da4e606"
+      }
+    },
+    "font_atlas_warmup_receiving": {
+      "base_commit": "adc918298db5e466cb1e9c8028228f1effe6ad19",
+      "runtime_sha256": "d4c479e981b71613d3e9b251df168270d2f158daae36e8616f79c72bcd7ab14e",
+      "molstar": "5.13.1",
+      "configured_molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "local_pandas": "2.3.3",
+      "chrome": "157.0.8103.38",
+      "limits": {"logical_cpus": 4, "ram_gib": 3, "swap_gib": 0},
+      "original": {
+        "profile": 1066,
+        "native_exit": 1,
+        "measured_uploads": 3,
+        "log_sha256": "89167773b057fa624287d2feb692da18159185160c46146ca15c95ee8f3d2081"
+      },
+      "observation": {
+        "profile": 1067,
+        "without_rendered_warmup": {"warmup_uploads_observed": 0, "measured_uploads": 3, "measured_frames_with_uploads": [1]},
+        "with_rendered_warmup": {"warmup_uploads_observed": 5, "measured_uploads": 0},
+        "measured_frame_order": [1, 2, 0, 1],
+        "distinct_font_images_observed": 3,
+        "log_sha256": "e30a3efd0d2dc73fc6381f383e113bcf49709773f6ecd28e78e38233c104559b"
+      },
+      "maintained_test": {
+        "profile": 1068,
+        "native_suite_passed": true,
+        "inventory_controls_passed": 10,
+        "suite_timeout_override": null,
+        "test_source_sha256": "ce67995a66e44a09d8f0670b2cfb7e5b730688949679fa7f3bc4b7a5389072e9",
+        "log_sha256": "4582fb96a637e329d173af06903f3149f751b5ae9151efc7e044dda0d63a1952"
+      },
+      "all_inputs_unchanged_per_invocation": true,
+      "survivors": 0,
+      "private_manifest_sha256": "88726a00754f0a44992e4f3004f00bfd6bcd84817b1d20376f2e268185498b64",
+      "scope": "The measured sample could include warm-up GPU work, because trajectory state updates alone do not establish a completed draw. The maintained test now waits for each warm-up frame and retains zero measured uploads and its coordinate assertions. Local browser evidence for the test correction. Full hosted core receiving remains pending."
     },
     "startup_diagnostics": {
       "profiles": {
