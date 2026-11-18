@@ -55,9 +55,9 @@ published native replacement or a separately reviewed dependency update.
 | Q1 | Preserve old identities; inspect exact new artifact/closure; align Node >=22 build routes. | Source selected: exact 5.13.1, isolated closure and old source/lock/runtime hashes preserved; build and recipe routes use Node 22. |
 | Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 491 current units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
-| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Complete source baseline: 63/63 core suites in 43748320908 on 3aff1d48/bc5a9297. Run 44334625017 passes 54 entries and all interaction calculations. Run 44356412325 reaches the DataCard focus failure after 34 passes. |
+| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Current Linux source receiving: 63/63 core suites in 44370662706 on 95d87988/4b0b1f8a, including DataCard, all interaction calculations and Movie. |
 | Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Current source scopes received: earlier named-session/H5MSM, Movie/encoder/offline and actual-host controls retain their exact inputs; canonical default-Jupyter reference and retained/released controls pass, followed by 30/30 same-kernel cycles in 809 on a72c92ba. Covering and installed acceptance remain separate. |
-| Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Source baseline received: three Python 3.14 hosts, 63 core suites and 25 notebooks. Later Linux Python and notebooks pass; complete core, exact installed pair and remaining compatibility/host exits are pending. |
+| Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | The earlier three-host baseline and the current full Linux source follow-up are verified. The exact installed pair and remaining compatibility and host exits are pending. |
 
 ## Current closeout checklist — 2026-11-15
 
@@ -206,10 +206,17 @@ trip. Its later Movie composition first ZIP export times out awaiting a
 renderer capture. Isolated `1097` passes composition on the same runtime
 with the 15-second per-request deadline, including native PNG/MP4 pixels and
 layout refusals. The first ZIP frame takes 12.886 seconds from request to
-reply. The combined failure's cause remains unknown. The exact full Linux
-source run still needs to receive all of these scenarios together.
+reply. The combined failure's cause remains unknown. The same three entries
+pass together in `1104` at `95d87988` with a passive renderer trace. Its first
+ZIP frame takes 12.846 seconds and its actual Movie producer imports match
+the frozen inputs. The [exact hosted run](https://github.com/uibcdf/molsysviewer/actions/runs/44370662706)
+passes all 63 entries, 25 notebooks and 4,756 Python cases in one attempt.
+It reaches the corrected DataCard path, all calculation profiles, native
+Movie playback, composited media and the complete molecular story. Both
+original ZIPs match GitHub's digests. This completes the current Linux
+source prerequisite for deciding candidate inputs with MolSysMT.
 
-Last complete passing source checkpoint:
+Earlier complete three-platform source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
 >=7.4.0 notebook profile. Linux retains all 63 core entries and 25 notebooks.

@@ -1145,8 +1145,56 @@
           "scope": "Isolated instrumented receipt with the same regenerated runtime and 15-second request budget. Actual draw, screenshot and renderer replies pass for ZIP and MP4, with native pixel/context and layout refusal assertions intact. First ZIP frame receives the native draw after 3.070 s and replies after 12.886 s. The prior combined timeout remains unexplained.",
           "log_sha256": "574e5e62cfad1bf9b54a7867d22fcc682aa7ad8efcc2ac5a86ac9f718166c150"
         },
+        "combined_1104": {
+          "molsysviewer": "95d87988ec9be281139b7d5f1936af77eefe6ddd",
+          "passed": ["datacard-lifecycle", "trajectory-plot", "movie-composition"],
+          "seconds": 287.348,
+          "unchanged_inputs": 9997,
+          "first_zip_frame_reply_seconds": 12.846,
+          "movie_producer_origin_sha256": "de75009f2862f140049d49c449a239680384b8c9df4de8e0b6513976e776a3d1",
+          "log_sha256": "8c5d3ac37c5da0b679cdd0e5fd0cc792825232422c056d97c2e269f890e630ca",
+          "private_manifest_sha256": "aceb624698a0d41ad60b8b961afeac44bb81d663d2d39189349130d89184bcf0",
+          "scope": "One Chromium, same sequence as 1096. Observe renderer requests, draw counts, native screenshots and replies. The original 15-second limit and all original assertions hold. Movie producer module paths and hashes match the frozen inputs; PNG/MP4, pixel observations and the ZIP are preserved. The earlier timeout did not recur in this observation."
+        },
         "private_manifest_sha256": "a57c01c0fc75e09527bc5f199ae6d7f2997e55e34e36f14382f735df7faffc2b",
         "scope": "The chart keeps its focused input through same-document redraws and recreates it across document changes. Local Chromium receives DataCard lifecycle and reference geometry, keyboard and Python authority, fifteen precision controls and independent HTML. Movie and full hosted source receiving retain separate verdicts."
+      }
+    },
+    "hosted_source_recovery_44370662706": {
+      "run": 44370662706,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "molsysviewer_commit": "95d87988ec9be281139b7d5f1936af77eefe6ddd",
+      "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas": "3.1.0",
+      "platform": "ubuntu-latest",
+      "scope": "Full Linux Python, all 63 core browser suites and 25 documentation notebooks with stable DataCard navigation through redraws and popups.",
+      "matching_dispatches_before": 0,
+      "matching_dispatches_after": 1,
+      "competing_active_or_queued_before": 0,
+      "terminal": {
+        "job": 135036253375,
+        "chrome": "157.0.8103.50",
+        "notebooks_passed": 25,
+        "core_passed": 63,
+        "core_required": 63,
+        "last_core_entry": "movie-story",
+        "both_original_zip_digests_match": true,
+        "job_log_sha256": "914ec7c0a7e114534e875bd691dc48f5a1e598e76ac3e7f41c177069d21d7547",
+        "private_manifest_sha256": "c721baa5baaf63143a5ba5e287bd8e3fb74f047fa15d2821f25fb1950395a21e"
+      },
+      "initial_python_receiving": {
+        "job": 135036253375,
+        "passed": 4756,
+        "skipped": 42,
+        "failed": 0,
+        "errors": 0,
+        "artifacts": [
+          {"id": 14461180313, "name": "source-receiving-Linux-py3.14", "sha256": "e127feb08f72e692ca3faa520c83748e4be549312c151712d23468c06a84725a", "size_bytes": 83350},
+          {"id": 14459995643, "name": "movie-encoder-native-Linux", "sha256": "2a90c3a564a39b5c323fde466b38fc81a3d5145e2dd762e1fead972063bf0199", "size_bytes": 14696}
+        ],
+        "private_manifest_sha256": "f87bcb40120e3271945c95692cd233d283dd091a073dd672fa2febc9e16d918b"
       }
     },
     "startup_diagnostics": {

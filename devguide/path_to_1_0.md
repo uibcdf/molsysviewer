@@ -155,8 +155,14 @@ pair nor the postponed human exits.
 The [Mol* qualification checklist](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md#current-closeout-checklist--2026-11-15)
 records the subsequent Linux follow-up on the changed sources, including the
 atlas warm-up correction, the Movie composition and interaction-calculation
-suite deadlines, and Movie's completed-draw observation. The complete current
-browser pass remains due.
+suite deadlines, Movie's completed-draw observation and the DataCard keyboard
+recovery. The [current Linux checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/44370662706)
+on `95d87988` / `4b0b1f8a` passes Python (4,756 passed, 42 skips), all 63 core
+browser suites and all 25 notebooks in one attempt. Both original ZIPs and
+the native log are verified. The [handoff](molsysmt_pre_1_0_handoff_20261110.md#coordination-preflight--2026-11-18)
+adds the targeted 326-case receipt against newer MolSysMT scientific sources
+and prepares the joint candidate decision. The exact installed and remaining
+compatibility and host exits keep their own evidence requirements.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

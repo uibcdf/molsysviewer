@@ -327,10 +327,32 @@ source results is `be6cd41c6c5233874a2315c176417bd5774addc5a9517b60e80e63999b06c
 The hosted Linux checkpoint uses the earlier `4b0b1f8a` provider and pandas
 3.1.0. The two producer scopes retain separate evidence.
 
+The updated MolSysViewer source `95d87988ec9be281139b7d5f1936af77eefe6ddd`
+passes the same 326 checks in local `1100`, using the verified `7eb24c4f`
+scientific inputs. All 9,822 input hashes remain unchanged and the in-process
+module origins match them. The 1.0.0 metadata draft still applies cleanly to
+this source. Hosted Linux [44370662706](https://github.com/uibcdf/molsysviewer/actions/runs/44370662706)
+passes 4,756 Python cases with 42 recorded skips, all 63 core browser suites
+and all 25 notebooks on the distinct `95d87988` / `4b0b1f8a` source pair.
+DataCard, Interactions and Movie complete in the same attempt. The
+[terminal receipt](moving_capture_followup_receiving_20261117.json) retains
+both verified original ZIPs, JUnit counts and the native log digest.
+
 The 18 November Anaconda inventory finds all four historical MolSysMT
 1.0.0 build-0 coordinates under `staging`, and zero files at MolSysViewer
 1.0.0. Recheck both complete inventories before agreeing unused build numbers.
 The four historical archives retain their original producer and digests.
+
+The `1103` dry run uses Conda 26.9.1/libmamba with strict channel priority,
+Python 3.14 and private synthetic `repodata.json` carrying both reciprocal
+1.0 floors. All 14 expected solver decisions hold. Either standalone partial
+promotion rejects an explicit 1.0.0 request and retains the older pair for
+the unversioned request. Both 1.0.0 entries together resolve in the synthetic
+public index and in staging over a public fallback. The installed pair and
+the real promotion/index results still need exact artifacts. Agree a joint
+availability window and confirm index visibility for both versions before
+announcing the new install command. The private manifest for `1100` and
+`1103` is `9058ca80ad55e678f1a94d0e81af150d7fc5a04d48da9474b3ea00fe7e2aea7e`.
 
 | Sequence | Owner and evidence |
 | --- | --- |
@@ -340,5 +362,9 @@ The four historical archives retain their original producer and digests.
 | Qualify the installed pair | MolSysMT runs one explicit four-platform × Python 3.11–3.14 staging matrix. Both owners check attempt-scoped installed URLs and SHA-256 values for both packages in every cell. MolSysViewer also receives its candidate core workflow and the three staged Windows launchers. |
 | Complete release acceptance | Record the remaining documentation and human workflow acceptance in #315. Publication authorization, public-channel 16-cell verification and archival follow under their existing gates. |
 
-This preflight prepares the coordination decision. Selection of candidate
-producers, staging builds and public publication remain paused.
+MolSysViewer is ready to coordinate the candidate inputs with MolSysMT.
+The current complete Linux checkpoint and the newer provider's targeted
+source evidence above have distinct scopes. The next joint decision covers
+producer references, build numbers, reciprocal floors and which candidate
+source, native and host checks need fresh exact receiving. Candidate freeze,
+staging construction and public publication retain their separate approvals.
