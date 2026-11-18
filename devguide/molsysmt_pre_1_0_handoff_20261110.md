@@ -368,3 +368,37 @@ source evidence above have distinct scopes. The next joint decision covers
 producer references, build numbers, reciprocal floors and which candidate
 source, native and host checks need fresh exact receiving. Candidate freeze,
 staging construction and public publication retain their separate approvals.
+
+### Proposed candidate inputs and version checks
+
+Both teams propose MolSysMT scientific base
+`7eb24c4ff403911939f96899dd6fee76ff4c8ef5` with ABI3 build **1**, and
+MolSysViewer code base `95d87988ec9be281139b7d5f1936af77eefe6ddd` with the
+evidence in `2d4bd3ac` and noarch build **0**. A fresh all-label Anaconda
+inventory found only the four historical MolSysMT 1.0.0 build-0 files and
+no MolSysViewer 1.0.0 files. Proposed dispatch branches are
+`candidate/1.0.0-build1` in MolSysMT and `candidate/1.0.0-build0` in
+MolSysViewer. The branches and the public `1.0.0` tags were absent in both
+remotes at this check. Recheck the coordinates before using them.
+
+After preparation is authorized, review both reciprocal `>=1.0.0` runtime
+floors, citation metadata and the committed staging route. In the clean
+MolSysViewer preparation checkout, generate the bundled runtime with
+`RELEASE_VERSION=1.0.0 npm run build:runtime` and confirm the embedded version
+before fixing the producer SHA. The existing
+[`ci-python-314-source-pair.yaml`](../.github/workflows/ci-python-314-source-pair.yaml)
+dispatch uses `source_receiving=false`, `platform=all`, both versions `1.0.0`
+and the full MolSysMT producer SHA. The runner creates temporary local tags
+at the verified source commits, installs both distributions and removes the
+tags. Receive both installed distribution versions as exactly `1.0.0`, with
+the runtime version and `pip check`. The staging workflow independently
+validates the ordinary Python wheel's metadata and packaged runtime.
+
+MolSysMT owns its 15 quick gates, scientific certificate, eight source cells,
+ABI3 checks and strict documentation build. After its bootstrap stage produces
+the four original archives, MolSysViewer stages its noarch file with the
+recipe test enabled. Record the effective MolSysMT build in the recipe and
+staged core CI evidence, given that both the historical build 0 and the
+proposed build 1 share version `1.0.0`. The single installed-pair run verifies
+the five original archive SHA-256 values across all 16 cells. These are
+proposed inputs and checks awaiting authorization to prepare and execute.
