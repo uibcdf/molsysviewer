@@ -18,6 +18,10 @@ owns #320's accepted functional scope. This is one programme, not a new
 backlog or progress denominator. The audit's source-delivery percentage is
 not a percentage of release readiness or an estimate of remaining time.
 
+The [joint coordination preflight](molsysmt_pre_1_0_handoff_20261110.md#coordination-preflight--2026-11-18)
+records current scientific source checks and the order for agreeing producers,
+staging original artifacts and qualifying the exact installed pair.
+
 The [Mol* integration review](pending_proposals/pre_1_0_molstar_integration_review.md)
 under #369 is also required before this handoff. Review the current integration
 against the latest published release and upstream development, assess unused

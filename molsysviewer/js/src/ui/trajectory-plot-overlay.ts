@@ -90,6 +90,7 @@ interface PlotCardEntry {
     readoutText?: SVGTextElement;
     frameInput?: HTMLInputElement;
     frameOutput?: HTMLOutputElement;
+    frameNavigationDocument?: Document;
     nFrames: number;
     width: number;
     height: number;
@@ -292,14 +293,7 @@ export class TrajectoryPlotOverlay {
         return [min, max];
     }
 
-    private renderEntry(entry: PlotCardEntry): void {
-        const opts = entry.options;
-        entry.xBounds = undefined;
-        entry.xBounds = this.xRange(entry);
-        const body = entry.card.body;
-        body.replaceChildren();
-        Object.assign(body.style, { display: entry.card.minimized ? "none" : "flex", flexDirection: "column", overflow: "auto" });
-
+    private createFrameNavigation(entry: PlotCardEntry): HTMLLabelElement {
         const controls = document.createElement("label");
         controls.setAttribute("data-molsysviewer-plot-navigation", entry.tag);
         Object.assign(controls.style, { display: "flex", alignItems: "center", gap: "6px", minWidth: "200px",
@@ -307,9 +301,7 @@ export class TrajectoryPlotOverlay {
         const caption = document.createElement("span");
         caption.textContent = "Structure";
         const input = document.createElement("input");
-        input.type = "range"; input.min = "0"; input.max = String(Math.max(0, entry.nFrames - 1)); input.step = "1";
-        input.disabled = entry.nFrames < 2;
-        input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
+        input.type = "range"; input.min = "0"; input.step = "1";
         Object.assign(input.style, { minWidth: "0", flex: "1 1 auto" });
         input.addEventListener("input", () => {
             const frame = Number(input.value);
@@ -321,6 +313,31 @@ export class TrajectoryPlotOverlay {
         output.style.whiteSpace = "nowrap";
         controls.appendChild(caption); controls.appendChild(input); controls.appendChild(output);
         entry.frameInput = input; entry.frameOutput = output;
+        entry.frameNavigationDocument = entry.card.body.ownerDocument;
+        return controls;
+    }
+
+    private renderEntry(entry: PlotCardEntry): void {
+        const opts = entry.options;
+        entry.xBounds = undefined;
+        entry.xBounds = this.xRange(entry);
+        const body = entry.card.body;
+        Object.assign(body.style, { display: entry.card.minimized ? "none" : "flex", flexDirection: "column", overflow: "auto" });
+
+        // Keep the native slider connected through resize and plot redraw.
+        // Moving across windows requires a new control in the receiving document.
+        const retained = entry.frameNavigationDocument === body.ownerDocument ? entry.frameInput?.parentElement : undefined;
+        const controls = retained ?? this.createFrameNavigation(entry);
+        for (const child of Array.from(body.children)) if (child !== controls) child.remove();
+        if (controls.parentElement !== body) body.appendChild(controls);
+        const input = entry.frameInput!;
+        input.max = String(Math.max(0, entry.nFrames - 1));
+        input.disabled = entry.nFrames < 2;
+        input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
+        if (entry.nFrames <= 0) {
+            input.removeAttribute("aria-valuetext");
+            entry.frameOutput!.textContent = "";
+        }
 
         const width = Math.max(200, entry.width || body.clientWidth || 440);
         const height = Math.max(120, (entry.height || body.clientHeight || 168) - 28);
@@ -444,8 +461,7 @@ export class TrajectoryPlotOverlay {
             this.onSeek(this.xToFrame(px, entry));
         });
 
-        body.appendChild(svg);
-        body.appendChild(controls);
+        body.insertBefore(svg, controls);
         if (opts.series?.some(series => series.observation)) {
             const details = document.createElement("details");
             details.setAttribute("data-molsysviewer-plot-context", entry.tag);

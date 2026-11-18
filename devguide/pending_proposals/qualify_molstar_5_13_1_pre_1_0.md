@@ -55,7 +55,7 @@ published native replacement or a separately reviewed dependency update.
 | Q1 | Preserve old identities; inspect exact new artifact/closure; align Node >=22 build routes. | Source selected: exact 5.13.1, isolated closure and old source/lock/runtime hashes preserved; build and recipe routes use Node 22. |
 | Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 491 current units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
-| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Complete source baseline: 63/63 core suites in 43748320908 on 3aff1d48/bc5a9297. Latest Linux run 44334625017 passes 54 entries and all interaction calculations before the Movie playback observation fails. |
+| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Complete source baseline: 63/63 core suites in 43748320908 on 3aff1d48/bc5a9297. Run 44334625017 passes 54 entries and all interaction calculations. Run 44356412325 reaches the DataCard focus failure after 34 passes. |
 | Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Current source scopes received: earlier named-session/H5MSM, Movie/encoder/offline and actual-host controls retain their exact inputs; canonical default-Jupyter reference and retained/released controls pass, followed by 30/30 same-kernel cycles in 809 on a72c92ba. Covering and installed acceptance remain separate. |
 | Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Source baseline received: three Python 3.14 hosts, 63 core suites and 25 notebooks. Later Linux Python and notebooks pass; complete core, exact installed pair and remaining compatibility/host exits are pending. |
 
@@ -179,6 +179,36 @@ and recovery imports match the frozen inputs. Pixel verification, scientific
 identities, session recovery and offline playback pass. The next complete
 hosted core pass remains due.
 
+**DataCard focus recurrence — 2026-11-18.** The [next Linux run](https://github.com/uibcdf/molsysviewer/actions/runs/44356412325)
+on `b6182584` and `4b0b1f8a` passes Python, 25 notebooks and 34 core entries.
+After Trusted Types popup refusal, the document is focused and the current
+slider is connected, but the slider has no focus and there is no requested or
+published frame. The 30-second End-key assertion is the first failure. Movie
+is unreached. The earlier #394 focus precondition could not protect against a
+later redraw detaching the focused slider.
+
+A real host resize in local `1085` replaces the SVG and the native slider
+with the original runtime. The previously focused input disconnects, the new
+input has no focus and the native structure remains zero. The correction
+keeps the same native slider connected while redrawing the graph. The browser
+guard now requires that identity/focus across real resize, then keeps the
+one native key, concurrent layout and complete frame-publication assertions.
+The first local correction reused the control after a successful card popup
+round trip as well. In `1091`, Chromium emitted trusted `input` and `change`
+events on the current slider, but the seek callback and Python intent were
+absent. Creating the input in the opener alone still reproduced the failure
+in `1094`. DataCard now reports the new document when its body moves between
+windows, even at matching dimensions. The plot recreates its navigation on
+that boundary and keeps it connected through redraws within the same document.
+Local `1096` receives the focused resize and the source/popup native keyboard
+intents, exact Python callbacks and Mol* coordinates through the popup round
+trip. Its later Movie composition first ZIP export times out awaiting a
+renderer capture. Isolated `1097` passes composition on the same runtime
+with the 15-second per-request deadline, including native PNG/MP4 pixels and
+layout refusals. The first ZIP frame takes 12.886 seconds from request to
+reply. The combined failure's cause remains unknown. The exact full Linux
+source run still needs to receive all of these scenarios together.
+
 Last complete passing source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
@@ -192,7 +222,7 @@ version/tag or installed acceptance is assigned.
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | **Current core incomplete at the Movie playback observation.** The corrected playback observation and the later Movie entries need the same complete execution. The earlier [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. The #244/#391/#395/#397 records retain their original input scopes. |
+| Complete integrated source receiving | **Current core incomplete at DataCard focus.** The corrected DataCard and all later entries, including Movie, need the same complete execution. The earlier [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. The #244/#391/#395/#397 records retain their original input scopes. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 

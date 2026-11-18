@@ -173366,7 +173366,6 @@ var FloatingDataCard = class {
     this.visible = true;
     this.bottomInset = 0;
     this.bodyDisplay = "";
-    this.measuredSize = { width: 0, height: 0 };
     this.desiredSize = { width: Math.max(240, options.width ?? 450), height: Math.max(42, options.height ?? 210) };
     this.card = document.createElement("div");
     this.card.setAttribute("data-molsysviewer-datacard", options.tag);
@@ -173689,8 +173688,10 @@ var FloatingDataCard = class {
   measureBody() {
     if (this.disposed || this.minimized && !this.popoutWindow) return;
     const width = this.body.clientWidth, height = this.body.clientHeight;
-    if (width > 0 && height > 0 && (width !== this.measuredSize.width || height !== this.measuredSize.height)) {
-      this.measuredSize = { width, height };
+    const owner = this.body.ownerDocument;
+    const previous = this.measuredSize;
+    if (width > 0 && height > 0 && (!previous || width !== previous.width || height !== previous.height || owner !== previous.document)) {
+      this.measuredSize = { width, height, document: owner };
       this.options.onResize?.(width, height);
     }
   }
@@ -174090,13 +174091,7 @@ var TrajectoryPlotOverlay = class {
     }
     return [min5, max5];
   }
-  renderEntry(entry) {
-    const opts = entry.options;
-    entry.xBounds = void 0;
-    entry.xBounds = this.xRange(entry);
-    const body = entry.card.body;
-    body.replaceChildren();
-    Object.assign(body.style, { display: entry.card.minimized ? "none" : "flex", flexDirection: "column", overflow: "auto" });
+  createFrameNavigation(entry) {
     const controls = document.createElement("label");
     controls.setAttribute("data-molsysviewer-plot-navigation", entry.tag);
     Object.assign(controls.style, {
@@ -174114,10 +174109,7 @@ var TrajectoryPlotOverlay = class {
     const input = document.createElement("input");
     input.type = "range";
     input.min = "0";
-    input.max = String(Math.max(0, entry.nFrames - 1));
     input.step = "1";
-    input.disabled = entry.nFrames < 2;
-    input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
     Object.assign(input.style, { minWidth: "0", flex: "1 1 auto" });
     input.addEventListener("input", () => {
       const frame2 = Number(input.value);
@@ -174132,6 +174124,27 @@ var TrajectoryPlotOverlay = class {
     controls.appendChild(output);
     entry.frameInput = input;
     entry.frameOutput = output;
+    entry.frameNavigationDocument = entry.card.body.ownerDocument;
+    return controls;
+  }
+  renderEntry(entry) {
+    const opts = entry.options;
+    entry.xBounds = void 0;
+    entry.xBounds = this.xRange(entry);
+    const body = entry.card.body;
+    Object.assign(body.style, { display: entry.card.minimized ? "none" : "flex", flexDirection: "column", overflow: "auto" });
+    const retained = entry.frameNavigationDocument === body.ownerDocument ? entry.frameInput?.parentElement : void 0;
+    const controls = retained ?? this.createFrameNavigation(entry);
+    for (const child of Array.from(body.children)) if (child !== controls) child.remove();
+    if (controls.parentElement !== body) body.appendChild(controls);
+    const input = entry.frameInput;
+    input.max = String(Math.max(0, entry.nFrames - 1));
+    input.disabled = entry.nFrames < 2;
+    input.setAttribute("aria-label", `${opts.title || opts.y_label || "Trajectory plot"}: structure index`);
+    if (entry.nFrames <= 0) {
+      input.removeAttribute("aria-valuetext");
+      entry.frameOutput.textContent = "";
+    }
     const width = Math.max(200, entry.width || body.clientWidth || 440);
     const height = Math.max(120, (entry.height || body.clientHeight || 168) - 28);
     const M5 = { top: 24, right: 14, bottom: opts.x_label ? 28 : 20, left: 40 };
@@ -174234,8 +174247,7 @@ var TrajectoryPlotOverlay = class {
       const px = (e.clientX - rect.left) * (width / rect.width);
       this.onSeek(this.xToFrame(px, entry));
     });
-    body.appendChild(svg);
-    body.appendChild(controls);
+    body.insertBefore(svg, controls);
     if (opts.series?.some((series) => series.observation)) {
       const details = document.createElement("details");
       details.setAttribute("data-molsysviewer-plot-context", entry.tag);

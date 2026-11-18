@@ -60,6 +60,27 @@ async function receiveCardKey(target: Page | Frame, slider: Locator, key: "End" 
             const input = document.querySelector('[data-molsysviewer-datacard="literal-card"] input[type="range"]');
             return document.hasFocus() && document.activeElement === input;
         });
+        if (concurrentLayout) {
+            phase = "focused-layout";
+            await target.evaluate(() => {
+                const w = window as any;
+                const entry = w.__controller.trajectoryPlotOverlay.entries.get("literal-card");
+                w.__cardKeyReceiving.focusedInput = entry.frameInput;
+                w.__cardKeyReceiving.chartBeforeResize = entry.svg;
+                Object.assign(document.getElementById("root")!.style, { width: "260px", height: "150px" });
+            });
+            await target.waitForFunction(() => {
+                const w = window as any;
+                const entry = w.__controller.trajectoryPlotOverlay.entries.get("literal-card");
+                return entry.svg !== w.__cardKeyReceiving.chartBeforeResize;
+            });
+            assert.equal(await target.evaluate(() => {
+                const w = window as any;
+                const entry = w.__controller.trajectoryPlotOverlay.entries.get("literal-card");
+                const input = w.__cardKeyReceiving.focusedInput;
+                return entry.frameInput === input && input.isConnected && document.activeElement === input;
+            }), true, "Resizing a plot must retain the focused native slider");
+        }
         phase = "publication";
         await slider.press(key);
         // The native model index can change before annotations and subscriber
@@ -84,6 +105,8 @@ async function receiveCardKey(target: Page | Frame, slider: Locator, key: "End" 
                 return { available: true, documentFocused: document.hasFocus(), inputFocused: document.activeElement === input,
                     inputConnected: input?.isConnected ?? false, inputValue: input?.value ?? null,
                     inputIsCurrent: entry?.frameInput === input, published: receipt?.published ?? null,
+                    focusedInputRetained: receipt?.focusedInput ? receipt.focusedInput === input : null,
+                    previouslyFocusedInputConnected: receipt?.focusedInput?.isConnected ?? null,
                     layoutReceived: receipt?.layoutReceived ?? false,
                     nativeFrame: c?.trajectory.getTrajectoryState().currentFrame ?? null,
                     pendingFrames: c?.trajectory.pendingFrames.size ?? null,

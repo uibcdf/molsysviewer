@@ -385,12 +385,16 @@ export class FloatingDataCard {
         this.card.style.top = `${Math.max(margin, Math.min(top, height - visibleHeight - margin))}px`;
     }
 
-    private measuredSize = { width: 0, height: 0 };
+    private measuredSize?: { width: number; height: number; document: Document };
     private measureBody(): void {
         if (this.disposed || (this.minimized && !this.popoutWindow)) return;
         const width = this.body.clientWidth, height = this.body.clientHeight;
-        if (width > 0 && height > 0 && (width !== this.measuredSize.width || height !== this.measuredSize.height)) {
-            this.measuredSize = { width, height };
+        const owner = this.body.ownerDocument;
+        const previous = this.measuredSize;
+        // A popup changes the DOM context even when the dimensions are identical.
+        if (width > 0 && height > 0 && (!previous || width !== previous.width || height !== previous.height
+            || owner !== previous.document)) {
+            this.measuredSize = { width, height, document: owner };
             this.options.onResize?.(width, height);
         }
     }

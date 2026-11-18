@@ -292,3 +292,53 @@ We verified the corrected pattern and unchanged scientific package,
 add-on and Rust/build inputs between the two commits, and returned the
 local receiving manifest digest to MolSysMT. Candidate selection and the
 installed matrix still need their separate evidence.
+
+## Coordination preflight — 2026-11-18
+
+The target remains the jointly qualified **MolSysViewer 1.0.0 and MolSysMT
+1.0.0** pair. The owner has closed #775 and published the `.tar.bz2` receiving
+correction in `7eb24c4ff403911939f96899dd6fee76ff4c8ef5`. The owner's
+[closeout record](https://github.com/uibcdf/molsysmt/blob/7eb24c4ff403911939f96899dd6fee76ff4c8ef5/devguide/pre_1_0_contract_closeout.md)
+retains #524's compatible-host acceptance and the reciprocal 1.0.0 floors.
+The #524 issue endpoint still returns HTTP 404. The owner record remains the
+reference for its scope until GitHub state is reconciled.
+
+A private, unapplied Viewer draft on `b6182584ce0208cd52eb33e45309fdbc6d2061b5`
+covers ten files. It puts `molsysmt>=1.0.0` in the Python manifest, Conda recipe,
+recipe floor check and all three runtime environments, selects the staged
+release route, and prepares the canonical and derived citation surfaces.
+The dependency and citation audits, patch applicability, both staged-route
+events and 50 scoped tests pass in an isolated Git export. Patch SHA-256 is
+`3ec6bbdc6291e4ecb65d96bdb85fcf78096b471b6734c219881e62272780550f`.
+The date in this draft is illustrative. The agreed release owners will set the
+actual date and rerun the audits against the complete candidate roots.
+
+Local source receiving `1084` passes 239 scientific consumer cases and 87
+release-evidence/gate cases on `b6182584`, with no skips, failures or errors.
+The fixture and pytest share the observed Python process. It uses the existing
+`63c22117` export whose MolSysMT package, Viewer add-on, Rust tree and build
+metadata match `7eb24c4f`. All 3,545 exported package and add-on files match
+the owner's Git blobs. Actual module origins match 9,822 unchanged input
+hashes, and the original native extension digest is `4ffb82e4…`. Interactions,
+H5MSM 0.5/1.0 and default-1.0 sessions, remapping, composite loading and box
+assignment are received together. The run uses Python 3.14.7, pandas 2.3.3 and
+2 CPU / 2 GiB. The private manifest for the draft, registry inputs and local
+source results is `be6cd41c6c5233874a2315c176417bd5774addc5a9517b60e80e63999b06c6f1`.
+The hosted Linux checkpoint uses the earlier `4b0b1f8a` provider and pandas
+3.1.0. The two producer scopes retain separate evidence.
+
+The 18 November Anaconda inventory finds all four historical MolSysMT
+1.0.0 build-0 coordinates under `staging`, and zero files at MolSysViewer
+1.0.0. Recheck both complete inventories before agreeing unused build numbers.
+The four historical archives retain their original producer and digests.
+
+| Sequence | Owner and evidence |
+| --- | --- |
+| Establish current source readiness | MolSysViewer receives the full 63-entry browser lane, Python and notebooks at the reviewed source pair. Both owners reconcile the applicability of their earlier source, native, scientific and host evidence. |
+| Agree candidate inputs | Both owners confirm the clean producer SHAs, triggerable refs, version/build coordinates, reciprocal floors, runtime composition and applicable candidate gates. Review the unapplied metadata before the freeze. |
+| Stage and inspect the original archives | MolSysMT stages four native ABI3 files first through the existing bootstrap route. MolSysViewer then builds and tests the single noarch `.tar.bz2` against staged MolSysMT. Preserve each producer's actual input manifest, file, URL, channel and SHA-256. |
+| Qualify the installed pair | MolSysMT runs one explicit four-platform × Python 3.11–3.14 staging matrix. Both owners check attempt-scoped installed URLs and SHA-256 values for both packages in every cell. MolSysViewer also receives its candidate core workflow and the three staged Windows launchers. |
+| Complete release acceptance | Record the remaining documentation and human workflow acceptance in #315. Publication authorization, public-channel 16-cell verification and archival follow under their existing gates. |
+
+This preflight prepares the coordination decision. Selection of candidate
+producers, staging builds and public publication remain paused.

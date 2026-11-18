@@ -146,7 +146,16 @@ class FakeElement {
     constructor(tag = "div") { this.tag = tag; }
 
     setAttribute(name: string, value: string) { this.attributes[name] = value; }
+    removeAttribute(name: string) { delete this.attributes[name]; }
     appendChild(child: FakeElement) { child.parentElement = this; this.children.push(child); return child; }
+    insertBefore(child: FakeElement, sibling: FakeElement) {
+        child.remove();
+        const index = this.children.indexOf(sibling);
+        assert.ok(index >= 0, "insertBefore requires a current child");
+        this.children.splice(index, 0, child);
+        child.parentElement = this;
+        return child;
+    }
     replaceChildren(...children: FakeElement[]) {
         for (const c of this.children) c.parentElement = null;
         this.children = [];

@@ -1066,6 +1066,89 @@
         "scope": "The old timer and the native draw observer see the same controller and playback. The maintained test observes fresh native draws through completion, retains its exact final camera and stop checks, and requires an interpolated pose on the path. Product runtime and Movie timeline are unchanged. The hosted run had no parallel draw observer."
       }
     },
+    "hosted_source_recovery_44356412325": {
+      "run": 44356412325,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "molsysviewer_commit": "b6182584ce0208cd52eb33e45309fdbc6d2061b5",
+      "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas": "3.1.0",
+      "platform": "ubuntu-latest",
+      "scope": "Full Linux Python, all 63 core browser suites and 25 documentation notebooks with the native draw Movie playback guard.",
+      "matching_dispatches_before": 0,
+      "matching_dispatches_after": 1,
+      "competing_active_or_queued_before": 0,
+      "terminal": {
+        "job": 134985615142,
+        "chrome": "157.0.8103.78",
+        "notebooks_passed": 25,
+        "core_passed": 34,
+        "core_required": 63,
+        "last_core_entry_started": "datacard-lifecycle",
+        "first_required_failure": "Trusted Types popup refusal recovery timed out waiting for the End key to publish frame 2",
+        "document_focused": true,
+        "slider_focused": false,
+        "current_slider_connected": true,
+        "native_frame": 0,
+        "published_frame": null,
+        "concurrent_layout_received": false,
+        "movie_playback_reached": false,
+        "job_log_sha256": "4dbc66a8068ea6c9004758a346ee1e80462185f91b2869d353b32ac261904b91",
+        "private_manifest_sha256": "2258e6d74b4eaae345d3109495ca90a649b81a268601bd1c04b961a9c07215f3"
+      },
+      "initial_python_receiving": {
+        "job": 134985615142,
+        "passed": 4756,
+        "skipped": 42,
+        "failed": 0,
+        "errors": 0,
+        "artifacts": [
+          {"id": 14454013157, "name": "source-receiving-Linux-py3.14", "sha256": "81367e5d4857ad8e9615f94b5b419f835cbab8dabf200da03a29458083ac0232", "size_bytes": 82365},
+          {"id": 14454092880, "name": "movie-encoder-native-Linux", "sha256": "9ad01389e0a262328a6fd1141cee18c3cb260c732763172fe85fb01e99ff61be", "size_bytes": 14696}
+        ],
+        "private_manifest_sha256": "bf6f9c6dd300647e83529632ee9327d5ad9fdbd973fbd16a63eb24cf37b51e25"
+      },
+      "local_datacard_followup": {
+        "base": "b6182584ce0208cd52eb33e45309fdbc6d2061b5",
+        "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+        "molsysmt_native_sha256": "4ffb82e4250a1862fff17dbe7725fb8f0770d613ffef2648370389a66983d345",
+        "chrome": "157.0.8103.38",
+        "negative_1085": {
+          "scope": "A host resize redraws the graph and disconnects the focused native input on the original runtime. Its replacement is unfocused and the native frame is unchanged.",
+          "log_sha256": "bc508e4b3b4d079a74eaa5240e1abe4f1b2486954177e12fbe79c901b9cdf20b"
+        },
+        "popup_probe_1091": {
+          "scope": "On the first same-node correction, the source's focused and current input receives trusted input and change events after returning from a card window. Neither the seek handler nor the owner intent is observed. Creating controls in the opener alone still fails the authority check in 1094.",
+          "log_sha256": "70ddf7ddc7024ebb1b8b12761c0dfaadbe66eade4459b75e0c02117e25dafc19"
+        },
+        "build_1095": {
+          "typescript": "passed",
+          "javascript_unit_passed": 495,
+          "javascript_unit_failed": 0,
+          "viewer_runtime_sha256": "6d252c5b8c244cc4027b80373b8d07e25818c3ce4a95fff35558a2b631b93dbd",
+          "browser_harness_sha256": "ca5c450334e88d02312d6431c0997527d6cf547305222c41de362036e891919f",
+          "log_sha256": "44f0b7f5b53308ae6222d0b0e111b0d59f853733eb1f908af41406e3dad3bc77"
+        },
+        "browser_1096": {
+          "profile": "8 logical CPUs, 4 GiB RAM, zero swap",
+          "unchanged_inputs": 9998,
+          "actual_nested_import_hashes_verified": true,
+          "datacard_lifecycle": "passed",
+          "trajectory_plot": "passed",
+          "movie_composition": "failed at first ZIP export with request_timeout while awaiting a renderer capture",
+          "inputs_manifest_sha256": "da4559bd9470b42b80263e87e07366ecd1a9ddf0d313e100a93aa2d5989449d6",
+          "log_sha256": "d51c9e1259fbf713ddd67575fbad914dc32d772d76a1e0ae5d283557ee7947fc"
+        },
+        "movie_composition_1097": {
+          "native_exit": 0,
+          "scope": "Isolated instrumented receipt with the same regenerated runtime and 15-second request budget. Actual draw, screenshot and renderer replies pass for ZIP and MP4, with native pixel/context and layout refusal assertions intact. First ZIP frame receives the native draw after 3.070 s and replies after 12.886 s. The prior combined timeout remains unexplained.",
+          "log_sha256": "574e5e62cfad1bf9b54a7867d22fcc682aa7ad8efcc2ac5a86ac9f718166c150"
+        },
+        "private_manifest_sha256": "a57c01c0fc75e09527bc5f199ae6d7f2997e55e34e36f14382f735df7faffc2b",
+        "scope": "The chart keeps its focused input through same-document redraws and recreates it across document changes. Local Chromium receives DataCard lifecycle and reference geometry, keyboard and Python authority, fifteen precision controls and independent HTML. Movie and full hosted source receiving retain separate verdicts."
+      }
+    },
     "startup_diagnostics": {
       "profiles": {
         "1051": {
