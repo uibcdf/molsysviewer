@@ -132,6 +132,9 @@ function runSuite(name: string, endpoint: string, workspace: string): Promise<vo
         // 236s at 8 CPU/4 GiB; the prior 5.4.1 control already took 179s.
         // This bounds the integrated suite, without changing any operation TTL.
         "interactions-geometry": 360_000,
+        // The scope controls and first 16 variants took the full 180s in CI
+        // before the final water-bridge variant reached its controls.
+        "interactions-calculation": 240_000,
         // Composition makes 16 native 720p captures across ZIP, MP4 and
         // layout-refusal controls. The 15s allowance for each capture alone
         // totals 240s. Leave room for startup, encoding and decoded pixels.

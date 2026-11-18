@@ -122,6 +122,7 @@ def test_controls_and_scientific_mirror_keep_separate_mandatory_owners():
 
 
 def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():
+    """Keep the worker and operation paths as the integrated suite budget evolves."""
     scenarios = (E2E_ROOT / "interactions-subpanel-scenarios.ts").read_text(encoding="utf-8")
     for suite, mode in (
         ("interactions-subpanel", "lifecycle"),
@@ -138,7 +139,7 @@ def test_all_interactions_scenarios_keep_default_deadlines_and_fresh_worker():
     runner = (E2E_ROOT / "e2e-runner.ts").read_text(encoding="utf-8")
     assert "process.env.E2E_SUITE_TIMEOUT_MS ?? 180_000" in runner
     assert '"interactions-geometry": 360_000' in runner
-    assert '"interactions-calculation":' not in runner
+    assert '"interactions-calculation": 240_000' in runner
     assert '"interactions-subpanel":' not in runner
 
 

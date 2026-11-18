@@ -55,7 +55,7 @@ published native replacement or a separately reviewed dependency update.
 | Q1 | Preserve old identities; inspect exact new artifact/closure; align Node >=22 build routes. | Source selected: exact 5.13.1, isolated closure and old source/lock/runtime hashes preserved; build and recipe routes use Node 22. |
 | Q2 | Forward the complete native renderer tuple; qualify the exact-byte cache repair and font upload seam. | Source-received: tuple and independent complete Spin/Rock defaults; project/build guards, actual chemistry/cache lifetime and 491 current units pass, including image ownership/readiness and popup observer controls. Native Start/Stop and motion on completed draws pass. |
 | Q3 | Compare default/explicit font quality, allocation and actual label readability; receive glyph pixels, context restoration and disposal. | Retain native default quality 3 and explicit choices. Corrected original-package allocations and glyph/style controls pass; GPU upload/pixel/restoration controls pass. Full/host/installed/human scopes remain separate. |
-| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Complete source baseline: 63/63 core suites in 43748320908 on 3aff1d48/bc5a9297. Linux check 44233166206 on 6c82a672/4b0b1f8a receives the atlas and 61 core suites, including measurements and interaction geometry/calculation. Movie composition reaches its outer deadline. |
+| Q4 | Receive native molecular identity/bonds/boxes/trajectories, rendering/picking, measurements/interactions, cameras and popups. | Complete source baseline: 63/63 core suites in 43748320908 on 3aff1d48/bc5a9297. Run 44233166206 passes 61 entries before Movie composition; run 44244621198 stops after 38 entries at the aggregate interaction-calculation deadline. |
 | Q5 | Receive session/H5MSM, Movie/encoders/offline output, actual-host lifecycle and prolonged use with unchanged scientific assertions. | Current source scopes received: earlier named-session/H5MSM, Movie/encoder/offline and actual-host controls retain their exact inputs; canonical default-Jupyter reference and retained/released controls pass, followed by 30/30 same-kernel cycles in 809 on a72c92ba. Covering and installed acceptance remain separate. |
 | Q6 | Consolidate applicable source/platform/browser CI, installed candidate and maintained compatibility documentation before freeze. | Source baseline received: three Python 3.14 hosts, 63 core suites and 25 notebooks. Later Linux Python and notebooks pass; complete core, exact installed pair and remaining compatibility/host exits are pending. |
 
@@ -138,6 +138,26 @@ scientific units and source indices, layout refusals and exclusion. The
 receipt preserves both resource profiles, exact producer imports and original
 files. The changed guard still needs complete hosted core receiving.
 
+**Linux follow-up — 2026-11-18.** The single [source checkpoint](https://github.com/uibcdf/molsysviewer/actions/runs/44244621198)
+on `ac51d77b` and `4b0b1f8a` with pandas 3.1.0 passes 4,756 Python tests
+with 42 skips, all 25 notebooks and the first 38 browser entries. The calculation
+entry passes its scope controls and 16 of its 17 variants. The outer runner
+stops the final `water_bridge_2/default` during preparation, 1.47 seconds
+after the start marker. That run reaches neither Movie entry. The
+[receipt](../moving_capture_followup_receiving_20261117.json) preserves the
+two original ZIPs and the native log. The earlier hosted run completes all 17
+calculation variants on the same scientific source and browser version.
+The revised runner gives the complete calculation entry 240 seconds. Its
+scope and detector cases, scientific/scene assertions and per-operation
+deadlines are retained. Local `1078` receives all 17 variants in 174 seconds
+with the maintained deadline, exact fixture-worker imports and all 9,998
+selected input hashes unchanged. Complete hosted receiving remains due.
+Reviewing the three preserved runs also identifies
+three close completed intervals between suite starts: moving capture lifecycle
+233.5/240 seconds, Studio live capture 558.6/600 and Studio image export
+215.8/240. These are timing observations for those runs, with their own
+source inputs and overhead. Their suites retain their existing limits.
+
 Last complete passing source checkpoint:
 [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908)
 on `3aff1d48` / owner-published `bc5a9297`, three Python 3.14 hosts and the
@@ -151,7 +171,7 @@ version/tag or installed acceptance is assigned.
 
 | Exit | Remaining evidence |
 | --- | --- |
-| Complete integrated source receiving | **Current core incomplete at Movie composition.** The earlier [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. The #244/#391/#395/#397 records retain their original input scopes. |
+| Complete integrated source receiving | **Current core incomplete at the interaction-calculation aggregate limit.** Movie composition and story remain due in the same complete execution. The earlier [43748320908](https://github.com/uibcdf/molsysviewer/actions/runs/43748320908), `3aff1d48` / `bc5a9297`, passes all three native Python 3.14 jobs, all 63 mandatory core entries in one uninterrupted run and all 25 notebooks. Six original ZIPs, hashes, native required steps and JUnit are verified. The #244/#391/#395/#397 records retain their original input scopes. |
 | Exact installed artifact | After the agreed candidate preparation/authorization, identify the clean producers, versions/builds, original files/channel and hashes. Verify the packaged runtime, 5.13.1 adapters and clean installed MolSysViewer/MolSysMT pair on the required four platforms and Python 3.11–3.14. Source overlays and the previous public package do not supply this evidence. This qualification precedes and does not authorize public publication. |
 | Compatibility and host closeout | Consolidate the current dependency/adapter decisions and the exact source, installed and actual-host evidence. Retain earlier 491-unit, native rendering/capture and 30-cycle results on their original inputs; review changed boundaries before reusing them for the final producer. Receive the applicable postponed visual observations or an explicit bounded disposition. Qt stays experimental; general human acceptance and the wider 1.0 programme retain their separate scope. |
 

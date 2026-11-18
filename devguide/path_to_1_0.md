@@ -150,8 +150,8 @@ pair nor the postponed human exits.
 
 The [Mol* qualification checklist](pending_proposals/qualify_molstar_5_13_1_pre_1_0.md#current-closeout-checklist--2026-11-15)
 records the subsequent Linux follow-up on the changed sources, including the
-atlas warm-up correction and the Movie composition deadline that still blocks
-the complete browser pass.
+atlas warm-up correction and the Movie composition and interaction-calculation
+suite deadlines. The complete current browser pass remains due.
 
 Independent work may overlap: provider coordination need not stop Movie or
 documentation preparation, and documentation should enter candidate checks

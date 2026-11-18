@@ -1,6 +1,16 @@
 # Robustness scale receiving — 2026-11-10
 
-**Partial: the adopted scale anchors pass; thirty active cycles in one kernel remain pending.** E2 under [the active plan](../pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md) is not closed. Original progress is 38/46 after C3 receiving; F1/B4 are additional source deliveries. The [machine-readable scale receipt](../robustness_scale_receiving_20261110.json) retains identities, sample counts, median/MAD/range, input hashes and scoped limits. The [prolonged-session receipt](../prolonged_scientific_session_receiving_20261110.json) preserves eight successful cycles and the ninth recovered-frame observation #354, then fifteen correct cycles in a separate kernel before the shared-pressure stop. No cycles are added across kernels.
+**Source results:** the adopted scale anchors pass. The later
+[same-kernel receipt](../residual_four_issues_receiving_20261116.json) records 30/30
+cycles on MolSysViewer `b8461576` and MolSysMT `4b0b1f8a` in actual ipykernel
+7.4.0. Follow [the active E2 plan](../pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#e--full-session-scale-and-human-acceptance)
+for candidate, installed and human acceptance.
+
+The [original scale receipt](../robustness_scale_receiving_20261110.json) retains
+identities, sample counts, median/MAD/range, input hashes and scoped limits. The
+[initial prolonged-session receipt](../prolonged_scientific_session_receiving_20261110.json)
+preserves eight complete cycles before the cycle-nine #354 observation, then
+fifteen complete cycles in a separate kernel before the shared-pressure stop.
 
 ## Measured axes
 
@@ -21,7 +31,7 @@ The older bounding-geometry/double-animation-frame criterion did not establish t
 
 Three fresh processes receive each small (62 atoms × 5,000 structures) and medium (10,044 × 1,000) reuse/churn anchor. Occurrences and composite ring participants are synthetic workload data, not detected aromatic chemistry. Public queries are compared with direct membership references; evaluated-empty and unevaluated coverage, source identities and H5MSM persistence are distinguished. H5MSM reads materialize the chosen analysis and are warm-process measurements. The real Buch control separately receives 62 atoms × 5,000 actual structures, nonempty occurrences, periodic geometry and twenty queries per process, repeated in three fresh processes.
 
-The ordinary and 104,856-atom literal-overlay history cases each retain twenty-five production checkpoints in three fresh workers, then verify empty history after clear. Allocator retention and lifetime peak RSS alone do not prove a leak. Browser page-close samples, full browser retirement and same-kernel retention are separate observations; the last remains pending.
+The ordinary and 104,856-atom literal-overlay history cases each retain twenty-five production checkpoints in three fresh workers, then verify empty history after clear. Allocator retention and lifetime peak RSS alone do not prove a leak. This scale receipt covers page close and full browser retirement. The later prolonged-session receipt records same-kernel retention.
 
 ## Summary arithmetic and retained evidence
 
@@ -43,7 +53,7 @@ uses all 5,000 structures of real pentalanine, a managed coordinate edit,
 independent distances, native Buch hbonds, exact session recovery, both popups,
 a separate 1TCD witness and live ownership/resource observations.
 
-The receiver explicitly shows and identifies the target widget before reading
+In the initial campaign the receiver shows and identifies the target widget before reading
 its initial frame. Activity requires completed native draws after the active
 interval and distinct structures, excluding replayed `didDraw` notifications;
 it sets no universal FPS admission threshold. Initial frame commands/results
@@ -51,5 +61,5 @@ are recorded without replacing their return values or submitting a repair seek.
 The original offscreen discrepancy remains under #354. The revised receiver
 observes fifteen correct cycles (12.55 minutes of cycle work) before the
 shared-pressure stop; #356 tracks thirty disposed controllers still exposing
-logical molecular data. A small retainer diagnosis precedes another complete
-run. These observations establish neither a leak cause nor 30-cycle acceptance.
+logical molecular data. The later 30-cycle receipt follows the observed
+lifetime corrections and retains this first campaign's scope.

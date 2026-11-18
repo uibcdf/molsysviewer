@@ -897,6 +897,84 @@
         "scope": "Only the suite's aggregate budget and progress logging change. The aggregate accommodates sixteen 15-second captures plus bounded setup, encode and inspection work; scientific assertions and individual operation deadlines stay in force. Local passing runs do not identify the hosted failure's phase or complete hosted qualification."
       }
     },
+    "hosted_source_recovery_44244621198": {
+      "run": 44244621198,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "molsysviewer_commit": "ac51d77b69f4e38f25c9d50559acd92ec805ad1b",
+      "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas": "3.1.0",
+      "platform": "ubuntu-latest",
+      "scope": "Full Linux Python, all 63 core browser suites and the 25 documentation notebooks. The previous per-capture deadline and original Movie assertions remain in force.",
+      "matching_dispatches_before": 0,
+      "matching_dispatches_after": 1,
+      "competing_active_or_queued_before": 0,
+      "terminal": {
+        "job": 134600492186,
+        "chrome": "157.0.8103.50",
+        "notebooks_passed": 25,
+        "core_passed": 38,
+        "core_required": 63,
+        "font_atlas_passed": true,
+        "last_core_entry_started": "interactions-calculation",
+        "first_required_failure": "interactions-calculation exceeded 180000 ms",
+        "calculation_scope_controls_passed": true,
+        "calculation_cases_passed": 16,
+        "calculation_cases_required": 17,
+        "last_passing_calculation_case": "water_bridge/default",
+        "interrupted_calculation_case": "water_bridge_2/default",
+        "interrupted_phase": "preparing",
+        "seconds_between_last_case_start_and_outer_stop_log": 1.467,
+        "movie_composition_reached": false,
+        "movie_story_reached": false,
+        "job_log_sha256": "89ca91efcf4de51e1f58a571f96fc792075a7fe358fbbf7470915271acdf3a93",
+        "private_manifest_sha256": "fa096654aead98210aefab96aecf0214a85c7f4bdf29e3198af4690517c32308"
+      },
+      "initial_python_receiving": {
+        "job": 134600492186,
+        "passed": 4756,
+        "skipped": 42,
+        "failed": 0,
+        "errors": 0,
+        "artifacts": [
+          {"id": 14401229383, "name": "source-receiving-Linux-py3.14", "sha256": "3784b863032535d9814487f336331ead4b54cf55f263a427efbf421bfa8a4511", "size_bytes": 84197},
+          {"id": 14401817839, "name": "movie-encoder-native-Linux", "sha256": "1ed3899b9495a5da64e9dc95f841238344265cda3ad615d8ea739e451f88b929", "size_bytes": 14696}
+        ],
+        "private_manifest_sha256": "73c9b9d53c619aa3fe254185d3ac91ab53f521457f7fa370396445c618078695"
+      },
+      "calculation_followup": {
+        "runner_source_sha256": "470bc5a80f5aa701b5305e244366da61c4cdde7f0625e5d5de10290d87074485",
+        "inventory_guard_sha256": "0004844a9d7028795ef0c122fc275d68b7426db3fceda4ff5996ee6e5b9444a2",
+        "suite_timeout_ms": 240000,
+        "scope": "The complete calculation entry gets its own aggregate allowance. The worker, scope checks, all 17 form variants, required scientific results and changed-scene assertions retain their operation paths and deadlines.",
+        "local_1077": {
+          "native_suite_passed": true,
+          "browser_elapsed_seconds": 178.773,
+          "outer_inputs_unchanged": false,
+          "changed_input": "tests/test_e2e_reliability.py",
+          "disposition": "Restore the original archived guard selector and repeat with a fully unchanged manifest. The restored selector passes the reporting checks.",
+          "log_sha256": "0caef4943f6c97d50b4d21b7ec3c20dc51c54ef51347000a68f73096d3b0b8dc"
+        },
+        "local_1078": {
+          "native_suite_passed": true,
+          "browser_elapsed_seconds": 174.264,
+          "verified_calculation_cases": 17,
+          "suite_timeout_override_ms": null,
+          "limits": {"logical_cpus": 8, "ram_gib": 4, "swap_gib": 0},
+          "selected_inputs": 9998,
+          "inputs_unchanged": true,
+          "own_cgroup_peak_bytes": 2165911552,
+          "minimum_available_gib": 17.16,
+          "owned_survivors": 0,
+          "actual_producer_origin_sha256": "244e670935832c1ed4556e8ef5f7a4ec72ddc24904ef9afe48a4436b9cb07c2f",
+          "log_sha256": "2c0df95e71bd9cd8716a1ea32afc7d9d50eb6f46cdfa4429f4b63642cd5ff2ab"
+        },
+        "producer_provenance": "The Python fixture worker reports five loaded modules from inside its process. All five file digests match the unchanged frozen manifest; the two loaded MolSysMT Python files match 4b0b1f8a and the Rust digest matches its frozen binary.",
+        "reporting_and_inventory_checks_passed": 445,
+        "private_manifest_sha256": "5b95cde6fd8e47ba781bf1b145da3db27c624e7b264f1f806d90ce5f58af917b"
+      }
+    },
     "startup_diagnostics": {
       "profiles": {
         "1051": {
