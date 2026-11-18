@@ -975,6 +975,97 @@
         "private_manifest_sha256": "5b95cde6fd8e47ba781bf1b145da3db27c624e7b264f1f806d90ce5f58af917b"
       }
     },
+    "hosted_source_recovery_44334625017": {
+      "run": 44334625017,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "molsysviewer_commit": "4dc8cac51f9fe9b1cabfe3fe99457a98bde9640c",
+      "molsysmt_source": "4b0b1f8a17e010e5ea9f28a8032a1bb06a1daa69",
+      "pandas": "3.1.0",
+      "platform": "ubuntu-latest",
+      "scope": "Full Linux Python, all 63 core browser suites and 25 documentation notebooks. Only the calculation suite's aggregate allowance changed since the previous checkpoint.",
+      "matching_dispatches_before": 0,
+      "matching_dispatches_after": 1,
+      "competing_active_or_queued_before": 0,
+      "terminal": {
+        "job": 134907854852,
+        "chrome": "157.0.8103.78",
+        "notebooks_passed": 25,
+        "core_passed": 54,
+        "core_required": 63,
+        "calculation_cases_passed": 17,
+        "last_core_entry_started": "movie-playback",
+        "first_required_failure": "Only one camera position was observed by the fixed timer sampler",
+        "camera_positions_sampled": 1,
+        "reported_final_camera_assertion_passed": true,
+        "movie_composition_reached": false,
+        "movie_story_reached": false,
+        "job_log_sha256": "cab7f27f38917cb68ff825b157aeb2498245d58203a00b480cf6e6ec37f2d411",
+        "private_manifest_sha256": "19154154f8c82bd068387ba830c4ebdd9e3146f44c440d740f8f0741fb96dd2d"
+      },
+      "initial_python_receiving": {
+        "job": 134907854852,
+        "passed": 4756,
+        "skipped": 42,
+        "failed": 0,
+        "errors": 0,
+        "skip_cases_and_reasons_match_run_44244621198": true,
+        "artifacts": [
+          {"id": 14441637864, "name": "source-receiving-Linux-py3.14", "sha256": "501d852f4c7d92dd3948a7dfe51a2b36461f0fa3a6732b574f9277a510039853", "size_bytes": 83718},
+          {"id": 14441569155, "name": "movie-encoder-native-Linux", "sha256": "6aecee4b6cda4804d46f3d4c6ba3dfe61dc3089d0ec4817d7a90ea0839b3bc91", "size_bytes": 14696}
+        ],
+        "private_manifest_sha256": "18510642c75d5bdd09a12d8b667f6d89cda6df4c3c2a4e75199796fd0c0fc704"
+      },
+      "movie_playback_followup": {
+        "maintained_test_sha256": "91ee54bf2ef53bc4ce5f44a6c83300c1d77ca62403e47a32230878ab33ef1f42",
+        "molstar": "5.13.1",
+        "local_chrome": "157.0.8103.38",
+        "runtime_sha256": "d4c479e981b71613d3e9b251df168270d2f158daae36e8616f79c72bcd7ab14e",
+        "trace_1080": {
+          "native_exit": 1,
+          "timer_observed_positions": 1,
+          "native_draw_distinct_positions": 3,
+          "intermediate_draw_ms_from_arming": 1466.2,
+          "exact_final_draw_ms_from_arming": 1805.9,
+          "at_completion": [60, 0, 0],
+          "limits": {"logical_cpus": 4, "ram_gib": 3, "swap_gib": 0},
+          "inputs_unchanged": true,
+          "log_sha256": "4dfdbb51eb77a047a399cf6d3f08bb880385770fd9eacbc3b75560edfc7a56c6"
+        },
+        "maintained_1081": {
+          "native_suite_passed": true,
+          "end_only_mutation_failed_distinct_draw_guard": true,
+          "end_only_mutation_distinct_positions": 2,
+          "timeline_ms": 900,
+          "suite_timeout_override_ms": null,
+          "limits": {"logical_cpus": 4, "ram_gib": 3, "swap_gib": 0},
+          "inputs_unchanged": true,
+          "log_sha256": "efc50871c43284288f4980b246da0ebfc3d7edc9698c648a7d0d12e9f23ee22d"
+        },
+        "movie_three_1082": {
+          "suites_passed": ["movie-playback", "movie-composition", "movie-story"],
+          "single_chromium": true,
+          "browser_elapsed_seconds": 368.374,
+          "suite_timeout_override_ms": null,
+          "limits": {"logical_cpus": 8, "ram_gib": 4, "swap_gib": 0},
+          "selected_inputs": 9998,
+          "inputs_unchanged": true,
+          "own_cgroup_peak_bytes": 1713975296,
+          "minimum_available_gib": 17.28,
+          "owned_survivors": 0,
+          "composition_origin_sha256": "de75009f2862f140049d49c449a239680384b8c9df4de8e0b6513976e776a3d1",
+          "story_producer_origin_sha256": "ddc4bd826d74702f7768381168fc4e5223c95aef986ba94e8f8fc25771d3989d",
+          "story_restored_origin_sha256": "65c92137e829033a5144d880f66082054c2e71d1481760554ad5e007968af2e1",
+          "story_producer_and_restored_analysis_signatures_match": true,
+          "log_sha256": "77c6115d50f42524528cece957c561c4316ac9b4eb801174dbb55c844d0fd3e5",
+          "scope": "Three selected core entries sequentially in one real Chromium. The actual composition, story producer and independent restoration import paths and module hashes match the frozen inputs. Native media pixels, overlay context, scientific identities, independent recovery and offline playback pass. The intervening core entries and the complete hosted checkpoint retain their own scope."
+        },
+        "reporting_and_inventory_checks_passed": 445,
+        "private_manifest_sha256": "44a7ececc88b2735f4894404f085b814efb7aa4579575ba485f4c458c7554a63",
+        "scope": "The old timer and the native draw observer see the same controller and playback. The maintained test observes fresh native draws through completion, retains its exact final camera and stop checks, and requires an interpolated pose on the path. Product runtime and Movie timeline are unchanged. The hosted run had no parallel draw observer."
+      }
+    },
     "startup_diagnostics": {
       "profiles": {
         "1051": {

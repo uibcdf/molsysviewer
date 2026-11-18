@@ -18,8 +18,7 @@ END
 /**
  * Browser observation for movie playback (uibcdf/molsysviewer#65).
  *
- * Playback only, and deliberately: export depends on an external encoder and the
- * capability audit already records that it is not exercised in CI.
+ * This entry exercises playback. The Movie export entries cover encoders.
  *
  * What makes this worth a browser is that playback is a `requestAnimationFrame`
  * loop. Nothing in a headless harness that draws once when idle can tell a moving
@@ -84,25 +83,26 @@ async function run() {
             { time_ms: 900, camera: { position: [60, 0, 0], target: [0, 0, 0], up: [0, 1, 0] } },
         ];
 
-        const sample = async (ms: number, every: number) => {
-            const seen: number[][] = [];
-            for (let elapsed = 0; elapsed < ms; elapsed += every) {
-                await new Promise(r => setTimeout(r, every));
-                const p = pos();
-                if (!p) continue;
-                if (!seen.length || JSON.stringify(p) !== JSON.stringify(seen[seen.length - 1])) seen.push(p);
+        const during: number[][] = [];
+        let observing = false;
+        const draws = controller.plugin.canvas3d.didDraw.subscribe(() => {
+            if (!observing) return;
+            const current = pos();
+            if (current && JSON.stringify(current) !== JSON.stringify(during.at(-1))) {
+                during.push(current);
             }
-            return seen;
-        };
-
-        await controller.handleMessage({ op: "play_movie", keyframes, loop: false });
-        const during = await sample(1200, 30);
-
-        // Mol* applies camera snapshots asynchronously. Playback completion is
-        // signalled only once its final snapshot has landed, not at a fixed wall time.
+        });
+        // didDraw can replay its last event on subscription. Observe fresh draws
+        // from playback dispatch through the existing completion deadline.
+        observing = true;
         const hasDone = () => ((w.__messages ?? []) as any[]).some(m => m?.event === "movie_playback_done");
-        for (let i = 0; i < 200 && !hasDone(); i++) {
-            await new Promise(r => setTimeout(r, 50));
+        try {
+            await controller.handleMessage({ op: "play_movie", keyframes, loop: false });
+            for (let i = 0; i < 200 && !hasDone(); i++) {
+                await new Promise(r => setTimeout(r, 50));
+            }
+        } finally {
+            draws.unsubscribe();
         }
         const done = hasDone();
         const after = pos();
@@ -172,8 +172,12 @@ async function run() {
     // distinct positions is the assertion that separates playing from arriving.
     assert.ok(
         result.during.length >= 3,
-        `Expected the camera to pass through intermediate positions, saw ${result.during.length}: ` +
+        `Expected the camera to draw distinct positions, saw ${result.during.length}: ` +
             JSON.stringify(result.during),
+    );
+    assert.ok(
+        result.during.some(([x, y, z]) => x > 1e-6 && z > 1e-6 && Math.abs(y) < 1e-6 && Math.abs(x + z - 60) < 1e-6),
+        `No completed draw showed the interpolated camera on its path: ${JSON.stringify(result.during)}`,
     );
     assert.ok(
         dist(result.during[0], result.settled) < 1e-6 || dist(result.during[0], end) > 1,
