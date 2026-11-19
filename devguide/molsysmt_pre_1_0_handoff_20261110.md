@@ -362,16 +362,16 @@ announcing the new install command. The private manifest for `1100` and
 | Qualify the installed pair | MolSysMT runs one explicit four-platform × Python 3.11–3.14 staging matrix. Both owners check attempt-scoped installed URLs and SHA-256 values for both packages in every cell. MolSysViewer also receives its candidate core workflow and the three staged Windows launchers. |
 | Complete release acceptance | Record the remaining documentation and human workflow acceptance in #315. Publication authorization, public-channel 16-cell verification and archival follow under their existing gates. |
 
-MolSysViewer is ready to coordinate the candidate inputs with MolSysMT.
-The current complete Linux checkpoint and the newer provider's targeted
-source evidence above have distinct scopes. The next joint decision covers
-producer references, build numbers, reciprocal floors and which candidate
-source, native and host checks need fresh exact receiving. Candidate freeze,
-staging construction and public publication retain their separate approvals.
+Both teams have agreed the source bases and provisional build coordinates
+below. The next decision is to authorize preparation of the coordinated
+metadata and version context. The final producer identities, exact-candidate
+checks, staging construction and public publication retain their separate
+requirements. The [current checkpoint](checkpoints.md#resume-in-one-page)
+links the preliminary reading and final handoff steps.
 
 ### Proposed candidate inputs and version checks
 
-Both teams propose MolSysMT scientific base
+Both teams agreed to prepare from MolSysMT scientific base
 `7eb24c4ff403911939f96899dd6fee76ff4c8ef5` with ABI3 build **1**, and
 MolSysViewer code base `95d87988ec9be281139b7d5f1936af77eefe6ddd` with the
 evidence in `2d4bd3ac` and noarch build **0**. A fresh all-label Anaconda

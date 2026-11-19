@@ -1,7 +1,37 @@
 # Development checkpoint
 
-Use [the current handoff](#resume-in-one-page) and [next actions](#what-is-next);
-the dated evidence below retains its original source scope.
+## Resume in one page
+
+**2026-11-18 — current Linux source validation passed. Both teams agreed on
+the bases for 1.0.0. Candidate preparation and final documentation handoff
+are pending.**
+
+| Area | Current state |
+| --- | --- |
+| MolSysViewer source | [Run 44370662706](https://github.com/uibcdf/molsysviewer/actions/runs/44370662706) passes 4,756 Python cases with 42 recorded skips, 63/63 core browser suites and 25/25 notebooks on MolSysViewer `95d87988` with MolSysMT `4b0b1f8a`. DataCard, Interactions and Movie pass in that attempt. The [terminal receipt](moving_capture_followup_receiving_20261117.json) preserves both original ZIP hashes and the native log digest. |
+| Newer MolSysMT source | The same MolSysViewer code passes 326 scoped local checks with the verified scientific inputs of MolSysMT `7eb24c4f`, including Interactions and H5MSM session recovery. [Joint source evidence](molsysmt_pre_1_0_handoff_20261110.md#coordination-preflight--2026-11-18). |
+| Candidate preparation | Agreed bases are MolSysViewer `95d87988ec9be281139b7d5f1936af77eefe6ddd` and MolSysMT `7eb24c4ff403911939f96899dd6fee76ff4c8ef5`. The provisional coordinates are MolSysViewer 1.0.0 noarch build 0 and MolSysMT 1.0.0 ABI3 build 1. The final producer SHAs, branch refs, metadata, exact source runs and staging artifacts remain pending. [Candidate inputs and version route](molsysmt_pre_1_0_handoff_20261110.md#proposed-candidate-inputs-and-version-checks). |
+| Documentation and human review | The preliminary reading can start from the recorded snapshots. F2 still needs the technical reconciliation of installation, capabilities, examples and references. The agreed E4 human checks remain postponed. The final reading packet also requires the qualified candidate pair and any remaining applicable technical acceptance under [#315](https://github.com/uibcdf/molsysviewer/issues/315) and [MolSysMT #334](https://github.com/uibcdf/molsysmt/issues/334). |
+
+Start the MolSysViewer reading with [installation](../docs/content/user/introduction/installation.ipynb),
+[Studio](../docs/content/user/viewer/studio.md), [sessions](../docs/content/user/export/session.md)
+and [Movie](../docs/content/user/movie/index.md). Use the
+[MolSysMT documentation snapshot](https://github.com/uibcdf/molsysmt/tree/7eb24c4ff403911939f96899dd6fee76ff4c8ef5/docs)
+and its owner's reading packet for MolSysMT. Record review findings against
+the exact document revision. The final packet will use the site and examples
+received for the coordinated candidate pair.
+
+## What is next
+
+1. Finish the [F2 documentation check](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#f--stable-public-contract-and-usable-documentation) while the preliminary reading proceeds. Reconcile the remaining Movie, scientific integration and scale acceptance in #315, and prepare the agreed E4 round for the maintainer to resume.
+2. Obtain authorization to prepare the candidates. Review the reciprocal `>=1.0.0` floors, citation metadata and versioned MolSysViewer runtime. Fix the producer SHAs and dispatch refs. Follow the [joint candidate route](molsysmt_pre_1_0_handoff_20261110.md#proposed-candidate-inputs-and-version-checks) for exact version and source checks once their execution is authorized.
+3. When staging is authorized, stage the four MolSysMT files first, then the MolSysViewer file with its recipe test. Verify the five original SHA-256 values, run the single 16-cell staging matrix and receive candidate core CI and the staged Windows launcher checks. Use [the release evidence contract](release_gate_evidence.md).
+4. Deliver the final documentation packet after the [handoff criteria](path_to_1_0.md#definition-of-done) are met. Record review corrections against the exact candidate and rerun the gates affected by any replacement. Reserve public numeric tags for authorized releases. The current distribution plan is the coordinated `1.0.0` pair. A numeric MolSysViewer tag starts the [npm publishing workflow](../.github/workflows/npm-publish.yaml).
+
+Follow the [#315 dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
+and its [work-item queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions)
+for individual states and scope decisions. The dated notes below retain
+their own inputs and results.
 
 ## Historical receiving notes
 
@@ -905,7 +935,10 @@ Experimental Qt defects and post-1.0 growth are not a core release clearance.
 This is the current handoff. Normative behavior remains in the linked contracts;
 previous qualification records retain their original candidate and environment.
 
-## Resume in one page
+## Earlier 1.0 preparation and source receiving
+
+These entries describe the state at their recorded dates. See
+[the current checkpoint](#resume-in-one-page) for today's work order.
 
 **Pre-1.0 pair preparation — 2026-11-17:** the
 [MolSysMT handoff](molsysmt_pre_1_0_handoff_20261110.md#pre-10-pair-preparation--2026-11-17)
@@ -3608,14 +3641,6 @@ Main findings:
 6. Scene-history snapshots now use compact deterministic JSON bytes and a
    64 MiB combined undo/redo budget. A 100k literal-overlay history dropped from
    about 212 MiB to 52.66 MiB retained RSS. The byte guard is mutation-verified.
-
-## What is next
-
-Follow the [agreed closure route](path_to_1_0.md#closure-route),
-then the [current dashboard](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard),
-[activation card](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#activation-card-and-priorities) and
-[work-item queue](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-next-actions).
-Unresolved scope decisions and release/manual boundaries stay explicit there.
 
 ## Dated action orders
 

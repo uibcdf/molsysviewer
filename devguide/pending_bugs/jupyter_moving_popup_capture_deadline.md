@@ -422,4 +422,13 @@ reports unchanged detectors, codec and native binary `4ffb82e4…`, and requests
 neither a new matrix nor publication. These are owner-reported results, not
 MolSysViewer receiving or an installed pair. Keep the frozen `4b0b1f8a` input
 for this investigation until explicit source adoption; the checkpoint does
-not change #344's pending browser qualification or the final-pair identity.
+not change the final-pair identity.
+
+**Covering Linux source validation passed — 2026-11-18.**
+[Run 44370662706](https://github.com/uibcdf/molsysviewer/actions/runs/44370662706)
+on MolSysViewer `95d87988` and MolSysMT `4b0b1f8a` passes all 63 core entries,
+including moving-state capture, moving-capture lifecycle and popup bootstrap.
+The [terminal receipt](../moving_capture_followup_receiving_20261117.json)
+preserves the original evidence. The historical actual-Jupyter failures
+still lack an established cause. Final candidate and actual-host acceptance
+remain open in their declared scopes.

@@ -588,7 +588,12 @@ maintainer. The coordination issue is #315; it does not replace scoped defects.
 
 ## Current dashboard
 
-**Current #344 working correction — 2026-11-17:** the
+**Current checkpoint — 2026-11-18:** the [source and candidate handoff](../checkpoints.md#resume-in-one-page)
+receives the full Linux source run and records the agreed bases for the
+coordinated 1.0.0 pair. Follow its next actions for F2, candidate preparation
+and final acceptance. Each work item below retains its own evidence.
+
+**Earlier #344 working correction — 2026-11-17:** the
 [follow-up receipt](../moving_capture_followup_receiving_20261117.json) owns
 the corrected adversarial pending-query setup, guarded diagnostic script loading
 and a native negative with 23 redundant playback receipts. The working feedback
@@ -597,10 +602,10 @@ receiving with zero consecutive duplicate receipts. The complete current
 Jupyter guard passes, including moving-popup startup and both popup saves.
 The earlier intermittent failures retain their causal limits. The scoped
 native box, moving-state and lifecycle checks pass in their recorded resource
-profiles. Covering source checks are pending. The previous source/final counters
-remain **41/46 and 1/46**; these supplemental controls add no original outcome.
+profiles. The source/final counters at that checkpoint were **41/46 and
+1/46**; these supplemental controls add no original outcome.
 
-**Current capture-source receiving — 2026-11-17:** the
+**Earlier capture-source receiving — 2026-11-17:** the
 [new receipt](../live_capture_preparation_receiving_20261117.json) delivers
 native-regression-protected removal of the implicit hidden cell and preservation
 of already evaluated dynamic membership during capture preparation. The full
@@ -627,7 +632,7 @@ Live-Jupyter diagnostics are outside that full-source profile. Failure observati
 before closing that window. Keep original negatives and resource scopes;
 **41/46 source-delivered and 1/46 final accepted** remain unchanged.
 
-**Current source exits — 2026-11-17:** `4f2d8fa2` closes the identified idle
+**Earlier source exits — 2026-11-17:** `4f2d8fa2` closes the identified idle
 peer-camera loop (#400), focused DataCard receiving (#394) and Linux notebook
 IPC route (#401), with 495 JS cases, full plot/scientific mirror, 25 original
 notebooks and 523 workflow/reporting/link guards. Actual-Jupyter Movie passes;
@@ -951,12 +956,10 @@ C2/task and hosted acceptance remain pending; C1 below holds the exact evidence.
 
 ### Current next actions
 
-Use the [adopted closure route](../path_to_1_0.md#closure-route) for programme
-order: finish Movie, complete the adopted #369 Mol* review alongside
-implementation and before architecture/candidate freeze, close scientific integration and prolonged/reliability
-receiving, then deliver internally checked documentation and the applicable
-source/installed/manual qualification. The items below retain the technical
-dependencies and existing stable IDs; they are not another priority order.
+Use the [current checkpoint](../checkpoints.md#what-is-next) for the work order
+and the [adopted closure route](../path_to_1_0.md#closure-route) for its exit
+criteria. The groups below retain the technical dependencies and existing
+stable IDs.
 
 H5MSM public-default 1.0 consumption is
 [received](../h5msm_default_receiving_20261111.json) on MolSysMT `aee7aa65`,
@@ -977,13 +980,15 @@ plan plus #705 evidence.
    delivery; complete its separate installed/hosted/manual acceptance. #690 is source-closed
    and its canonical corrected backend is received; do not repeat its dangerous
    original allocation outside the preserved protected control.
-2. Retain source-delivered B4 figure provenance and F1’s reviewed public-contract snapshot; retain the verified owner integration of producer PR #702.
-   Retain delivered C3 host services; continue D5.4/#615 initialization and
-   C4/Viewer #305 with causal or bounded evidenced dispositions, retaining
-   original failed runs and unchanged deadlines.
+2. Retain source-delivered B4 figure provenance, F1's reviewed public-contract
+   snapshot, producer PR #702 and delivered C3 host services. Preserve D5.4's
+   accepted #615 host-floor disposition and C4's completed source receiving
+   under #305. Carry their applicable candidate checks forward with the
+   original failures and deadlines.
 3. Retain owner-merged #706's corrected readiness/playback deadlines and
-   owner-incorporated #707 instrumentation. Neither closes the unexplained
-   #615 timeout. Retain source-received #357/#361 and resolved #356/#364 with
+   owner-incorporated #707 instrumentation. The original #615 timeout has an
+   unknown cause within its accepted disposition. Retain source-received
+   #357/#361 and resolved #356/#364 with
    their original failures and durable guards. #344's coherent-presentation
    and frame-query corrections and #723's canonical host/metrology controls
    now have scoped receiving; do not repeat completed campaigns without a
@@ -994,23 +999,24 @@ plan plus #705 evidence.
    #356's backing-buffer guard, #363's upstream monitoring and owner-integrated
    PR #721's readiness/import observer. The current canonical #723 protocol
    has actual-kernel provenance and qualified default-host controls. #354's
-   original failure is a pre-save Python index assertion, not an established
-   recovered-canvas failure; receive MolSysMT #754's phase/controller/error
-   diagnostics and isolate that authority discrepancy. Preserve the original
-   `513` and other failed campaigns rather than combining their prefixes. Retain
-   source/installed/human scopes separately. Complete mandatory Movie #320;
-   B3.6/E3 remain separate recommendations and E4 human review remains postponed.
+   original failure was in the Python index assertion before saving. Keep
+   the received MolSysMT #754 diagnostics and later complete thirty-cycle run
+   with their source identities. The original authority discrepancy's cause
+   remains open. Preserve the `513` and other failed campaigns.
+   Movie #320 has integrated source receiving in the complete Linux run.
+   Complete its applicable host and release qualification. B3.6/E3 remain
+   separate recommendations and E4 human workflow checks remain postponed.
 5. Finish and internally review F2 documentation alongside the concrete,
    separately authorized artifact/platform/installed/manual gates. All required
    technical acceptance precedes the maintainer's final documentary handoff;
    final review corrections retain their applicable release checks.
    Candidate/publication remain paused.
 
-Viewer incremental commits use `[skip ci]`; do not launch CI for every small
-change. MolSysMT contributions retain its owner PR/checkpoint rules. Human
-review, candidates, tags, packages, promotions and both 1.0 publications remain
-paused. The following table is current; preceding dated receiving notes retain
-their own inputs and do not supersede this order.
+Viewer incremental commits use `[skip ci]`; source campaigns follow the agreed
+checkpoints. MolSysMT contributions retain its owner PR/checkpoint rules.
+Preliminary reading can proceed. E4 human workflow checks, candidates, tags,
+packages, promotions and both 1.0 publications remain paused until their
+agreed resumption.
 
 | Block | Current status | Owner and tracking | Exit evidence |
 | --- | --- | --- | --- |

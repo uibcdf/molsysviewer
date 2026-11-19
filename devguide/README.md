@@ -6,15 +6,14 @@ Git and `docs/content/developer/changes_notes.md` already preserve chronology.
 
 ## Read first
 
-For a new session aimed at 1.0, begin with the agreed
-[documentation-review handoff objective](path_to_1_0.md#documentation-review-handoff),
-then the [active robustness audit and action ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md),
-then the [current handoff](checkpoints.md#resume-in-one-page), its
-[ordered next actions](checkpoints.md#what-is-next) and the
-[1.0 release plan](path_to_1_0.md). The middle of the checkpoint
-retains dated evidence: do not interpret earlier candidate coordinates
-as current instructions. Read the active report for the chosen work item;
-the experimental Qt-host migration is `uibcdf/molsysviewer#109`, and
+For a new session aimed at 1.0, start at the
+[current checkpoint](checkpoints.md#resume-in-one-page) and its
+[ordered next actions](checkpoints.md#what-is-next). The
+[release plan](path_to_1_0.md#documentation-review-handoff) defines the goal
+for the documentation handoff, and the
+[active robustness ledger](pending_proposals/pre_1_0_robustness_audit_and_action_plan_20261106.md#current-dashboard)
+tracks individual work items. Read the active report for the chosen work
+item. The experimental Qt-host migration is `uibcdf/molsysviewer#109`, and
 the deferred version/dogfooding decision is `uibcdf/molsysviewer#113`.
 The shared Linux Python 3.14 development recipe is maintained by
 `uibcdf/molsyssuite#52`.
@@ -47,7 +46,15 @@ documents, and historical audits.
 
 ## Current status and planning
 
-The [current #344 follow-up](moving_capture_followup_receiving_20261117.json)
+The [18 November checkpoint](checkpoints.md#resume-in-one-page) records the
+complete Linux source result, the agreed bases for 1.0.0 and the preliminary
+documentation reading route. It also lists the remaining candidate,
+qualification and final handoff steps.
+
+### Dated status and receiving records
+
+These records retain the states and inputs observed at their respective dates.
+The [#344 follow-up](moving_capture_followup_receiving_20261117.json)
 receives a stale adversarial capture precondition and the diagnostic observer's
 classic-script corruption. A native negative also measures 23 unchanged
 playback receipts that repeatedly regenerate Python summaries. Coalescing
